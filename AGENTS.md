@@ -50,6 +50,7 @@ Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz a�
 - [x] Tailwind CSS ve shadcn/ui entegrasyonunun yapılması.
 - [x] Cloudflare `wrangler.toml` dosyasının oluşturulması ve D1 veritabanı binding ayarlarının yapılması.
 - [x] Proje genelinde tip güvenliği ve kod standartları için Prettier/ESLint ayarlarının tamamlanması.
+- [ ] E2E testler için playwrigt entegrasyonunun yapılması.
 
 ### Phase 2: Data Layer & Auth (Veri Katmanı ve Kimlik Doğrulama)
 
@@ -81,6 +82,16 @@ Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz a�
 - [ ] SEO standartları için `sitemap.xml` ve `robots.txt` rotalarının dinamik olarak eklenmesi.
 - [ ] Görsellerin ve fontların performans optimizasyonu (Lighthouse kontrolleri).
 - [ ] Projenin Cloudflare Pages'a deploy edilmesi ve canlı (production) D1 veritabanının bağlanması.
+
+### Phase 6: CI/CD Pipeline
+
+- [ ] Pull Request bazlı CI hattının kurulması (`lint`, `typecheck`, `unit/integration test`, `build` adımlarının otomatik çalıştırılması).
+- [ ] Playwright tabanlı kritik E2E akışlarının (özellikle login ve dashboard guard) CI ortamında çalıştırılması.
+- [ ] Local D1 migration ve seed akışını CI içinde doğrulayacak geçici test veritabanı/pipeline adımlarının kurulması.
+- [ ] `main` branch push'larında Cloudflare preview/production deploy sürecinin otomatikleştirilmesi.
+- [ ] Production deploy öncesi D1 migration apply adımının kontrollü ve güvenli şekilde pipeline'a bağlanması.
+- [ ] Cloudflare secrets, Better Auth secret'ları ve diğer environment variable'lar için güvenli CI secret yönetiminin dokümante edilmesi ve standardize edilmesi.
+- [ ] Deploy sonrası smoke test, health check ve başarısız deploy durumları için rollback/alert stratejisinin eklenmesi.
 
 ## 4. Design & UI/UX Strategy (Expert Level)
 
