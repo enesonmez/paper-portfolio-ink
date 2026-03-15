@@ -27,6 +27,7 @@
   },
   "include": [
     "app",
+    "db",
     "tests",
     "vite.config.ts",
     "vitest.config.ts",
