@@ -25,6 +25,7 @@ describe("auth server factory", () => {
   beforeEach(() => {
     betterAuthMock.mockReset();
     drizzleAdapterMock.mockReset();
+    vi.unstubAllEnvs();
   });
 
   it("creates Better Auth with the shared Drizzle schema and custom table mappings", async () => {
@@ -87,16 +88,5 @@ describe("auth server factory", () => {
         },
       }),
     );
-  });
-
-  it("derives a safe local auth config from the request origin", async () => {
-    const { resolveAuthConfig } = await import("../../app/lib/auth/auth.server");
-    const request = new Request("http://localhost:5173/login");
-
-    expect(resolveAuthConfig(request)).toEqual({
-      baseURL: "http://localhost:5173",
-      secret: "dev-only-better-auth-secret",
-      trustedOrigins: ["http://localhost:5173"],
-    });
   });
 });

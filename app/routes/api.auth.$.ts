@@ -1,6 +1,7 @@
 import type { Route } from "./+types/api.auth.$";
 
-import { createAuth, resolveAuthConfig } from "../lib/auth/auth.server";
+import { resolveAuthConfig } from "../lib/auth/auth-config.server";
+import { createAuth } from "../lib/auth/auth.server";
 
 function getAuthFromContext(request: Request, context: Route.LoaderArgs["context"]) {
   const authConfig = resolveAuthConfig(request, context.auth);

@@ -59,6 +59,13 @@ Ana fonksiyonlar:
 - `createAuth({ db, secret, baseURL, trustedOrigins })`
 - `getSessionFromRequest(request, options)`
 
+Burada sorumluluklar özellikle ayrıldı:
+
+- `app/lib/auth/auth-config.server.ts`
+  request origin'i, process env ve runtime override'larından son auth config'i üretir
+- `app/lib/auth/auth.server.ts`
+  yalnızca Better Auth factory ve session çözümleme işini yapar
+
 `resolveAuthConfig()` request origin'inden güvenli local varsayılanları türetir. Context içinden override gelirse onu kullanır.
 
 ### 3. Better Auth konfigürasyonu
@@ -127,6 +134,34 @@ Ardından migration local D1 veritabanına uygulandı ve doğrulandı.
 - `package-lock.json`: kurulum kilidi
 - `tests/unit/db-schema.test.ts`: auth uyumlu schema beklentileri
 - `AGENTS.md`: roadmap güncellemesi
+
+### Auth secret ve URL konfigürasyonu
+
+Local `react-router dev` akışında:
+
+- `.env.example`
+
+dosyası referans alınarak:
+
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
+
+değerleri `.env` içine konabilir.
+
+Cloudflare / Wrangler akışında:
+
+- `.dev.vars.example`
+
+dosyası referans alınarak local Worker secret'ları `.dev.vars` içine konabilir.
+
+Cloudflare request handler, runtime env değerlerini `AppLoadContext.auth` içine taşıyacak şekilde bridge edildiği için Worker tarafında da Better Auth artık gerçek secret ile çalışır.
+
+Bu mapper da ayrıca ayrıştırıldı:
+
+- `workers/auth-env.ts`
+  Cloudflare env binding'lerini auth override nesnesine dönüştürür
+- `workers/load-context.ts`
+  yalnızca app load context compositon root'u olarak davranır
 
 ## Uygulanan Testler ve Doğrulamalar
 

@@ -5,24 +5,8 @@ import type { AppDb } from "../../../db";
 import { schema } from "../../../db/schema";
 import type { AuthRuntimeConfig } from "./auth-config";
 
-const DEV_AUTH_SECRET = "dev-only-better-auth-secret";
-
 interface CreateAuthOptions extends AuthRuntimeConfig {
   db: AppDb;
-}
-
-export function resolveAuthConfig(
-  request: Request,
-  override?: Partial<AuthRuntimeConfig>,
-): AuthRuntimeConfig {
-  const origin = new URL(request.url).origin;
-  const baseURL = override?.baseURL ?? origin;
-
-  return {
-    baseURL,
-    secret: override?.secret ?? DEV_AUTH_SECRET,
-    trustedOrigins: override?.trustedOrigins ?? [baseURL],
-  };
 }
 
 export function createAuth({ db, secret, baseURL, trustedOrigins }: CreateAuthOptions) {
