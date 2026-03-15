@@ -12,4 +12,4 @@ binding = "DB"
 database_name = "paper-enes-ink-db"
 database_id = "00000000-0000-0000-0000-000000000000"
 preview_database_id = "00000000-0000-0000-0000-000000000000"
-
+migrations_dir = "db/migrations"
