@@ -18,6 +18,7 @@
       "~/*": ["./app/*"]
     },
     "types": [
+      "node",
       "@cloudflare/workers-types",
       "vite/client",
       "vitest/globals",

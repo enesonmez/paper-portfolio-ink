@@ -10,11 +10,15 @@ export function meta() {
 
 export default function ProjectsPage() {
   return (
-    <main className="page-shell">
-      <section className="panel hero-panel">
-        <p className="eyebrow">Projects / Placeholder</p>
-        <h1>Projeler listesi hazirlaniyor</h1>
-        <p className="lede">
+    <main className="mx-auto grid min-h-screen max-w-6xl px-4 py-8 md:px-6 lg:py-16">
+      <section className="grid min-h-[24rem] content-center gap-5 border-2 border-black bg-card p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)] md:p-8">
+        <p className="text-sm uppercase tracking-[0.08em] text-muted-foreground">
+          Projects / Placeholder
+        </p>
+        <h1 className="font-display text-5xl leading-none md:text-7xl">
+          Projeler listesi hazirlaniyor
+        </h1>
+        <p className="max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">
           Proje kartlari ve detayli case study akisi sonraki public UI adiminda
           bu route uzerine yerlestirilecek.
         </p>
@@ -22,4 +26,3 @@ export default function ProjectsPage() {
     </main>
   );
 }
-

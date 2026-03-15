@@ -44,7 +44,7 @@ Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz a�
 
 ### Phase 1: Foundation (Kurulum ve Temel Yapı)
 - [x] React Router v7 projesinin (Edge Runtime ayarlı) başlatılması.
-- [ ] Tailwind CSS ve shadcn/ui entegrasyonunun yapılması.
+- [x] Tailwind CSS ve shadcn/ui entegrasyonunun yapılması.
 - [x] Cloudflare `wrangler.toml` dosyasının oluşturulması ve D1 veritabanı binding ayarlarının yapılması.
 - [ ] Proje genelinde tip güvenliği ve kod standartları için Prettier/ESLint ayarlarının tamamlanması.
 
