@@ -1,0 +1,134 @@
+:root {
+  color-scheme: light dark;
+  --background: #f5f5f4;
+  --surface: #ffffff;
+  --foreground: #0c0a09;
+  --muted: #57534e;
+  --border: #000000;
+  --accent: #facc15;
+  --danger: #dc2626;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    linear-gradient(180deg, rgba(250, 204, 21, 0.12), transparent 24%),
+    var(--background);
+  color: var(--foreground);
+  font-family: "JetBrains Mono", monospace;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+.page-shell {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+.panel {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  box-shadow: 4px 4px 0 0 var(--border);
+  padding: 1.5rem;
+}
+
+.hero-panel {
+  min-height: 22rem;
+  align-content: center;
+}
+
+.eyebrow {
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+h1,
+h2 {
+  font-family: "VT323", monospace;
+  font-weight: 400;
+  line-height: 1;
+  margin: 0 0 1rem;
+}
+
+h1 {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+}
+
+h2 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.lede {
+  max-width: 40rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border);
+  background: var(--accent);
+  box-shadow: 4px 4px 0 0 var(--border);
+  text-decoration: none;
+}
+
+.button-secondary {
+  background: var(--surface);
+}
+
+.button:focus-visible,
+.button:hover {
+  outline: 3px solid var(--danger);
+  outline-offset: 3px;
+}
+
+.stack-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1c1917;
+    --surface: #292524;
+    --foreground: #fafaf9;
+    --muted: #a8a29e;
+  }
+
+  .panel,
+  .button {
+    box-shadow: 4px 4px 0 0 var(--accent);
+  }
+}
+
