@@ -1,0 +1,2 @@
+BETTER_AUTH_SECRET=replace-with-a-production-grade-secret-of-at-least-32-characters
+BETTER_AUTH_URL=http://localhost:8788

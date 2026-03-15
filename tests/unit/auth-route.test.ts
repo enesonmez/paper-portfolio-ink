@@ -7,14 +7,19 @@ const { createAuthMock, handlerMock } = vi.hoisted(() => {
   };
 });
 
-vi.mock("../../app/lib/auth/auth.server", () => {
+vi.mock("../../app/lib/auth/auth-config.server", () => {
   return {
-    createAuth: createAuthMock,
     resolveAuthConfig: vi.fn((request: Request) => ({
       secret: "test-secret",
       baseURL: new URL(request.url).origin,
       trustedOrigins: [new URL(request.url).origin],
     })),
+  };
+});
+
+vi.mock("../../app/lib/auth/auth.server", () => {
+  return {
+    createAuth: createAuthMock,
   };
 });
 
