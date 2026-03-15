@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createAppDb } from "../../db";
+import { schema } from "../../db/schema";
 import { createD1Db, d1Provider } from "../../db/providers/d1";
 
 const { drizzleMock } = vi.hoisted(() => {
@@ -29,6 +30,7 @@ describe("database provider", () => {
     expect(createD1Db(binding)).toBe(dbInstance);
     expect(drizzleMock).toHaveBeenCalledWith(binding, {
       casing: "snake_case",
+      schema,
     });
   });
 
