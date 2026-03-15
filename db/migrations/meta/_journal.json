@@ -8,6 +8,13 @@
       "when": 1773589563066,
       "tag": "0000_violet_power_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1773592807061,
+      "tag": "0001_flaky_bulldozer",
+      "breakpoints": true
     }
   ]
 }

@@ -36,7 +36,6 @@ export const users = sqliteTable(
       .notNull()
       .default(false),
     displayName: text("display_name").notNull(),
-    passwordHash: text("password_hash").notNull(),
     role: text("role").$type<UserRole>().notNull().default("admin"),
     avatarUrl: text("avatar_url"),
     bio: text("bio"),
@@ -101,15 +100,63 @@ export const sessions = sqliteTable(
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    tokenHash: text("token_hash").notNull(),
+    token: text("token").notNull(),
     expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
     ...createTimestampColumns(),
   },
   (table) => [
-    uniqueIndex("sessions_token_hash_unique").on(table.tokenHash),
+    uniqueIndex("sessions_token_unique").on(table.token),
     index("sessions_user_id_expires_at_idx").on(table.userId, table.expiresAt),
+  ],
+);
+
+export const accounts = sqliteTable(
+  "accounts",
+  {
+    id: createIdColumn(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    accountId: text("account_id").notNull(),
+    providerId: text("provider_id").notNull(),
+    accessToken: text("access_token"),
+    refreshToken: text("refresh_token"),
+    idToken: text("id_token"),
+    accessTokenExpiresAt: integer("access_token_expires_at", {
+      mode: "timestamp_ms",
+    }),
+    refreshTokenExpiresAt: integer("refresh_token_expires_at", {
+      mode: "timestamp_ms",
+    }),
+    scope: text("scope"),
+    password: text("password"),
+    ...createTimestampColumns(),
+  },
+  (table) => [
+    uniqueIndex("accounts_provider_account_unique").on(
+      table.providerId,
+      table.accountId,
+    ),
+    index("accounts_user_id_idx").on(table.userId),
+  ],
+);
+
+export const verifications = sqliteTable(
+  "verifications",
+  {
+    id: createIdColumn(),
+    identifier: text("identifier").notNull(),
+    value: text("value").notNull(),
+    expiresAt: integer("expires_at", { mode: "timestamp_ms" }).notNull(),
+    ...createTimestampColumns(),
+  },
+  (table) => [
+    uniqueIndex("verifications_identifier_value_unique").on(
+      table.identifier,
+      table.value,
+    ),
   ],
 );
 
@@ -118,4 +165,6 @@ export const schema = {
   posts,
   projects,
   sessions,
+  accounts,
+  verifications,
 };

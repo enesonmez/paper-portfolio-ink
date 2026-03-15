@@ -1,7 +1,15 @@
 import { getTableConfig } from "drizzle-orm/sqlite-core";
 import { describe, expect, it } from "vitest";
 
-import { posts, projects, schema, sessions, users } from "../../db/schema";
+import {
+  accounts,
+  posts,
+  projects,
+  schema,
+  sessions,
+  users,
+  verifications,
+} from "../../db/schema";
 
 function getColumnNames(table: Parameters<typeof getTableConfig>[0]) {
   return getTableConfig(table).columns.map((column) => column.name);
@@ -10,14 +18,16 @@ function getColumnNames(table: Parameters<typeof getTableConfig>[0]) {
 describe("database schema", () => {
   it("exports the domain tables through a shared schema object", () => {
     expect(schema).toMatchObject({
+      accounts,
       posts,
       projects,
       sessions,
       users,
+      verifications,
     });
   });
 
-  it("defines the users table with auth and profile columns", () => {
+  it("defines the users table with Better Auth-compatible profile columns", () => {
     const config = getTableConfig(users);
 
     expect(getColumnNames(users)).toEqual(
@@ -26,7 +36,7 @@ describe("database schema", () => {
         "email",
         "email_verified",
         "display_name",
-        "password_hash",
+        "avatar_url",
         "role",
         "created_at",
         "updated_at",
@@ -80,14 +90,14 @@ describe("database schema", () => {
     expect(config.indexes).toHaveLength(3);
   });
 
-  it("defines the sessions table with hashed token storage and expiry", () => {
+  it("defines the sessions table with Better Auth session columns", () => {
     const config = getTableConfig(sessions);
 
     expect(getColumnNames(sessions)).toEqual(
       expect.arrayContaining([
         "id",
         "user_id",
-        "token_hash",
+        "token",
         "expires_at",
         "ip_address",
         "user_agent",
@@ -97,5 +107,45 @@ describe("database schema", () => {
     );
     expect(config.foreignKeys).toHaveLength(1);
     expect(config.indexes).toHaveLength(2);
+  });
+
+  it("defines the accounts table for credential and provider auth records", () => {
+    const config = getTableConfig(accounts);
+
+    expect(getColumnNames(accounts)).toEqual(
+      expect.arrayContaining([
+        "id",
+        "user_id",
+        "account_id",
+        "provider_id",
+        "access_token",
+        "refresh_token",
+        "id_token",
+        "access_token_expires_at",
+        "refresh_token_expires_at",
+        "scope",
+        "password",
+        "created_at",
+        "updated_at",
+      ]),
+    );
+    expect(config.foreignKeys).toHaveLength(1);
+    expect(config.indexes).toHaveLength(2);
+  });
+
+  it("defines the verifications table for auth verification flows", () => {
+    const config = getTableConfig(verifications);
+
+    expect(getColumnNames(verifications)).toEqual(
+      expect.arrayContaining([
+        "id",
+        "identifier",
+        "value",
+        "expires_at",
+        "created_at",
+        "updated_at",
+      ]),
+    );
+    expect(config.indexes).toHaveLength(1);
   });
 });
