@@ -39,6 +39,7 @@ Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz a�
         3. Uygulanan testlerin detayları ve sonuçları.
         4. Projeyi veya ilgili feature'ı ayağa kaldırma/çalıştırma komutları.
         5. Development Roadmap'teki ilgili task numaralarına referans.
+* **Git Strategy:** Feature'a başlamadan önce `features/{Phase#}_{Task#}_{FeatureName}` isimlendirme standardı ile branch aç. Açılan branch'e geç ve değişikliklerini burada yap.
 
 ## 3. Development Roadmap & Tasks (Phases)
 
