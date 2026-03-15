@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/d1";
 
+import { schema } from "../schema";
 import type { DatabaseProvider } from "../contracts";
 
 export interface D1Bindings {
@@ -9,6 +10,7 @@ export interface D1Bindings {
 export function createD1Db(binding: D1Database) {
   return drizzle(binding, {
     casing: "snake_case",
+    schema,
   });
 }
 
