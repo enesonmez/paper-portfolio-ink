@@ -8,15 +8,19 @@ interface RequireSessionOptions {
   redirectTo?: string;
 }
 
+export async function getSessionForRequest(request: Request, context: AppLoadContext) {
+  return getSessionFromRequest(request, {
+    db: context.db,
+    ...resolveAuthConfig(request, context.auth),
+  });
+}
+
 export async function requireSession(
   request: Request,
   context: AppLoadContext,
   options: RequireSessionOptions = {},
 ) {
-  const session = await getSessionFromRequest(request, {
-    db: context.db,
-    ...resolveAuthConfig(request, context.auth),
-  });
+  const session = await getSessionForRequest(request, context);
 
   if (!session) {
     return redirect(options.redirectTo ?? "/");

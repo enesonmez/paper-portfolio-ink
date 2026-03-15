@@ -1,11 +1,12 @@
 import { Outlet } from "react-router";
 
 import type { Route } from "./+types/dashboard";
+import { buildLoginRedirect } from "../lib/auth/login.server";
 import { requireSession } from "../lib/auth/session.server";
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const session = await requireSession(request, context, {
-    redirectTo: "/",
+    redirectTo: buildLoginRedirect(request),
   });
 
   if (session instanceof Response) {

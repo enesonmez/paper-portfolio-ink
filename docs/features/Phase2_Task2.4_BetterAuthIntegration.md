@@ -163,6 +163,13 @@ Bu mapper da ayrıca ayrıştırıldı:
 - `workers/load-context.ts`
   yalnızca app load context compositon root'u olarak davranır
 
+Local `npm run dev` akışı için de Vite tarafında resmi React Router Cloudflare dev proxy eklendi:
+
+- `vite.config.ts`
+  `cloudflareDevProxy(...)` ile `.dev.vars` ve `wrangler.toml` içindeki local D1 binding'leri React Router development server'a taşır
+
+Böylece Better Auth, development modunda da gerçek `context.db` ve `context.auth` üzerinden çalışır; login gibi DB sorgusu yapan akışlar yalnızca `wrangler dev` altında değil, standart local dev komutunda da bozulmaz.
+
 ## Uygulanan Testler ve Doğrulamalar
 
 ### Yeni testler
@@ -231,6 +238,17 @@ npm run db:migrate:local
 ```bash
 npm run db:migrations:list:local
 ```
+
+### Test login kullanicisini seed etmek
+
+```bash
+npm run db:seed:test-user
+```
+
+Varsayilan bilgiler:
+
+- `admin@paper-enes-ink.local`
+- `PaperInk1234!`
 
 ### Genel doğrulama
 

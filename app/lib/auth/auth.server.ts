@@ -24,28 +24,15 @@ export function createAuth({ db, secret, baseURL, trustedOrigins }: CreateAuthOp
     user: {
       modelName: "users",
       fields: {
-        name: "display_name",
-        image: "avatar_url",
+        name: "displayName",
+        image: "avatarUrl",
       },
     },
     session: {
       modelName: "sessions",
-      fields: {
-        userId: "user_id",
-      },
     },
     account: {
       modelName: "accounts",
-      fields: {
-        userId: "user_id",
-        accountId: "account_id",
-        providerId: "provider_id",
-        accessToken: "access_token",
-        refreshToken: "refresh_token",
-        idToken: "id_token",
-        accessTokenExpiresAt: "access_token_expires_at",
-        refreshTokenExpiresAt: "refresh_token_expires_at",
-      },
     },
     verification: {
       modelName: "verifications",

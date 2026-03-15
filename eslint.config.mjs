@@ -16,6 +16,7 @@ export default defineConfig(
       "eslint.config.mjs",
       "node_modules/**",
       "prettier.config.mjs",
+      "scripts/**",
     ],
   },
   js.configs.recommended,
