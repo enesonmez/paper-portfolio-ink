@@ -13,7 +13,7 @@ export function meta() {
 export default function HomePage() {
   return (
     <main className="mx-auto grid min-h-screen max-w-6xl gap-6 px-4 py-8 md:px-6 lg:py-16">
-      <section className="grid min-h-[28rem] content-center gap-6 border-2 border-black bg-card p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)] md:p-8">
+      <section className="grid min-h-112 content-center gap-6 border-2 border-black bg-card p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)] md:p-8">
         <p className="text-sm uppercase tracking-[0.08em] text-muted-foreground">
           Paper Comic / Phase 1.2
         </p>
