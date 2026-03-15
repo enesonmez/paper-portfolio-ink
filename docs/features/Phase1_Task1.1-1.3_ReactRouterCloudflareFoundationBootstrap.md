@@ -218,4 +218,3 @@ Yani bu geliştirme, tam UI sistemi kurulumundan önce gelen çalışan temel is
 - `app/routes/_index.tsx`
 - `tests/unit/site-config.test.ts`
 - `tests/unit/home-route.test.tsx`
-
