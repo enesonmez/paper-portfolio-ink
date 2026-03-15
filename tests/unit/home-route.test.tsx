@@ -17,13 +17,13 @@ describe("HomePage", () => {
         name: "Enes Ink",
       }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "Projeleri Incele" }),
-    ).toHaveAttribute("href", "/projects");
+    expect(screen.getByRole("link", { name: "Projeleri Incele" })).toHaveAttribute(
+      "href",
+      "/projects",
+    );
     expect(screen.getByRole("link", { name: "Yazilari Oku" })).toHaveAttribute(
       "href",
       "/blog",
     );
   });
 });
-

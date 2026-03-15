@@ -8,4 +8,3 @@ hydrateRoot(
     <HydratedRouter />
   </StrictMode>,
 );
-

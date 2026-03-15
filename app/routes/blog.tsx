@@ -11,16 +11,16 @@ export function meta() {
 export default function BlogPage() {
   return (
     <main className="mx-auto grid min-h-screen max-w-6xl px-4 py-8 md:px-6 lg:py-16">
-      <section className="grid min-h-96 content-center gap-5 border-2 border-black bg-card p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)] md:p-8">
-        <p className="text-sm uppercase tracking-[0.08em] text-muted-foreground">
+      <section className="bg-card grid min-h-96 content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+        <p className="text-muted-foreground text-sm tracking-[0.08em] uppercase">
           Blog / Placeholder
         </p>
         <h1 className="font-display text-5xl leading-none md:text-7xl">
           Yazilar yolda
         </h1>
-        <p className="max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">
-          Blog listeleme ve detay akisi bir sonraki asamada SEO uyumlu route
-          yapisi ile tamamlanacak.
+        <p className="text-muted-foreground max-w-2xl text-base leading-7 md:text-lg">
+          Blog listeleme ve detay akisi bir sonraki asamada SEO uyumlu route yapisi ile
+          tamamlanacak.
         </p>
       </section>
     </main>

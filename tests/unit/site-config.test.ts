@@ -8,4 +8,3 @@ describe("siteConfig", () => {
     expect(siteConfig.description).toContain("Cloudflare");
   });
 });
-

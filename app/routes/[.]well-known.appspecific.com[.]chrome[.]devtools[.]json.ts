@@ -3,4 +3,3 @@ export function loader() {
     workspace: "paper-enes-ink",
   });
 }
-

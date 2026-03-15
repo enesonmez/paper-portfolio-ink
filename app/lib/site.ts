@@ -5,4 +5,3 @@ export const siteConfig = {
   description:
     "Cloudflare üzerinde calisan, performans odakli portfolyo ve teknik blog sistemi.",
 } as const;
-

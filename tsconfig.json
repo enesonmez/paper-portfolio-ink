@@ -25,5 +25,11 @@
       "vitest/jsdom"
     ]
   },
-  "include": ["app", "tests", "vite.config.ts", "vitest.config.ts", "react-router.config.ts"]
+  "include": [
+    "app",
+    "tests",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "react-router.config.ts"
+  ]
 }

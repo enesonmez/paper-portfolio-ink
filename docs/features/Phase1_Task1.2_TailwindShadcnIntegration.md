@@ -213,4 +213,3 @@ npm run build
 Phase 1 içinde sıradaki teknik temel görev:
 
 - `1.4` Prettier / ESLint ve kod standartlarının tamamlanması
-
