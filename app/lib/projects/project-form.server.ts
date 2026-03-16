@@ -1,6 +1,15 @@
 import { z } from "zod";
 
-const projectStatusValues = ["draft", "published", "archived"] as const;
+import {
+  buildProjectFormValues,
+  type ProjectFormState,
+} from "~/features/projects/project-form.shared";
+import {
+  PROJECT_DEFAULT_STATUS,
+  PROJECT_FORM_FIELD,
+  PROJECT_STATUS_VALUES,
+  type ProjectStatus,
+} from "~/features/projects/project.shared";
 
 const projectFormSchema = z.object({
   title: z
@@ -30,7 +39,7 @@ const projectFormSchema = z.object({
     .trim()
     .url("Gecerli bir kapak gorseli URL gir.")
     .or(z.literal("")),
-  status: z.enum(projectStatusValues, {
+  status: z.enum(PROJECT_STATUS_VALUES, {
     error: () => "Gecerli bir yayin durumu sec.",
   }),
   isFeatured: z.boolean(),
@@ -40,29 +49,7 @@ const projectFormSchema = z.object({
     .min(0, "Siralama degeri 0 veya daha buyuk olmali."),
 });
 
-export type ProjectStatus = (typeof projectStatusValues)[number];
-
-export type ProjectFormValues = {
-  coverImageUrl: string;
-  description: string;
-  isFeatured: boolean;
-  liveUrl: string;
-  repositoryUrl: string;
-  slug: string;
-  sortOrder: string;
-  status: ProjectStatus;
-  summary: string;
-  title: string;
-};
-
 export type ProjectSubmission = z.infer<typeof projectFormSchema>;
-
-export interface ProjectFormState {
-  errors?: Partial<Record<keyof ProjectFormValues, string>> & {
-    form?: string;
-  };
-  values: ProjectFormValues;
-}
 
 function compactFieldErrors<T extends Record<string, string | undefined>>(errors: T) {
   return Object.fromEntries(
@@ -76,44 +63,21 @@ function readStringField(formData: FormData, field: string) {
   return typeof value === "string" ? value : "";
 }
 
-export function getDefaultProjectFormValues(): ProjectFormValues {
-  return {
-    coverImageUrl: "",
-    description: "",
-    isFeatured: false,
-    liveUrl: "",
-    repositoryUrl: "",
-    slug: "",
-    sortOrder: "0",
-    status: "draft",
-    summary: "",
-    title: "",
-  };
-}
-
-export function buildProjectFormValues(
-  values: Partial<ProjectFormValues> = {},
-): ProjectFormValues {
-  return {
-    ...getDefaultProjectFormValues(),
-    ...values,
-  };
-}
-
 export function parseProjectFormData(
   formData: FormData,
 ): { data: ProjectSubmission } | ProjectFormState {
   const rawValues = {
-    coverImageUrl: readStringField(formData, "coverImageUrl"),
-    description: readStringField(formData, "description"),
-    isFeatured: formData.get("isFeatured") === "on",
-    liveUrl: readStringField(formData, "liveUrl"),
-    repositoryUrl: readStringField(formData, "repositoryUrl"),
-    slug: readStringField(formData, "slug"),
-    sortOrder: readStringField(formData, "sortOrder") || "0",
-    status: readStringField(formData, "status") || "draft",
-    summary: readStringField(formData, "summary"),
-    title: readStringField(formData, "title"),
+    coverImageUrl: readStringField(formData, PROJECT_FORM_FIELD.coverImageUrl),
+    description: readStringField(formData, PROJECT_FORM_FIELD.description),
+    isFeatured: formData.get(PROJECT_FORM_FIELD.isFeatured) === "on",
+    liveUrl: readStringField(formData, PROJECT_FORM_FIELD.liveUrl),
+    repositoryUrl: readStringField(formData, PROJECT_FORM_FIELD.repositoryUrl),
+    slug: readStringField(formData, PROJECT_FORM_FIELD.slug),
+    sortOrder: readStringField(formData, PROJECT_FORM_FIELD.sortOrder) || "0",
+    status:
+      readStringField(formData, PROJECT_FORM_FIELD.status) || PROJECT_DEFAULT_STATUS,
+    summary: readStringField(formData, PROJECT_FORM_FIELD.summary),
+    title: readStringField(formData, PROJECT_FORM_FIELD.title),
   };
 
   const parsed = projectFormSchema.safeParse(rawValues);
@@ -135,9 +99,9 @@ export function parseProjectFormData(
       }),
       values: buildProjectFormValues({
         ...rawValues,
-        status: projectStatusValues.includes(rawValues.status as ProjectStatus)
+        status: PROJECT_STATUS_VALUES.includes(rawValues.status as ProjectStatus)
           ? (rawValues.status as ProjectStatus)
-          : "draft",
+          : PROJECT_DEFAULT_STATUS,
       }),
     };
   }

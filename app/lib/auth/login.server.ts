@@ -2,6 +2,8 @@ import { isAPIError } from "better-auth/api";
 import { data, redirect, type AppLoadContext } from "react-router";
 import { z } from "zod";
 
+import type { LoginFormState } from "~/features/auth/login/login.shared";
+
 import { resolveAuthConfig } from "./auth-config.server";
 import { createAuth } from "./auth.server";
 
@@ -20,18 +22,6 @@ export interface LoginSubmission {
   email: string;
   password: string;
   redirectTo: string;
-}
-
-export interface LoginFormState {
-  errors?: {
-    email?: string;
-    password?: string;
-    form?: string;
-  };
-  values: {
-    email: string;
-    redirectTo: string;
-  };
 }
 
 interface SignInWithEmailOptions {

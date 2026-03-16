@@ -30,6 +30,7 @@ const baseScreenProps = {
     {
       coverImageUrl: null,
       createdAtLabel: "2026-03-16",
+      description: "Commerce frontend built for edge delivery.",
       id: "project-1",
       isFeatured: true,
       liveUrl: "https://cyber.paper-enes-ink.dev",
