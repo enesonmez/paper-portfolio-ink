@@ -1,3 +1,7 @@
+import { DashboardMetricCard } from "~/components/dashboard/metric-card";
+import { DashboardPanel } from "~/components/dashboard/panel";
+import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
+
 const dashboardStats = [
   {
     label: "Total Posts",
@@ -64,51 +68,36 @@ const dashboardLogs = [
   },
 ];
 
-function cardClasses() {
-  return "bg-card border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]";
-}
-
 export default function DashboardIndexRoute() {
   return (
     <div className="space-y-8">
       <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {dashboardStats.map((stat) => (
-          <article key={stat.label} className={cardClasses()}>
-            <p className="text-muted-foreground mb-2 font-sans text-xs font-bold tracking-[0.18em] uppercase">
-              {stat.label}
-            </p>
-            <div className="flex items-end gap-3">
-              <span className="font-display text-foreground text-6xl leading-none">
-                {stat.value}
-              </span>
-              <span className={`font-sans text-xs font-bold uppercase ${stat.tone}`}>
-                {stat.delta}
-              </span>
-            </div>
-          </article>
+          <DashboardMetricCard
+            key={stat.label}
+            label={stat.label}
+            meta={stat.delta}
+            value={stat.value}
+          />
         ))}
       </section>
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
         <section className="space-y-4">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.18em] uppercase">
-                Content Pipeline
-              </p>
-              <h1 className="font-display text-foreground text-5xl leading-none uppercase md:text-6xl">
-                Manage Content
-              </h1>
-            </div>
-            <button
-              type="button"
-              className="bg-primary w-full border-2 border-black px-5 py-3 font-sans text-sm font-bold tracking-[0.14em] text-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none md:w-auto dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
-            >
-              Create New Post
-            </button>
-          </div>
+          <DashboardSectionHeading
+            action={
+              <button
+                type="button"
+                className="bg-primary w-full border-2 border-black px-5 py-3 font-sans text-sm font-bold tracking-[0.14em] text-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none md:w-auto dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+              >
+                Create New Post
+              </button>
+            }
+            eyebrow="Content Pipeline"
+            title="Manage Content"
+          />
 
-          <div className="bg-card overflow-x-auto border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+          <DashboardPanel className="overflow-x-auto p-0">
             <table className="min-w-full border-collapse text-left">
               <thead className="bg-muted border-b-2 border-black">
                 <tr>
@@ -165,22 +154,15 @@ export default function DashboardIndexRoute() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </DashboardPanel>
         </section>
 
         <aside className="space-y-4">
-          <div>
-            <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.18em] uppercase">
-              Runtime Feed
-            </p>
-            <h2 className="font-display text-foreground text-5xl leading-none uppercase">
-              Logs
-            </h2>
-          </div>
+          <DashboardSectionHeading eyebrow="Runtime Feed" level={2} title="Logs" />
 
           <div className="space-y-4">
             {dashboardLogs.map((log) => (
-              <article key={log.title} className={cardClasses()}>
+              <DashboardPanel key={log.title}>
                 <div className="flex items-start gap-4">
                   <div
                     className={`shrink-0 border-2 border-black px-3 py-2 ${log.tone}`}
@@ -198,7 +180,7 @@ export default function DashboardIndexRoute() {
                     </p>
                   </div>
                 </div>
-              </article>
+              </DashboardPanel>
             ))}
           </div>
         </aside>

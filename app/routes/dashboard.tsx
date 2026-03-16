@@ -35,9 +35,9 @@ const dashboardNavigation = [
     icon: Newspaper,
   },
   {
-    kind: "static" as const,
+    kind: "link" as const,
     label: "Projects",
-    note: "Phase 4.4",
+    to: "/dashboard/projects",
     icon: FolderKanban,
   },
   {
