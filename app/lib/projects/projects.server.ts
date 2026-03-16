@@ -2,7 +2,9 @@ import { asc, desc, eq } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { projects } from "../../../db/schema";
-import type { ProjectSubmission, ProjectStatus } from "./project-form.server";
+import type { ProjectStatus } from "~/features/projects/project.shared";
+
+import type { ProjectSubmission } from "./project-form.server";
 
 export interface ProjectOverview {
   coverImageUrl: string | null;

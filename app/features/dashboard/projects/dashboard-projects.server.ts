@@ -1,0 +1,117 @@
+import { data, redirect } from "react-router";
+
+import { getDbFromContext } from "../../../../db/context";
+import {
+  buildProjectFormValues,
+  type ProjectFormState,
+} from "~/features/projects/project-form.shared";
+import {
+  DASHBOARD_PROJECTS_QUERY_PARAM,
+  PROJECT_FORM_FIELD,
+  PROJECT_MUTATION_INTENT,
+} from "~/features/projects/project.shared";
+import {
+  hasParsedProjectData,
+  parseProjectFormData,
+} from "~/lib/projects/project-form.server";
+import {
+  createProject,
+  deleteProject,
+  listProjects,
+  updateProject,
+} from "~/lib/projects/projects.server";
+
+import { DASHBOARD_PROJECTS_FORM_COPY } from "./dashboard-projects.constants";
+import {
+  buildDashboardProjectsMetrics,
+  resolveDashboardProjectsForm,
+  type DashboardProjectsLoaderData,
+} from "./dashboard-projects.shared";
+
+interface DbContextShape {
+  db: ReturnType<typeof getDbFromContext>;
+}
+
+function readStringField(formData: FormData, field: string) {
+  const value = formData.get(field);
+
+  return typeof value === "string" ? value : "";
+}
+
+export async function loadDashboardProjectsData(
+  context: DbContextShape,
+  request: Request,
+): Promise<DashboardProjectsLoaderData> {
+  const db = getDbFromContext(context);
+  const projects = await listProjects(db);
+  const url = new URL(request.url);
+
+  return {
+    form: resolveDashboardProjectsForm({
+      editId: url.searchParams.get(DASHBOARD_PROJECTS_QUERY_PARAM.edit),
+      modal: url.searchParams.get(DASHBOARD_PROJECTS_QUERY_PARAM.modal),
+      projects,
+    }),
+    metrics: buildDashboardProjectsMetrics(projects),
+    projects,
+  };
+}
+
+export async function handleDashboardProjectsAction(
+  context: DbContextShape,
+  request: Request,
+) {
+  const db = getDbFromContext(context);
+  const formData = await request.formData();
+  const intent = readStringField(formData, PROJECT_FORM_FIELD.intent);
+  const projectId = readStringField(formData, PROJECT_FORM_FIELD.projectId);
+
+  if (intent === PROJECT_MUTATION_INTENT.delete) {
+    if (!projectId) {
+      return data<ProjectFormState>(
+        {
+          errors: {
+            form: DASHBOARD_PROJECTS_FORM_COPY.errors.deleteMissingProject,
+          },
+          values: buildProjectFormValues(),
+        },
+        { status: 400 },
+      );
+    }
+
+    await deleteProject(db, projectId);
+
+    return redirect("/dashboard/projects");
+  }
+
+  const submission = parseProjectFormData(formData);
+
+  if (!hasParsedProjectData(submission)) {
+    return data<ProjectFormState>(submission, { status: 400 });
+  }
+
+  if (intent === PROJECT_MUTATION_INTENT.update) {
+    if (!projectId) {
+      return data<ProjectFormState>(
+        {
+          errors: {
+            form: DASHBOARD_PROJECTS_FORM_COPY.errors.updateMissingProject,
+          },
+          values: buildProjectFormValues({
+            ...submission.data,
+            sortOrder: submission.data.sortOrder.toString(),
+          }),
+        },
+        { status: 400 },
+      );
+    }
+
+    await updateProject(db, projectId, submission.data);
+
+    return redirect("/dashboard/projects");
+  }
+
+  await createProject(db, submission.data);
+
+  return redirect("/dashboard/projects");
+}
