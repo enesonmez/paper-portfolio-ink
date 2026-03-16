@@ -63,6 +63,13 @@ describe("auth server factory", () => {
             name: "displayName",
             image: "avatarUrl",
           },
+          additionalFields: {
+            role: {
+              type: "string",
+              input: false,
+              required: false,
+            },
+          },
         },
         session: {
           modelName: "sessions",

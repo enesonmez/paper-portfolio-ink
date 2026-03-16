@@ -27,6 +27,13 @@ export function createAuth({ db, secret, baseURL, trustedOrigins }: CreateAuthOp
         name: "displayName",
         image: "avatarUrl",
       },
+      additionalFields: {
+        role: {
+          type: "string",
+          input: false,
+          required: false,
+        },
+      },
     },
     session: {
       modelName: "sessions",

@@ -27,6 +27,9 @@ describe("dashboard route guard", () => {
       },
       user: {
         id: "user-1",
+        name: "Enes Admin",
+        email: "admin@paper-enes-ink.local",
+        role: "admin",
       },
     });
 
@@ -39,7 +42,14 @@ describe("dashboard route guard", () => {
         },
         params: {},
       } as never),
-    ).resolves.toBeNull();
+    ).resolves.toEqual({
+      user: {
+        displayName: "Enes Admin",
+        email: "admin@paper-enes-ink.local",
+        initials: "EA",
+        role: "admin",
+      },
+    });
 
     expect(requireSessionMock).toHaveBeenCalledWith(
       request,
