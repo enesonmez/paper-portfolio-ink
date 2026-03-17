@@ -1,63 +1,13 @@
 import { Form } from "react-router";
 
+import { Button } from "~/components/ui/button";
+import { FormError, TextField } from "~/components/ui/form-field";
+
 import { LOGIN_COPY } from "../login.constants";
 import type { LoginFormState } from "../login.shared";
 
 interface LoginFormCardProps extends LoginFormState {
   isSubmitting: boolean;
-}
-
-interface LoginFieldProps {
-  autoComplete?: string;
-  defaultValue?: string;
-  error?: string;
-  id: string;
-  label: string;
-  name: string;
-  placeholder: string;
-  type: "email" | "password";
-}
-
-function LoginField({
-  autoComplete,
-  defaultValue,
-  error,
-  id,
-  label,
-  name,
-  placeholder,
-  type,
-}: LoginFieldProps) {
-  return (
-    <div className="grid gap-2">
-      <label
-        htmlFor={id}
-        className="font-sans text-xs font-bold tracking-[0.18em] uppercase"
-      >
-        {label}
-      </label>
-      <input
-        id={id}
-        name={name}
-        type={type}
-        autoComplete={autoComplete}
-        defaultValue={defaultValue}
-        placeholder={placeholder}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${id}-error` : undefined}
-        className="text-foreground placeholder:text-muted-foreground dark:border-primary dark:focus-visible:outline-primary min-h-14 border-2 border-black bg-white px-4 py-3 font-sans text-base tracking-[0.05em] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:bg-stone-800"
-      />
-      {error ? (
-        <p
-          id={`${id}-error`}
-          className="bg-destructive text-destructive-foreground dark:border-primary border-2 border-black px-3 py-2 font-sans text-sm"
-          role="alert"
-        >
-          {error}
-        </p>
-      ) : null}
-    </div>
-  );
 }
 
 export function LoginFormCard({
@@ -86,44 +36,38 @@ export function LoginFormCard({
       <Form method="post" className="space-y-6" replace>
         <input type="hidden" name="redirectTo" value={values.redirectTo} />
 
-        <LoginField
+        <TextField
           autoComplete="email"
           defaultValue={values.email}
           error={errors?.email}
-          id="email"
+          inputClassName="min-h-14 text-base tracking-[0.05em]"
           label={LOGIN_COPY.emailLabel}
           name="email"
           placeholder={LOGIN_COPY.emailPlaceholder}
           type="email"
         />
 
-        <LoginField
+        <TextField
           autoComplete="current-password"
           error={errors?.password}
-          id="password"
+          inputClassName="min-h-14 text-base tracking-[0.05em]"
           label={LOGIN_COPY.passwordLabel}
           name="password"
           placeholder="••••••••"
           type="password"
         />
 
-        {errors?.form ? (
-          <p
-            className="bg-destructive text-destructive-foreground dark:border-primary border-2 border-black px-3 py-2 font-sans text-sm"
-            role="alert"
-          >
-            {errors.form}
-          </p>
-        ) : null}
+        <FormError message={errors?.form} />
 
         <div className="pt-2">
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-primary disabled:bg-primary/70 dark:focus-visible:outline-primary w-full border-2 border-black px-5 py-4 font-sans text-2xl font-bold tracking-[0.08em] text-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black disabled:translate-x-0 disabled:translate-y-0 disabled:text-black/70 dark:border-black dark:shadow-[6px_6px_0px_0px_rgba(250,204,21,1)]"
+            size="xl"
+            className="w-full tracking-[0.08em] disabled:bg-primary/70 disabled:text-black/70 hover:translate-x-1 hover:translate-y-1 hover:shadow-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black focus-visible:ring-0 dark:focus-visible:outline-primary"
           >
             {isSubmitting ? LOGIN_COPY.buttonSubmitting : LOGIN_COPY.buttonIdle}
-          </button>
+          </Button>
         </div>
       </Form>
 

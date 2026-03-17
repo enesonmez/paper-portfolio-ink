@@ -2,6 +2,8 @@ import { Plus } from "lucide-react";
 import { Form, Link } from "react-router";
 
 import { DashboardModal } from "~/components/dashboard/modal";
+import { Button } from "~/components/ui/button";
+import { FormError, SelectField, TextField, TextareaField } from "~/components/ui/form-field";
 import {
   PROJECT_FORM_FIELD,
   PROJECT_MUTATION_INTENT,
@@ -16,7 +18,6 @@ import {
   dashboardProjectStatusOptions,
   type DashboardProjectsFormState,
 } from "../dashboard-projects.shared";
-import { ProjectField, ProjectSelect, ProjectTextarea } from "./project-form-fields";
 
 interface DashboardProjectsModalProps {
   form: DashboardProjectsFormState;
@@ -62,71 +63,79 @@ export function DashboardProjectsModalView({
           />
         ) : null}
 
-        <ProjectField
+        <TextField
           error={form.errors?.title}
+          inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
           label={DASHBOARD_PROJECTS_FORM_COPY.title.label}
           name={PROJECT_FORM_FIELD.title}
           placeholder={DASHBOARD_PROJECTS_FORM_COPY.title.placeholder}
-          value={form.values.title}
+          defaultValue={form.values.title}
         />
-        <ProjectField
+        <TextField
           error={form.errors?.slug}
+          inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
           label={DASHBOARD_PROJECTS_FORM_COPY.slug.label}
           name={PROJECT_FORM_FIELD.slug}
           placeholder={DASHBOARD_PROJECTS_FORM_COPY.slug.placeholder}
-          value={form.values.slug}
+          defaultValue={form.values.slug}
         />
-        <ProjectField
+        <TextField
           error={form.errors?.summary}
+          inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
           label={DASHBOARD_PROJECTS_FORM_COPY.summary.label}
           name={PROJECT_FORM_FIELD.summary}
           placeholder={DASHBOARD_PROJECTS_FORM_COPY.summary.placeholder}
-          value={form.values.summary}
+          defaultValue={form.values.summary}
         />
-        <ProjectTextarea
+        <TextareaField
           error={form.errors?.description}
           label={DASHBOARD_PROJECTS_FORM_COPY.description.label}
           name={PROJECT_FORM_FIELD.description}
-          value={form.values.description}
+          defaultValue={form.values.description}
+          rows={5}
         />
         <div className="grid gap-4 xl:grid-cols-2">
-          <ProjectField
+          <TextField
             error={form.errors?.repositoryUrl}
+            inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
             label={DASHBOARD_PROJECTS_FORM_COPY.repositoryUrl.label}
             name={PROJECT_FORM_FIELD.repositoryUrl}
             placeholder={DASHBOARD_PROJECTS_FORM_COPY.repositoryUrl.placeholder}
-            value={form.values.repositoryUrl}
+            defaultValue={form.values.repositoryUrl}
           />
-          <ProjectField
+          <TextField
             error={form.errors?.liveUrl}
+            inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
             label={DASHBOARD_PROJECTS_FORM_COPY.liveUrl.label}
             name={PROJECT_FORM_FIELD.liveUrl}
             placeholder={DASHBOARD_PROJECTS_FORM_COPY.liveUrl.placeholder}
-            value={form.values.liveUrl}
+            defaultValue={form.values.liveUrl}
           />
         </div>
         <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-[minmax(0,1fr)_11rem_11rem]">
-          <ProjectField
+          <TextField
             error={form.errors?.coverImageUrl}
+            inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
             label={DASHBOARD_PROJECTS_FORM_COPY.coverImageUrl.label}
             name={PROJECT_FORM_FIELD.coverImageUrl}
             placeholder={DASHBOARD_PROJECTS_FORM_COPY.coverImageUrl.placeholder}
-            value={form.values.coverImageUrl}
+            defaultValue={form.values.coverImageUrl}
           />
-          <ProjectSelect
+          <SelectField
             error={form.errors?.status}
             label={DASHBOARD_PROJECTS_FORM_COPY.status.label}
             name={PROJECT_FORM_FIELD.status}
             options={dashboardProjectStatusOptions}
-            value={form.values.status}
+            defaultValue={form.values.status}
           />
-          <ProjectField
+          <TextField
             error={form.errors?.sortOrder}
+            inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
             label={DASHBOARD_PROJECTS_FORM_COPY.sortOrder.label}
             name={PROJECT_FORM_FIELD.sortOrder}
             placeholder={DASHBOARD_PROJECTS_FORM_COPY.sortOrder.placeholder}
             type="number"
-            value={form.values.sortOrder}
+            defaultValue={form.values.sortOrder}
           />
         </div>
 
@@ -140,29 +149,21 @@ export function DashboardProjectsModalView({
           {DASHBOARD_PROJECTS_COPY.featuredToggleLabel}
         </label>
 
-        {form.errors?.form ? (
-          <p
-            className="bg-destructive text-destructive-foreground border-2 border-black px-3 py-2 font-sans text-sm"
-            role="alert"
-          >
-            {form.errors.form}
-          </p>
-        ) : null}
+        <FormError message={form.errors?.form} />
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Link
-            to={buildDashboardProjectsHref()}
-            className="bg-card text-foreground inline-flex items-center justify-center border-2 border-black px-5 py-3 font-sans text-sm font-bold tracking-[0.14em] uppercase"
-          >
-            {DASHBOARD_PROJECTS_FORM_COPY.cancelLabel}
-          </Link>
-          <button
+          <Button asChild variant="secondary" className="tracking-[0.14em]">
+            <Link to={buildDashboardProjectsHref()}>
+              {DASHBOARD_PROJECTS_FORM_COPY.cancelLabel}
+            </Link>
+          </Button>
+          <Button
             type="submit"
-            className="bg-primary flex items-center justify-center gap-2 border-2 border-black px-5 py-3 font-sans text-sm font-bold tracking-[0.14em] text-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+            className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
           >
             <Plus className="size-4" aria-hidden="true" />
             {actionLabel}
-          </button>
+          </Button>
         </div>
       </Form>
     </DashboardModal>
