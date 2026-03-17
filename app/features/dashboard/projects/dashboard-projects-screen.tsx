@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
+import { Button } from "~/components/ui/button";
 import type { ProjectOverview } from "~/lib/projects/projects.server";
 
 import { DASHBOARD_PROJECTS_COPY } from "./dashboard-projects.constants";
@@ -45,13 +46,15 @@ export function DashboardProjectsScreen({
           eyebrow={DASHBOARD_PROJECTS_COPY.inventoryEyebrow}
           title={DASHBOARD_PROJECTS_COPY.registryTitle}
           action={
-            <Link
-              to={buildDashboardProjectsHref({ modal: "create" })}
-              className="bg-primary inline-flex items-center justify-center gap-2 border-2 border-black px-5 py-3 font-sans text-sm font-bold tracking-[0.14em] text-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+            <Button
+              asChild
+              className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
             >
-              <Plus className="size-4" aria-hidden="true" />
-              {DASHBOARD_PROJECTS_COPY.createActionLabel}
-            </Link>
+              <Link to={buildDashboardProjectsHref({ modal: "create" })}>
+                <Plus className="size-4" aria-hidden="true" />
+                {DASHBOARD_PROJECTS_COPY.createActionLabel}
+              </Link>
+            </Button>
           }
         />
 
