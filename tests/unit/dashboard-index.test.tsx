@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, it } from "vitest";
 
 describe("dashboard index route", () => {
@@ -6,13 +7,27 @@ describe("dashboard index route", () => {
     const { default: DashboardIndexRoute } =
       await import("../../app/routes/dashboard._index");
 
-    render(<DashboardIndexRoute />);
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard",
+          element: <DashboardIndexRoute />,
+        },
+      ],
+      {
+        initialEntries: ["/dashboard"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
 
     expect(screen.getByText("Total Posts")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { level: 1, name: "Manage Content" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Create New Post" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Create New Post" }),
+    ).toHaveAttribute("href", "/dashboard/posts?modal=create");
     expect(screen.getByRole("heading", { level: 2, name: "Logs" })).toBeInTheDocument();
   });
 });

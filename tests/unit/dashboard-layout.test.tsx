@@ -43,6 +43,7 @@ describe("dashboard layout", () => {
       screen.getByRole("button", { name: "Open navigation menu" }),
     ).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("link", { name: "Dashboard Live" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Posts Live" })).toBeInTheDocument();
     expect(screen.getByText("System Status: Logged In")).toBeInTheDocument();
     expect(screen.getByText("Enes Admin")).toBeInTheDocument();
     expect(
