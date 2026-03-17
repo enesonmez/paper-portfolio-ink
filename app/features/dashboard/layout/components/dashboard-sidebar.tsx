@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { Form, NavLink } from "react-router";
 import { X } from "lucide-react";
 
 import {
@@ -6,6 +6,7 @@ import {
   DASHBOARD_LAYOUT_ICON,
   DASHBOARD_NAVIGATION,
 } from "../dashboard-layout.constants";
+import { Button } from "~/components/ui/button";
 
 interface DashboardSidebarProps {
   isSidebarOpen: boolean;
@@ -100,20 +101,19 @@ export function DashboardSidebar({
       </nav>
 
       <div className="border-t-2 border-black p-4">
-        <button
-          type="button"
-          disabled
-          aria-label={DASHBOARD_LAYOUT_COPY.logoutAriaLabel}
-          className="bg-destructive text-destructive-foreground flex w-full items-center justify-between gap-3 border-2 border-black px-4 py-3 font-sans text-sm font-bold tracking-[0.12em] uppercase opacity-75"
-        >
-          <span className="flex items-center gap-3">
-            <LogoutIcon className="size-4" aria-hidden="true" />
-            <span>{DASHBOARD_LAYOUT_COPY.logoutLabel}</span>
-          </span>
-          <span className="text-[10px]">
-            {DASHBOARD_LAYOUT_COPY.logoutPhaseLabel}
-          </span>
-        </button>
+        <Form action="/logout" method="post">
+          <Button
+            type="submit"
+            variant="destructive"
+            className="flex w-full items-center justify-between px-4 py-3 tracking-[0.12em] cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            aria-label={DASHBOARD_LAYOUT_COPY.logoutAriaLabel}
+          >
+            <span className="flex items-center gap-3">
+              <LogoutIcon className="size-4" aria-hidden="true" />
+              <span>{DASHBOARD_LAYOUT_COPY.logoutLabel}</span>
+            </span>
+          </Button>
+        </Form>
       </div>
     </aside>
   );

@@ -46,8 +46,12 @@ describe("dashboard layout", () => {
     expect(screen.getByText("System Status: Logged In")).toBeInTheDocument();
     expect(screen.getByText("Enes Admin")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Logout (Available in Phase 4.7)" }),
-    ).toBeDisabled();
+      screen.getByRole("button", { name: "Logout current admin session" }),
+    ).toBeInTheDocument();
+    const logoutForm = screen
+      .getByRole("button", { name: "Logout current admin session" })
+      .closest("form");
+    expect(logoutForm).toHaveAttribute("action", "/logout");
     expect(screen.getByText("Child dashboard content")).toBeInTheDocument();
   });
 });

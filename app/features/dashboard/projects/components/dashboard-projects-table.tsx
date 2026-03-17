@@ -108,7 +108,7 @@ export function DashboardProjectsTable({
               type="submit"
               variant="destructive"
               size="iconSm"
-              className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               aria-label={`Delete ${formatDashboardProjectTitle(project.title)}`}
             >
               <Trash2 className="size-4" aria-hidden="true" />
