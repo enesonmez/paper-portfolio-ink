@@ -58,9 +58,8 @@ export const DASHBOARD_NAVIGATION: readonly DashboardNavigationItem[] = [
 export const DASHBOARD_LAYOUT_COPY = {
   closeMenuAriaLabel: "Close navigation menu",
   closeOverlayAriaLabel: "Close navigation overlay",
-  logoutAriaLabel: "Logout (Available in Phase 4.7)",
+  logoutAriaLabel: "Logout current admin session",
   logoutLabel: "Logout",
-  logoutPhaseLabel: "Phase 4.7",
   menuOpenAriaLabel: "Open navigation menu",
   navigationAriaLabel: "Dashboard",
   shellTitle: "Admin Portal",
