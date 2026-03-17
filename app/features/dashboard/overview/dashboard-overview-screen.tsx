@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
@@ -82,10 +84,10 @@ export default function DashboardOverviewScreen() {
           <DashboardSectionHeading
             action={
               <Button
-                type="button"
+                asChild
                 className="w-full tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none md:w-auto"
               >
-                Create New Post
+                <Link to="/dashboard/posts?modal=create">Create New Post</Link>
               </Button>
             }
             eyebrow="Content Pipeline"

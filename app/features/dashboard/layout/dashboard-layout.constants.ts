@@ -36,9 +36,10 @@ export const DASHBOARD_NAVIGATION: readonly DashboardNavigationItem[] = [
   },
   {
     icon: Newspaper,
-    kind: "static",
+    kind: "link",
     label: "Posts",
-    note: "Phase 4.5",
+    statusLabel: "Live",
+    to: "/dashboard/posts",
   },
   {
     icon: FolderKanban,

@@ -27,7 +27,7 @@ export function DashboardModal({
     >
       <Link
         to={to}
-        aria-label="Close project modal overlay"
+        aria-label="Close dashboard modal overlay"
         className="absolute inset-0"
       />
       <section
@@ -52,7 +52,7 @@ export function DashboardModal({
           </div>
           <Link
             to={to}
-            aria-label="Close project modal"
+            aria-label="Close dashboard modal"
             className="bg-card text-foreground flex size-10 shrink-0 items-center justify-center border-2 border-black"
           >
             <X className="size-4" aria-hidden="true" />

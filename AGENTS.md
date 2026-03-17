@@ -73,7 +73,7 @@ Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz a�
 - [x] `/login` sayfasının oluşturulması.
 - [x] Dashboard mizanpajının (Sidebar ve üst bilgi) oluşturulması.
 - [x] Projeler için CRUD (Ekleme, Düzenleme, Silme, Listeleme) arayüzlerinin form validasyonları (Zod) ile yapılması.
-- [ ] Blog yazıları için CRUD işlemleri ve içerik yazımı için Markdown / Rich Text Editor entegrasyonu.
+- [x] Blog yazıları için CRUD işlemleri ve içerik yazımı için Markdown / Rich Text Editor entegrasyonu.
 - [ ] Cloudflare R2 üzerinde görsel yükleme (Presigned URL veya Direct Upload) ve silme mekanizmasının kurulması.
 - [ ] Kullanıcılar için CRUD işlemlerinin yapılması.
 - [x] Logout yapısının oluşturulması.
@@ -82,6 +82,7 @@ Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz a�
 
 - [ ] Cloudflare Pages için `loader` seviyesinde Edge Caching (Cache-Control headers) stratejilerinin uygulanması.
 - [ ] SEO standartları için `sitemap.xml` ve `robots.txt` rotalarının dinamik olarak eklenmesi.
+- [ ] Semantic HTML, dinamik meta yönetimi ve LCP/FID/CLS optimizasyonun yapılması.
 - [ ] Görsellerin ve fontların performans optimizasyonu (Lighthouse kontrolleri).
 - [ ] Projenin Cloudflare Pages'a deploy edilmesi ve canlı (production) D1 veritabanının bağlanması.
 
