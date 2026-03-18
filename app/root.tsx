@@ -1,8 +1,30 @@
 import type { ReactNode } from "react";
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useLoaderData,
+  useLocation,
+  useRouteLoaderData,
+} from "react-router";
+
+import {
+  isPublicPathname,
+  PUBLIC_THEME,
+} from "~/features/public/layout/public-layout.shared";
+import { PublicSiteLayout } from "~/features/public/layout/public-site-layout";
+import { getThemeFromRequest } from "~/features/public/layout/public-theme.server";
 
 import appStylesHref from "./styles/app.css?url";
 import { siteConfig } from "./lib/site";
+
+export function loader({ request }: { request: Request }) {
+  return {
+    theme: getThemeFromRequest(request),
+  };
+}
 
 export function links() {
   return [
@@ -12,15 +34,22 @@ export function links() {
 }
 
 export function Layout({ children }: { children: ReactNode }) {
+  const data = useRouteLoaderData<typeof loader>("root");
+  const theme = data?.theme ?? PUBLIC_THEME.light;
+
   return (
-    <html lang={siteConfig.locale} suppressHydrationWarning>
+    <html
+      lang={siteConfig.locale}
+      className={theme}
+      suppressHydrationWarning
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body suppressHydrationWarning>
+      <body className="selection:bg-primary selection:text-primary-foreground" suppressHydrationWarning>
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -30,7 +59,15 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const { theme } = useLoaderData<typeof loader>();
+  const location = useLocation();
+  const content = <Outlet />;
+
+  if (!isPublicPathname(location.pathname)) {
+    return content;
+  }
+
+  return <PublicSiteLayout theme={theme}>{content}</PublicSiteLayout>;
 }
 
 export function ErrorBoundary() {

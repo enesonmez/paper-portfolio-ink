@@ -62,8 +62,8 @@ Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz a�
 
 ### Phase 3: Public UI (Son Kullanıcı Arayüzü)
 
-- [ ] Global Layout, Navbar ve Footer bileşenlerinin (Dark/Light mode switch dahil) tasarlanması.
-- [ ] Ana sayfanın (Hero section, yetenekler/tech stack özeti) geliştirilmesi.
+- [x] Global Layout, Navbar ve Footer bileşenlerinin (Dark/Light mode switch dahil) tasarlanması.
+- [x] Ana sayfanın (Hero section, öne çıkan projeler, yetenekler/tech stack, sosyal medya ve özgeçmiş bölümü) geliştirilmesi.
 - [ ] Projeler sayfası (`/projects`) ve proje kartları bileşenlerinin oluşturulması.
 - [ ] Blog listeleme sayfası (`/blog`) ve SEO/Metadata uyumlu Blog Detay (`/blog/:slug`) sayfasının kodlanması.
 

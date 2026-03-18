@@ -64,7 +64,7 @@ export function LoginFormCard({
             type="submit"
             disabled={isSubmitting}
             size="xl"
-            className="w-full tracking-[0.08em] disabled:bg-primary/70 disabled:text-black/70 hover:translate-x-1 hover:translate-y-1 hover:shadow-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black focus-visible:ring-0 dark:focus-visible:outline-primary"
+            className="w-full tracking-[0.08em] disabled:bg-primary/70 disabled:text-black/70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black focus-visible:ring-0 dark:focus-visible:outline-primary"
           >
             {isSubmitting ? LOGIN_COPY.buttonSubmitting : LOGIN_COPY.buttonIdle}
           </Button>
