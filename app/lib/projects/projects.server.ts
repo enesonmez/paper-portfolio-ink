@@ -1,8 +1,11 @@
-import { asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { projects } from "../../../db/schema";
-import type { ProjectStatus } from "~/features/projects/project.shared";
+import {
+  PROJECT_STATUS,
+  type ProjectStatus,
+} from "~/features/projects/project.shared";
 
 import type { ProjectSubmission } from "./project-form.server";
 
@@ -18,6 +21,16 @@ export interface ProjectOverview {
   status: ProjectStatus;
   summary: string;
   description: string | null;
+  title: string;
+}
+
+export interface PublicFeaturedProject {
+  createdAtLabel: string;
+  description: string | null;
+  liveUrl: string | null;
+  repositoryUrl: string | null;
+  slug: string;
+  summary: string;
   title: string;
 }
 
@@ -88,6 +101,39 @@ export async function listProjects(db: AppDb): Promise<ProjectOverview[]> {
       status: project.status,
     }),
   );
+}
+
+export async function listPublicFeaturedProjects(
+  db: AppDb,
+): Promise<PublicFeaturedProject[]> {
+  const result = await db
+    .select({
+      createdAt: projects.createdAt,
+      description: projects.description,
+      liveUrl: projects.liveUrl,
+      repositoryUrl: projects.repositoryUrl,
+      slug: projects.slug,
+      summary: projects.summary,
+      title: projects.title,
+    })
+    .from(projects)
+    .where(
+      and(
+        eq(projects.isFeatured, true),
+        eq(projects.status, PROJECT_STATUS.published),
+      ),
+    )
+    .orderBy(asc(projects.sortOrder), desc(projects.createdAt));
+
+  return result.map((project) => ({
+    createdAtLabel: formatProjectDate(project.createdAt),
+    description: project.description,
+    liveUrl: project.liveUrl,
+    repositoryUrl: project.repositoryUrl,
+    slug: project.slug,
+    summary: project.summary,
+    title: project.title,
+  }));
 }
 
 export async function createProject(db: AppDb, submission: ProjectSubmission) {

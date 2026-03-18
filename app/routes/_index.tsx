@@ -1,6 +1,8 @@
-import { Link } from "react-router";
+import { useLoaderData } from "react-router";
+import type { Route } from "./+types/_index";
 
-import { Button } from "~/components/ui/button";
+import { PublicHomeScreen } from "~/features/public/home/public-home-screen";
+import { loadPublicHomeData } from "~/features/public/home/public-home.server";
 import { siteConfig } from "../lib/site";
 
 export function meta() {
@@ -10,41 +12,12 @@ export function meta() {
   ];
 }
 
-export default function HomePage() {
-  return (
-    <main className="mx-auto grid min-h-screen max-w-6xl gap-6 px-4 py-8 md:px-6 lg:py-16">
-      <section className="bg-card grid min-h-112 content-center gap-6 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
-        <p className="text-muted-foreground text-sm tracking-[0.08em] uppercase">
-          Paper Comic / Phase 1.2
-        </p>
-        <h1 className="font-display text-6xl leading-none md:text-8xl">
-          {siteConfig.name}
-        </h1>
-        <p className="text-muted-foreground max-w-2xl text-base leading-7 md:text-lg">
-          {siteConfig.description}
-        </p>
-        <div className="flex flex-wrap gap-3" aria-label="Ana yonlendirmeler">
-          <Button asChild size="lg">
-            <Link to="/projects">Projeleri Incele</Link>
-          </Button>
-          <Button asChild size="lg" variant="secondary">
-            <Link to="/blog">Yazilari Oku</Link>
-          </Button>
-        </div>
-      </section>
+export async function loader({ context }: Route.LoaderArgs) {
+  return loadPublicHomeData(context);
+}
 
-      <section className="bg-card grid gap-4 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
-        <h2 className="font-display text-4xl leading-none md:text-5xl">
-          Tailwind + shadcn tabani hazir
-        </h2>
-        <ul className="text-muted-foreground grid gap-3 pl-5 text-sm leading-6 md:text-base">
-          <li>`app/` React Router route ve layout dosyalari</li>
-          <li>`components/ui/` shadcn tabanli UI atomlari</li>
-          <li>`tests/` Unit ve integration test senaryolari</li>
-          <li>`public/` statik varliklar</li>
-          <li>`db/` D1 migration ciktilari icin ayrilan alan</li>
-        </ul>
-      </section>
-    </main>
-  );
+export default function HomePage() {
+  const loaderData = useLoaderData<typeof loader>();
+
+  return <PublicHomeScreen featuredProjects={loaderData.featuredProjects} />;
 }
