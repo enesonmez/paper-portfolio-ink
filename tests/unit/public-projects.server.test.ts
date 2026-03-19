@@ -21,9 +21,9 @@ describe("public projects server", () => {
           createdAtLabel: "2026-03-18",
           description: null,
           isFeatured: true,
-          liveUrl: "https://paper-enes-ink.dev",
-          repositoryUrl: "https://github.com/enesonmez/paper-enes-ink",
-          slug: "paper-enes-ink",
+          liveUrl: "https://paper-portfolio-ink.dev",
+          repositoryUrl: "https://github.com/enesonmez/paper-portfolio-ink",
+          slug: "paper-portfolio-ink",
           summary: "Portfolio, blog, and dashboard stack tuned for Cloudflare.",
           title: "Paper Enes Ink",
         },
@@ -46,7 +46,7 @@ describe("public projects server", () => {
     await expect(
       loadPublicProjectsData(
         { db } as unknown as AppLoadContext,
-        new Request("https://paper-enes-ink.dev/projects?page=99"),
+        new Request("https://paper-portfolio-ink.dev/projects?page=99"),
       ),
     ).resolves.toEqual({
       nextPage: 2,
@@ -74,7 +74,7 @@ describe("public projects server", () => {
     await expect(
       loadPublicProjectsFeedData(
         { db } as unknown as AppLoadContext,
-        new Request("https://paper-enes-ink.dev/projects/feed?page=3"),
+        new Request("https://paper-portfolio-ink.dev/projects/feed?page=3"),
       ),
     ).resolves.toEqual({
       page: 3,

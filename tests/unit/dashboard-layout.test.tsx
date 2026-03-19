@@ -13,7 +13,7 @@ describe("dashboard layout", () => {
           loader: () => ({
             user: {
               displayName: "Enes Admin",
-              email: "admin@paper-enes-ink.local",
+              email: "admin@paper-portfolio-ink.local",
               role: "admin",
               initials: "EA",
             },

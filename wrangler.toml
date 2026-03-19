@@ -1,5 +1,5 @@
 "$schema" = "./node_modules/wrangler/config-schema.json"
-name = "paper-enes-ink"
+name = "paper-portfolio-ink"
 main = "./workers/app.ts"
 compatibility_date = "2026-03-15"
 
@@ -9,7 +9,7 @@ binding = "ASSETS"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "paper-enes-ink-db"
+database_name = "paper-portfolio-ink-db"
 database_id = "00000000-0000-0000-0000-000000000000"
 preview_database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "db/migrations"

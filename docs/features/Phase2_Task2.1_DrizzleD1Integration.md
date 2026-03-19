@@ -2,7 +2,7 @@
 
 ## Kapsam
 
-Bu geliştirme, `paper-enes-ink` projesindeki `Phase 2 / Task 2.1` maddesini tamamlar:
+Bu geliştirme, `paper-portfolio-ink` projesindeki `Phase 2 / Task 2.1` maddesini tamamlar:
 
 - `2.1` Drizzle ORM kurulumu ve D1 veritabanı adaptörünün bağlanması
 

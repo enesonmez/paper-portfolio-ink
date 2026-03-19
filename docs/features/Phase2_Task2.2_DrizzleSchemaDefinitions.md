@@ -2,7 +2,7 @@
 
 ## Kapsam
 
-Bu geliştirme, `paper-enes-ink` projesindeki `Phase 2 / Task 2.2` maddesini tamamlar:
+Bu geliştirme, `paper-portfolio-ink` projesindeki `Phase 2 / Task 2.2` maddesini tamamlar:
 
 - `2.2` Temel veritabanı şemalarının (`users`, `posts`, `projects`, `sessions`) `schema.ts` içinde oluşturulması
 

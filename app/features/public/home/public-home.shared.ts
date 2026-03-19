@@ -110,7 +110,7 @@ export const PUBLIC_HOME_SOCIAL_CARDS = [
   },
   {
     description: "Project inquiries, resume requests, and direct contact.",
-    href: "mailto:hello@paper-enes-ink.dev",
+    href: "mailto:hello@paper-portfolio-ink.dev",
     key: "mail",
     label: "Email",
   },

@@ -9,12 +9,12 @@ describe("dashboard layout shared helpers", () => {
     expect(
       buildDashboardIdentity({
         displayName: "  Enes Oz  ",
-        email: "  admin@paper-enes-ink.dev ",
+        email: "  admin@paper-portfolio-ink.dev ",
         role: "  admin ",
       }),
     ).toEqual({
       displayName: "Enes Oz",
-      email: "admin@paper-enes-ink.dev",
+      email: "admin@paper-portfolio-ink.dev",
       initials: "EO",
       role: "admin",
     });

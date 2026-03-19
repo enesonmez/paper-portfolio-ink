@@ -7,13 +7,13 @@ import { PUBLIC_THEME } from "../../app/features/public/layout/public-layout.sha
 
 describe("public theme server helpers", () => {
   it("defaults to light theme when the cookie is missing", () => {
-    const request = new Request("https://paper-enes-ink.dev/");
+    const request = new Request("https://paper-portfolio-ink.dev/");
 
     expect(getThemeFromRequest(request)).toBe(PUBLIC_THEME.light);
   });
 
   it("reads the dark theme from the cookie header", () => {
-    const request = new Request("https://paper-enes-ink.dev/blog", {
+    const request = new Request("https://paper-portfolio-ink.dev/blog", {
       headers: {
         Cookie: "paper-theme=dark",
       },

@@ -2,7 +2,7 @@
 
 ## Kapsam
 
-Bu geliştirme, `paper-enes-ink` projesindeki `Phase 1 / Task 1.2` maddesini tamamlar:
+Bu geliştirme, `paper-portfolio-ink` projesindeki `Phase 1 / Task 1.2` maddesini tamamlar:
 
 - `1.2` Tailwind CSS ve shadcn/ui entegrasyonunun yapılması
 

@@ -2,7 +2,7 @@
 
 ## Kapsam
 
-Bu geliştirme, `paper-enes-ink` projesindeki `Phase 2 / Task 2.4` maddesini tamamlar:
+Bu geliştirme, `paper-portfolio-ink` projesindeki `Phase 2 / Task 2.4` maddesini tamamlar:
 
 - `2.4` Portable Session-based Auth (Better Auth) kurulumu ve login/session mekanizmasının D1'e bağlanması
 
@@ -203,7 +203,7 @@ Bu test:
 npm run db:generate
 npm run db:migrate:local
 npm run db:migrations:list:local
-npx wrangler d1 execute paper-enes-ink-db --local --command "PRAGMA table_info('sessions'); SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
+npx wrangler d1 execute paper-portfolio-ink-db --local --command "PRAGMA table_info('sessions'); SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
 npm test
 npm run lint
 npm run typecheck
@@ -247,7 +247,7 @@ npm run db:seed:test-user
 
 Varsayilan bilgiler:
 
-- `admin@paper-enes-ink.local`
+- `admin@paper-portfolio-ink.local`
 - `PaperInk1234!`
 
 ### Genel doğrulama

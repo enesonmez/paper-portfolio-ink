@@ -33,7 +33,7 @@ const baseScreenProps = {
       description: "Commerce frontend built for edge delivery.",
       id: "project-1",
       isFeatured: true,
-      liveUrl: "https://cyber.paper-enes-ink.dev",
+      liveUrl: "https://cyber.paper-portfolio-ink.dev",
       repositoryUrl: "https://github.com/enes/cyber-store-front",
       slug: "cyber-store-front",
       sortOrder: 1,

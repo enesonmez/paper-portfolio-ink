@@ -3,7 +3,7 @@ import { getPlatformProxy } from "wrangler";
 
 const DEFAULT_USER = {
   displayName: "Enes Test Admin",
-  email: "admin@paper-enes-ink.local",
+  email: "admin@paper-portfolio-ink.local",
   password: "PaperInk1234!",
   role: "admin",
 };

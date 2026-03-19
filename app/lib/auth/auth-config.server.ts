@@ -1,6 +1,6 @@
 import type { AuthRuntimeConfig } from "./auth-config";
 
-const DEV_AUTH_SECRET = "paper-enes-ink-dev-secret-0123456789";
+const DEV_AUTH_SECRET = "paper-portfolio-ink-dev-secret-0123456789";
 
 type AuthServerEnvName = "AUTH_SECRET" | "BETTER_AUTH_SECRET" | "BETTER_AUTH_URL";
 

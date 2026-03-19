@@ -1,4 +1,4 @@
-# PROJECT: paper-enes-ink | Portfolio & Blog System
+# PROJECT: paper-portfolio-ink | Portfolio & Blog System
 
 ## Project Overview
 

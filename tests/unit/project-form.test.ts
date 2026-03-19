@@ -11,10 +11,10 @@ describe("project form parser", () => {
     formData.set("summary", "Edge-first commerce frontend.");
     formData.set("description", "A detailed dashboard-managed commerce project.");
     formData.set("repositoryUrl", "https://github.com/enes/cyber-store-front");
-    formData.set("liveUrl", "https://cyber.paper-enes-ink.dev");
+    formData.set("liveUrl", "https://cyber.paper-portfolio-ink.dev");
     formData.set(
       "coverImageUrl",
-      "https://images.paper-enes-ink.dev/cyber-store-front.webp",
+      "https://images.paper-portfolio-ink.dev/cyber-store-front.webp",
     );
     formData.set("status", "published");
     formData.set("isFeatured", "on");
@@ -22,10 +22,10 @@ describe("project form parser", () => {
 
     expect(parseProjectFormData(formData)).toEqual({
       data: {
-        coverImageUrl: "https://images.paper-enes-ink.dev/cyber-store-front.webp",
+        coverImageUrl: "https://images.paper-portfolio-ink.dev/cyber-store-front.webp",
         description: "A detailed dashboard-managed commerce project.",
         isFeatured: true,
-        liveUrl: "https://cyber.paper-enes-ink.dev",
+        liveUrl: "https://cyber.paper-portfolio-ink.dev",
         repositoryUrl: "https://github.com/enes/cyber-store-front",
         slug: "cyber-store-front",
         sortOrder: 4,

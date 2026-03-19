@@ -16,9 +16,9 @@ describe("public home server", () => {
       {
         createdAtLabel: "2026-03-18",
         description: null,
-        liveUrl: "https://paper-enes-ink.dev",
-        repositoryUrl: "https://github.com/enesonmez/paper-enes-ink",
-        slug: "paper-enes-ink",
+        liveUrl: "https://paper-portfolio-ink.dev",
+        repositoryUrl: "https://github.com/enesonmez/paper-portfolio-ink",
+        slug: "paper-portfolio-ink",
         summary: "Portfolio, blog, and dashboard stack tuned for Cloudflare.",
         title: "Paper Enes Ink",
       },

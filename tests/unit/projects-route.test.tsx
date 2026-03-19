@@ -6,13 +6,13 @@ import { PublicProjectsScreen } from "../../app/features/public/projects/public-
 
 const baseProjects = [
   {
-    coverImageUrl: "https://images.paper-enes-ink.dev/paper-enes-ink.webp",
+    coverImageUrl: "https://images.paper-portfolio-ink.dev/paper-portfolio-ink.webp",
     createdAtLabel: "2026-03-18",
     description: "Public portfolio and publishing workflow on Cloudflare.",
     isFeatured: true,
-    liveUrl: "https://paper-enes-ink.dev",
-    repositoryUrl: "https://github.com/enesonmez/paper-enes-ink",
-    slug: "paper-enes-ink",
+    liveUrl: "https://paper-portfolio-ink.dev",
+    repositoryUrl: "https://github.com/enesonmez/paper-portfolio-ink",
+    slug: "paper-portfolio-ink",
     summary: "Portfolio, blog, and dashboard stack tuned for Cloudflare.",
     title: "Paper Enes Ink",
   },

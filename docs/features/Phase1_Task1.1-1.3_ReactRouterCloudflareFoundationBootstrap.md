@@ -2,7 +2,7 @@
 
 ## Kapsam
 
-Bu doküman, `paper-enes-ink` projesinde Phase 1 altındaki aşağıdaki görevler için yapılan ilk foundation geliştirmesini özetler:
+Bu doküman, `paper-portfolio-ink` projesinde Phase 1 altındaki aşağıdaki görevler için yapılan ilk foundation geliştirmesini özetler:
 
 - `1.1` React Router v7 projesinin Edge Runtime uyumlu şekilde başlatılması
 - `1.3` Cloudflare `wrangler.toml` dosyasının oluşturulması ve D1 binding temelinin hazırlanması

@@ -2,7 +2,7 @@
 
 ## Kapsam
 
-Bu geliştirme, `paper-enes-ink` projesindeki `Phase 4 / Task 4.2` maddesini tamamlar:
+Bu geliştirme, `paper-portfolio-ink` projesindeki `Phase 4 / Task 4.2` maddesini tamamlar:
 
 - `4.2` `/login` sayfasının oluşturulması
 

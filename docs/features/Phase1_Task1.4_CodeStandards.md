@@ -2,7 +2,7 @@
 
 ## Kapsam
 
-Bu geliştirme, `paper-enes-ink` projesindeki `Phase 1 / Task 1.4` maddesini tamamlar:
+Bu geliştirme, `paper-portfolio-ink` projesindeki `Phase 1 / Task 1.4` maddesini tamamlar:
 
 - `1.4` Proje genelinde tip güvenliği ve kod standartları için Prettier/ESLint ayarlarının tamamlanması
 

@@ -74,7 +74,7 @@ export function PublicHomeResume() {
             className="w-full whitespace-normal text-center leading-5 sm:w-auto"
           >
             <a
-              href="mailto:hello@paper-enes-ink.dev"
+              href="mailto:hello@paper-portfolio-ink.dev"
               className="w-full"
             >
               {PUBLIC_HOME_COPY.resumeCta}

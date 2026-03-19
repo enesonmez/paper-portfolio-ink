@@ -7,7 +7,7 @@ describe("chrome devtools well-known route", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("Content-Type")).toContain("application/json");
     await expect(response.json()).resolves.toEqual({
-      workspace: "paper-enes-ink",
+      workspace: "paper-portfolio-ink",
     });
   });
 });

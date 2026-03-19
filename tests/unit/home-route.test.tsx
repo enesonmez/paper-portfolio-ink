@@ -7,9 +7,9 @@ const featuredProjects = [
   {
     createdAtLabel: "2026-03-18",
     description: "Edge-first portfolio stack with CMS-grade editorial flows.",
-    liveUrl: "https://paper-enes-ink.dev",
-    repositoryUrl: "https://github.com/enesonmez/paper-enes-ink",
-    slug: "paper-enes-ink",
+    liveUrl: "https://paper-portfolio-ink.dev",
+    repositoryUrl: "https://github.com/enesonmez/paper-portfolio-ink",
+    slug: "paper-portfolio-ink",
     summary: "Portfolio, blog, and dashboard stack tuned for Cloudflare.",
     title: "Paper Enes Ink",
   },

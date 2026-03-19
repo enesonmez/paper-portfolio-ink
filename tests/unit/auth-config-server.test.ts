@@ -11,7 +11,7 @@ describe("auth config resolver", () => {
 
     expect(resolveAuthConfig(request)).toEqual({
       baseURL: "http://localhost:5173",
-      secret: "paper-enes-ink-dev-secret-0123456789",
+      secret: "paper-portfolio-ink-dev-secret-0123456789",
       trustedOrigins: ["http://localhost:5173"],
     });
   });
@@ -21,12 +21,12 @@ describe("auth config resolver", () => {
     const request = new Request("http://localhost:5173/login");
 
     vi.stubEnv("BETTER_AUTH_SECRET", "0123456789-0123456789-0123456789-0123");
-    vi.stubEnv("BETTER_AUTH_URL", "https://paper-enes-ink.test");
+    vi.stubEnv("BETTER_AUTH_URL", "https://paper-portfolio-ink.test");
 
     expect(resolveAuthConfig(request)).toEqual({
-      baseURL: "https://paper-enes-ink.test",
+      baseURL: "https://paper-portfolio-ink.test",
       secret: "0123456789-0123456789-0123456789-0123",
-      trustedOrigins: ["https://paper-enes-ink.test"],
+      trustedOrigins: ["https://paper-portfolio-ink.test"],
     });
   });
 });

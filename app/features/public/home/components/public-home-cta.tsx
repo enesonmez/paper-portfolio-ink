@@ -24,7 +24,7 @@ export function PublicHomeCta() {
 
           <div className="flex flex-wrap gap-4">
             <Button asChild size="lg" className="bg-black text-white dark:bg-black dark:text-white whitespace-normal">
-              <a href="mailto:hello@paper-enes-ink.dev">
+              <a href="mailto:hello@paper-portfolio-ink.dev">
                 {PUBLIC_HOME_COPY.ctaPrimary}
                 <ArrowRight className="size-5" aria-hidden="true" />
               </a>

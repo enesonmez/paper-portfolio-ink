@@ -67,7 +67,7 @@ export const PUBLIC_SOCIAL_LINKS = [
     label: "LinkedIn",
   },
   {
-    href: "mailto:hello@paper-enes-ink.dev",
+    href: "mailto:hello@paper-portfolio-ink.dev",
     label: "Mail",
   },
 ] as const;

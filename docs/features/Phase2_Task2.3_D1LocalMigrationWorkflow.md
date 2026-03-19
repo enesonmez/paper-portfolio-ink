@@ -2,7 +2,7 @@
 
 ## Kapsam
 
-Bu geliştirme, `paper-enes-ink` projesindeki `Phase 2 / Task 2.3` maddesini tamamlar:
+Bu geliştirme, `paper-portfolio-ink` projesindeki `Phase 2 / Task 2.3` maddesini tamamlar:
 
 - `2.3` Local geliştirme için ilk D1 migration (göç) işleminin başarıyla çalıştırılması
 
@@ -92,7 +92,7 @@ Sonrasında iki ek doğrulama yapıldı:
 
 1. `npm run db:migrations:list:local`
    Sonuç: bekleyen migration kalmadı
-2. `wrangler d1 execute paper-enes-ink-db --local --command "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"`
+2. `wrangler d1 execute paper-portfolio-ink-db --local --command "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"`
    Sonuç: `users`, `posts`, `projects`, `sessions` tabloları local DB içinde doğrulandı
 
 ### 5. Soyutlama yapısı ile uyum
@@ -146,7 +146,7 @@ Bu testler:
 npm run db:generate
 npm run db:migrate:local
 npm run db:migrations:list:local
-npx wrangler d1 execute paper-enes-ink-db --local --command "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
+npx wrangler d1 execute paper-portfolio-ink-db --local --command "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
 npm test
 npm run lint
 npm run typecheck

@@ -27,7 +27,7 @@ export const DASHBOARD_POSTS_FORM_COPY = {
   },
   coverImageUrl: {
     label: "Cover Image URL",
-    placeholder: "https://cdn.paper-enes-ink.dev/posts/edge-cache.webp",
+    placeholder: "https://cdn.paper-portfolio-ink.dev/posts/edge-cache.webp",
   },
   errors: {
     deleteMissingPost: "Silinecek yazi bulunamadi.",

@@ -39,7 +39,7 @@ describe("post form parser", () => {
         ["slug", "edge-cache-diary"],
         ["excerpt", "Cloudflare cache invalidation and rollout notes."],
         ["content", content],
-        ["coverImageUrl", "https://paper-enes-ink.dev/cover.webp"],
+        ["coverImageUrl", "https://paper-portfolio-ink.dev/cover.webp"],
         ["status", "published"],
         ["publishedAt", "2026-03-17"],
       ]),
@@ -48,7 +48,7 @@ describe("post form parser", () => {
     expect(submission).toEqual({
       data: {
         content,
-        coverImageUrl: "https://paper-enes-ink.dev/cover.webp",
+        coverImageUrl: "https://paper-portfolio-ink.dev/cover.webp",
         excerpt: "Cloudflare cache invalidation and rollout notes.",
         slug: "edge-cache-diary",
         status: "published",

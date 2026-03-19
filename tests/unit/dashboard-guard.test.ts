@@ -28,7 +28,7 @@ describe("dashboard route guard", () => {
       user: {
         id: "user-1",
         name: "Enes Admin",
-        email: "admin@paper-enes-ink.local",
+        email: "admin@paper-portfolio-ink.local",
         role: "admin",
       },
     });
@@ -45,7 +45,7 @@ describe("dashboard route guard", () => {
     ).resolves.toEqual({
       user: {
         displayName: "Enes Admin",
-        email: "admin@paper-enes-ink.local",
+        email: "admin@paper-portfolio-ink.local",
         initials: "EA",
         role: "admin",
       },

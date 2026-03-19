@@ -26,7 +26,7 @@ describe("cloudflare load context", () => {
   });
 
   it("maps Cloudflare env bindings into the app load context", async () => {
-    const request = new Request("https://paper-enes-ink.dev/dashboard");
+    const request = new Request("https://paper-portfolio-ink.dev/dashboard");
     const db = { query: {} };
     const runtime = { platform: "cloudflare" };
     const { createCloudflareLoadContext } = await import("../../workers/load-context");
@@ -40,14 +40,14 @@ describe("cloudflare load context", () => {
         env: {
           DB: { prepare: vi.fn() } as unknown as D1Database,
           BETTER_AUTH_SECRET: "0123456789-0123456789-0123456789-0123",
-          BETTER_AUTH_URL: "https://paper-enes-ink.dev",
+          BETTER_AUTH_URL: "https://paper-portfolio-ink.dev",
         },
       }),
     ).toEqual({
       auth: {
-        baseURL: "https://paper-enes-ink.dev",
+        baseURL: "https://paper-portfolio-ink.dev",
         secret: "0123456789-0123456789-0123456789-0123",
-        trustedOrigins: ["https://paper-enes-ink.dev"],
+        trustedOrigins: ["https://paper-portfolio-ink.dev"],
       },
       db,
       runtime,
