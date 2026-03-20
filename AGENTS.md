@@ -52,6 +52,7 @@ Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz a�
 - [x] Cloudflare `wrangler.toml` dosyasının oluşturulması ve D1 veritabanı binding ayarlarının yapılması.
 - [x] Proje genelinde tip güvenliği ve kod standartları için Prettier/ESLint ayarlarının tamamlanması.
 - [ ] E2E testler için playwrigt entegrasyonunun yapılması.
+- [ ] i18n altyapısını kur. DB merkezli olsun. Proje ayağa kalkarken cache'e alsın.
 
 ### Phase 2: Data Layer & Auth (Veri Katmanı ve Kimlik Doğrulama)
 
@@ -74,9 +75,11 @@ Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz a�
 - [x] Dashboard mizanpajının (Sidebar ve üst bilgi) oluşturulması.
 - [x] Projeler için CRUD (Ekleme, Düzenleme, Silme, Listeleme) arayüzlerinin form validasyonları (Zod) ile yapılması.
 - [x] Blog yazıları için CRUD işlemleri ve içerik yazımı için Markdown / Rich Text Editor entegrasyonu.
-- [ ] Cloudflare R2 üzerinde görsel yükleme (Presigned URL veya Direct Upload) ve silme mekanizmasının kurulması.
+- [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı yap. Mock şekilde.
 - [x] Kullanıcılar için CRUD işlemlerinin yapılması.
 - [x] Logout yapısının oluşturulması.
+- [ ] Beceriler için `/skills` menüsü altında listeleme, create ve delete işlemleri.
+- [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı içine `/account` tabı ekle. İçerisinde email, linkedin, github, x, instagram linklerini alacak yapı olsun. Form şeklinde olmasın. Listelensin üzerine tıklayınca po-up çıksın ve orada kayıt edilsin. DB de configuration-parameter tablosu oluştur ve oraya key-value şeklinde kaydet.
 
 ### Phase 5: Optimization & Launch (Optimizasyon ve Yayınlama)
 

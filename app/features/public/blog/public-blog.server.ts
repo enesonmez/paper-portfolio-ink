@@ -7,16 +7,8 @@ import {
   listPublicPostsPage,
 } from "~/lib/posts/posts.server";
 
+import { PublicBlogPostNotFoundError } from "./public-blog.errors";
 import { normalizePublicBlogPage, PUBLIC_BLOG_PAGE_SIZE } from "./public-blog.shared";
-
-export class PublicBlogPostNotFoundError extends Error {
-  readonly status = 404;
-
-  constructor() {
-    super("Published blog post not found.");
-    this.name = "PublicBlogPostNotFoundError";
-  }
-}
 
 export async function loadPublicBlogData(context: AppLoadContext, _request: Request) {
   const db = getDbFromContext(context);

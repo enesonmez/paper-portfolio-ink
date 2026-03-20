@@ -1,11 +1,9 @@
 import { useLoaderData, useRouteError } from "react-router";
 import type { Route } from "./+types/blog_.$slug";
 
+import { PublicBlogPostNotFoundError } from "~/features/public/blog/public-blog.errors";
 import { PublicBlogPostScreen } from "~/features/public/blog/public-blog-post-screen";
-import {
-  loadPublicBlogPostData,
-  PublicBlogPostNotFoundError,
-} from "~/features/public/blog/public-blog.server";
+import { loadPublicBlogPostData } from "~/features/public/blog/public-blog.server";
 import { siteConfig } from "~/lib/site";
 
 export const meta: Route.MetaFunction = ({ data, location }) => {
