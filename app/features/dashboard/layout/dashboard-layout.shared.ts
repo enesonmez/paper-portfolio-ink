@@ -1,4 +1,5 @@
 export interface DashboardIdentity {
+  id: string | null;
   displayName: string;
   email: string;
   initials: string;
@@ -6,8 +7,12 @@ export interface DashboardIdentity {
 }
 
 export type DashboardIdentitySource = Partial<
-  Record<"displayName" | "email" | "name" | "role", unknown>
+  Record<"displayName" | "email" | "id" | "name" | "role", unknown>
 >;
+
+export interface DashboardLayoutOutletContext {
+  user: DashboardIdentity;
+}
 
 const DASHBOARD_IDENTITY_FALLBACK = {
   displayName: "Paper Enes Ink",
@@ -36,6 +41,7 @@ function buildInitials(source: string) {
 export function buildDashboardIdentity(
   source: DashboardIdentitySource,
 ): DashboardIdentity {
+  const id = readString(source.id) ?? null;
   const displayName =
     readString(source.displayName) ??
     readString(source.name) ??
@@ -45,6 +51,7 @@ export function buildDashboardIdentity(
   const role = readString(source.role) ?? DASHBOARD_IDENTITY_FALLBACK.role;
 
   return {
+    id,
     displayName,
     email,
     initials: buildInitials(displayName),

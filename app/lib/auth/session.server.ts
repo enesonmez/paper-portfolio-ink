@@ -3,6 +3,7 @@ import { redirect } from "react-router";
 
 import { resolveAuthConfig } from "./auth-config.server";
 import { getSessionFromRequest } from "./auth.server";
+import { isSessionUserActive } from "./session-user";
 
 interface RequireSessionOptions {
   redirectTo?: string;
@@ -23,6 +24,10 @@ export async function requireSession(
   const session = await getSessionForRequest(request, context);
 
   if (!session) {
+    return redirect(options.redirectTo ?? "/");
+  }
+
+  if (!isSessionUserActive(session)) {
     return redirect(options.redirectTo ?? "/");
   }
 

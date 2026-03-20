@@ -55,10 +55,11 @@ async function seedTestUser() {
       db
         .prepare(
           [
-            "INSERT INTO users (id, email, email_verified, display_name, role, created_at, updated_at)",
-            "VALUES (?, ?, 0, ?, ?, ?, ?)",
+            "INSERT INTO users (id, email, email_verified, display_name, is_active, role, created_at, updated_at)",
+            "VALUES (?, ?, 0, ?, 1, ?, ?, ?)",
             "ON CONFLICT(email) DO UPDATE SET",
             "display_name = excluded.display_name,",
+            "is_active = excluded.is_active,",
             "role = excluded.role,",
             "updated_at = excluded.updated_at",
           ].join(" "),

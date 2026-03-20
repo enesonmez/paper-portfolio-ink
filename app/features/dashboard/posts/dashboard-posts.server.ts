@@ -3,6 +3,7 @@ import { data, redirect, type AppLoadContext } from "react-router";
 import { getDbFromContext } from "../../../../db/context";
 import { buildLoginRedirect } from "~/lib/auth/login.server";
 import { requireSession } from "~/lib/auth/session.server";
+import { getSessionUserId } from "~/lib/auth/session-user";
 import {
   buildPostFormValues,
   type PostFormState,
@@ -36,22 +37,6 @@ function readStringField(formData: FormData, field: string) {
   const value = formData.get(field);
 
   return typeof value === "string" ? value : "";
-}
-
-function resolveSessionUserId(session: unknown) {
-  if (
-    typeof session === "object" &&
-    session !== null &&
-    "user" in session &&
-    typeof session.user === "object" &&
-    session.user !== null &&
-    "id" in session.user &&
-    typeof session.user.id === "string"
-  ) {
-    return session.user.id;
-  }
-
-  return null;
 }
 
 function buildPostActionValues(values: PostFormState["values"]) {
@@ -175,7 +160,7 @@ export async function handleDashboardPostsAction(
     return redirect("/dashboard/posts");
   }
 
-  const authorId = resolveSessionUserId(session);
+  const authorId = getSessionUserId(session);
 
   if (!authorId) {
     return data<PostFormState>(

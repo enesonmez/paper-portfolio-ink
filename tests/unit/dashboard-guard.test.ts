@@ -46,6 +46,7 @@ describe("dashboard route guard", () => {
       user: {
         displayName: "Enes Admin",
         email: "admin@paper-portfolio-ink.local",
+        id: "user-1",
         initials: "EA",
         role: "admin",
       },
