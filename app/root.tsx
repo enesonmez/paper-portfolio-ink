@@ -38,18 +38,17 @@ export function Layout({ children }: { children: ReactNode }) {
   const theme = data?.theme ?? PUBLIC_THEME.light;
 
   return (
-    <html
-      lang={siteConfig.locale}
-      className={theme}
-      suppressHydrationWarning
-    >
+    <html lang={siteConfig.locale} className={theme} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body className="selection:bg-primary selection:text-primary-foreground" suppressHydrationWarning>
+      <body
+        className="selection:bg-primary selection:text-primary-foreground"
+        suppressHydrationWarning
+      >
         {children}
         <ScrollRestoration />
         <Scripts />

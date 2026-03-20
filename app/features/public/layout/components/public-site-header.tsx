@@ -21,8 +21,8 @@ function renderNavItem(item: (typeof PUBLIC_NAV_ITEMS)[number]) {
       to={item.to}
       className={({ isActive }) =>
         cn(
-          "px-2 py-1 underline-offset-4 decoration-4 hover:underline hover:decoration-primary",
-          isActive ? "underline decoration-primary" : "",
+          "hover:decoration-primary px-2 py-1 decoration-4 underline-offset-4 hover:underline",
+          isActive ? "decoration-primary underline" : "",
         )
       }
     >
@@ -40,13 +40,13 @@ function renderNavItem(item: (typeof PUBLIC_NAV_ITEMS)[number]) {
 
 export function PublicSiteHeader({ theme }: PublicSiteHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 border-b-2 border-black bg-background/90 backdrop-blur-sm">
+    <header className="bg-background/90 sticky top-0 z-50 border-b-2 border-black backdrop-blur-sm">
       <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-4 md:px-8 lg:px-12">
         <NavLink to="/" className="flex min-w-0 items-center gap-3">
-          <span className="flex size-11 items-center justify-center border-2 border-black bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <span className="bg-primary flex size-11 items-center justify-center border-2 border-black text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <Boxes className="size-5" aria-hidden="true" />
           </span>
-          <span className="truncate font-display text-[2rem] leading-none uppercase tracking-tight sm:text-4xl">
+          <span className="font-display truncate text-[2rem] leading-none tracking-tight uppercase sm:text-4xl">
             {PUBLIC_LAYOUT_COPY.footerName}
           </span>
         </NavLink>
@@ -64,16 +64,10 @@ export function PublicSiteHeader({ theme }: PublicSiteHeaderProps) {
           <details className="group relative md:hidden">
             <summary
               aria-label={PUBLIC_LAYOUT_COPY.navMenuLabel}
-              className="inline-flex min-h-10 cursor-pointer list-none items-center gap-2 border-2 border-black bg-card px-2 py-2 text-[11px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 [&::-webkit-details-marker]:hidden dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+              className="bg-card inline-flex min-h-10 cursor-pointer list-none items-center gap-2 border-2 border-black px-2 py-2 text-[11px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)] [&::-webkit-details-marker]:hidden"
             >
-              <Menu
-                className="size-4 group-open:hidden"
-                aria-hidden="true"
-              />
-              <X
-                className="hidden size-4 group-open:block"
-                aria-hidden="true"
-              />
+              <Menu className="size-4 group-open:hidden" aria-hidden="true" />
+              <X className="hidden size-4 group-open:block" aria-hidden="true" />
               <span className="hidden min-[420px]:inline">
                 {PUBLIC_LAYOUT_COPY.navMenuText}
               </span>
@@ -81,12 +75,12 @@ export function PublicSiteHeader({ theme }: PublicSiteHeaderProps) {
 
             <nav
               aria-label="Mobile public navigation"
-              className="absolute right-0 top-[calc(100%+0.75rem)] z-20 grid w-[min(18rem,calc(100vw-2rem))] gap-2 border-2 border-black bg-card p-3 text-[13px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+              className="bg-card absolute top-[calc(100%+0.75rem)] right-0 z-20 grid w-[min(18rem,calc(100vw-2rem))] gap-2 border-2 border-black p-3 text-[13px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
             >
               {PUBLIC_NAV_ITEMS.map((item) => (
                 <div
                   key={item.to}
-                  className="border-2 border-black bg-background px-1 py-1"
+                  className="bg-background border-2 border-black px-1 py-1"
                 >
                   {renderNavItem(item)}
                 </div>

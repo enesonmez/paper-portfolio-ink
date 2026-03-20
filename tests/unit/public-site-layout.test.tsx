@@ -17,9 +17,7 @@ describe("PublicSiteLayout", () => {
       },
     ]);
 
-    render(
-      <RouterProvider router={router} />,
-    );
+    render(<RouterProvider router={router} />);
 
     expect(
       screen
@@ -32,7 +30,9 @@ describe("PublicSiteLayout", () => {
         .some((link) => link.getAttribute("href") === "/projects"),
     ).toBe(true);
     expect(screen.getByLabelText("Toggle navigation")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Theme: Comic Noir/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Theme: Comic Noir/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Back To Top" })).toHaveAttribute(
       "href",
       "#top",

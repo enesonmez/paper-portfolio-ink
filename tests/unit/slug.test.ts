@@ -13,13 +13,15 @@ describe("slug helpers", () => {
   });
 
   it("finds the next available suffixed slug", async () => {
-    const isTaken = vi.fn(async (slug: string) => {
-      return slug === "edge-cache-diary" || slug === "edge-cache-diary-2";
+    const isTaken = vi.fn((slug: string) => {
+      return Promise.resolve(
+        slug === "edge-cache-diary" || slug === "edge-cache-diary-2",
+      );
     });
 
-    await expect(
-      findNextAvailableSlug("edge-cache-diary", isTaken),
-    ).resolves.toBe("edge-cache-diary-3");
+    await expect(findNextAvailableSlug("edge-cache-diary", isTaken)).resolves.toBe(
+      "edge-cache-diary-3",
+    );
   });
 
   it("recognizes sqlite unique slug constraint errors", () => {

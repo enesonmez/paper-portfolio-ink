@@ -39,9 +39,8 @@ describe("public projects server", () => {
     listPublicProjectsPageMock.mockResolvedValue(pageData);
     getPublicProjectsStatsMock.mockResolvedValue(stats);
 
-    const { loadPublicProjectsData } = await import(
-      "../../app/features/public/projects/public-projects.server"
-    );
+    const { loadPublicProjectsData } =
+      await import("../../app/features/public/projects/public-projects.server");
 
     await expect(
       loadPublicProjectsData(
@@ -67,9 +66,8 @@ describe("public projects server", () => {
 
     listPublicProjectsPageMock.mockResolvedValue(pageData);
 
-    const { loadPublicProjectsFeedData } = await import(
-      "../../app/features/public/projects/public-projects.server"
-    );
+    const { loadPublicProjectsFeedData } =
+      await import("../../app/features/public/projects/public-projects.server");
 
     await expect(
       loadPublicProjectsFeedData(

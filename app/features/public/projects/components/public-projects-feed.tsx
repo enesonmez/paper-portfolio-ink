@@ -104,7 +104,7 @@ export function PublicProjectsFeed({
         <div
           ref={sentinelRef}
           aria-live="polite"
-          className="grid place-items-center gap-3 border-2 border-dashed border-black bg-background px-4 py-6 text-center"
+          className="bg-background grid place-items-center gap-3 border-2 border-dashed border-black px-4 py-6 text-center"
         >
           {fetcher.state === "loading" ? (
             <div className="inline-flex items-center gap-2 text-sm font-bold uppercase">
@@ -116,7 +116,7 @@ export function PublicProjectsFeed({
               {PUBLIC_PROJECTS_COPY.feedReady}
             </p>
           )}
-          <p className="text-muted-foreground text-xs uppercase tracking-[0.18em]">
+          <p className="text-muted-foreground text-xs tracking-[0.18em] uppercase">
             {PUBLIC_PROJECTS_COPY.scrollHint}
           </p>
         </div>

@@ -31,10 +31,10 @@ export function PublicProjectsScreen({
     <main className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:px-8 md:py-16 lg:px-12 lg:py-20">
       <section className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(17rem,0.9fr)] lg:items-end">
         <div className="grid gap-5">
-          <p className="text-muted-foreground text-xs font-bold uppercase tracking-[0.18em]">
+          <p className="text-muted-foreground text-xs font-bold tracking-[0.18em] uppercase">
             {PUBLIC_PROJECTS_COPY.heroEyebrow}
           </p>
-          <h1 className="font-display text-6xl uppercase leading-[0.92] md:text-7xl lg:text-[5.5rem]">
+          <h1 className="font-display text-6xl leading-[0.92] uppercase md:text-7xl lg:text-[5.5rem]">
             {PUBLIC_PROJECTS_COPY.heroTitle}
           </h1>
           <p className="text-muted-foreground max-w-3xl border-l-4 border-black pl-5 text-base leading-8 md:text-lg">
@@ -49,15 +49,13 @@ export function PublicProjectsScreen({
             return (
               <div
                 key={key}
-                className="flex items-center justify-between gap-4 border-2 border-black bg-card px-5 py-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+                className="bg-card flex items-center justify-between gap-4 border-2 border-black px-5 py-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
               >
                 <span className="inline-flex items-center gap-3 text-sm font-bold uppercase">
                   <Icon className="size-5" aria-hidden="true" />
                   {STAT_LABELS[key]}
                 </span>
-                <span className="font-display text-4xl leading-none">
-                  {stats[key]}
-                </span>
+                <span className="font-display text-4xl leading-none">{stats[key]}</span>
               </div>
             );
           })}
@@ -65,7 +63,7 @@ export function PublicProjectsScreen({
       </section>
 
       {projects.length === 0 ? (
-        <section className="grid min-h-96 content-center gap-5 border-2 border-black bg-card p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)] md:p-8">
+        <section className="bg-card grid min-h-96 content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
           <p className="text-muted-foreground text-sm tracking-[0.08em] uppercase">
             {PUBLIC_PROJECTS_COPY.emptyEyebrow}
           </p>

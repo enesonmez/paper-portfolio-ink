@@ -114,8 +114,6 @@ describe("ProjectsPage", () => {
     expect(
       screen.getByRole("heading", { level: 2, name: "No public projects yet." }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByText("Scroll to load more projects"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Scroll to load more projects")).not.toBeInTheDocument();
   });
 });

@@ -68,11 +68,15 @@ describe("dashboard posts route", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("heading", { level: 1, name: "Post Registry" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Post Registry" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Published Posts")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Create New Post" })).toBeInTheDocument();
     expect(screen.getByText("EDGE_TELEMETRY")).toBeInTheDocument();
-    expect(screen.queryByRole("dialog", { name: "Create Post" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("dialog", { name: "Create Post" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders a fullscreen compose surface without repeating the registry screen", async () => {
@@ -111,7 +115,9 @@ describe("dashboard posts route", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("dialog", { name: "Edit Post Editor" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("dialog", { name: "Edit Post Editor" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Draft / Saved locally")).toBeInTheDocument();
     expect(
       screen.queryByRole("heading", { level: 1, name: "Post Registry" }),

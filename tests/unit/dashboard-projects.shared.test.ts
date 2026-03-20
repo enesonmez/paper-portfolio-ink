@@ -2,9 +2,8 @@ import { describe, expect, it } from "vitest";
 
 describe("dashboard projects shared helpers", () => {
   it("builds stable dashboard project URLs from typed params", async () => {
-    const { buildDashboardProjectsHref } = await import(
-      "../../app/features/dashboard/projects/dashboard-projects.shared"
-    );
+    const { buildDashboardProjectsHref } =
+      await import("../../app/features/dashboard/projects/dashboard-projects.shared");
 
     expect(buildDashboardProjectsHref()).toBe("/dashboard/projects");
     expect(buildDashboardProjectsHref({ modal: "create" })).toBe(
@@ -16,9 +15,8 @@ describe("dashboard projects shared helpers", () => {
   });
 
   it("maps project status to consistent badge tones", async () => {
-    const { getProjectStatusTone } = await import(
-      "../../app/features/dashboard/projects/dashboard-projects.shared"
-    );
+    const { getProjectStatusTone } =
+      await import("../../app/features/dashboard/projects/dashboard-projects.shared");
 
     expect(getProjectStatusTone("draft")).toBe("warning");
     expect(getProjectStatusTone("published")).toBe("success");
@@ -26,9 +24,8 @@ describe("dashboard projects shared helpers", () => {
   });
 
   it("resolves edit mode state from query params and selected project", async () => {
-    const { resolveDashboardProjectsForm } = await import(
-      "../../app/features/dashboard/projects/dashboard-projects.shared"
-    );
+    const { resolveDashboardProjectsForm } =
+      await import("../../app/features/dashboard/projects/dashboard-projects.shared");
 
     expect(
       resolveDashboardProjectsForm({

@@ -9,10 +9,7 @@ import {
   TextField,
   TextareaField,
 } from "~/components/ui/form-field";
-import {
-  USER_FORM_FIELD,
-  USER_MUTATION_INTENT,
-} from "~/features/users/user.shared";
+import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/features/users/user.shared";
 
 import {
   DASHBOARD_USERS_COPY,

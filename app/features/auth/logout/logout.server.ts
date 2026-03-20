@@ -12,10 +12,7 @@ interface PerformLogoutOptions {
   request: Request;
 }
 
-export async function performLogout({
-  context,
-  request,
-}: PerformLogoutOptions) {
+export async function performLogout({ context, request }: PerformLogoutOptions) {
   const auth = createAuth({
     db: context.db,
     ...resolveAuthConfig(request, context.auth),

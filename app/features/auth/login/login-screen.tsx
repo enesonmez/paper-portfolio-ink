@@ -19,11 +19,7 @@ export function LoginScreen({
       <LoginHeader />
 
       <section className="relative z-10 flex flex-1 items-center justify-center px-4 py-10 md:px-6 md:py-14">
-        <LoginFormCard
-          errors={errors}
-          isSubmitting={isSubmitting}
-          values={values}
-        />
+        <LoginFormCard errors={errors} isSubmitting={isSubmitting} values={values} />
       </section>
 
       <LoginFooter />

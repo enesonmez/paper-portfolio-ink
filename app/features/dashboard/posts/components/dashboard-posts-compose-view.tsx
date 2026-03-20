@@ -4,10 +4,7 @@ import { ArrowLeft, PenSquare, X } from "lucide-react";
 import { SlugSuggestionField } from "~/components/dashboard/slug-suggestion-field";
 import { Button } from "~/components/ui/button";
 import { FormError, SelectField, TextField } from "~/components/ui/form-field";
-import {
-  POST_FORM_FIELD,
-  POST_MUTATION_INTENT,
-} from "~/features/posts/post.shared";
+import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/features/posts/post.shared";
 
 import {
   DASHBOARD_POSTS_COPY,
@@ -23,9 +20,7 @@ interface DashboardPostsComposeViewProps {
   form: DashboardPostsFormState;
 }
 
-export function DashboardPostsComposeView({
-  form,
-}: DashboardPostsComposeViewProps) {
+export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewProps) {
   if (!form.isOpen || !form.mode) {
     return null;
   }
@@ -58,7 +53,11 @@ export function DashboardPostsComposeView({
           }
         />
         {form.mode === "edit" && form.editingPostId ? (
-          <input type="hidden" name={POST_FORM_FIELD.postId} value={form.editingPostId} />
+          <input
+            type="hidden"
+            name={POST_FORM_FIELD.postId}
+            value={form.editingPostId}
+          />
         ) : null}
 
         <header className="sticky top-0 z-10 border-b-2 border-black bg-stone-100/95 backdrop-blur dark:bg-stone-900/95">
@@ -92,7 +91,10 @@ export function DashboardPostsComposeView({
                 {submitLabel}
               </Button>
               <Button asChild variant="secondary" size="iconSm">
-                <Link to="/dashboard/posts" aria-label={DASHBOARD_POSTS_FORM_COPY.closeFullscreenLabel}>
+                <Link
+                  to="/dashboard/posts"
+                  aria-label={DASHBOARD_POSTS_FORM_COPY.closeFullscreenLabel}
+                >
                   <X className="size-4" aria-hidden="true" />
                 </Link>
               </Button>
@@ -108,7 +110,7 @@ export function DashboardPostsComposeView({
                 name={POST_FORM_FIELD.title}
                 defaultValue={form.values.title}
                 placeholder={DASHBOARD_POSTS_FORM_COPY.fullscreenTitlePlaceholder}
-                className="w-full border-0 bg-transparent p-0 font-display text-6xl leading-none text-stone-950 outline-none placeholder:text-stone-400 md:text-7xl dark:text-stone-50 dark:placeholder:text-stone-500"
+                className="font-display w-full border-0 bg-transparent p-0 text-6xl leading-none text-stone-950 outline-none placeholder:text-stone-400 md:text-7xl dark:text-stone-50 dark:placeholder:text-stone-500"
               />
               <FormError message={form.errors?.title} />
               <textarea
@@ -169,7 +171,11 @@ export function DashboardPostsComposeView({
                 Editor Flow
               </p>
               <div className="mt-4 grid gap-3">
-                <Button asChild variant="secondary" className="justify-between tracking-[0.12em]">
+                <Button
+                  asChild
+                  variant="secondary"
+                  className="justify-between tracking-[0.12em]"
+                >
                   <Link to="/dashboard/posts">
                     {DASHBOARD_POSTS_FORM_COPY.backToListLabel}
                     <ArrowLeft className="size-4" aria-hidden="true" />

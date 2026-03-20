@@ -15,7 +15,7 @@ export function PublicHomeHero() {
     <section className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:px-8 md:py-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)] lg:px-12 lg:py-28">
       <div className="order-2 grid content-start gap-8 lg:order-1">
         <div className="grid gap-5">
-          <span className="w-fit border-2 border-black bg-primary px-3 py-1 text-xs font-bold uppercase">
+          <span className="bg-primary w-fit border-2 border-black px-3 py-1 text-xs font-bold uppercase">
             {PUBLIC_HOME_COPY.heroBadge}
           </span>
 
@@ -55,27 +55,27 @@ export function PublicHomeHero() {
 
       <div className="order-1 hidden lg:block">
         <div
-          className={`${PUBLIC_HOME_SURFACE_CLASSNAME} relative aspect-square overflow-hidden bg-primary`}
+          className={`${PUBLIC_HOME_SURFACE_CLASSNAME} bg-primary relative aspect-square overflow-hidden`}
         >
           <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(0,0,0,0.14)_25%,transparent_25%,transparent_50%,rgba(0,0,0,0.14)_50%,rgba(0,0,0,0.14)_75%,transparent_75%,transparent)] bg-size-[28px_28px]" />
 
           <div className="relative z-10 grid h-full gap-6 p-5 md:p-8">
             <div className="flex items-start justify-between">
               <div className="grid gap-2">
-                <span className="w-fit border-2 border-black bg-card px-3 py-1 text-[11px] font-bold uppercase">
+                <span className="bg-card w-fit border-2 border-black px-3 py-1 text-[11px] font-bold uppercase">
                   {PUBLIC_HOME_COPY.visualLabel}
                 </span>
                 <span className="text-sm font-bold uppercase">
                   {PUBLIC_HOME_COPY.availability}
                 </span>
               </div>
-              <span className="flex size-14 items-center justify-center border-2 border-black bg-card">
+              <span className="bg-card flex size-14 items-center justify-center border-2 border-black">
                 <Boxes className="size-7" aria-hidden="true" />
               </span>
             </div>
 
             <div className="mt-auto grid gap-4">
-              <div className="grid gap-3 border-2 border-black bg-card p-4">
+              <div className="bg-card grid gap-3 border-2 border-black p-4">
                 <div className="flex items-center justify-between text-[11px] font-bold uppercase">
                   <span>System</span>
                   <span>Ready</span>
@@ -93,7 +93,7 @@ export function PublicHomeHero() {
                 </div>
               </div>
 
-              <div className="border-2 border-black bg-black p-4 text-primary">
+              <div className="text-primary border-2 border-black bg-black p-4">
                 <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase">
                   <Sparkles className="size-4" aria-hidden="true" />
                   Runtime command

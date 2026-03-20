@@ -17,7 +17,8 @@ interface PublicThemeToggleProps {
 
 export function PublicThemeToggle({ theme }: PublicThemeToggleProps) {
   const location = useLocation();
-  const nextTheme = theme === PUBLIC_THEME.light ? PUBLIC_THEME.dark : PUBLIC_THEME.light;
+  const nextTheme =
+    theme === PUBLIC_THEME.light ? PUBLIC_THEME.dark : PUBLIC_THEME.light;
   const redirectTo = `${location.pathname}${location.search}${location.hash}`;
   const themeLabel =
     nextTheme === PUBLIC_THEME.dark
@@ -36,11 +37,7 @@ export function PublicThemeToggle({ theme }: PublicThemeToggleProps) {
         name={PUBLIC_THEME_FORM_FIELD.redirectTo}
         value={redirectTo}
       />
-      <input
-        type="hidden"
-        name={PUBLIC_THEME_FORM_FIELD.theme}
-        value={nextTheme}
-      />
+      <input type="hidden" name={PUBLIC_THEME_FORM_FIELD.theme} value={nextTheme} />
       <Button
         type="submit"
         variant="secondary"

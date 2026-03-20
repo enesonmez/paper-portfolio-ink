@@ -10,11 +10,7 @@ interface LoginFormCardProps extends LoginFormState {
   isSubmitting: boolean;
 }
 
-export function LoginFormCard({
-  errors,
-  isSubmitting,
-  values,
-}: LoginFormCardProps) {
+export function LoginFormCard({ errors, isSubmitting, values }: LoginFormCardProps) {
   return (
     <div className="dark:border-primary w-full max-w-md border-2 border-black bg-white p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:bg-stone-900 dark:shadow-[6px_6px_0px_0px_rgba(250,204,21,1)]">
       <div className="mb-8">
@@ -64,7 +60,7 @@ export function LoginFormCard({
             type="submit"
             disabled={isSubmitting}
             size="xl"
-            className="w-full tracking-[0.08em] disabled:bg-primary/70 disabled:text-black/70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black focus-visible:ring-0 dark:focus-visible:outline-primary"
+            className="disabled:bg-primary/70 dark:focus-visible:outline-primary w-full tracking-[0.08em] focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black disabled:text-black/70"
           >
             {isSubmitting ? LOGIN_COPY.buttonSubmitting : LOGIN_COPY.buttonIdle}
           </Button>

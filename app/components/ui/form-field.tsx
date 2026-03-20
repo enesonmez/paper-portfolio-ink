@@ -2,8 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 
 import { cn } from "~/lib/utils";
 
-const fieldLabelClassName =
-  "font-sans text-xs font-bold tracking-[0.18em] uppercase";
+const fieldLabelClassName = "font-sans text-xs font-bold tracking-[0.18em] uppercase";
 const fieldErrorClassName =
   "bg-destructive text-destructive-foreground border-2 border-black px-3 py-2 font-sans text-sm";
 const fieldBaseClassName =
@@ -128,7 +127,8 @@ export interface SelectOption {
 }
 
 interface SelectFieldProps
-  extends BaseFieldProps,
+  extends
+    BaseFieldProps,
     Omit<ComponentProps<"select">, "children" | "className" | "id" | "name"> {
   options: readonly SelectOption[];
 }

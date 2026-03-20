@@ -78,8 +78,6 @@ export function normalizePublicTheme(value: string | null | undefined): PublicTh
 
 export function isPublicPathname(pathname: string) {
   return (
-    pathname === "/" ||
-    pathname.startsWith("/projects") ||
-    pathname.startsWith("/blog")
+    pathname === "/" || pathname.startsWith("/projects") || pathname.startsWith("/blog")
   );
 }

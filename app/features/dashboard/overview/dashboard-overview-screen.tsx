@@ -34,7 +34,9 @@ export default function DashboardOverviewScreen() {
       header: "Status",
       id: "status",
       render: (post) => (
-        <span className={`font-sans text-xs font-bold uppercase ${post.statusToneClassName}`}>
+        <span
+          className={`font-sans text-xs font-bold uppercase ${post.statusToneClassName}`}
+        >
           {post.status}
         </span>
       ),

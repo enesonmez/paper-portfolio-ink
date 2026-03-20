@@ -25,7 +25,7 @@ const DashboardPostsRichTextSurface = lazy(async () => {
 
 function EditorFallback() {
   return (
-    <div className="px-6 py-10 font-sans text-sm font-bold uppercase tracking-[0.18em] text-stone-500 dark:text-stone-400">
+    <div className="px-6 py-10 font-sans text-sm font-bold tracking-[0.18em] text-stone-500 uppercase dark:text-stone-400">
       {DASHBOARD_POSTS_FORM_COPY.editor.loadingLabel}
     </div>
   );

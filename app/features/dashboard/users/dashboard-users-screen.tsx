@@ -39,10 +39,7 @@ export function DashboardUsersScreen({
           label="Admin Seats"
           value={String(metrics.adminCount)}
         />
-        <DashboardMetricCard
-          label="Author Seats"
-          value={String(metrics.authorCount)}
-        />
+        <DashboardMetricCard label="Author Seats" value={String(metrics.authorCount)} />
       </section>
 
       <section className="space-y-4">

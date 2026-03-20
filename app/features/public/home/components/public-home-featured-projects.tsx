@@ -24,7 +24,7 @@ export function PublicHomeFeaturedProjects({
     <section className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:px-8 md:py-16 lg:px-12">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div className="grid gap-3">
-          <p className="text-muted-foreground text-xs font-bold uppercase tracking-[0.18em]">
+          <p className="text-muted-foreground text-xs font-bold tracking-[0.18em] uppercase">
             {PUBLIC_HOME_COPY.featuredEyebrow}
           </p>
           <h2 className="font-display text-5xl uppercase md:text-6xl">
@@ -33,7 +33,7 @@ export function PublicHomeFeaturedProjects({
         </div>
         <Link
           to="/projects"
-          className="text-sm font-bold uppercase underline decoration-4 decoration-primary underline-offset-4"
+          className="decoration-primary text-sm font-bold uppercase underline decoration-4 underline-offset-4"
         >
           {PUBLIC_HOME_FEATURED_PROJECTS_COPY.browseAll}
         </Link>
@@ -46,17 +46,16 @@ export function PublicHomeFeaturedProjects({
             className={`${PUBLIC_HOME_SURFACE_CLASSNAME} grid gap-5 p-6 transition-transform hover:-translate-y-1`}
           >
             <div className="flex items-center justify-between gap-3">
-              <p className="text-muted-foreground text-[11px] font-bold uppercase tracking-[0.18em]">
-                {PUBLIC_HOME_FEATURED_PROJECTS_COPY.featuredSince} / {project.createdAtLabel}
+              <p className="text-muted-foreground text-[11px] font-bold tracking-[0.18em] uppercase">
+                {PUBLIC_HOME_FEATURED_PROJECTS_COPY.featuredSince} /{" "}
+                {project.createdAtLabel}
               </p>
-              <span className="border-2 border-black bg-primary px-2 py-1 text-[10px] font-bold uppercase text-black">
+              <span className="bg-primary border-2 border-black px-2 py-1 text-[10px] font-bold text-black uppercase">
                 {project.slug}
               </span>
             </div>
             <h3 className="text-2xl font-bold uppercase">{project.title}</h3>
-            <p className="text-muted-foreground text-sm leading-7">
-              {project.summary}
-            </p>
+            <p className="text-muted-foreground text-sm leading-7">{project.summary}</p>
             {project.description ? (
               <p className="border-t-2 border-black pt-4 text-xs leading-6 uppercase">
                 {project.description}

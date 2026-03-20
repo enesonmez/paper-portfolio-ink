@@ -74,9 +74,8 @@ describe("dashboard users server", () => {
   });
 
   it("loads the users registry for admin sessions", async () => {
-    const { loadDashboardUsersData } = await import(
-      "../../app/features/dashboard/users/dashboard-users.server"
-    );
+    const { loadDashboardUsersData } =
+      await import("../../app/features/dashboard/users/dashboard-users.server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -139,9 +138,8 @@ describe("dashboard users server", () => {
   });
 
   it("does not expose registry data to non-admin sessions", async () => {
-    const { loadDashboardUsersData } = await import(
-      "../../app/features/dashboard/users/dashboard-users.server"
-    );
+    const { loadDashboardUsersData } =
+      await import("../../app/features/dashboard/users/dashboard-users.server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -166,9 +164,8 @@ describe("dashboard users server", () => {
   });
 
   it("creates a new user when the session belongs to an admin", async () => {
-    const { handleDashboardUsersAction } = await import(
-      "../../app/features/dashboard/users/dashboard-users.server"
-    );
+    const { handleDashboardUsersAction } =
+      await import("../../app/features/dashboard/users/dashboard-users.server");
 
     const request = new Request("http://localhost:3000/dashboard/users", {
       body: new URLSearchParams({
@@ -222,9 +219,8 @@ describe("dashboard users server", () => {
   });
 
   it("returns a 403 form error for non-admin action attempts", async () => {
-    const { handleDashboardUsersAction } = await import(
-      "../../app/features/dashboard/users/dashboard-users.server"
-    );
+    const { handleDashboardUsersAction } =
+      await import("../../app/features/dashboard/users/dashboard-users.server");
 
     const request = new Request("http://localhost:3000/dashboard/users", {
       body: new URLSearchParams({
@@ -263,9 +259,8 @@ describe("dashboard users server", () => {
   });
 
   it("deactivates users instead of deleting them", async () => {
-    const { handleDashboardUsersAction } = await import(
-      "../../app/features/dashboard/users/dashboard-users.server"
-    );
+    const { handleDashboardUsersAction } =
+      await import("../../app/features/dashboard/users/dashboard-users.server");
 
     const request = new Request("http://localhost:3000/dashboard/users", {
       body: new URLSearchParams({
@@ -301,9 +296,8 @@ describe("dashboard users server", () => {
   });
 
   it("blocks deactivating the last active admin", async () => {
-    const { handleDashboardUsersAction } = await import(
-      "../../app/features/dashboard/users/dashboard-users.server"
-    );
+    const { handleDashboardUsersAction } =
+      await import("../../app/features/dashboard/users/dashboard-users.server");
 
     const request = new Request("http://localhost:3000/dashboard/users", {
       body: new URLSearchParams({
@@ -345,9 +339,8 @@ describe("dashboard users server", () => {
   });
 
   it("blocks demoting the last active admin to author", async () => {
-    const { handleDashboardUsersAction } = await import(
-      "../../app/features/dashboard/users/dashboard-users.server"
-    );
+    const { handleDashboardUsersAction } =
+      await import("../../app/features/dashboard/users/dashboard-users.server");
 
     const request = new Request("http://localhost:3000/dashboard/users", {
       body: new URLSearchParams({

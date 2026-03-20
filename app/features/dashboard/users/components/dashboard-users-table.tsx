@@ -5,10 +5,7 @@ import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
-import {
-  USER_FORM_FIELD,
-  USER_MUTATION_INTENT,
-} from "~/features/users/user.shared";
+import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/features/users/user.shared";
 import type { UserOverview } from "~/lib/users/users.server";
 
 import { DASHBOARD_USERS_COPY } from "../dashboard-users.constants";
@@ -47,11 +44,7 @@ export function DashboardUsersTable({ users }: DashboardUsersTableProps) {
         <DashboardStatusBadge
           label={`${formatDashboardUserRole(user.role)} / ${user.isActive ? "ACTIVE" : "INACTIVE"}`}
           tone={
-            !user.isActive
-              ? "danger"
-              : user.role === "admin"
-                ? "warning"
-                : "neutral"
+            !user.isActive ? "danger" : user.role === "admin" ? "warning" : "neutral"
           }
         />
       ),
@@ -92,11 +85,7 @@ export function DashboardUsersTable({ users }: DashboardUsersTableProps) {
               name={USER_FORM_FIELD.intent}
               value={USER_MUTATION_INTENT.delete}
             />
-            <input
-              type="hidden"
-              name={USER_FORM_FIELD.userId}
-              value={user.id}
-            />
+            <input type="hidden" name={USER_FORM_FIELD.userId} value={user.id} />
             <Button
               type="submit"
               variant="destructive"

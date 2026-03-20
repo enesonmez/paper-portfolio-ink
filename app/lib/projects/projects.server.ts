@@ -2,10 +2,7 @@ import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { projects } from "../../../db/schema";
-import {
-  PROJECT_STATUS,
-  type ProjectStatus,
-} from "~/features/projects/project.shared";
+import { PROJECT_STATUS, type ProjectStatus } from "~/features/projects/project.shared";
 import { findNextAvailableSlug, suggestSlugFromTitle } from "~/lib/slug";
 
 import type { ProjectSubmission } from "./project-form.server";
@@ -142,10 +139,7 @@ export async function listPublicFeaturedProjects(
     })
     .from(projects)
     .where(
-      and(
-        eq(projects.isFeatured, true),
-        eq(projects.status, PROJECT_STATUS.published),
-      ),
+      and(eq(projects.isFeatured, true), eq(projects.status, PROJECT_STATUS.published)),
     )
     .orderBy(asc(projects.sortOrder), desc(projects.createdAt));
 
@@ -208,15 +202,11 @@ export async function listPublicProjectsPage(
   };
 }
 
-export async function getPublicProjectsStats(
-  db: AppDb,
-): Promise<PublicProjectsStats> {
+export async function getPublicProjectsStats(db: AppDb): Promise<PublicProjectsStats> {
   const [result] = await db
     .select({
-      featuredCount:
-        sql<number>`sum(case when ${projects.isFeatured} = 1 then 1 else 0 end)`,
-      liveCount:
-        sql<number>`sum(case when ${projects.liveUrl} is not null and ${projects.liveUrl} <> '' then 1 else 0 end)`,
+      featuredCount: sql<number>`sum(case when ${projects.isFeatured} = 1 then 1 else 0 end)`,
+      liveCount: sql<number>`sum(case when ${projects.liveUrl} is not null and ${projects.liveUrl} <> '' then 1 else 0 end)`,
       totalCount: sql<number>`count(*)`,
     })
     .from(projects)

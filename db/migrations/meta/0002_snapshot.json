@@ -104,17 +104,12 @@
       "indexes": {
         "accounts_provider_account_unique": {
           "name": "accounts_provider_account_unique",
-          "columns": [
-            "provider_id",
-            "account_id"
-          ],
+          "columns": ["provider_id", "account_id"],
           "isUnique": true
         },
         "accounts_user_id_idx": {
           "name": "accounts_user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -123,12 +118,8 @@
           "name": "accounts_user_id_users_id_fk",
           "tableFrom": "accounts",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -224,24 +215,17 @@
       "indexes": {
         "posts_slug_unique": {
           "name": "posts_slug_unique",
-          "columns": [
-            "slug"
-          ],
+          "columns": ["slug"],
           "isUnique": true
         },
         "posts_author_id_idx": {
           "name": "posts_author_id_idx",
-          "columns": [
-            "author_id"
-          ],
+          "columns": ["author_id"],
           "isUnique": false
         },
         "posts_status_published_at_idx": {
           "name": "posts_status_published_at_idx",
-          "columns": [
-            "status",
-            "published_at"
-          ],
+          "columns": ["status", "published_at"],
           "isUnique": false
         }
       },
@@ -250,12 +234,8 @@
           "name": "posts_author_id_users_id_fk",
           "tableFrom": "posts",
           "tableTo": "users",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -367,24 +347,17 @@
       "indexes": {
         "projects_slug_unique": {
           "name": "projects_slug_unique",
-          "columns": [
-            "slug"
-          ],
+          "columns": ["slug"],
           "isUnique": true
         },
         "projects_status_idx": {
           "name": "projects_status_idx",
-          "columns": [
-            "status"
-          ],
+          "columns": ["status"],
           "isUnique": false
         },
         "projects_featured_sort_order_idx": {
           "name": "projects_featured_sort_order_idx",
-          "columns": [
-            "is_featured",
-            "sort_order"
-          ],
+          "columns": ["is_featured", "sort_order"],
           "isUnique": false
         }
       },
@@ -458,17 +431,12 @@
       "indexes": {
         "sessions_token_unique": {
           "name": "sessions_token_unique",
-          "columns": [
-            "token"
-          ],
+          "columns": ["token"],
           "isUnique": true
         },
         "sessions_user_id_expires_at_idx": {
           "name": "sessions_user_id_expires_at_idx",
-          "columns": [
-            "user_id",
-            "expires_at"
-          ],
+          "columns": ["user_id", "expires_at"],
           "isUnique": false
         }
       },
@@ -477,12 +445,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -573,16 +537,12 @@
       "indexes": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         },
         "users_role_idx": {
           "name": "users_role_idx",
-          "columns": [
-            "role"
-          ],
+          "columns": ["role"],
           "isUnique": false
         }
       },
@@ -642,10 +602,7 @@
       "indexes": {
         "verifications_identifier_value_unique": {
           "name": "verifications_identifier_value_unique",
-          "columns": [
-            "identifier",
-            "value"
-          ],
+          "columns": ["identifier", "value"],
           "isUnique": true
         }
       },

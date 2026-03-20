@@ -43,12 +43,9 @@ export const DASHBOARD_USERS_FORM_COPY = {
     createDuplicateEmail: "Bu e-posta adresi zaten kullanimda.",
     deactivateMissingUser: "Pasiflestirilecek kullanici bulunamadi.",
     forbidden: "Bu flow'a erişim yetkiniz yoktur.",
-    lastActiveAdminDeactivate:
-      "Son aktif admin hesabi pasiflestirilemez.",
-    lastActiveAdminDemotion:
-      "Son aktif admin hesabi author rolune dusurulemez.",
-    lastActiveAdminDelete:
-      "Son aktif admin hesabi kaldirilamaz.",
+    lastActiveAdminDeactivate: "Son aktif admin hesabi pasiflestirilemez.",
+    lastActiveAdminDemotion: "Son aktif admin hesabi author rolune dusurulemez.",
+    lastActiveAdminDelete: "Son aktif admin hesabi kaldirilamaz.",
     updateDuplicateEmail: "Bu e-posta adresi baska bir kullaniciya ait.",
     updateMissingUser: "Guncellenecek kullanici bulunamadi.",
   },

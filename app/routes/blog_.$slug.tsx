@@ -1,16 +1,14 @@
-import {
-  isRouteErrorResponse,
-  useLoaderData,
-  useRouteError,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "react-router";
+import { useLoaderData, useRouteError } from "react-router";
+import type { Route } from "./+types/blog_.$slug";
 
 import { PublicBlogPostScreen } from "~/features/public/blog/public-blog-post-screen";
-import { loadPublicBlogPostData } from "~/features/public/blog/public-blog.server";
+import {
+  loadPublicBlogPostData,
+  PublicBlogPostNotFoundError,
+} from "~/features/public/blog/public-blog.server";
 import { siteConfig } from "~/lib/site";
 
-export const meta: MetaFunction<typeof loader> = ({ data, location }) => {
+export const meta: Route.MetaFunction = ({ data, location }) => {
   if (!data) {
     return [{ title: "Blog Post | Enes Ink" }];
   }
@@ -59,11 +57,11 @@ export const meta: MetaFunction<typeof loader> = ({ data, location }) => {
   return descriptors;
 };
 
-export async function loader({ context, params }: LoaderFunctionArgs) {
+export async function loader({ context, params }: Route.LoaderArgs) {
   const slug = params.slug;
 
   if (!slug) {
-    throw new Response("Not Found", { status: 404 });
+    throw new PublicBlogPostNotFoundError();
   }
 
   return loadPublicBlogPostData(context, slug);
@@ -80,7 +78,7 @@ export default function BlogPostPage() {
 export function ErrorBoundary() {
   const error = useRouteError();
 
-  if (isRouteErrorResponse(error) && error.status === 404) {
+  if (error instanceof PublicBlogPostNotFoundError) {
     return (
       <main className="mx-auto grid min-h-[70vh] max-w-4xl px-4 py-12 md:px-8 md:py-16">
         <section className="bg-card grid content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
@@ -99,5 +97,9 @@ export function ErrorBoundary() {
     );
   }
 
-  throw error;
+  if (error instanceof Error) {
+    throw error;
+  }
+
+  throw new Error("Unknown blog route error");
 }

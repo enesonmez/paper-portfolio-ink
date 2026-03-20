@@ -3,7 +3,7 @@ export function LoginBackground() {
     <>
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg[radial-gradient(var(--color-border)_0.6px,transparent_0.6px)] bg-size[20px_20px] opacity-[0.06] dark:opacity-[0.04]"
+        className="bg[radial-gradient(var(--color-border)_0.6px,transparent_0.6px)] bg-size[20px_20px] pointer-events-none absolute inset-0 opacity-[0.06] dark:opacity-[0.04]"
       />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="dark:border-primary absolute top-8 left-6 h-24 w-24 rotate-12 border-4 border-black md:top-12 md:left-10 md:h-32 md:w-32" />

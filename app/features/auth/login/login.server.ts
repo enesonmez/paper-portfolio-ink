@@ -28,10 +28,7 @@ export async function loadLoginData(
   };
 }
 
-export async function handleLoginAction(
-  request: Request,
-  context: AppLoadContext,
-) {
+export async function handleLoginAction(request: Request, context: AppLoadContext) {
   const formData = await request.formData();
   const submission = parseLoginFormData(formData);
 

@@ -61,7 +61,6 @@ export function DashboardPostsScreen({
 
         <DashboardPostsTable posts={posts} />
       </section>
-
     </div>
   );
 }

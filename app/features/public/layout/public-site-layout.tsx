@@ -9,10 +9,7 @@ interface PublicSiteLayoutProps {
   theme: PublicTheme;
 }
 
-export function PublicSiteLayout({
-  children,
-  theme,
-}: PublicSiteLayoutProps) {
+export function PublicSiteLayout({ children, theme }: PublicSiteLayoutProps) {
   return (
     <div id="top" className="relative flex min-h-screen flex-col overflow-x-hidden">
       <div

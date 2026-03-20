@@ -42,9 +42,8 @@ describe("logout server helper", () => {
         "set-cookie": "better-auth.session_token=; Path=/; HttpOnly",
       },
     });
-    const { performLogout } = await import(
-      "../../app/features/auth/logout/logout.server"
-    );
+    const { performLogout } =
+      await import("../../app/features/auth/logout/logout.server");
 
     createAuthMock.mockReturnValue({
       api: {
@@ -68,16 +67,13 @@ describe("logout server helper", () => {
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toBe("/login");
-    expect(response.headers.get("set-cookie")).toContain(
-      "better-auth.session_token=",
-    );
+    expect(response.headers.get("set-cookie")).toContain("better-auth.session_token=");
   });
 
   it("redirects GET requests for the logout route back to login", async () => {
     const request = new Request("http://localhost:3000/logout");
-    const { redirectLoggedOutUsers } = await import(
-      "../../app/features/auth/logout/logout.server"
-    );
+    const { redirectLoggedOutUsers } =
+      await import("../../app/features/auth/logout/logout.server");
 
     const response = redirectLoggedOutUsers(request);
 

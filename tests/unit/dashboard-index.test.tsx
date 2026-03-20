@@ -25,9 +25,10 @@ describe("dashboard index route", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Manage Content" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "Create New Post" }),
-    ).toHaveAttribute("href", "/dashboard/posts?modal=create");
+    expect(screen.getByRole("link", { name: "Create New Post" })).toHaveAttribute(
+      "href",
+      "/dashboard/posts?modal=create",
+    );
     expect(screen.getByRole("heading", { level: 2, name: "Logs" })).toBeInTheDocument();
   });
 });

@@ -1,11 +1,4 @@
-import {
-  Cloud,
-  Database,
-  Feather,
-  Route,
-  ShieldCheck,
-  SquareCode,
-} from "lucide-react";
+import { Cloud, Database, Feather, Route, ShieldCheck, SquareCode } from "lucide-react";
 
 import {
   PUBLIC_HOME_COPY,
@@ -24,11 +17,11 @@ const TECH_STACK_ICONS = {
 
 export function PublicHomeTechStack() {
   return (
-    <section className="border-y-2 border-black bg-card py-16 md:py-20">
+    <section className="bg-card border-y-2 border-black py-16 md:py-20">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 md:px-8 lg:px-12">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="grid gap-3">
-            <p className="text-muted-foreground text-xs font-bold uppercase tracking-[0.18em]">
+            <p className="text-muted-foreground text-xs font-bold tracking-[0.18em] uppercase">
               {PUBLIC_HOME_COPY.techEyebrow}: {PUBLIC_HOME_TECH_STACK.length}
             </p>
             <h2 className="font-display text-5xl uppercase md:text-6xl">
@@ -50,7 +43,7 @@ export function PublicHomeTechStack() {
                 key={item.title}
                 className={`${PUBLIC_HOME_SURFACE_CLASSNAME} grid gap-5 p-6 transition-transform hover:-translate-y-1`}
               >
-                <span className="flex size-16 items-center justify-center border-2 border-black bg-primary text-black">
+                <span className="bg-primary flex size-16 items-center justify-center border-2 border-black text-black">
                   <Icon className="size-8" aria-hidden="true" />
                 </span>
                 <div className="grid gap-3">

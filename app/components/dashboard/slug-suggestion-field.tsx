@@ -86,12 +86,14 @@ export function SlugSuggestionField({
         <Button
           type="button"
           variant="secondary"
-          className="h-auto max-w-full min-w-0 justify-start whitespace-normal break-all text-left tracking-[0.08em]"
+          className="h-auto max-w-full min-w-0 justify-start text-left tracking-[0.08em] break-all whitespace-normal"
           onClick={() => {
             setSlugValue(nextSuggestion);
           }}
         >
-          <span>Use suggested slug: <span className="lowercase" >{nextSuggestion}</span></span>
+          <span>
+            Use suggested slug: <span className="lowercase">{nextSuggestion}</span>
+          </span>
         </Button>
       ) : null}
     </div>

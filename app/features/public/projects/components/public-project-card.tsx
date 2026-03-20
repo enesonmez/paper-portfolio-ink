@@ -2,9 +2,7 @@ import { ArrowUpRight, Globe, Github } from "lucide-react";
 
 import type { PublicProjectCard as PublicProjectCardData } from "~/lib/projects/projects.server";
 
-import {
-  PUBLIC_PROJECTS_COPY,
-} from "../public-projects.shared";
+import { PUBLIC_PROJECTS_COPY } from "../public-projects.shared";
 
 interface PublicProjectCardProps {
   project: PublicProjectCardData;
@@ -12,9 +10,9 @@ interface PublicProjectCardProps {
 
 export function PublicProjectCard({ project }: PublicProjectCardProps) {
   return (
-    <article className="grid gap-5 border-2 border-black bg-card p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-1 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)] md:p-6">
+    <article className="bg-card grid gap-5 border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-1 md:p-6 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
       {project.coverImageUrl ? (
-        <div className="relative aspect-4/3 overflow-hidden border-2 border-black bg-primary">
+        <div className="bg-primary relative aspect-4/3 overflow-hidden border-2 border-black">
           <img
             alt={`${project.title} cover`}
             className="h-full w-full object-cover"
@@ -22,18 +20,18 @@ export function PublicProjectCard({ project }: PublicProjectCardProps) {
             src={project.coverImageUrl}
           />
           {project.isFeatured ? (
-            <span className="absolute left-3 top-3 border-2 border-black bg-primary px-2 py-1 text-[10px] font-bold uppercase text-black">
+            <span className="bg-primary absolute top-3 left-3 border-2 border-black px-2 py-1 text-[10px] font-bold text-black uppercase">
               {PUBLIC_PROJECTS_COPY.featuredBadge}
             </span>
           ) : null}
         </div>
       ) : (
-        <div className="grid min-h-52 place-items-center border-2 border-black bg-primary/55 p-6 text-center">
+        <div className="bg-primary/55 grid min-h-52 place-items-center border-2 border-black p-6 text-center">
           <div className="grid gap-2">
-            <span className="text-xs font-bold uppercase tracking-[0.18em]">
+            <span className="text-xs font-bold tracking-[0.18em] uppercase">
               {project.createdAtLabel}
             </span>
-            <p className="font-display text-4xl uppercase leading-none">
+            <p className="font-display text-4xl leading-none uppercase">
               {project.title}
             </p>
           </div>
@@ -42,21 +40,19 @@ export function PublicProjectCard({ project }: PublicProjectCardProps) {
 
       <div className="grid gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="text-muted-foreground text-[11px] font-bold uppercase tracking-[0.18em]">
+          <span className="text-muted-foreground text-[11px] font-bold tracking-[0.18em] uppercase">
             {project.createdAtLabel}
           </span>
-          <span className="border-2 border-black bg-background px-2 py-1 text-[10px] font-bold uppercase">
+          <span className="bg-background border-2 border-black px-2 py-1 text-[10px] font-bold uppercase">
             {project.slug}
           </span>
         </div>
 
         <div className="grid gap-3">
-          <h2 className="font-display text-5xl uppercase leading-[0.92]">
+          <h2 className="font-display text-5xl leading-[0.92] uppercase">
             {project.title}
           </h2>
-          <p className="text-muted-foreground text-sm leading-7">
-            {project.summary}
-          </p>
+          <p className="text-muted-foreground text-sm leading-7">{project.summary}</p>
           {project.description ? (
             <p className="border-l-4 border-black pl-4 text-sm leading-7">
               {project.description}

@@ -12,16 +12,16 @@ function resolveSessionUser(input: unknown): SessionUserRecord | null {
   if ("user" in input) {
     const user = (input as { user?: unknown }).user;
 
-    return typeof user === "object" && user !== null ? (user as SessionUserRecord) : null;
+    return typeof user === "object" && user !== null
+      ? (user as SessionUserRecord)
+      : null;
   }
 
   return input as SessionUserRecord;
 }
 
 function readString(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : null;
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }
 
 export function getSessionUserId(input: unknown) {

@@ -56,11 +56,15 @@ describe("dashboard users route", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("heading", { level: 1, name: "User Registry" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 1, name: "User Registry" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Admin Seats")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Create New User" })).toBeInTheDocument();
     expect(screen.getByText("admin@example.com")).toBeInTheDocument();
-    expect(screen.queryByRole("dialog", { name: "Create User" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("dialog", { name: "Create User" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders a modal form when user creation is requested", async () => {
@@ -95,13 +99,14 @@ describe("dashboard users route", () => {
   });
 
   it("renders the restricted access warning for non-admin viewers", async () => {
-    const { DashboardUsersAccessDeniedScreen } = await import(
-      "../../app/routes/dashboard.users"
-    );
+    const { DashboardUsersAccessDeniedScreen } =
+      await import("../../app/routes/dashboard.users");
 
     render(<DashboardUsersAccessDeniedScreen viewerRole="author" />);
 
-    expect(screen.getByRole("heading", { level: 1, name: "Restricted Flow" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Restricted Flow" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Bu flow'a erişim yetkiniz yoktur.")).toBeInTheDocument();
     expect(screen.getByText("Current role: author")).toBeInTheDocument();
   });

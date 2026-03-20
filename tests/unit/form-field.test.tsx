@@ -34,8 +34,6 @@ describe("form field primitives", () => {
     );
 
     expect(screen.getByLabelText("Status")).toHaveValue("draft");
-    expect(screen.getByRole("option", { name: "Published" })).toHaveValue(
-      "published",
-    );
+    expect(screen.getByRole("option", { name: "Published" })).toHaveValue("published");
   });
 });

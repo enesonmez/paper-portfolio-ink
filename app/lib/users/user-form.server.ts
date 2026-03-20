@@ -14,15 +14,8 @@ import {
 } from "~/features/users/user.shared";
 
 const userFormSchema = z.object({
-  avatarUrl: z
-    .string()
-    .trim()
-    .url("Gecerli bir avatar URL gir.")
-    .or(z.literal("")),
-  bio: z
-    .string()
-    .trim()
-    .max(500, "Biyografi en fazla 500 karakter olabilir."),
+  avatarUrl: z.string().trim().url("Gecerli bir avatar URL gir.").or(z.literal("")),
+  bio: z.string().trim().max(500, "Biyografi en fazla 500 karakter olabilir."),
   displayName: z
     .string()
     .trim()
@@ -52,10 +45,7 @@ function readStringField(formData: FormData, field: string) {
   return typeof value === "string" ? value : "";
 }
 
-function buildPasswordError(
-  intent: UserMutationIntent,
-  password: string,
-) {
+function buildPasswordError(intent: UserMutationIntent, password: string) {
   if (intent === USER_MUTATION_INTENT.create && password.length < 8) {
     return "Parola en az 8 karakter olmali.";
   }

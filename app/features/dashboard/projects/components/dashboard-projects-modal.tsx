@@ -4,7 +4,12 @@ import { Form, Link } from "react-router";
 import { DashboardModal } from "~/components/dashboard/modal";
 import { SlugSuggestionField } from "~/components/dashboard/slug-suggestion-field";
 import { Button } from "~/components/ui/button";
-import { FormError, SelectField, TextField, TextareaField } from "~/components/ui/form-field";
+import {
+  FormError,
+  SelectField,
+  TextField,
+  TextareaField,
+} from "~/components/ui/form-field";
 import {
   PROJECT_FORM_FIELD,
   PROJECT_MUTATION_INTENT,
@@ -24,9 +29,7 @@ interface DashboardProjectsModalProps {
   form: DashboardProjectsFormState;
 }
 
-export function DashboardProjectsModalView({
-  form,
-}: DashboardProjectsModalProps) {
+export function DashboardProjectsModalView({ form }: DashboardProjectsModalProps) {
   if (!form.isOpen || !form.mode) {
     return null;
   }

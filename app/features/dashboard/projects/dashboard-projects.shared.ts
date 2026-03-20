@@ -62,9 +62,7 @@ function toProjectFormValues(project: ProjectOverview): ProjectFormValues {
   });
 }
 
-export function buildDashboardProjectsHref(
-  params: DashboardProjectsHrefParams = {},
-) {
+export function buildDashboardProjectsHref(params: DashboardProjectsHrefParams = {}) {
   const searchParams = new URLSearchParams();
 
   if (params.modal) {

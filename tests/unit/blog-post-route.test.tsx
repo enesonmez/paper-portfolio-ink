@@ -115,7 +115,7 @@ describe("blog detail route", () => {
           state: null,
           unstable_mask: undefined,
         },
-        matches: [],
+        matches: [] as never,
         params: {
           slug: post.slug,
         },
@@ -154,7 +154,7 @@ describe("blog detail route", () => {
           state: null,
           unstable_mask: undefined,
         },
-        matches: [],
+        matches: [] as never,
         params: {
           slug: "missing-story",
         },

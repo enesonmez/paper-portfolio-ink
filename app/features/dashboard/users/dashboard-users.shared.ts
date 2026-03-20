@@ -65,9 +65,7 @@ function toUserFormValues(user: UserOverview): UserFormValues {
   });
 }
 
-export function buildDashboardUsersHref(
-  params: DashboardUsersHrefParams = {},
-) {
+export function buildDashboardUsersHref(params: DashboardUsersHrefParams = {}) {
   const searchParams = new URLSearchParams();
 
   if (params.modal) {
@@ -116,9 +114,7 @@ export function resolveDashboardUsersForm({
     editingUserId: editingUser?.id ?? null,
     isOpen: mode !== null,
     mode,
-    values: editingUser
-      ? toUserFormValues(editingUser)
-      : buildUserFormValues(),
+    values: editingUser ? toUserFormValues(editingUser) : buildUserFormValues(),
   };
 }
 

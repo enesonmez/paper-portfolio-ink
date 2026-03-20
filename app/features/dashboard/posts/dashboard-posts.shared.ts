@@ -62,9 +62,7 @@ function toPostFormValues(post: PostOverview): PostFormValues {
   });
 }
 
-export function buildDashboardPostsHref(
-  params: DashboardPostsHrefParams = {},
-) {
+export function buildDashboardPostsHref(params: DashboardPostsHrefParams = {}) {
   const searchParams = new URLSearchParams();
 
   if (params.modal) {
@@ -79,10 +77,7 @@ export function buildDashboardPostsHref(
     params.presentation &&
     params.presentation !== DASHBOARD_POSTS_PRESENTATION.modal
   ) {
-    searchParams.set(
-      DASHBOARD_POSTS_QUERY_PARAM.presentation,
-      params.presentation,
-    );
+    searchParams.set(DASHBOARD_POSTS_QUERY_PARAM.presentation, params.presentation);
   }
 
   const search = searchParams.toString();
@@ -139,9 +134,7 @@ export function resolveDashboardPostsForm({
         ? DASHBOARD_POSTS_PRESENTATION.fullscreen
         : DASHBOARD_POSTS_PRESENTATION.modal,
     slugSuggestion: null,
-    values: editingPost
-      ? toPostFormValues(editingPost)
-      : buildPostFormValues(),
+    values: editingPost ? toPostFormValues(editingPost) : buildPostFormValues(),
   };
 }
 

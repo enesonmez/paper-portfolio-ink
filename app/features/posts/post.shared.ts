@@ -74,5 +74,6 @@ export const DASHBOARD_POSTS_PRESENTATION = {
   modal: "modal",
 } as const;
 
-export type DashboardPostsPresentationMode =
-  ValueOf<typeof DASHBOARD_POSTS_PRESENTATION>;
+export type DashboardPostsPresentationMode = ValueOf<
+  typeof DASHBOARD_POSTS_PRESENTATION
+>;

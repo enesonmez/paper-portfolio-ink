@@ -148,9 +148,9 @@ describe("public blog server", () => {
     await expect(
       loadPublicBlogPostData(context, "missing-story"),
     ).rejects.toMatchObject({
-      init: {
-        status: 404,
-      },
+      message: "Published blog post not found.",
+      name: "PublicBlogPostNotFoundError",
+      status: 404,
     });
   });
 });

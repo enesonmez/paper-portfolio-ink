@@ -8,14 +8,8 @@ import {
   buildUserFormValues,
   type UserFormState,
 } from "~/features/users/user-form.shared";
-import {
-  USER_FORM_FIELD,
-  USER_MUTATION_INTENT,
-} from "~/features/users/user.shared";
-import {
-  hasParsedUserData,
-  parseUserFormData,
-} from "~/lib/users/user-form.server";
+import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/features/users/user.shared";
+import { hasParsedUserData, parseUserFormData } from "~/lib/users/user-form.server";
 import {
   countActiveAdmins,
   createUser,
@@ -41,10 +35,7 @@ function readStringField(formData: FormData, field: string) {
   return typeof value === "string" ? value : "";
 }
 
-function buildDuplicateEmailState(
-  values: UserFormState["values"],
-  message: string,
-) {
+function buildDuplicateEmailState(values: UserFormState["values"], message: string) {
   return data<UserFormState>(
     {
       errors: {

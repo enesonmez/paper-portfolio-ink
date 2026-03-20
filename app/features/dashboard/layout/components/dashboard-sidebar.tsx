@@ -109,7 +109,7 @@ export function DashboardSidebar({
           <Button
             type="submit"
             variant="destructive"
-            className="flex w-full items-center justify-between px-4 py-3 tracking-[0.12em] cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            className="flex w-full cursor-pointer items-center justify-between px-4 py-3 tracking-[0.12em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
             aria-label={DASHBOARD_LAYOUT_COPY.logoutAriaLabel}
           >
             <span className="flex items-center gap-3">

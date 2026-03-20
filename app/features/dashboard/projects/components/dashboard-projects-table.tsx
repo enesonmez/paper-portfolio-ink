@@ -22,9 +22,7 @@ interface DashboardProjectsTableProps {
   projects: ProjectOverview[];
 }
 
-export function DashboardProjectsTable({
-  projects,
-}: DashboardProjectsTableProps) {
+export function DashboardProjectsTable({ projects }: DashboardProjectsTableProps) {
   const columns: DataTableColumn<ProjectOverview>[] = [
     {
       cellClassName: "align-top",
@@ -42,10 +40,7 @@ export function DashboardProjectsTable({
                 tone="warning"
               />
             ) : null}
-            <DashboardStatusBadge
-              label={`Sort ${project.sortOrder}`}
-              tone="neutral"
-            />
+            <DashboardStatusBadge label={`Sort ${project.sortOrder}`} tone="neutral" />
           </div>
         </div>
       ),

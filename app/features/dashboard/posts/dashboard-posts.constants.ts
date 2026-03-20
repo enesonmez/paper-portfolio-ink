@@ -5,8 +5,7 @@ export const DASHBOARD_POSTS_COPY = {
   composeEyebrow: "Draft / Saved locally",
   createTitle: "Create Post",
   editActionLabel: "Update Post",
-  editDescription:
-    "Mevcut hikayenin govdesini, yayin tarihini ve durumunu guncelle.",
+  editDescription: "Mevcut hikayenin govdesini, yayin tarihini ve durumunu guncelle.",
   editTitle: "Edit Post",
   emptyState: "Henüz post yok. Ilk hikayeni ekle.",
   inventoryEyebrow: "Publishing Pipeline",
@@ -45,8 +44,7 @@ export const DASHBOARD_POSTS_FORM_COPY = {
     placeholder: "Yazinin liste ekraninda gosterilecek kisa ozeti.",
   },
   fullscreenTitlePlaceholder: "Tell your story...",
-  heroHelper:
-    "Minimal yazim akisini koruyup yayin metadata'sini sag panelde yonet.",
+  heroHelper: "Minimal yazim akisini koruyup yayin metadata'sini sag panelde yonet.",
   publishedAt: {
     label: "Published On",
   },

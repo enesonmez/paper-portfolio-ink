@@ -41,7 +41,9 @@ describe("HomePage", () => {
       screen.getByRole("heading", { level: 2, name: "Featured Projects" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Paper Enes Ink")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 2, name: "Tech Stack" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Tech Stack" }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { level: 2, name: "Resume Snapshot" }),
     ).toBeInTheDocument();
@@ -57,6 +59,8 @@ describe("HomePage", () => {
     expect(
       screen.queryByRole("heading", { level: 2, name: "Featured Projects" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 2, name: "Tech Stack" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Tech Stack" }),
+    ).toBeInTheDocument();
   });
 });

@@ -26,9 +26,8 @@ describe("public home server", () => {
 
     listPublicFeaturedProjectsMock.mockResolvedValue(featuredProjects);
 
-    const { loadPublicHomeData } = await import(
-      "../../app/features/public/home/public-home.server"
-    );
+    const { loadPublicHomeData } =
+      await import("../../app/features/public/home/public-home.server");
 
     await expect(
       loadPublicHomeData({ db } as unknown as AppLoadContext),

@@ -29,7 +29,9 @@ describe("data table primitive", () => {
 
     const table = screen.getByRole("table");
 
-    expect(within(table).getByRole("columnheader", { name: "Name" })).toBeInTheDocument();
+    expect(
+      within(table).getByRole("columnheader", { name: "Name" }),
+    ).toBeInTheDocument();
     expect(within(table).getByText("Enes")).toBeInTheDocument();
     expect(within(table).getByText("Editor")).toBeInTheDocument();
   });

@@ -1,4 +1,4 @@
-import { data, type AppLoadContext } from "react-router";
+import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
 import {
@@ -8,6 +8,15 @@ import {
 } from "~/lib/posts/posts.server";
 
 import { normalizePublicBlogPage, PUBLIC_BLOG_PAGE_SIZE } from "./public-blog.shared";
+
+export class PublicBlogPostNotFoundError extends Error {
+  readonly status = 404;
+
+  constructor() {
+    super("Published blog post not found.");
+    this.name = "PublicBlogPostNotFoundError";
+  }
+}
 
 export async function loadPublicBlogData(context: AppLoadContext, _request: Request) {
   const db = getDbFromContext(context);
@@ -40,14 +49,7 @@ export async function loadPublicBlogPostData(context: AppLoadContext, slug: stri
   const post = await getPublicPostBySlug(db, slug);
 
   if (!post) {
-    throw data(
-      {
-        message: "Published blog post not found.",
-      },
-      {
-        status: 404,
-      },
-    );
+    throw new PublicBlogPostNotFoundError();
   }
 
   const morePosts = await listPublicCompanionPosts(db, slug, 3);
