@@ -18,6 +18,8 @@ export interface PostContentDocument {
   type: "doc";
 }
 
+const SAFE_POST_LINK_PROTOCOLS = new Set(["http:", "https:", "mailto:"]);
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -63,14 +65,16 @@ function isPostContentNode(value: unknown): value is PostContentNode {
 
   if (
     value.content !== undefined &&
-    (!Array.isArray(value.content) || !value.content.every((node) => isPostContentNode(node)))
+    (!Array.isArray(value.content) ||
+      !value.content.every((node) => isPostContentNode(node)))
   ) {
     return false;
   }
 
   if (
     value.marks !== undefined &&
-    (!Array.isArray(value.marks) || !value.marks.every((mark) => isPostContentMark(mark)))
+    (!Array.isArray(value.marks) ||
+      !value.marks.every((mark) => isPostContentMark(mark)))
   ) {
     return false;
   }
@@ -142,9 +146,7 @@ export function serializePostContent(document: PostContentDocument): string {
   return JSON.stringify(document);
 }
 
-export function parsePostContentDocument(
-  content: string,
-): PostContentDocument | null {
+export function parsePostContentDocument(content: string): PostContentDocument | null {
   const trimmedContent = content.trim();
 
   if (trimmedContent.length === 0) {
@@ -198,4 +200,24 @@ export function getPostContentCharacterCount(content: string): number {
 
 export function getDefaultPostContentValue(): string {
   return serializePostContent(createEmptyPostContentDocument());
+}
+
+export function sanitizePostLinkHref(href: string): string | null {
+  const normalizedHref = href.trim();
+
+  if (normalizedHref.length === 0) {
+    return null;
+  }
+
+  try {
+    const parsedUrl = new URL(normalizedHref);
+
+    if (!SAFE_POST_LINK_PROTOCOLS.has(parsedUrl.protocol)) {
+      return null;
+    }
+
+    return normalizedHref;
+  } catch {
+    return null;
+  }
 }

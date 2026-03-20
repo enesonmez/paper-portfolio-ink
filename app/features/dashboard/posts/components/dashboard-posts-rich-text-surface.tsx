@@ -23,6 +23,7 @@ import type { DashboardPostsRichTextSurfaceProps } from "./dashboard-posts-edito
 import {
   coercePostContentDocument,
   normalizePostContentValue,
+  sanitizePostLinkHref,
 } from "~/features/posts/post-content.shared";
 import { DASHBOARD_POSTS_FORM_COPY } from "../dashboard-posts.constants";
 import { cn } from "~/lib/utils";
@@ -46,9 +47,9 @@ function ToolbarButton({
       type={type}
       className={cn(
         "inline-flex size-10 items-center justify-center border-2 border-transparent bg-transparent text-stone-700 transition-colors",
-        "hover:border-black hover:bg-primary hover:text-stone-950 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-destructive focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "hover:bg-primary focus-visible:ring-destructive focus-visible:ring-offset-background hover:border-black hover:text-stone-950 focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:outline-none",
         "disabled:cursor-not-allowed disabled:opacity-40",
-        active ? "border-black bg-primary text-stone-950" : "",
+        active ? "bg-primary border-black text-stone-950" : "",
         className,
       )}
       {...props}
@@ -56,9 +57,7 @@ function ToolbarButton({
   );
 }
 
-function DashboardPostsEditorToolbar({
-  editor,
-}: DashboardPostsToolbarProps) {
+function DashboardPostsEditorToolbar({ editor }: DashboardPostsToolbarProps) {
   const editorState = useEditorState({
     editor,
     selector: ({ editor: currentEditor }) => ({
@@ -105,12 +104,20 @@ function DashboardPostsEditorToolbar({
       return;
     }
 
+    const safeHref = sanitizePostLinkHref(normalizedHref);
+
+    if (!safeHref) {
+      activeEditor.chain().focus().extendMarkRange("link").unsetLink().run();
+
+      return;
+    }
+
     activeEditor
       .chain()
       .focus()
       .extendMarkRange("link")
       .setLink({
-        href: normalizedHref,
+        href: safeHref,
         rel: "noopener noreferrer nofollow",
         target: "_blank",
       })
@@ -257,10 +264,7 @@ function DashboardPostsEditorToolbar({
         >
           <Unlink className="size-4" aria-hidden="true" />
         </ToolbarButton>
-        <ToolbarButton
-          aria-label="Insert Image"
-          onClick={handleInsertImage}
-        >
+        <ToolbarButton aria-label="Insert Image" onClick={handleInsertImage}>
           <ImagePlus className="size-4" aria-hidden="true" />
         </ToolbarButton>
       </div>
@@ -343,7 +347,9 @@ export function DashboardPostsRichTextSurface({
       extensions: editorExtensions,
       immediatelyRender: true,
       onUpdate: ({ editor: currentEditor }) => {
-        setSerializedContent(normalizePostContentValue(JSON.stringify(currentEditor.getJSON())));
+        setSerializedContent(
+          normalizePostContentValue(JSON.stringify(currentEditor.getJSON())),
+        );
       },
     },
     [editorClassName, editorExtensions, initialContent, variant],
@@ -356,10 +362,13 @@ export function DashboardPostsRichTextSurface({
       {editor ? (
         <EditorContent
           editor={editor}
-          className={cn("px-6 py-6 md:px-8", variant === "fullscreen" ? "md:px-10" : "")}
+          className={cn(
+            "px-6 py-6 md:px-8",
+            variant === "fullscreen" ? "md:px-10" : "",
+          )}
         />
       ) : (
-        <div className="px-6 py-10 font-sans text-sm font-bold uppercase tracking-[0.18em] text-stone-500 dark:text-stone-400">
+        <div className="px-6 py-10 font-sans text-sm font-bold tracking-[0.18em] text-stone-500 uppercase dark:text-stone-400">
           {DASHBOARD_POSTS_FORM_COPY.editor.loadingLabel}
         </div>
       )}

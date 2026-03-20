@@ -1,13 +1,118 @@
 import { render, screen } from "@testing-library/react";
+import { createMemoryRouter, RouterProvider } from "react-router";
+import { afterEach, beforeEach, vi } from "vitest";
 
-import BlogPage from "../../app/routes/blog";
+import { PublicBlogScreen } from "../../app/features/public/blog/public-blog-screen";
+import { meta } from "../../app/routes/blog";
 
-describe("BlogPage", () => {
-  it("renders a stable placeholder page for the blog route", () => {
-    render(<BlogPage />);
+const posts = [
+  {
+    authorName: "Enes Sonmez",
+    coverImageUrl: "https://images.paper-portfolio-ink.dev/edge-observability.webp",
+    excerpt:
+      "Cloudflare edge runtime uzerinde izleme, log korelasyonu ve deploy ritmi icin notlar.",
+    publishedAtIso: "2026-03-18T10:00:00.000Z",
+    publishedAtLabel: "18 Mar 2026",
+    readingTimeMinutes: 6,
+    slug: "edge-observability-playbook",
+    title: "Edge Observability Playbook",
+  },
+  {
+    authorName: "Enes Sonmez",
+    coverImageUrl: null,
+    excerpt:
+      "D1 migration sirasinda bozulmayan bir release akisi kurmak icin izledigim adimlar.",
+    publishedAtIso: "2026-03-12T09:00:00.000Z",
+    publishedAtLabel: "12 Mar 2026",
+    readingTimeMinutes: 4,
+    slug: "zero-downtime-d1-migrations",
+    title: "Zero Downtime D1 Migrations",
+  },
+];
+
+describe("blog route", () => {
+  const intersectionObserverMock = vi.fn();
+
+  beforeEach(() => {
+    intersectionObserverMock.mockReset();
+    class IntersectionObserverMock {
+      constructor(callback: IntersectionObserverCallback) {
+        intersectionObserverMock(callback);
+      }
+
+      disconnect() {}
+
+      observe() {}
+
+      unobserve() {}
+    }
+
+    vi.stubGlobal("IntersectionObserver", IntersectionObserverMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("renders a lead story feed with sidebar sections", () => {
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/blog",
+          element: <PublicBlogScreen nextPage={2} posts={posts} />,
+        },
+      ],
+      {
+        initialEntries: ["/blog"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Yazilar yolda" }),
+      screen.getByRole("heading", { level: 1, name: "Field Notes From The Edge" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("link", { name: "Edge Observability Playbook" })[0],
+    ).toHaveAttribute("href", "/blog/edge-observability-playbook");
+    expect(screen.getByText("Notebook Index")).toBeInTheDocument();
+    expect(screen.getByText("Recent Topics")).toBeInTheDocument();
+    expect(screen.getByText("6 min read")).toBeInTheDocument();
+    expect(screen.getByText("Scroll to load more notes")).toBeInTheDocument();
+    expect(
+      screen.getByText("Automatic loading continues as you scroll down."),
+    ).toBeInTheDocument();
+  });
+
+  it("returns SEO metadata for the public blog index", () => {
+    expect(
+      meta({
+        data: undefined,
+        error: undefined,
+        loaderData: undefined,
+        location: {
+          hash: "",
+          key: "default",
+          pathname: "/blog",
+          search: "",
+          state: null,
+          unstable_mask: undefined,
+        },
+        matches: [],
+        params: {},
+      }),
+    ).toEqual(
+      expect.arrayContaining([
+        { title: "Blog | Enes Ink" },
+        {
+          name: "description",
+          content: "Edge-first teknik notlar, mimari denemeler ve uygulama gunlukleri.",
+        },
+        {
+          property: "og:title",
+          content: "Blog | Enes Ink",
+        },
+      ]),
+    );
   });
 });
