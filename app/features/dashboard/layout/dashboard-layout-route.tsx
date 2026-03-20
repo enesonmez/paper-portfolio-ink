@@ -24,6 +24,7 @@ export default function DashboardLayoutRoute() {
       <DashboardSidebar
         isSidebarOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
+        user={user}
       />
 
       <main className="flex min-w-0 flex-1 flex-col">

@@ -7,7 +7,7 @@ import {
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 
-type UserRole = "admin" | "author";
+export type UserRole = "admin" | "author";
 type PublishingStatus = "draft" | "published" | "archived";
 
 function createIdColumn() {
@@ -36,6 +36,7 @@ export const users = sqliteTable(
       .notNull()
       .default(false),
     displayName: text("display_name").notNull(),
+    isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
     role: text("role").$type<UserRole>().notNull().default("admin"),
     avatarUrl: text("avatar_url"),
     bio: text("bio"),
@@ -53,7 +54,7 @@ export const posts = sqliteTable(
     id: createIdColumn(),
     authorId: text("author_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "restrict" }),
     title: text("title").notNull(),
     slug: text("slug").notNull(),
     excerpt: text("excerpt"),

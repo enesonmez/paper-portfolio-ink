@@ -80,4 +80,41 @@ describe("requireSession", () => {
       status: 302,
     });
   });
+
+  it("returns a redirect response when the session user is inactive", async () => {
+    const request = new Request("http://localhost:3000/dashboard");
+    const { requireSession } = await import("../../app/lib/auth/session.server");
+
+    resolveAuthConfigMock.mockReturnValue({
+      secret: "test-secret",
+      baseURL: "http://localhost:3000",
+      trustedOrigins: ["http://localhost:3000"],
+    });
+    getSessionFromRequestMock.mockResolvedValue({
+      session: {
+        id: "session-1",
+        userId: "user-1",
+      },
+      user: {
+        id: "user-1",
+        email: "disabled@example.com",
+        isActive: false,
+      },
+    });
+
+    await expect(
+      requireSession(
+        request,
+        {
+          db: { query: {} },
+          runtime: { platform: "node" },
+        } as never,
+        {
+          redirectTo: "/login",
+        },
+      ),
+    ).resolves.toMatchObject({
+      status: 302,
+    });
+  });
 });

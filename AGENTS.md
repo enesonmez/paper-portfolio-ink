@@ -75,7 +75,7 @@ Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz a�
 - [x] Projeler için CRUD (Ekleme, Düzenleme, Silme, Listeleme) arayüzlerinin form validasyonları (Zod) ile yapılması.
 - [x] Blog yazıları için CRUD işlemleri ve içerik yazımı için Markdown / Rich Text Editor entegrasyonu.
 - [ ] Cloudflare R2 üzerinde görsel yükleme (Presigned URL veya Direct Upload) ve silme mekanizmasının kurulması.
-- [ ] Kullanıcılar için CRUD işlemlerinin yapılması.
+- [x] Kullanıcılar için CRUD işlemlerinin yapılması.
 - [x] Logout yapısının oluşturulması.
 
 ### Phase 5: Optimization & Launch (Optimizasyon ve Yayınlama)

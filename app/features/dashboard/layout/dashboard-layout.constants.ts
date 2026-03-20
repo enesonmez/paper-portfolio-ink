@@ -4,6 +4,7 @@ import {
   LogOut,
   Newspaper,
   Settings,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 
@@ -26,7 +27,7 @@ export type DashboardNavigationItem =
   | DashboardNavigationLinkItem
   | DashboardNavigationStaticItem;
 
-export const DASHBOARD_NAVIGATION: readonly DashboardNavigationItem[] = [
+const DASHBOARD_BASE_NAVIGATION: readonly DashboardNavigationItem[] = [
   {
     icon: LayoutDashboard,
     kind: "link",
@@ -48,6 +49,19 @@ export const DASHBOARD_NAVIGATION: readonly DashboardNavigationItem[] = [
     statusLabel: "Live",
     to: "/dashboard/projects",
   },
+];
+
+const DASHBOARD_ADMIN_NAVIGATION: readonly DashboardNavigationItem[] = [
+  {
+    icon: Users,
+    kind: "link",
+    label: "Users",
+    statusLabel: "Live",
+    to: "/dashboard/users",
+  },
+];
+
+const DASHBOARD_STATIC_NAVIGATION: readonly DashboardNavigationItem[] = [
   {
     icon: Settings,
     kind: "static",
@@ -55,6 +69,14 @@ export const DASHBOARD_NAVIGATION: readonly DashboardNavigationItem[] = [
     note: "Later",
   },
 ];
+
+export function getDashboardNavigation(role: string): DashboardNavigationItem[] {
+  return [
+    ...DASHBOARD_BASE_NAVIGATION,
+    ...(role === "admin" ? DASHBOARD_ADMIN_NAVIGATION : []),
+    ...DASHBOARD_STATIC_NAVIGATION,
+  ];
+}
 
 export const DASHBOARD_LAYOUT_COPY = {
   closeMenuAriaLabel: "Close navigation menu",

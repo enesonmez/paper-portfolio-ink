@@ -44,6 +44,7 @@ describe("dashboard layout", () => {
     ).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("link", { name: "Dashboard Live" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Posts Live" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Users Live" })).toBeInTheDocument();
     expect(screen.getByText("System Status: Logged In")).toBeInTheDocument();
     expect(screen.getByText("Enes Admin")).toBeInTheDocument();
     expect(
@@ -54,5 +55,39 @@ describe("dashboard layout", () => {
       .closest("form");
     expect(logoutForm).toHaveAttribute("action", "/logout");
     expect(screen.getByText("Child dashboard content")).toBeInTheDocument();
+  });
+
+  it("hides the users navigation link for non-admin roles", async () => {
+    const { default: DashboardLayout } = await import("../../app/routes/dashboard");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard",
+          loader: () => ({
+            user: {
+              displayName: "Ayla Author",
+              email: "author@paper-portfolio-ink.local",
+              role: "author",
+              initials: "AA",
+            },
+          }),
+          element: <DashboardLayout />,
+          children: [
+            {
+              index: true,
+              element: <section>Child dashboard content</section>,
+            },
+          ],
+        },
+      ],
+      {
+        initialEntries: ["/dashboard"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(screen.queryByRole("link", { name: "Users Live" })).not.toBeInTheDocument();
   });
 });

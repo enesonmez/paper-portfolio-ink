@@ -15,6 +15,7 @@ describe("dashboard layout shared helpers", () => {
     ).toEqual({
       displayName: "Enes Oz",
       email: "admin@paper-portfolio-ink.dev",
+      id: null,
       initials: "EO",
       role: "admin",
     });
@@ -28,6 +29,7 @@ describe("dashboard layout shared helpers", () => {
     expect(buildDashboardIdentity({})).toEqual({
       displayName: "Paper Enes Ink",
       email: "-",
+      id: null,
       initials: "PE",
       role: "-",
     });

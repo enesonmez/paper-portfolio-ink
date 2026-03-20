@@ -3,6 +3,7 @@ import { data, redirect, type AppLoadContext } from "react-router";
 import { z } from "zod";
 
 import type { LoginFormState } from "~/features/auth/login/login.shared";
+import { findUserByEmail } from "~/lib/users/users.server";
 
 import { resolveAuthConfig } from "./auth-config.server";
 import { createAuth } from "./auth.server";
@@ -160,6 +161,7 @@ function resolveLoginErrorMessage(status: number, code?: string, message?: strin
   if (
     status === 400 ||
     status === 401 ||
+    status === 403 ||
     status === 404 ||
     code === "USER_NOT_FOUND" ||
     code === "INVALID_EMAIL_OR_PASSWORD" ||
@@ -167,10 +169,6 @@ function resolveLoginErrorMessage(status: number, code?: string, message?: strin
     message === "User not found"
   ) {
     return "E-posta veya parola hatali.";
-  }
-
-  if (status === 403) {
-    return "Bu hesap su anda giris icin hazir degil.";
   }
 
   return "Giris su anda tamamlanamadi.";
@@ -182,6 +180,25 @@ export async function signInWithEmail({
   submission,
 }: SignInWithEmailOptions) {
   try {
+    const existingUser = await findUserByEmail(context.db, submission.email);
+
+    if (existingUser && !existingUser.isActive) {
+      return data<LoginFormState>(
+        {
+          errors: {
+            form: resolveLoginErrorMessage(403),
+          },
+          values: {
+            email: submission.email,
+            redirectTo: submission.redirectTo,
+          },
+        },
+        {
+          status: 403,
+        },
+      );
+    }
+
     const auth = createAuth({
       db: context.db,
       ...resolveAuthConfig(request, context.auth),

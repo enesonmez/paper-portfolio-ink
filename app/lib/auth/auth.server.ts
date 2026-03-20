@@ -28,6 +28,11 @@ export function createAuth({ db, secret, baseURL, trustedOrigins }: CreateAuthOp
         image: "avatarUrl",
       },
       additionalFields: {
+        isActive: {
+          type: "boolean",
+          input: false,
+          required: false,
+        },
         role: {
           type: "string",
           input: false,

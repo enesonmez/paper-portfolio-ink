@@ -36,6 +36,7 @@ describe("database schema", () => {
         "email",
         "email_verified",
         "display_name",
+        "is_active",
         "avatar_url",
         "role",
         "created_at",

@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { isRouteErrorResponse } from "react-router";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { createAuthMock, signInEmailMock } = vi.hoisted(() => {
+const { createAuthMock, findUserByEmailMock, signInEmailMock } = vi.hoisted(() => {
   return {
     createAuthMock: vi.fn(),
+    findUserByEmailMock: vi.fn(),
     signInEmailMock: vi.fn(),
   };
 });
@@ -24,9 +25,16 @@ vi.mock("../../app/lib/auth/auth-config.server", () => {
   };
 });
 
+vi.mock("../../app/lib/users/users.server", () => {
+  return {
+    findUserByEmail: findUserByEmailMock,
+  };
+});
+
 describe("login server helpers", () => {
   beforeEach(() => {
     createAuthMock.mockReset();
+    findUserByEmailMock.mockReset();
     signInEmailMock.mockReset();
   });
 
@@ -93,6 +101,12 @@ describe("login server helpers", () => {
         signInEmail: signInEmailMock,
       },
     });
+    findUserByEmailMock.mockResolvedValue({
+      email: "admin@example.com",
+      id: "user-1",
+      isActive: true,
+      role: "admin",
+    });
     signInEmailMock.mockResolvedValue(authResponse);
 
     const response = await signInWithEmail({
@@ -149,6 +163,7 @@ describe("login server helpers", () => {
         signInEmail: signInEmailMock,
       },
     });
+    findUserByEmailMock.mockResolvedValue(null);
     signInEmailMock.mockResolvedValue(authResponse);
 
     const result = await signInWithEmail({
@@ -176,6 +191,46 @@ describe("login server helpers", () => {
         values: {
           email: "enesonmezx@gmail.com",
           redirectTo: "/dashboard",
+        },
+      },
+    });
+  });
+
+  it("blocks inactive users before Better Auth creates a session", async () => {
+    const request = new Request("http://localhost:3000/login", {
+      method: "POST",
+    });
+    const { signInWithEmail } = await import("../../app/lib/auth/login.server");
+
+    findUserByEmailMock.mockResolvedValue({
+      email: "disabled@example.com",
+      id: "user-2",
+      isActive: false,
+      role: "author",
+    });
+
+    const result = await signInWithEmail({
+      request,
+      context: {
+        db: { query: {} },
+        runtime: { platform: "node" },
+      } as never,
+      submission: {
+        email: "disabled@example.com",
+        password: "password1234",
+        redirectTo: "/dashboard",
+      },
+    });
+
+    expect(createAuthMock).not.toHaveBeenCalled();
+    expect(signInEmailMock).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      init: {
+        status: 403,
+      },
+      data: {
+        errors: {
+          form: "E-posta veya parola hatali.",
         },
       },
     });

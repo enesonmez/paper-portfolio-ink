@@ -4,20 +4,24 @@ import { X } from "lucide-react";
 import {
   DASHBOARD_LAYOUT_COPY,
   DASHBOARD_LAYOUT_ICON,
-  DASHBOARD_NAVIGATION,
+  getDashboardNavigation,
 } from "../dashboard-layout.constants";
+import type { DashboardIdentity } from "../dashboard-layout.shared";
 import { Button } from "~/components/ui/button";
 
 interface DashboardSidebarProps {
   isSidebarOpen: boolean;
   onClose: () => void;
+  user: DashboardIdentity;
 }
 
 export function DashboardSidebar({
   isSidebarOpen,
   onClose,
+  user,
 }: DashboardSidebarProps) {
   const LogoutIcon = DASHBOARD_LAYOUT_ICON.logout;
+  const navigation = getDashboardNavigation(user.role);
 
   return (
     <aside
@@ -56,7 +60,7 @@ export function DashboardSidebar({
         className="flex flex-1 flex-col gap-2 p-4"
         aria-label={DASHBOARD_LAYOUT_COPY.navigationAriaLabel}
       >
-        {DASHBOARD_NAVIGATION.map((item) => {
+        {navigation.map((item) => {
           const ItemIcon = item.icon;
 
           if (item.kind === "link") {
