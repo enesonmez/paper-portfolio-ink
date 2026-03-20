@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, it } from "vitest";
 
@@ -20,6 +20,7 @@ const baseScreenProps = {
       summary: "",
       title: "",
     },
+    slugSuggestion: null,
   },
   metrics: {
     featuredCount: 1,
@@ -105,6 +106,100 @@ describe("dashboard projects route", () => {
     expect(screen.getByLabelText("Project Name")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Create New Project" }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a title-based slug suggestion in the project modal", async () => {
+    const { DashboardProjectsScreen } =
+      await import("../../app/routes/dashboard.projects");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/projects",
+          element: (
+            <DashboardProjectsScreen
+              {...baseScreenProps}
+              form={{
+                ...baseScreenProps.form,
+                isOpen: true,
+                mode: "create",
+                values: {
+                  ...baseScreenProps.form.values,
+                  slug: "",
+                  title: "Paper Portfolio Ink",
+                },
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/projects?modal=create"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      await screen.findByRole("button", {
+        name: "Use suggested slug: paper-portfolio-ink",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("recomputes the project slug suggestion after a duplicate-slug response when title changes", async () => {
+    const { DashboardProjectsScreen } =
+      await import("../../app/routes/dashboard.projects");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/projects",
+          element: (
+            <DashboardProjectsScreen
+              {...baseScreenProps}
+              form={{
+                ...baseScreenProps.form,
+                errors: {
+                  slug: "Bu slug zaten kullanimda. Baska bir slug sec.",
+                },
+                isOpen: true,
+                mode: "create",
+                slugSuggestion: "paper-portfolio-ink-2",
+                values: {
+                  ...baseScreenProps.form.values,
+                  slug: "paper-portfolio-ink",
+                  title: "Paper Portfolio Ink",
+                },
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/projects?modal=create"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      await screen.findByRole("button", {
+        name: "Use suggested slug: paper-portfolio-ink-2",
+      }),
+    ).toBeInTheDocument();
+
+    fireEvent.input(screen.getByLabelText("Project Name"), {
+      target: {
+        value: "Portfolio Radar",
+      },
+    });
+
+    expect(
+      await screen.findByRole("button", {
+        name: "Use suggested slug: portfolio-radar",
+      }),
     ).toBeInTheDocument();
   });
 });

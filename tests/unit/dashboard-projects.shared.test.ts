@@ -55,6 +55,7 @@ describe("dashboard projects shared helpers", () => {
       editingProjectId: "project-1",
       isOpen: true,
       mode: "edit",
+      slugSuggestion: null,
       values: {
         coverImageUrl: "",
         description: "Detailed case study",

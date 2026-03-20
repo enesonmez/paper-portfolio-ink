@@ -5,6 +5,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const {
   createPostMock,
   deletePostMock,
+  findAvailablePostSlugMock,
+  isPostSlugTakenMock,
   listPostsMock,
   parsePostFormDataMock,
   requireSessionMock,
@@ -13,6 +15,8 @@ const {
   return {
     createPostMock: vi.fn(),
     deletePostMock: vi.fn(),
+    findAvailablePostSlugMock: vi.fn(),
+    isPostSlugTakenMock: vi.fn(),
     listPostsMock: vi.fn(),
     parsePostFormDataMock: vi.fn(),
     requireSessionMock: vi.fn(),
@@ -24,6 +28,8 @@ vi.mock("../../app/lib/posts/posts.server", () => {
   return {
     createPost: createPostMock,
     deletePost: deletePostMock,
+    findAvailablePostSlug: findAvailablePostSlugMock,
+    isPostSlugTaken: isPostSlugTakenMock,
     listPosts: listPostsMock,
     updatePost: updatePostMock,
   };
@@ -55,6 +61,8 @@ describe("dashboard posts server", () => {
   beforeEach(() => {
     createPostMock.mockReset();
     deletePostMock.mockReset();
+    findAvailablePostSlugMock.mockReset();
+    isPostSlugTakenMock.mockReset();
     listPostsMock.mockReset();
     parsePostFormDataMock.mockReset();
     requireSessionMock.mockReset();
@@ -234,6 +242,60 @@ describe("dashboard posts server", () => {
       },
       init: {
         status: 400,
+      },
+    });
+  });
+
+  it("returns a slug field error and suggestion when the submitted post slug is taken", async () => {
+    const { handleDashboardPostsAction } = await import(
+      "../../app/features/dashboard/posts/dashboard-posts.server"
+    );
+
+    const request = new Request("http://localhost:3000/dashboard/posts", {
+      body: new URLSearchParams({
+        content: "# Edge runtime",
+        excerpt: "Publishing note",
+        intent: "create",
+        slug: "edge-runtime",
+        status: "published",
+        title: "Edge Runtime",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-1",
+      },
+    });
+    parsePostFormDataMock.mockReturnValue({
+      data: {
+        content: "# Edge runtime",
+        coverImageUrl: "",
+        excerpt: "Publishing note",
+        slug: "edge-runtime",
+        status: "published",
+        title: "Edge Runtime",
+      },
+    });
+    isPostSlugTakenMock.mockResolvedValue(true);
+    findAvailablePostSlugMock.mockResolvedValue("edge-runtime-2");
+
+    const response = await handleDashboardPostsAction(context, request);
+
+    expect(createPostMock).not.toHaveBeenCalled();
+    expect(response).toMatchObject({
+      data: {
+        errors: {
+          slug: "Bu slug zaten kullanimda. Baska bir slug sec.",
+        },
+        slugSuggestion: "edge-runtime-2",
+      },
+      init: {
+        status: 409,
       },
     });
   });

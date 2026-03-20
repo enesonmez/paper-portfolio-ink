@@ -26,6 +26,7 @@ export interface DashboardProjectsFormState {
   errors?: ProjectFormState["errors"];
   isOpen: boolean;
   mode: DashboardProjectsModalMode | null;
+  slugSuggestion?: string | null;
   values: ProjectFormValues;
 }
 
@@ -121,6 +122,7 @@ export function resolveDashboardProjectsForm({
     editingProjectId: editingProject?.id ?? null,
     isOpen: mode !== null,
     mode,
+    slugSuggestion: null,
     values: editingProject
       ? toProjectFormValues(editingProject)
       : buildProjectFormValues(),
@@ -143,6 +145,7 @@ export function mergeDashboardProjectsFormState(
     errors: actionData.errors,
     isOpen: loaderForm.isOpen,
     mode: loaderForm.mode,
+    slugSuggestion: actionData.slugSuggestion ?? null,
     values: actionData.values,
   };
 }

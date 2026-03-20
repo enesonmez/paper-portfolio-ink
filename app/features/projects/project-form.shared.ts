@@ -17,6 +17,7 @@ export interface ProjectFormState {
   errors?: Partial<Record<keyof ProjectFormValues, string>> & {
     form?: string;
   };
+  slugSuggestion?: string | null;
   values: ProjectFormValues;
 }
 

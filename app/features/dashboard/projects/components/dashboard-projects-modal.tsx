@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { Form, Link } from "react-router";
 
 import { DashboardModal } from "~/components/dashboard/modal";
+import { SlugSuggestionField } from "~/components/dashboard/slug-suggestion-field";
 import { Button } from "~/components/ui/button";
 import { FormError, SelectField, TextField, TextareaField } from "~/components/ui/form-field";
 import {
@@ -42,6 +43,7 @@ export function DashboardProjectsModalView({
     form.mode === "edit"
       ? DASHBOARD_PROJECTS_COPY.editDescription
       : DASHBOARD_PROJECTS_COPY.createDescription;
+  const titleInputId = "dashboard-project-title";
 
   return (
     <DashboardModal description={description} title={title} to="/dashboard/projects">
@@ -65,19 +67,24 @@ export function DashboardProjectsModalView({
 
         <TextField
           error={form.errors?.title}
+          id={titleInputId}
           inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
           label={DASHBOARD_PROJECTS_FORM_COPY.title.label}
           name={PROJECT_FORM_FIELD.title}
           placeholder={DASHBOARD_PROJECTS_FORM_COPY.title.placeholder}
           defaultValue={form.values.title}
         />
-        <TextField
+        <SlugSuggestionField
+          defaultValue={form.values.slug}
           error={form.errors?.slug}
+          id={PROJECT_FORM_FIELD.slug}
+          initialTitleValue={form.values.title}
           inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
           label={DASHBOARD_PROJECTS_FORM_COPY.slug.label}
           name={PROJECT_FORM_FIELD.slug}
           placeholder={DASHBOARD_PROJECTS_FORM_COPY.slug.placeholder}
-          defaultValue={form.values.slug}
+          serverSuggestion={form.slugSuggestion}
+          titleInputId={titleInputId}
         />
         <TextField
           error={form.errors?.summary}

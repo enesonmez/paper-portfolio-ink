@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
@@ -27,6 +27,7 @@ const baseScreenProps = {
       status: "draft" as const,
       title: "",
     },
+    slugSuggestion: null,
   },
   metrics: {
     draftCount: 1,
@@ -120,5 +121,99 @@ describe("dashboard posts route", () => {
     expect(backLinks[0]).toHaveAttribute("href", "/dashboard/posts");
     expect(backLinks[1]).toHaveAttribute("href", "/dashboard/posts");
     expect(screen.getByRole("button", { name: "Update Post" })).toBeInTheDocument();
+  });
+
+  it("shows a title-based slug suggestion in the post compose view", async () => {
+    const { DashboardPostsScreen } = await import("../../app/routes/dashboard.posts");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/posts",
+          element: (
+            <DashboardPostsScreen
+              {...baseScreenProps}
+              form={{
+                ...baseScreenProps.form,
+                isOpen: true,
+                mode: "create",
+                presentation: "fullscreen",
+                values: {
+                  ...baseScreenProps.form.values,
+                  slug: "",
+                  title: "Edge Runtime Notes",
+                },
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/posts?modal=create"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      await screen.findByRole("button", {
+        name: "Use suggested slug: edge-runtime-notes",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("recomputes the post slug suggestion after a duplicate-slug response when title changes", async () => {
+    const { DashboardPostsScreen } = await import("../../app/routes/dashboard.posts");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/posts",
+          element: (
+            <DashboardPostsScreen
+              {...baseScreenProps}
+              form={{
+                ...baseScreenProps.form,
+                errors: {
+                  slug: "Bu slug zaten kullanimda. Baska bir slug sec.",
+                },
+                isOpen: true,
+                mode: "create",
+                presentation: "fullscreen",
+                slugSuggestion: "edge-runtime-2",
+                values: {
+                  ...baseScreenProps.form.values,
+                  slug: "edge-runtime",
+                  title: "Edge Runtime",
+                },
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/posts?modal=create"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      await screen.findByRole("button", {
+        name: "Use suggested slug: edge-runtime-2",
+      }),
+    ).toBeInTheDocument();
+
+    fireEvent.input(screen.getByPlaceholderText("Tell your story..."), {
+      target: {
+        value: "Edge Session Graph",
+      },
+    });
+
+    expect(
+      await screen.findByRole("button", {
+        name: "Use suggested slug: edge-session-graph",
+      }),
+    ).toBeInTheDocument();
   });
 });

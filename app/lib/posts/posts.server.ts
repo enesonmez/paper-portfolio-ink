@@ -4,6 +4,7 @@ import type { AppDb } from "../../../db";
 import { posts, users } from "../../../db/schema";
 import { getPostContentPlainText } from "~/features/posts/post-content.shared";
 import { POST_STATUS, type PostStatus } from "~/features/posts/post.shared";
+import { findNextAvailableSlug, suggestSlugFromTitle } from "~/lib/slug";
 
 import type { PostSubmission } from "./post-form.server";
 
@@ -269,6 +270,36 @@ export async function listPublicCompanionPosts(
     .limit(limit);
 
   return result.map((post) => toPublicPostListItem(post));
+}
+
+export async function isPostSlugTaken(
+  db: AppDb,
+  slug: string,
+  excludedPostId?: string,
+) {
+  const [post] = await db
+    .select({ id: posts.id })
+    .from(posts)
+    .where(
+      excludedPostId
+        ? and(eq(posts.slug, slug), ne(posts.id, excludedPostId))
+        : eq(posts.slug, slug),
+    )
+    .limit(1);
+
+  return Boolean(post);
+}
+
+export async function findAvailablePostSlug(
+  db: AppDb,
+  title: string,
+  excludedPostId?: string,
+) {
+  const baseSlug = suggestSlugFromTitle(title);
+
+  return findNextAvailableSlug(baseSlug, async (slug) =>
+    isPostSlugTaken(db, slug, excludedPostId),
+  );
 }
 
 export async function getPublicPostBySlug(

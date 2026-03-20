@@ -18,9 +18,12 @@ import {
 import {
   createPost,
   deletePost,
+  findAvailablePostSlug,
+  isPostSlugTaken,
   listPosts,
   updatePost,
 } from "~/lib/posts/posts.server";
+import { isUniqueSlugConstraintError } from "~/lib/slug";
 
 import { DASHBOARD_POSTS_FORM_COPY } from "./dashboard-posts.constants";
 import {
@@ -49,6 +52,29 @@ function resolveSessionUserId(session: unknown) {
   }
 
   return null;
+}
+
+function buildPostActionValues(values: PostFormState["values"]) {
+  return buildPostFormValues(values);
+}
+
+async function buildDuplicatePostSlugState(
+  context: AppLoadContext,
+  values: PostFormState["values"],
+  postId?: string,
+) {
+  const db = getDbFromContext(context);
+
+  return data<PostFormState>(
+    {
+      errors: {
+        slug: "Bu slug zaten kullanimda. Baska bir slug sec.",
+      },
+      slugSuggestion: await findAvailablePostSlug(db, values.title, postId),
+      values: buildPostActionValues(values),
+    },
+    { status: 409 },
+  );
 }
 
 export async function loadDashboardPostsData(
@@ -126,13 +152,25 @@ export async function handleDashboardPostsAction(
           errors: {
             form: DASHBOARD_POSTS_FORM_COPY.errors.updateMissingPost,
           },
-          values: submission.data,
+          values: buildPostActionValues(submission.data),
         },
         { status: 400 },
       );
     }
 
-    await updatePost(db, postId, submission.data);
+    if (await isPostSlugTaken(db, submission.data.slug, postId)) {
+      return buildDuplicatePostSlugState(context, submission.data, postId);
+    }
+
+    try {
+      await updatePost(db, postId, submission.data);
+    } catch (error) {
+      if (isUniqueSlugConstraintError(error, "posts")) {
+        return buildDuplicatePostSlugState(context, submission.data, postId);
+      }
+
+      throw error;
+    }
 
     return redirect("/dashboard/posts");
   }
@@ -145,13 +183,25 @@ export async function handleDashboardPostsAction(
         errors: {
           form: DASHBOARD_POSTS_FORM_COPY.errors.missingAuthor,
         },
-        values: submission.data,
+        values: buildPostActionValues(submission.data),
       },
       { status: 400 },
     );
   }
 
-  await createPost(db, authorId, submission.data);
+  if (await isPostSlugTaken(db, submission.data.slug)) {
+    return buildDuplicatePostSlugState(context, submission.data);
+  }
+
+  try {
+    await createPost(db, authorId, submission.data);
+  } catch (error) {
+    if (isUniqueSlugConstraintError(error, "posts")) {
+      return buildDuplicatePostSlugState(context, submission.data);
+    }
+
+    throw error;
+  }
 
   return redirect("/dashboard/posts");
 }

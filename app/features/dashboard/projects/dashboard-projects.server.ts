@@ -17,9 +17,12 @@ import {
 import {
   createProject,
   deleteProject,
+  findAvailableProjectSlug,
+  isProjectSlugTaken,
   listProjects,
   updateProject,
 } from "~/lib/projects/projects.server";
+import { isUniqueSlugConstraintError } from "~/lib/slug";
 
 import { DASHBOARD_PROJECTS_FORM_COPY } from "./dashboard-projects.constants";
 import {
@@ -30,6 +33,36 @@ import {
 
 interface DbContextShape {
   db: ReturnType<typeof getDbFromContext>;
+}
+
+type ProjectActionValues = Omit<ProjectFormState["values"], "sortOrder"> & {
+  sortOrder?: number | string;
+};
+
+function buildProjectActionValues(values: ProjectActionValues) {
+  return buildProjectFormValues({
+    ...values,
+    sortOrder: values.sortOrder?.toString() ?? "0",
+  });
+}
+
+async function buildDuplicateProjectSlugState(
+  context: DbContextShape,
+  values: ProjectActionValues,
+  projectId?: string,
+) {
+  const db = getDbFromContext(context);
+
+  return data<ProjectFormState>(
+    {
+      errors: {
+        slug: "Bu slug zaten kullanimda. Baska bir slug sec.",
+      },
+      slugSuggestion: await findAvailableProjectSlug(db, values.title, projectId),
+      values: buildProjectActionValues(values),
+    },
+    { status: 409 },
+  );
 }
 
 function readStringField(formData: FormData, field: string) {
@@ -97,21 +130,42 @@ export async function handleDashboardProjectsAction(
           errors: {
             form: DASHBOARD_PROJECTS_FORM_COPY.errors.updateMissingProject,
           },
-          values: buildProjectFormValues({
-            ...submission.data,
-            sortOrder: submission.data.sortOrder.toString(),
-          }),
+          values: buildProjectActionValues(submission.data),
         },
         { status: 400 },
       );
     }
 
-    await updateProject(db, projectId, submission.data);
+    if (await isProjectSlugTaken(db, submission.data.slug, projectId)) {
+      return buildDuplicateProjectSlugState(context, submission.data, projectId);
+    }
+
+    try {
+      await updateProject(db, projectId, submission.data);
+    } catch (error) {
+      if (isUniqueSlugConstraintError(error, "projects")) {
+        return buildDuplicateProjectSlugState(context, submission.data, projectId);
+      }
+
+      throw error;
+    }
 
     return redirect("/dashboard/projects");
   }
 
-  await createProject(db, submission.data);
+  if (await isProjectSlugTaken(db, submission.data.slug)) {
+    return buildDuplicateProjectSlugState(context, submission.data);
+  }
+
+  try {
+    await createProject(db, submission.data);
+  } catch (error) {
+    if (isUniqueSlugConstraintError(error, "projects")) {
+      return buildDuplicateProjectSlugState(context, submission.data);
+    }
+
+    throw error;
+  }
 
   return redirect("/dashboard/projects");
 }
