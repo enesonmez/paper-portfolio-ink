@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { projects } from "../../../db/schema";
@@ -6,6 +6,7 @@ import {
   PROJECT_STATUS,
   type ProjectStatus,
 } from "~/features/projects/project.shared";
+import { findNextAvailableSlug, suggestSlugFromTitle } from "~/lib/slug";
 
 import type { ProjectSubmission } from "./project-form.server";
 
@@ -226,6 +227,36 @@ export async function getPublicProjectsStats(
     liveCount: Number(result?.liveCount ?? 0),
     totalCount: Number(result?.totalCount ?? 0),
   };
+}
+
+export async function isProjectSlugTaken(
+  db: AppDb,
+  slug: string,
+  excludedProjectId?: string,
+) {
+  const [project] = await db
+    .select({ id: projects.id })
+    .from(projects)
+    .where(
+      excludedProjectId
+        ? and(eq(projects.slug, slug), ne(projects.id, excludedProjectId))
+        : eq(projects.slug, slug),
+    )
+    .limit(1);
+
+  return Boolean(project);
+}
+
+export async function findAvailableProjectSlug(
+  db: AppDb,
+  title: string,
+  excludedProjectId?: string,
+) {
+  const baseSlug = suggestSlugFromTitle(title);
+
+  return findNextAvailableSlug(baseSlug, async (slug) =>
+    isProjectSlugTaken(db, slug, excludedProjectId),
+  );
 }
 
 export async function createProject(db: AppDb, submission: ProjectSubmission) {

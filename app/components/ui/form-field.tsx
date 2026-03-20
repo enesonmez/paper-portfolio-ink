@@ -49,6 +49,7 @@ function FieldError({ id, message }: FieldErrorProps) {
 
 interface BaseFieldProps {
   error?: string;
+  id?: string;
   inputClassName?: string;
   label: string;
   name: string;
@@ -59,18 +60,20 @@ type TextFieldProps = BaseFieldProps &
 
 export function TextField({
   error,
+  id,
   inputClassName,
   label,
   name,
   ...props
 }: TextFieldProps) {
-  const errorId = `${name}-error`;
+  const inputId = id ?? name;
+  const errorId = `${inputId}-error`;
 
   return (
     <FieldShell>
-      <FieldLabel htmlFor={name}>{label}</FieldLabel>
+      <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
       <input
-        id={name}
+        id={inputId}
         name={name}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}

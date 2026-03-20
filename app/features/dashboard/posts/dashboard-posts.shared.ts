@@ -29,6 +29,7 @@ export interface DashboardPostsFormState {
   isOpen: boolean;
   mode: DashboardPostsModalMode | null;
   presentation: DashboardPostsPresentationMode;
+  slugSuggestion?: string | null;
   values: PostFormValues;
 }
 
@@ -137,6 +138,7 @@ export function resolveDashboardPostsForm({
       mode !== null
         ? DASHBOARD_POSTS_PRESENTATION.fullscreen
         : DASHBOARD_POSTS_PRESENTATION.modal,
+    slugSuggestion: null,
     values: editingPost
       ? toPostFormValues(editingPost)
       : buildPostFormValues(),
@@ -160,6 +162,7 @@ export function mergeDashboardPostsFormState(
     isOpen: loaderForm.isOpen,
     mode: loaderForm.mode,
     presentation: loaderForm.presentation,
+    slugSuggestion: actionData.slugSuggestion ?? null,
     values: actionData.values,
   };
 }

@@ -1,6 +1,7 @@
 import { Form, Link } from "react-router";
 import { ArrowLeft, PenSquare, X } from "lucide-react";
 
+import { SlugSuggestionField } from "~/components/dashboard/slug-suggestion-field";
 import { Button } from "~/components/ui/button";
 import { FormError, SelectField, TextField } from "~/components/ui/form-field";
 import {
@@ -37,6 +38,7 @@ export function DashboardPostsComposeView({
     form.mode === "edit"
       ? DASHBOARD_POSTS_COPY.editActionLabel
       : DASHBOARD_POSTS_COPY.createTitle;
+  const titleInputId = "dashboard-post-title";
 
   return (
     <div
@@ -102,6 +104,7 @@ export function DashboardPostsComposeView({
           <section className="mx-auto w-full max-w-3xl space-y-6">
             <div className="space-y-3">
               <input
+                id={titleInputId}
                 name={POST_FORM_FIELD.title}
                 defaultValue={form.values.title}
                 placeholder={DASHBOARD_POSTS_FORM_COPY.fullscreenTitlePlaceholder}
@@ -133,12 +136,16 @@ export function DashboardPostsComposeView({
                 Story Setup
               </p>
               <div className="mt-4 grid gap-4">
-                <TextField
+                <SlugSuggestionField
+                  defaultValue={form.values.slug}
                   error={form.errors?.slug}
+                  id={POST_FORM_FIELD.slug}
+                  initialTitleValue={form.values.title}
                   label={DASHBOARD_POSTS_FORM_COPY.slug.label}
                   name={POST_FORM_FIELD.slug}
-                  defaultValue={form.values.slug}
                   placeholder={DASHBOARD_POSTS_FORM_COPY.slug.placeholder}
+                  serverSuggestion={form.slugSuggestion}
+                  titleInputId={titleInputId}
                 />
                 <TextField
                   error={form.errors?.coverImageUrl}

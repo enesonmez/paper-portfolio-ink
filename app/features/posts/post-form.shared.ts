@@ -14,6 +14,7 @@ export interface PostFormState {
   errors?: Partial<Record<keyof PostFormValues, string>> & {
     form?: string;
   };
+  slugSuggestion?: string | null;
   values: PostFormValues;
 }
 
