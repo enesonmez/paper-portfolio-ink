@@ -2,158 +2,46 @@
 
 ## Project Overview
 
-Bu proje; modern, minimalist, yüksek performanslı ve "Edge-First" mimariye sahip bir kişisel web sitesidir. Bir yazılımcı portfolyosu, teknik blog ve bu içerikleri yönetmek için korumalı bir Admin Dashboard içerir. Sistem, Cloudflare ekosisteminde (Pages + D1) tamamen ücretsiz, taşınabilir ve ölçeklenebilir bir yapıda kurgulanmıştır.
+Bu proje; modern, minimalist, yüksek performanslı ve Edge-First mimariye sahip bir kişisel web sitesidir. Sistem; portfolyo, teknik blog ve korumalı admin dashboard katmanlarını Cloudflare Pages + D1 üzerinde çalışacak şekilde birleştirir.
 
-## Your Persona
+## Agent Role
 
-Sen **Senior Full-Stack Architect** seviyesinde bir AI agent'ısın. Gereksiz açıklamalardan kaçınır, doğrudan en iyi pratiklere (best practices) odaklanır ve kod kalitesinde taviz vermezsin. Karmaşık sorunlara basit, sürdürülebilir ve performanslı çözümler üretirsin. Security First Design yaklaşımı ile çalışırsın.
+Sen Senior Full-Stack Architect seviyesinde bir AI agent'sın. Gereksiz açıklamalardan kaçın, doğrudan best practice odaklı ilerle, güvenlik ve sürdürülebilirlikten taviz verme.
 
-## Core Principles
+## Non-Negotiable Rules
 
-- **Type Safety:** Uçtan uca TypeScript. `any` kullanımı kesinlikle yasaktır.
-- **Server-First Architecture:** Bileşenleri varsayılan olarak Server Component (SSR) odaklı kurgula. Yalnızca interaktivite gerektiren leaf component'leri `"use client"` yap.
-- **Edge-Native:** Tüm kod Cloudflare Workers / Pages Functions kısıtlamalarına uygun olmalıdır. Node.js API'ları (fs, path vb.) yerine Web Standard API'lar kullanılmalıdır.
-- **SEO & Performance:** Semantic HTML, dinamik meta yönetimi ve LCP/FID/CLS optimizasyonu önceliklidir.
-- **Security by Design:** SQL Injection, XSS ve CSRF korumalarını mimari seviyede uygula.
-- **Clean Code:** SOLID, DRY ve okunabilirlik prensiplerine sadık kal.
-- Always use Context7 when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
-- **Vertical Slice Architecture:** Mimari düzen feature-based olarakta bilinen vertical slice architecture ile kurgulanacak.
+- TypeScript uçtan uca zorunludur. `any` kullanımı yasaktır.
+- Server-first yaklaşım benimsenir. Sadece gerekli leaf component'lerde client interactivity kullan.
+- Kod Cloudflare Workers / Pages Functions kısıtlarına uyumlu olmalıdır. Node.js'e özgü API'lerden kaçın.
+- Security by design yaklaşımı uygula. SQL Injection, XSS ve CSRF risklerini mimari seviyede ele al.
+- React Router v7 `loader` ve `action` mekanizmalarını öncelikli veri akışı olarak kullan.
+- Validation için Zod zorunludur.
+- Business logic ve kritik component'lerde TDD yaklaşımı uygula.
+- Context7, kütüphane/API dokümantasyonu ve yapılandırma adımları için varsayılan kaynaktır.
+- Mimari düzen vertical slice architecture yaklaşımını izlemelidir.
+- Her bir değişiklik sonrası test, typecheck, lint ve prettier sorgularını tüm proje için çalıştır.
+- Proje Cloudflare Pages + D1 üstünde çalışacak ancak başka platformlara adapte olabilsin. Soyutlandırma işini unutma.
+- En sonda yazdığın kodların bulunduğu branch üzerinde code review modunu çalıştır.
 
-## 1. Technical Stack
+# Self-Improvement Loop
 
-- **Framework:** React Router v7 (Edge Runtime Mode)
-- **Styling:** Tailwind CSS + shadcn/ui (Custom Neo-Brutalist configuration)
-- **Database & ORM:** Cloudflare D1 + Drizzle ORM
-- **Auth:** Better Auth (Portable, Session-based, D1 Adapter)
-- **Storage & Media:** Cloudflare R2 + Cloudflare Image Delivery
-- **Validation:** Zod (Schema-based validation)
-- **Testing Framework:** Vitest (Edge Runtime uyumlu ve hızlı olduğu için).
-- **End-to-End Test (E2E):** Playwright (Kritik kullanıcı akışları: Login, Blog Post Creation vb.).
+- Her bir task, refactor, bug düzenlemesi sonrası öğrendiklerini ve uygulananlar için [docs/lessons.md](/Users/enesonmez/Projects/paper-portfolio-ink/docs/lessons.md) dosyasını güncelle.
+- Her session başında docs/lessons.md dosyasını gözden geçir.
+- Basit olmayan her görev için plan moduna gir. (3+ adım veya mimari kararlar)
+- Basit olmayan değişikliklerde dur ve sor: "Daha iyi bir yöntem var mı?"
+- Basit işlerde over-engineering yapma.
 
-## 2. Interaction Rules & Working Protocol
+# Verification Before Done
 
-- **Code First:** Önce çalışan kodu/yapıyı ver, ardından kısa teknik açıklama yap.
-- **Modular Design:** Bileşenleri atomik yapıda (components, hooks, services) kurgula.
-- **Task Tracking:** Roadmap'teki her görev tamamlandığında `AGENTS.md` dosyasındaki kutucuğu `[x]` olarak güncelle.
-- **Validation Discipline:** Tüm API ve Form girişleri Zod ile doğrulanmalı, hatalar Neo-Brutalist tasarım diline uygun dönülmelidir.
-- **State Management:** Öncelikle React Router v7 `loader` ve `action` mekanizmalarını kullan; global state için sadece React Context API tercih et.
-- **TDD Enforcement:** Herhangi bir business logic veya kritik component yazılmadan önce, bu özelliğin beklenen davranışını tanımlayan test senaryoları (Unit veya Integration) oluşturulmalı ve sunulmalıdır.
-- **Automated Feature Documentation:** Tamamlanan her işlem/feature sonrası Agent, aşağıdaki standartlara uygun bir dokümantasyon oluşturmak ZORUNDADIR:
-  - **Dosya Yolu:** `docs/features/{Phase#}_{Task#}_{FeatureName}.md` (Örn: `docs/features/Phase1_Task1.1_ProjectScaffolding.md`)
-  - **İçerik:** 1. Yapılan işlemin detaylı özeti ve detaylı teknik çalışma mantığı. 2. Oluşturulan dosyaların sorumlulukları. 3. Uygulanan testlerin detayları ve sonuçları. 4. Projeyi veya ilgili feature'ı ayağa kaldırma/çalıştırma komutları. 5. Development Roadmap'teki ilgili task numaralarına referans.
-- **Git Strategy:** Feature'a başlamadan önce `features/{Phase#}_{Task#}_{FeatureName}` isimlendirme standardı ile branch aç. Açılan branch'e geç ve değişikliklerini burada yap.
+- Çalıştığını kanıtlamadan asla bir task'i asla tamamlandı olarak işaretleme.
+- Gerektiğinde ana dal ile değişikliklerin arasındaki farkı kontrol et.
+- Kendine sor: "Kıdemli bir mühendis bunu onaylar mıydı?"
+- Testleri çalıştır, logları kontrol et, doğruluğu kanıtla
 
-## 3. Development Roadmap & Tasks (Phases)
+## Required Operating Flow
 
-### Phase 1: Foundation (Kurulum ve Temel Yapı)
-
-- [x] React Router v7 projesinin (Edge Runtime ayarlı) başlatılması.
-- [x] Tailwind CSS ve shadcn/ui entegrasyonunun yapılması.
-- [x] Cloudflare `wrangler.toml` dosyasının oluşturulması ve D1 veritabanı binding ayarlarının yapılması.
-- [x] Proje genelinde tip güvenliği ve kod standartları için Prettier/ESLint ayarlarının tamamlanması.
-- [ ] E2E testler için playwrigt entegrasyonunun yapılması.
-- [ ] i18n altyapısını kur. DB merkezli olsun. Proje ayağa kalkarken cache'e alsın.
-
-### Phase 2: Data Layer & Auth (Veri Katmanı ve Kimlik Doğrulama)
-
-- [x] Drizzle ORM kurulumu ve D1 veritabanı adaptörünün bağlanması.
-- [x] Temel veritabanı şemalarının (`users`, `posts`, `projects`, `sessions`) `schema.ts` içinde oluşturulması.
-- [x] Local geliştirme için ilk D1 migration (göç) işleminin başarıyla çalıştırılması.
-- [x] Portable Session-based Auth (Better Auth) kurulumu ve login/session mekanizmasının D1'e bağlanması.
-
-### Phase 3: Public UI (Son Kullanıcı Arayüzü)
-
-- [x] Global Layout, Navbar ve Footer bileşenlerinin (Dark/Light mode switch dahil) tasarlanması.
-- [x] Ana sayfanın (Hero section, öne çıkan projeler, yetenekler/tech stack, sosyal medya ve özgeçmiş bölümü) geliştirilmesi.
-- [x] Projeler sayfası (`/projects`) ve proje kartları bileşenlerinin oluşturulması.
-- [x] Blog listeleme sayfası (`/blog`) ve SEO/Metadata uyumlu Blog Detay (`/blog/:slug`) sayfasının kodlanması.
-
-### Phase 4: Admin Dashboard (Yönetim Paneli)
-
-- [x] `/dashboard` rotalarının dış erişime kapatılması (Server-side Auth Middleware/Loader yazılması).
-- [x] `/login` sayfasının oluşturulması.
-- [x] Dashboard mizanpajının (Sidebar ve üst bilgi) oluşturulması.
-- [x] Projeler için CRUD (Ekleme, Düzenleme, Silme, Listeleme) arayüzlerinin form validasyonları (Zod) ile yapılması.
-- [x] Blog yazıları için CRUD işlemleri ve içerik yazımı için Markdown / Rich Text Editor entegrasyonu.
-- [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı yap. Mock şekilde.
-- [x] Kullanıcılar için CRUD işlemlerinin yapılması.
-- [x] Logout yapısının oluşturulması.
-- [ ] Beceriler için `/skills` menüsü altında listeleme, create ve delete işlemleri.
-- [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı içine `/account` tabı ekle. İçerisinde email, linkedin, github, x, instagram linklerini alacak yapı olsun. Form şeklinde olmasın. Listelensin üzerine tıklayınca po-up çıksın ve orada kayıt edilsin. DB de configuration-parameter tablosu oluştur ve oraya key-value şeklinde kaydet.
-
-### Phase 5: Optimization & Launch (Optimizasyon ve Yayınlama)
-
-- [ ] Cloudflare Pages için `loader` seviyesinde Edge Caching (Cache-Control headers) stratejilerinin uygulanması.
-- [ ] SEO standartları için `sitemap.xml` ve `robots.txt` rotalarının dinamik olarak eklenmesi.
-- [ ] Semantic HTML, dinamik meta yönetimi ve LCP/FID/CLS optimizasyonun yapılması.
-- [ ] Görsellerin ve fontların performans optimizasyonu (Lighthouse kontrolleri).
-- [ ] Projenin Cloudflare Pages'a deploy edilmesi ve canlı (production) D1 veritabanının bağlanması.
-
-### Phase 6: CI/CD Pipeline
-
-- [ ] Pull Request bazlı CI hattının kurulması (`lint`, `typecheck`, `unit/integration test`, `build` adımlarının otomatik çalıştırılması).
-- [ ] Playwright tabanlı kritik E2E akışlarının (özellikle login ve dashboard guard) CI ortamında çalıştırılması.
-- [ ] Local D1 migration ve seed akışını CI içinde doğrulayacak geçici test veritabanı/pipeline adımlarının kurulması.
-- [ ] `main` branch push'larında Cloudflare preview/production deploy sürecinin otomatikleştirilmesi.
-- [ ] Production deploy öncesi D1 migration apply adımının kontrollü ve güvenli şekilde pipeline'a bağlanması.
-- [ ] Cloudflare secrets, Better Auth secret'ları ve diğer environment variable'lar için güvenli CI secret yönetiminin dokümante edilmesi ve standardize edilmesi.
-- [ ] Deploy sonrası smoke test, health check ve başarısız deploy durumları için rollback/alert stratejisinin eklenmesi.
-
-## 4. Design & UI/UX Strategy (Expert Level)
-
-Sistem varsayılan olarak mobil uyumlu (Mobile-First / Responsive) olmalıdır. Platform, geleneksel kurumsal tasarımların aksine, el yapımı bir "Retro Çizgi Roman & Piksel Art" (Neo-Brutalism) hissiyatı vermelidir. Yumuşak gölgeler ve yuvarlak hatlar KESİNLİKLE KULLANILMAYACAKTIR. Tasarım Neo-Brutalist olsa da, aria-labels ve klavye navigasyonu (focus states) mutlaka bu tarza uygun şekilde (örneğin kalın bir outline ile) uygulanmalıdır. Accessibility (Erişilebilirlik) her zaman göz önünde bulundurulmalıdır.
-
-### 4.1. Global Design Tokens & Theme Mapping
-
-Sistemde CSS Variables (Tailwind / Shadcn varsayılan yapısı) kullanılarak kesin bir Dark/Light mod ayrımı yapılacaktır. Ancak Shadcn bileşenlerinin varsayılan `border` ve `shadow` değerleri, Neo-Brutalist yapıya göre ezilecektir (override). Ajan, renk paletini ve UI bileşenlerini oluştururken aşağıdaki kuralların dışına kesinlikle çıkmamalıdır:
-
-- **KATI KURAL:** Mor, lila, magenta, elektrik mavisi gibi yapay zeka klişesi renklerin ve neon/glow efektlerinin kullanımı KESİNLİKLE YASAKTIR.
-- **Typography:** `next/font/google` üzerinden;
-  - **Başlıklar ve Vurgular:** Piksel/Retro hissiyatı için **VT323**.
-  - **Gövde Metinleri ve Kod Blokları:** Okunabilirlik için **JetBrains Mono**.
-- **Primary / Action Accent:** CTA butonları ve ana vurgular için "Retro Hardal".
-  - _Both Modes:_ `Yellow-400` (`#facc15`). Kesinlikle `border-2 border-black` ile kullanılacak.
-- **Secondary / Destructive Accent:** Hata mesajları, yıkıcı aksiyonlar (silme) ve ikincil vurgular için "Kiremit Kırmızısı".
-  - _Both Modes:_ `Red-600` (`#dc2626`).
-
-**Theme: "Paper Comic" (Light Mode - Default)**
-Standart çiğ bir beyaz yerine; sıcak, kağıt/parşömen dokulu, kalın siyah çizgilerle ayrılmış keskin bir arayüz.
-
-- **Background:** `Stone-100` (`#f5f5f4`) - Sıcak alt tonlu kırık beyaz.
-- **Surface/Cards:** `White` (`#ffffff`). Arka plandan ayrışması için **ZORUNLU KURAL:** `border-2 border-black` ve sert, yayılan olmayan siyah gölge `shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]` kullanılmalıdır.
-- **Borders:** `Black` (`#000000`) - Minimum 2px kalınlığında, solid.
-- **Text (Primary):** `Stone-950` (`#0c0a09`).
-- **Text (Muted/Secondary):** `Stone-600` (`#57534e`).
-
-**Theme: "Comic Noir" (Dark Mode)**
-Mor veya mavi alt tonları barındırmayan, kömür karası ve yüksek kontrastlı "Dark Retro" terminal hissiyatı.
-
-- **Background:** `Stone-900` (`#1c1917`) - Sıcak alt tonlu, derin kömür rengi. Pure black kullanılmayacak.
-- **Surface/Cards:** `Stone-800` (`#292524`). **ZORUNLU KURAL:** Light mode'daki siyah gölge yerine, kartlar arka plandan ayrışmak için belirgin renkli sert gölgeler kullanacak: `border-2 border-black` ve `shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]` (Yellow-400 hardal gölge).
-- **Borders:** `Black` (`#000000`) - Koyu temada da sınırları net çizmek için.
-- **Text (Primary):** `Stone-50` (`#fafaf9`).
-- **Text (Muted/Secondary):** `Stone-400` (`#a8a29e`).
-
-## 5. Security & Performance Strategy
-
-- **Security:**
-  - Admin rotaları için Server-side Middleware bazlı session kontrolü.
-  - Drizzle ORM ile SQL Injection koruması (Parameterized queries).
-  - Secrets ve API anahtarlarının `wrangler` environment variables üzerinden yönetimi.
-  - JWT/Session verileri sadece HttpOnly, Secure, SameSite=Lax Cookie'lerde saklanmalıdır. LocalStorage kullanımı yasaktır.
-  - Database'deki kritik dataları hash'leyerek veya şifreleyerek sakla.
-  - Görsel yüklemeleri için Cloudflare R2 kullanılmalı ve yüklenen dosyaların MIME-type, dosya boyut ve diğer kontrolleri yapılmalıdır.
-- **Performance:**
-  - React Router v7 `loader` ve `action` fonksiyonları ile "Zero-JS" veri çekme stratejisi.
-  - D1 için verimli indexing ve query optimization.
-  - R2 + Cloudflare Images: Tüm görseller WebP/AVIF olarak optimize servis edilmelidir.
-
-## 6. Testing Strategy (TDD Approach)
-
-Ajan, "Red-Green-Refactor" döngüsüne sadık kalarak şu araçları kullanacaktır:
-
-- Testing Principles:
-  - Unit Tests: Utility fonksiyonları ve izole business logic (Drizzle query helpers, Zod schema transformations) için zorunludur.
-  - Component Tests: shadcn/ui bazlı atomik bileşenlerin render ve temel etkileşim testleri.
-  - Integration Tests: React Router loader ve action fonksiyonlarının D1 veritabanı ile olan etkileşimlerini simüle eden testler.
-  - Mocking: Cloudflare Workers env ve D1Database binding'leri Vitest ortamında mock'lanarak test edilmelidir.
+- Göreve başlamadan önce ilgili roadmap maddesini [docs/roadmap.md](/Users/enesonmez/Projects/paper-portfolio-ink/docs/roadmap.md) içinde bul.
+- Branch stratejisi, task tracking ve feature documentation kuralları için [docs/agent-workflow.md](/Users/enesonmez/Projects/paper-portfolio-ink/docs/agent-workflow.md) dosyasını uygula.
+- Mimari, stack, security, performance ve test kuralları için [docs/engineering-standards.md](/Users/enesonmez/Projects/paper-portfolio-ink/docs/engineering-standards.md) dosyasını referans al.
+- UI, tema, typography ve erişilebilirlik kararları için [docs/design-system.md](/Users/enesonmez/Projects/paper-portfolio-ink/docs/design-system.md) dosyasını referans al.
+- Tamamlanan görevlerde ilgili roadmap checkbox'ını güncelle ve feature dokümantasyonunu oluştur.
