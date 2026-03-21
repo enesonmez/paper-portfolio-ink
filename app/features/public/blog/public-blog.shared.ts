@@ -1,4 +1,5 @@
 import type { PublicPostListItem } from "~/lib/posts/posts.server";
+import { z } from "zod";
 
 export const PUBLIC_BLOG_COPY = {
   archiveCaption:
@@ -23,7 +24,7 @@ export const PUBLIC_BLOG_COPY = {
 export const PUBLIC_BLOG_PAGE_SIZE = 5;
 
 export const PUBLIC_BLOG_QUERY_PARAM = {
-  page: "page",
+  cursor: "cursor",
 } as const;
 
 export const PUBLIC_BLOG_TOPICS = [
@@ -36,28 +37,44 @@ export const PUBLIC_BLOG_TOPICS = [
 ] as const;
 
 export interface PublicBlogLoaderData {
-  nextPage: number | null;
+  nextCursor: string | null;
   posts: PublicPostListItem[];
 }
 
 export interface PublicBlogFeedLoaderData {
-  nextPage: number | null;
-  page: number;
+  cursor: string | null;
+  nextCursor: string | null;
   posts: PublicPostListItem[];
 }
 
-export function normalizePublicBlogPage(value: string | null) {
-  const parsed = Number(value);
+const publicBlogCursorSchema = z.object({
+  createdAtIso: z.string().datetime(),
+  publishedAtIso: z.string().datetime(),
+  slug: z.string().min(1),
+  updatedAtIso: z.string().datetime(),
+});
 
-  if (!Number.isInteger(parsed) || parsed < 1) {
-    return 1;
+export type PublicBlogCursor = z.infer<typeof publicBlogCursorSchema>;
+
+export function parsePublicBlogCursor(value: string | null) {
+  if (!value) {
+    return null;
   }
 
-  return parsed;
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    const result = publicBlogCursorSchema.safeParse(parsed);
+
+    return result.success ? result.data : null;
+  } catch {
+    return null;
+  }
 }
 
-export function buildPublicBlogFeedHref(page: number) {
-  return `/blog/feed?${PUBLIC_BLOG_QUERY_PARAM.page}=${page}`;
+export function buildPublicBlogFeedHref(cursor: string) {
+  return `/blog/feed?${new URLSearchParams({
+    [PUBLIC_BLOG_QUERY_PARAM.cursor]: cursor,
+  }).toString()}`;
 }
 
 export function mergePublicBlogPosts(

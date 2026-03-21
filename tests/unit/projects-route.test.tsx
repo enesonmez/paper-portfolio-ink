@@ -49,7 +49,7 @@ describe("ProjectsPage", () => {
             {
               element: (
                 <PublicProjectsScreen
-                  nextPage={2}
+                  nextCursor='{"createdAtIso":"2026-03-18T10:00:00.000Z","isFeatured":true,"slug":"paper-portfolio-ink","sortOrder":0}'
                   projects={baseProjects}
                   stats={{
                     featuredCount: 1,
@@ -61,7 +61,7 @@ describe("ProjectsPage", () => {
               path: "/projects",
             },
             {
-              loader: () => ({ nextPage: null, projects: [] }),
+              loader: () => ({ nextCursor: null, projects: [] }),
               path: "/projects/feed",
             },
           ],
@@ -92,7 +92,7 @@ describe("ProjectsPage", () => {
             {
               element: (
                 <PublicProjectsScreen
-                  nextPage={null}
+                  nextCursor={null}
                   projects={[]}
                   stats={{
                     featuredCount: 0,

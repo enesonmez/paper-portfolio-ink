@@ -5,7 +5,7 @@ import { PUBLIC_PROJECTS_COPY } from "./public-projects.shared";
 import { PublicProjectsFeed } from "./components/public-projects-feed";
 
 interface PublicProjectsScreenProps {
-  nextPage: PublicProjectsLoaderData["nextPage"];
+  nextCursor: PublicProjectsLoaderData["nextCursor"];
   projects: PublicProjectsLoaderData["projects"];
   stats: PublicProjectsLoaderData["stats"];
 }
@@ -23,7 +23,7 @@ const STAT_LABELS = {
 } as const;
 
 export function PublicProjectsScreen({
-  nextPage,
+  nextCursor,
   projects,
   stats,
 }: PublicProjectsScreenProps) {
@@ -75,7 +75,7 @@ export function PublicProjectsScreen({
           </p>
         </section>
       ) : (
-        <PublicProjectsFeed initialNextPage={nextPage} initialProjects={projects} />
+        <PublicProjectsFeed initialNextCursor={nextCursor} initialProjects={projects} />
       )}
     </main>
   );

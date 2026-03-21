@@ -46,5 +46,7 @@ export async function loader({
 export default function BlogPage() {
   const loaderData = useLoaderData<typeof loader>();
 
-  return <PublicBlogScreen nextPage={loaderData.nextPage} posts={loaderData.posts} />;
+  return (
+    <PublicBlogScreen nextCursor={loaderData.nextCursor} posts={loaderData.posts} />
+  );
 }

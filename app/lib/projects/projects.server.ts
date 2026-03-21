@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, lt, ne, or, sql } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { projects } from "../../../db/schema";
@@ -46,7 +46,7 @@ export interface PublicProjectCard {
 
 export interface PublicProjectsPage {
   items: PublicProjectCard[];
-  nextPage: number | null;
+  nextCursor: string | null;
 }
 
 export interface PublicProjectsStats {
@@ -61,6 +61,50 @@ function formatProjectDate(value: Date) {
 
 function normalizeNullableUrl(value: string) {
   return value.length > 0 ? value : null;
+}
+
+interface PublicProjectsCursorInput {
+  createdAtIso: string;
+  isFeatured: boolean;
+  slug: string;
+  sortOrder: number;
+}
+
+interface PublicProjectsCursorRecord {
+  createdAt: Date;
+  isFeatured: boolean;
+  slug: string;
+  sortOrder: number;
+}
+
+function encodePublicProjectsCursor(cursor: PublicProjectsCursorInput) {
+  return JSON.stringify(cursor);
+}
+
+function buildPublicProjectsCursorWhere(cursor: PublicProjectsCursorRecord) {
+  const sharedFeaturedBranch = [
+    and(
+      eq(projects.isFeatured, cursor.isFeatured),
+      gt(projects.sortOrder, cursor.sortOrder),
+    ),
+    and(
+      eq(projects.isFeatured, cursor.isFeatured),
+      eq(projects.sortOrder, cursor.sortOrder),
+      lt(projects.createdAt, cursor.createdAt),
+    ),
+    and(
+      eq(projects.isFeatured, cursor.isFeatured),
+      eq(projects.sortOrder, cursor.sortOrder),
+      eq(projects.createdAt, cursor.createdAt),
+      gt(projects.slug, cursor.slug),
+    ),
+  ];
+
+  if (cursor.isFeatured) {
+    return or(eq(projects.isFeatured, false), ...sharedFeaturedBranch);
+  }
+
+  return or(...sharedFeaturedBranch);
 }
 
 function toProjectOverview(project: {
@@ -157,9 +201,8 @@ export async function listPublicFeaturedProjects(
 export async function listPublicProjectsPage(
   db: AppDb,
   pageSize: number,
-  page: number,
+  cursor?: PublicProjectsCursorRecord | null,
 ): Promise<PublicProjectsPage> {
-  const offset = (page - 1) * pageSize;
   const result = await db
     .select({
       coverImageUrl: projects.coverImageUrl,
@@ -169,22 +212,30 @@ export async function listPublicProjectsPage(
       liveUrl: projects.liveUrl,
       repositoryUrl: projects.repositoryUrl,
       slug: projects.slug,
+      sortOrder: projects.sortOrder,
       summary: projects.summary,
       title: projects.title,
     })
     .from(projects)
-    .where(eq(projects.status, PROJECT_STATUS.published))
+    .where(
+      cursor
+        ? and(
+            eq(projects.status, PROJECT_STATUS.published),
+            buildPublicProjectsCursorWhere(cursor),
+          )
+        : eq(projects.status, PROJECT_STATUS.published),
+    )
     .orderBy(
       desc(projects.isFeatured),
       asc(projects.sortOrder),
       desc(projects.createdAt),
       asc(projects.slug),
     )
-    .limit(pageSize + 1)
-    .offset(offset);
+    .limit(pageSize + 1);
 
   const hasMore = result.length > pageSize;
-  const items = result.slice(0, pageSize).map((project) => ({
+  const visibleItems = result.slice(0, pageSize);
+  const items = visibleItems.map((project) => ({
     coverImageUrl: project.coverImageUrl,
     createdAtLabel: formatProjectDate(project.createdAt),
     description: project.description,
@@ -195,10 +246,19 @@ export async function listPublicProjectsPage(
     summary: project.summary,
     title: project.title,
   }));
+  const lastVisibleItem = visibleItems.at(-1);
 
   return {
     items,
-    nextPage: hasMore ? page + 1 : null,
+    nextCursor:
+      hasMore && lastVisibleItem
+        ? encodePublicProjectsCursor({
+            createdAtIso: lastVisibleItem.createdAt.toISOString(),
+            isFeatured: lastVisibleItem.isFeatured,
+            slug: lastVisibleItem.slug,
+            sortOrder: lastVisibleItem.sortOrder,
+          })
+        : null,
   };
 }
 

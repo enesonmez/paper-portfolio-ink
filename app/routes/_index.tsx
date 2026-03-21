@@ -12,8 +12,8 @@ export function meta() {
   ];
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
-  return loadPublicHomeData(context);
+export async function loader({ context, request }: Route.LoaderArgs) {
+  return loadPublicHomeData(context, request);
 }
 
 export default function HomePage() {

@@ -3,6 +3,9 @@ import type * as ProjectFormServerModule from "../../app/lib/projects/project-fo
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
+  cacheDeleteMock,
+  cacheGetMock,
+  cacheSetMock,
   createProjectMock,
   deleteProjectMock,
   findAvailableProjectSlugMock,
@@ -11,6 +14,9 @@ const {
   parseProjectFormDataMock,
   updateProjectMock,
 } = vi.hoisted(() => ({
+  cacheDeleteMock: vi.fn(),
+  cacheGetMock: vi.fn(),
+  cacheSetMock: vi.fn(),
   createProjectMock: vi.fn(),
   deleteProjectMock: vi.fn(),
   findAvailableProjectSlugMock: vi.fn(),
@@ -42,10 +48,19 @@ vi.mock("../../app/lib/projects/project-form.server", async () => {
 
 describe("dashboard projects server", () => {
   const context = {
+    cache: {
+      delete: cacheDeleteMock,
+      get: cacheGetMock,
+      set: cacheSetMock,
+    },
     db: { query: {} } as never,
+    runtime: { platform: "node" as const },
   } as unknown as AppLoadContext;
 
   beforeEach(() => {
+    cacheDeleteMock.mockReset();
+    cacheGetMock.mockReset();
+    cacheSetMock.mockReset();
     createProjectMock.mockReset();
     deleteProjectMock.mockReset();
     findAvailableProjectSlugMock.mockReset();
@@ -105,5 +120,35 @@ describe("dashboard projects server", () => {
         status: 409,
       },
     });
+  });
+
+  it("purges the public project caches after a delete mutation", async () => {
+    const { handleDashboardProjectsAction } =
+      await import("../../app/features/dashboard/projects/dashboard-projects.server");
+
+    const request = new Request("http://localhost:3000/dashboard/projects", {
+      body: new URLSearchParams({
+        intent: "delete",
+        projectId: "project-1",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    const response = await handleDashboardProjectsAction(context, request);
+
+    if (!(response instanceof Response)) {
+      throw new Error("Expected redirect response after delete action");
+    }
+
+    expect(deleteProjectMock).toHaveBeenCalledWith({ query: {} }, "project-1");
+    expect(cacheDeleteMock).toHaveBeenCalledWith(
+      "http://localhost:3000/__cache/public/home-data",
+    );
+    expect(cacheDeleteMock).toHaveBeenCalledWith(
+      "http://localhost:3000/__cache/public/projects/page-1",
+    );
   });
 });

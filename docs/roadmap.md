@@ -39,7 +39,7 @@
 
 ## Phase 5: Optimization & Launch
 
-- [ ] Cloudflare Pages için `loader` seviyesinde Edge Caching (Cache-Control headers) stratejilerinin uygulanması.
+- [x] Cloudflare Pages için `loader` seviyesinde Edge Caching (Cache-Control headers) stratejilerinin uygulanması.
 - [ ] SEO standartları için `sitemap.xml` ve `robots.txt` rotalarının dinamik olarak eklenmesi.
 - [ ] Semantic HTML, dinamik meta yönetimi ve LCP/FID/CLS optimizasyonun yapılması.
 - [ ] Görsellerin ve fontların performans optimizasyonu (Lighthouse kontrolleri).

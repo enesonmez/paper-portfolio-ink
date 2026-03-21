@@ -3,11 +3,11 @@ import { PUBLIC_BLOG_COPY } from "./public-blog.shared";
 import { PublicBlogFeed } from "./components/public-blog-feed";
 
 interface PublicBlogScreenProps {
-  nextPage: number | null;
+  nextCursor: string | null;
   posts: PublicPostListItem[];
 }
 
-export function PublicBlogScreen({ nextPage, posts }: PublicBlogScreenProps) {
+export function PublicBlogScreen({ nextCursor, posts }: PublicBlogScreenProps) {
   return (
     <main className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:px-8 md:py-16 lg:px-12 lg:py-20">
       <section className="grid gap-5">
@@ -23,7 +23,7 @@ export function PublicBlogScreen({ nextPage, posts }: PublicBlogScreenProps) {
       </section>
 
       {posts.length > 0 ? (
-        <PublicBlogFeed initialNextPage={nextPage} initialPosts={posts} />
+        <PublicBlogFeed initialNextCursor={nextCursor} initialPosts={posts} />
       ) : (
         <section className="bg-card grid min-h-96 content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
           <p className="text-muted-foreground text-sm tracking-[0.08em] uppercase">

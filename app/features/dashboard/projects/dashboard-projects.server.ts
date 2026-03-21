@@ -1,6 +1,8 @@
-import { data, redirect } from "react-router";
+import { data, redirect, type AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
+import { purgePublicHomeDataCache } from "~/features/public/home/public-home.server";
+import { purgePublicProjectsDataCache } from "~/features/public/projects/public-projects.server";
 import {
   buildProjectFormValues,
   type ProjectFormState,
@@ -31,9 +33,7 @@ import {
   type DashboardProjectsLoaderData,
 } from "./dashboard-projects.shared";
 
-interface DbContextShape {
-  db: ReturnType<typeof getDbFromContext>;
-}
+type DbContextShape = Pick<AppLoadContext, "cache" | "db" | "runtime">;
 
 type ProjectActionValues = Omit<ProjectFormState["values"], "sortOrder"> & {
   sortOrder?: number | string;
@@ -113,6 +113,10 @@ export async function handleDashboardProjectsAction(
     }
 
     await deleteProject(db, projectId);
+    await Promise.all([
+      purgePublicHomeDataCache(context, request),
+      purgePublicProjectsDataCache(context, request),
+    ]);
 
     return redirect("/dashboard/projects");
   }
@@ -150,6 +154,11 @@ export async function handleDashboardProjectsAction(
       throw error;
     }
 
+    await Promise.all([
+      purgePublicHomeDataCache(context, request),
+      purgePublicProjectsDataCache(context, request),
+    ]);
+
     return redirect("/dashboard/projects");
   }
 
@@ -166,6 +175,11 @@ export async function handleDashboardProjectsAction(
 
     throw error;
   }
+
+  await Promise.all([
+    purgePublicHomeDataCache(context, request),
+    purgePublicProjectsDataCache(context, request),
+  ]);
 
   return redirect("/dashboard/projects");
 }

@@ -3,6 +3,9 @@ import type * as SkillFormServerModule from "../../app/lib/skills/skill-form.ser
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
+  cacheDeleteMock,
+  cacheGetMock,
+  cacheSetMock,
   createSkillMock,
   deleteSkillMock,
   isSkillSlugTakenMock,
@@ -11,6 +14,9 @@ const {
   requireSessionMock,
   updateSkillMock,
 } = vi.hoisted(() => ({
+  cacheDeleteMock: vi.fn(),
+  cacheGetMock: vi.fn(),
+  cacheSetMock: vi.fn(),
   createSkillMock: vi.fn(),
   deleteSkillMock: vi.fn(),
   isSkillSlugTakenMock: vi.fn(),
@@ -45,11 +51,19 @@ vi.mock("../../app/lib/auth/session.server", () => ({
 
 describe("dashboard skills server", () => {
   const context = {
+    cache: {
+      delete: cacheDeleteMock,
+      get: cacheGetMock,
+      set: cacheSetMock,
+    },
     db: { query: {} } as never,
     runtime: { platform: "node" },
   } as unknown as AppLoadContext;
 
   beforeEach(() => {
+    cacheDeleteMock.mockReset();
+    cacheGetMock.mockReset();
+    cacheSetMock.mockReset();
     createSkillMock.mockReset();
     deleteSkillMock.mockReset();
     isSkillSlugTakenMock.mockReset();
@@ -275,6 +289,9 @@ describe("dashboard skills server", () => {
     );
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe("/dashboard/skills");
+    expect(cacheDeleteMock).toHaveBeenCalledWith(
+      "http://localhost:3000/__cache/public/home-data",
+    );
   });
 
   it("deletes a skill row when a valid delete action is posted", async () => {
@@ -308,5 +325,8 @@ describe("dashboard skills server", () => {
     expect(deleteSkillMock).toHaveBeenCalledWith({ query: {} }, "skill-1");
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe("/dashboard/skills");
+    expect(cacheDeleteMock).toHaveBeenCalledWith(
+      "http://localhost:3000/__cache/public/home-data",
+    );
   });
 });
