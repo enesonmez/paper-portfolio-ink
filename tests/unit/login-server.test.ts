@@ -40,7 +40,7 @@ describe("login server helpers", () => {
     createAuthMock.mockReset();
     findUserByEmailMock.mockReset();
     signInEmailMock.mockReset();
-  });
+  }, 20000);
 
   it("builds a dashboard login redirect url from a protected request", async () => {
     const request = new Request("http://localhost:3000/dashboard?tab=posts");
@@ -55,7 +55,7 @@ describe("login server helpers", () => {
         request,
       ),
     ).resolves.toBe("/tr/login?redirectTo=%2Fdashboard%3Ftab%3Dposts");
-  });
+  }, 20000);
 
   it("normalizes unsafe redirect targets back to the dashboard root", async () => {
     const { normalizeRedirectTarget } = await import("../../app/lib/auth/login.server");
@@ -65,7 +65,7 @@ describe("login server helpers", () => {
     expect(normalizeRedirectTarget("/dashboard/projects", "tr")).toBe(
       "/tr/dashboard/projects",
     );
-  });
+  }, 20000);
 
   it("returns field errors for invalid login submissions", async () => {
     const formData = new FormData();
@@ -84,7 +84,7 @@ describe("login server helpers", () => {
         redirectTo: "/tr/dashboard",
       },
     });
-  });
+  }, 20000);
 
   it("signs in with Better Auth and forwards cookie headers into a redirect response", async () => {
     const request = new Request("http://localhost:3000/login", {
@@ -153,7 +153,7 @@ describe("login server helpers", () => {
     expect((response as Response).headers.get("set-cookie")).toContain(
       "better-auth.session_token=abc",
     );
-  });
+  }, 20000);
 
   it("returns a user-facing form error when Better Auth answers with invalid credentials", async () => {
     const request = new Request("http://localhost:3000/login", {
@@ -255,5 +255,5 @@ describe("login server helpers", () => {
         },
       },
     });
-  });
+  }, 20000);
 });

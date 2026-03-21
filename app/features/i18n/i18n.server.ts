@@ -3,7 +3,7 @@ import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../db/context";
 import { locales, translations } from "../../../db/schema";
-import { loadCachedData } from "~/lib/cache/data-cache.server";
+import { invalidateCachedData, loadCachedData } from "~/lib/cache/data-cache.server";
 import { z } from "zod";
 
 import {
@@ -190,6 +190,34 @@ export async function loadSupportedLocales(context: AppLoadContext, request: Req
   supportedLocalesRequestCache.set(request, promise);
 
   return promise;
+}
+
+export async function purgeSupportedLocalesCache(
+  context: AppLoadContext,
+  request: Request,
+) {
+  await invalidateCachedData(context, buildSupportedLocalesCacheKey(request));
+}
+
+export async function purgeI18nLocaleCache(
+  context: AppLoadContext,
+  request: Request,
+  locale: AppLocale,
+) {
+  await invalidateCachedData(context, buildI18nCacheKey(request, locale));
+}
+
+export async function purgeI18nDataCache(
+  context: AppLoadContext,
+  request: Request,
+  localeCodes: readonly AppLocale[],
+) {
+  await Promise.all([
+    purgeSupportedLocalesCache(context, request),
+    ...localeCodes.map((localeCode) =>
+      purgeI18nLocaleCache(context, request, localeCode),
+    ),
+  ]);
 }
 
 export async function loadI18nRuntimeState(

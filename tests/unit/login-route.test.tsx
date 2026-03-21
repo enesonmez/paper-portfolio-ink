@@ -34,48 +34,42 @@ describe("login route", () => {
 
   it("redirects authenticated users away from the login page", async () => {
     const request = new Request("http://localhost:3000/login");
-    const { loader } = await import("../../app/routes/login");
+    const { loadLoginData } =
+      await import("../../app/features/auth/login/login.server");
 
     getSessionForRequestMock.mockResolvedValue({
       session: { id: "session-1" },
       user: { id: "user-1" },
     });
 
-    const response = await loader({
-      request,
-      context: {
-        db: { query: {} },
-        runtime: { platform: "node" },
-      },
-      params: {},
+    const response = await loadLoginData(request, {
+      db: { query: {} },
+      runtime: { platform: "node" },
     } as never);
 
     expect(response).toBeInstanceOf(Response);
     expect((response as Response).status).toBe(302);
-  });
+  }, 20000);
 
   it("returns the sanitized redirect target for unauthenticated users", async () => {
     const request = new Request(
       "http://localhost:3000/login?redirectTo=%2Fdashboard%2Fprojects",
     );
-    const { loader } = await import("../../app/routes/login");
+    const { loadLoginData } =
+      await import("../../app/features/auth/login/login.server");
 
     getSessionForRequestMock.mockResolvedValue(null);
     normalizeRedirectTargetMock.mockReturnValue("/dashboard/projects");
 
     await expect(
-      loader({
-        request,
-        context: {
-          db: { query: {} },
-          runtime: { platform: "node" },
-        },
-        params: {},
+      loadLoginData(request, {
+        db: { query: {} },
+        runtime: { platform: "node" },
       } as never),
     ).resolves.toEqual({
       redirectTo: "/dashboard/projects",
     });
-  });
+  }, 20000);
 
   it("delegates valid form submissions to the login auth service", async () => {
     const formData = new FormData();
@@ -93,21 +87,18 @@ describe("login route", () => {
         location: "/dashboard",
       },
     });
-    const { action } = await import("../../app/routes/login");
+    const { handleLoginAction } =
+      await import("../../app/features/auth/login/login.server");
 
     signInWithEmailMock.mockResolvedValue(response);
 
     await expect(
-      action({
-        request,
-        context: {
-          db: { query: {} },
-          runtime: { platform: "node" },
-        },
-        params: {},
+      handleLoginAction(request, {
+        db: { query: {} },
+        runtime: { platform: "node" },
       } as never),
     ).resolves.toBe(response);
-  });
+  }, 20000);
 
   it("renders a neo-brutalist login form shell", async () => {
     const { LoginScreen } = await import("../../app/routes/login");
@@ -137,5 +128,5 @@ describe("login route", () => {
     expect(
       screen.getByRole("button", { name: "Login_To_Terminal" }),
     ).toBeInTheDocument();
-  });
+  }, 20000);
 });

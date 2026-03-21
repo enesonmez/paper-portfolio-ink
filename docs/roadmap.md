@@ -36,7 +36,7 @@
 - [x] Logout yapısının oluşturulması.
 - [x] Beceriler için `/skills` menüsü altında listeleme, create ve delete işlemleri.
 - [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı içine `/account` tabı ekle. İçerisinde email, linkedin, github, x, instagram linklerini alacak yapı olsun. Form şeklinde olmasın. Listelensin üzerine tıklayınca po-up çıksın ve orada kayıt edilsin. DB de configuration-parameter tablosu oluştur ve oraya key-value şeklinde kaydet.
-- [ ] Locale ve Transalations tablolarını yönetebileceğim CRUD işlemlerinin yapılması. Cache odaklı geliştirilecek. Menü `/resources` olsun. İçerisinde 'Tabbed Settings Page' tasarımı olsun. Tablarda locale ve translations olsun.
+- [x] Locale ve Transalations tablolarını yönetebileceğim CRUD işlemlerinin yapılması. Cache odaklı geliştirilecek. Menü `/resources` olsun. İçerisinde 'Tabbed Settings Page' tasarımı olsun. Tablarda locale ve translations olsun.
 
 ## Phase 5: Optimization & Launch
 

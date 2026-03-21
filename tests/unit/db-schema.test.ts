@@ -3,11 +3,13 @@ import { describe, expect, it } from "vitest";
 
 import {
   accounts,
+  locales,
   posts,
   projects,
   schema,
   sessions,
   skills,
+  translations,
   users,
   verifications,
 } from "../../db/schema";
@@ -24,6 +26,8 @@ describe("database schema", () => {
       projects,
       sessions,
       skills,
+      locales,
+      translations,
       users,
       verifications,
     });
@@ -109,6 +113,33 @@ describe("database schema", () => {
       ]),
     );
     expect(config.indexes).toHaveLength(2);
+  });
+
+  it("defines the locales table with active/default registry metadata", () => {
+    const config = getTableConfig(locales);
+
+    expect(getColumnNames(locales)).toEqual(
+      expect.arrayContaining([
+        "code",
+        "label",
+        "is_active",
+        "is_default",
+        "sort_order",
+        "created_at",
+        "updated_at",
+      ]),
+    );
+    expect(config.indexes).toHaveLength(2);
+  });
+
+  it("defines the translations table with locale foreign key and composite identity", () => {
+    const config = getTableConfig(translations);
+
+    expect(getColumnNames(translations)).toEqual(
+      expect.arrayContaining(["locale", "key", "value", "created_at", "updated_at"]),
+    );
+    expect(config.foreignKeys).toHaveLength(1);
+    expect(config.indexes).toHaveLength(1);
   });
 
   it("defines the sessions table with Better Auth session columns", () => {

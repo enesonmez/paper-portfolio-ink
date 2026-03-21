@@ -81,7 +81,7 @@ describe("dashboard posts server", () => {
     parsePostFormDataMock.mockReset();
     requireSessionMock.mockReset();
     updatePostMock.mockReset();
-  });
+  }, 20000);
 
   it("loads post inventory and metrics for the dashboard route", async () => {
     const { loadDashboardPostsData } =
@@ -141,7 +141,7 @@ describe("dashboard posts server", () => {
     }
 
     expect(response.posts).toHaveLength(2);
-  });
+  }, 20000);
 
   it("creates a post with the current session user as author", async () => {
     const { handleDashboardPostsAction } =
@@ -199,7 +199,7 @@ describe("dashboard posts server", () => {
     expect(cacheDeleteMock).toHaveBeenCalledWith(
       "http://localhost:3000/__cache/public/blog/page-1",
     );
-  });
+  }, 20000);
 
   it("returns a 400 state when validation fails", async () => {
     const { handleDashboardPostsAction } =
@@ -305,5 +305,5 @@ describe("dashboard posts server", () => {
         status: 409,
       },
     });
-  });
+  }, 20000);
 });

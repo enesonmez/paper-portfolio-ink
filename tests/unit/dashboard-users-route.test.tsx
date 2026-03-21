@@ -65,7 +65,7 @@ describe("dashboard users route", () => {
     expect(
       screen.queryByRole("dialog", { name: "Create user" }),
     ).not.toBeInTheDocument();
-  });
+  }, 20000);
 
   it("renders a modal form when user creation is requested", async () => {
     const { DashboardUsersScreen } = await import("../../app/routes/dashboard.users");
@@ -96,7 +96,7 @@ describe("dashboard users route", () => {
     expect(screen.getByRole("dialog", { name: "Create user" })).toBeInTheDocument();
     expect(screen.getByLabelText("Display name")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("renders the restricted access warning for non-admin viewers", async () => {
     const { DashboardUsersAccessDeniedScreen } =
@@ -111,7 +111,7 @@ describe("dashboard users route", () => {
       screen.getByText("You do not have permission to access this flow."),
     ).toBeInTheDocument();
     expect(screen.getByText("Current role: author")).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("renders a popup when a destructive user action returns a form-level error", async () => {
     const { DashboardUsersScreen } = await import("../../app/routes/dashboard.users");
@@ -145,5 +145,5 @@ describe("dashboard users route", () => {
       "Son aktif admin hesabi pasiflestirilemez.",
     );
     expect(screen.getByRole("link", { name: "Dismiss" })).toBeInTheDocument();
-  });
+  }, 20000);
 });

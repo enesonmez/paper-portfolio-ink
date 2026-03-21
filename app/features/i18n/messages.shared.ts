@@ -195,6 +195,7 @@ const tr = {
   "dashboard.layout.navDashboard": "Dashboard",
   "dashboard.layout.navPosts": "Yazilar",
   "dashboard.layout.navProjects": "Projeler",
+  "dashboard.layout.navResources": "Kaynaklar",
   "dashboard.layout.navSkills": "Beceriler",
   "dashboard.layout.navUsers": "Kullanicilar",
   "dashboard.layout.navSettings": "Ayarlar",
@@ -365,6 +366,106 @@ const tr = {
   "dashboard.skills.form.summary.label": "Ozet",
   "dashboard.skills.form.summary.placeholder":
     "Kuresel urun sistemleri icin edge veritabani workflowlari.",
+  "dashboard.resources.actionBlockedTitle": "Aksiyon engellendi",
+  "dashboard.resources.cacheDescription":
+    "Locale ve translations kayitlari ayni cache invalidation hatti ile temizlenir. Locale degisirse locale listesi ve ilgili mesaj cache'leri birlikte bosaltilir.",
+  "dashboard.resources.cacheEyebrow": "Cache odakli ayarlar",
+  "dashboard.resources.createLocaleActionLabel": "Locale ekle",
+  "dashboard.resources.createLocaleDescription":
+    "Yeni bir locale kaydi ekle; aktif/default durumu ve sira bilgisi cache ile uyumlu sekilde kaydedilsin.",
+  "dashboard.resources.createLocaleTitle": "Locale olustur",
+  "dashboard.resources.createTranslationActionLabel": "Translation ekle",
+  "dashboard.resources.createTranslationDescription":
+    "Secili locale icin yeni bir mesaj anahtari ekle ve request-time cache'i aninda guncelle.",
+  "dashboard.resources.createTranslationTitle": "Translation olustur",
+  "dashboard.resources.currentRoleLabel": "Mevcut rol",
+  "dashboard.resources.defaultBadge": "Varsayilan",
+  "dashboard.resources.editLocaleActionLabel": "Locale guncelle",
+  "dashboard.resources.editLocaleDescription":
+    "Locale kodu, etiketi ve aktif/default durumu tek modal yuzeyinden guncellenir.",
+  "dashboard.resources.editLocaleTitle": "Locale duzenle",
+  "dashboard.resources.editTranslationActionLabel": "Translation guncelle",
+  "dashboard.resources.editTranslationDescription":
+    "Mesaj anahtari, locale baglantisi ve value icerigini duzenle.",
+  "dashboard.resources.editTranslationTitle": "Translation duzenle",
+  "dashboard.resources.emptyLocales": "Henuz locale kaydi yok.",
+  "dashboard.resources.emptyTranslations":
+    "Bu locale icin henuz translation kaydi yok.",
+  "dashboard.resources.localeFilterTitle": "Translation locale filtresi",
+  "dashboard.resources.localeInventoryEyebrow": "Locale registry",
+  "dashboard.resources.localeTabLabel": "Locales",
+  "dashboard.resources.metricActiveLocales": "Aktif locale",
+  "dashboard.resources.metricSelectedLocaleTranslations": "Secili locale mesaji",
+  "dashboard.resources.metricTotalLocales": "Toplam locale",
+  "dashboard.resources.metricTotalTranslations": "Toplam translation",
+  "dashboard.resources.registryTitle": "Resource ayarlari",
+  "dashboard.resources.restrictedDescription": "Bu flow icin erisim yetkiniz yoktur.",
+  "dashboard.resources.restrictedTitle": "Kisitli akis",
+  "dashboard.resources.clearSearchLabel": "Temizle",
+  "dashboard.resources.paginationNextLabel": "Sonraki",
+  "dashboard.resources.paginationPreviousLabel": "Onceki",
+  "dashboard.resources.searchEmptyState":
+    "Bu arama ile eslesen translation kaydi bulunamadi.",
+  "dashboard.resources.searchTitle": "Translation arama",
+  "dashboard.resources.tabDescription":
+    "Locale registry ve translations tablolarini ayni settings yuzeyinde yonet.",
+  "dashboard.resources.tableActionsLabel": "Aksiyonlar",
+  "dashboard.resources.tableCreatedPrefix": "Olusturuldu",
+  "dashboard.resources.tableLocaleCodeLabel": "Locale",
+  "dashboard.resources.tableLocaleMetaLabel": "Meta",
+  "dashboard.resources.tableLocaleStatusLabel": "Durum",
+  "dashboard.resources.tableSortPrefix": "Sira",
+  "dashboard.resources.tableTranslationsPrefix": "Mesaj",
+  "dashboard.resources.tableTranslationKeyLabel": "Anahtar",
+  "dashboard.resources.tableTranslationUpdatedLabel": "Zaman",
+  "dashboard.resources.tableTranslationValueLabel": "Deger",
+  "dashboard.resources.tableUpdatedPrefix": "Guncellendi",
+  "dashboard.resources.translationInventoryEyebrow": "Translation registry",
+  "dashboard.resources.translationTabLabel": "Translations",
+  "dashboard.resources.form.cancelLabel": "Iptal",
+  "dashboard.resources.form.error.createLocaleDuplicateCode":
+    "Bu locale kodu zaten kayitli.",
+  "dashboard.resources.form.error.createTranslationDuplicateKey":
+    "Bu translation anahtari secili locale icin zaten var.",
+  "dashboard.resources.form.error.deleteLocaleMissing": "Silinecek locale bulunamadi.",
+  "dashboard.resources.form.error.deleteLocaleRestricted":
+    "Son aktif/default locale kaldirilamaz.",
+  "dashboard.resources.form.error.deleteTranslationMissing":
+    "Silinecek translation bulunamadi.",
+  "dashboard.resources.form.error.forbidden": "Bu flow icin erisim yetkiniz yoktur.",
+  "dashboard.resources.form.error.localeMissing":
+    "Guncellenecek locale kaydi bulunamadi.",
+  "dashboard.resources.form.error.translationLocaleMissing":
+    "Translation icin gecerli bir locale sec.",
+  "dashboard.resources.form.error.translationMissing":
+    "Guncellenecek translation kaydi bulunamadi.",
+  "dashboard.resources.form.error.updateLocaleDuplicateCode":
+    "Bu locale kodu baska bir kayitta zaten kullaniliyor.",
+  "dashboard.resources.form.error.updateLocaleMissing":
+    "Guncellenecek locale bulunamadi.",
+  "dashboard.resources.form.error.updateTranslationDuplicateKey":
+    "Bu translation anahtari baska bir kayitta zaten kullaniliyor.",
+  "dashboard.resources.form.error.updateTranslationMissing":
+    "Guncellenecek translation bulunamadi.",
+  "dashboard.resources.form.locale.activeLabel": "Aktiflik",
+  "dashboard.resources.form.locale.code.label": "Locale kodu",
+  "dashboard.resources.form.locale.code.placeholder": "de",
+  "dashboard.resources.form.locale.defaultLabel": "Varsayilan locale",
+  "dashboard.resources.form.locale.defaultNo": "Hayir",
+  "dashboard.resources.form.locale.defaultYes": "Evet",
+  "dashboard.resources.form.locale.label.label": "Etiket",
+  "dashboard.resources.form.locale.label.placeholder": "DE",
+  "dashboard.resources.form.locale.sortOrder.label": "Siralama",
+  "dashboard.resources.form.locale.sortOrder.placeholder": "2",
+  "dashboard.resources.form.translation.key.label": "Mesaj anahtari",
+  "dashboard.resources.form.translation.key.placeholder":
+    "dashboard.layout.navDashboard",
+  "dashboard.resources.form.translation.locale.label": "Locale",
+  "dashboard.resources.form.translation.search.label": "Ara",
+  "dashboard.resources.form.translation.search.placeholder": "Key veya value ile ara",
+  "dashboard.resources.form.translation.value.label": "Deger",
+  "dashboard.resources.form.translation.value.placeholder":
+    "Dashboard ana metni buraya yazilir.",
   "dashboard.users.actionBlockedTitle": "Aksiyon engellendi",
   "dashboard.users.createActionLabel": "Yeni kullanici olustur",
   "dashboard.users.createDescription":
@@ -529,6 +630,24 @@ const tr = {
   "validation.skill.summary.max": "Beceri ozeti en fazla 180 karakter olabilir.",
   "validation.skill.sortOrder.int": "Siralama tam sayi olmali.",
   "validation.skill.sortOrder.min": "Siralama degeri 0 veya daha buyuk olmali.",
+  "validation.resource.locale.code": "Gecerli bir locale kodu gir.",
+  "validation.resource.locale.label.min": "Locale etiketi en az 2 karakter olmali.",
+  "validation.resource.locale.label.max":
+    "Locale etiketi en fazla 48 karakter olabilir.",
+  "validation.resource.locale.sortOrder.int": "Siralama tam sayi olmali.",
+  "validation.resource.locale.sortOrder.min":
+    "Siralama degeri 0 veya daha buyuk olmali.",
+  "validation.resource.locale.defaultActive": "Varsayilan locale pasif olamaz.",
+  "validation.resource.translation.key.min":
+    "Translation anahtari en az 2 karakter olmali.",
+  "validation.resource.translation.key.max":
+    "Translation anahtari en fazla 140 karakter olabilir.",
+  "validation.resource.translation.key.pattern":
+    "Translation anahtari yalnizca harf, rakam, nokta, tire ve alt cizgi icerebilir.",
+  "validation.resource.translation.locale": "Gecerli bir locale sec.",
+  "validation.resource.translation.value.min": "Translation degeri bos birakilamaz.",
+  "validation.resource.translation.value.max":
+    "Translation degeri en fazla 4000 karakter olabilir.",
   "validation.user.avatarUrl": "Gecerli bir avatar URL gir.",
   "validation.user.bio.max": "Biyografi en fazla 500 karakter olabilir.",
   "validation.user.displayName.min": "Gorunen ad en az 2 karakter olmali.",
@@ -740,6 +859,7 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.layout.navDashboard": "Dashboard",
   "dashboard.layout.navPosts": "Posts",
   "dashboard.layout.navProjects": "Projects",
+  "dashboard.layout.navResources": "Resources",
   "dashboard.layout.navSkills": "Skills",
   "dashboard.layout.navUsers": "Users",
   "dashboard.layout.navSettings": "Settings",
@@ -917,6 +1037,108 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.skills.form.summary.label": "Summary",
   "dashboard.skills.form.summary.placeholder":
     "Edge database workflows for globally distributed product systems.",
+  "dashboard.resources.actionBlockedTitle": "Action blocked",
+  "dashboard.resources.cacheDescription":
+    "Locale and translation records share the same invalidation path. When a locale changes, both the locale list and related message caches are purged together.",
+  "dashboard.resources.cacheEyebrow": "Cache-first settings",
+  "dashboard.resources.createLocaleActionLabel": "Create locale",
+  "dashboard.resources.createLocaleDescription":
+    "Add a new locale record with active/default state and ordering metadata that stays in sync with the runtime cache.",
+  "dashboard.resources.createLocaleTitle": "Create locale",
+  "dashboard.resources.createTranslationActionLabel": "Create translation",
+  "dashboard.resources.createTranslationDescription":
+    "Add a new message key for the selected locale and refresh the request-time cache immediately.",
+  "dashboard.resources.createTranslationTitle": "Create translation",
+  "dashboard.resources.currentRoleLabel": "Current role",
+  "dashboard.resources.defaultBadge": "Default",
+  "dashboard.resources.editLocaleActionLabel": "Update locale",
+  "dashboard.resources.editLocaleDescription":
+    "Update locale code, label, and active/default state from a single modal surface.",
+  "dashboard.resources.editLocaleTitle": "Edit locale",
+  "dashboard.resources.editTranslationActionLabel": "Update translation",
+  "dashboard.resources.editTranslationDescription":
+    "Update the message key, locale binding, and value content.",
+  "dashboard.resources.editTranslationTitle": "Edit translation",
+  "dashboard.resources.emptyLocales": "No locales registered yet.",
+  "dashboard.resources.emptyTranslations":
+    "No translations have been registered for this locale yet.",
+  "dashboard.resources.localeFilterTitle": "Translation locale filter",
+  "dashboard.resources.localeInventoryEyebrow": "Locale registry",
+  "dashboard.resources.localeTabLabel": "Locales",
+  "dashboard.resources.metricActiveLocales": "Active locales",
+  "dashboard.resources.metricSelectedLocaleTranslations": "Selected locale messages",
+  "dashboard.resources.metricTotalLocales": "Total locales",
+  "dashboard.resources.metricTotalTranslations": "Total translations",
+  "dashboard.resources.registryTitle": "Resource settings",
+  "dashboard.resources.restrictedDescription":
+    "You do not have permission to access this flow.",
+  "dashboard.resources.restrictedTitle": "Restricted flow",
+  "dashboard.resources.clearSearchLabel": "Clear",
+  "dashboard.resources.paginationNextLabel": "Next",
+  "dashboard.resources.paginationPreviousLabel": "Previous",
+  "dashboard.resources.searchEmptyState": "No translation record matched this search.",
+  "dashboard.resources.searchTitle": "Translation search",
+  "dashboard.resources.tabDescription":
+    "Manage locale registry and translation tables from the same settings surface.",
+  "dashboard.resources.tableActionsLabel": "Actions",
+  "dashboard.resources.tableCreatedPrefix": "Created",
+  "dashboard.resources.tableLocaleCodeLabel": "Locale",
+  "dashboard.resources.tableLocaleMetaLabel": "Meta",
+  "dashboard.resources.tableLocaleStatusLabel": "Status",
+  "dashboard.resources.tableSortPrefix": "Sort",
+  "dashboard.resources.tableTranslationsPrefix": "Messages",
+  "dashboard.resources.tableTranslationKeyLabel": "Key",
+  "dashboard.resources.tableTranslationUpdatedLabel": "Timing",
+  "dashboard.resources.tableTranslationValueLabel": "Value",
+  "dashboard.resources.tableUpdatedPrefix": "Updated",
+  "dashboard.resources.translationInventoryEyebrow": "Translation registry",
+  "dashboard.resources.translationTabLabel": "Translations",
+  "dashboard.resources.form.cancelLabel": "Cancel",
+  "dashboard.resources.form.error.createLocaleDuplicateCode":
+    "This locale code is already registered.",
+  "dashboard.resources.form.error.createTranslationDuplicateKey":
+    "This translation key already exists for the selected locale.",
+  "dashboard.resources.form.error.deleteLocaleMissing":
+    "The locale to delete could not be found.",
+  "dashboard.resources.form.error.deleteLocaleRestricted":
+    "The last active/default locale cannot be removed.",
+  "dashboard.resources.form.error.deleteTranslationMissing":
+    "The translation to delete could not be found.",
+  "dashboard.resources.form.error.forbidden":
+    "You do not have permission to access this flow.",
+  "dashboard.resources.form.error.localeMissing":
+    "The locale record to update could not be found.",
+  "dashboard.resources.form.error.translationLocaleMissing":
+    "Select a valid locale for the translation.",
+  "dashboard.resources.form.error.translationMissing":
+    "The translation record to update could not be found.",
+  "dashboard.resources.form.error.updateLocaleDuplicateCode":
+    "This locale code is already used by another record.",
+  "dashboard.resources.form.error.updateLocaleMissing":
+    "The locale to update could not be found.",
+  "dashboard.resources.form.error.updateTranslationDuplicateKey":
+    "This translation key is already used by another record.",
+  "dashboard.resources.form.error.updateTranslationMissing":
+    "The translation to update could not be found.",
+  "dashboard.resources.form.locale.activeLabel": "Active state",
+  "dashboard.resources.form.locale.code.label": "Locale code",
+  "dashboard.resources.form.locale.code.placeholder": "de",
+  "dashboard.resources.form.locale.defaultLabel": "Default locale",
+  "dashboard.resources.form.locale.defaultNo": "No",
+  "dashboard.resources.form.locale.defaultYes": "Yes",
+  "dashboard.resources.form.locale.label.label": "Label",
+  "dashboard.resources.form.locale.label.placeholder": "DE",
+  "dashboard.resources.form.locale.sortOrder.label": "Sort order",
+  "dashboard.resources.form.locale.sortOrder.placeholder": "2",
+  "dashboard.resources.form.translation.key.label": "Message key",
+  "dashboard.resources.form.translation.key.placeholder":
+    "dashboard.layout.navDashboard",
+  "dashboard.resources.form.translation.locale.label": "Locale",
+  "dashboard.resources.form.translation.search.label": "Search",
+  "dashboard.resources.form.translation.search.placeholder": "Search by key or value",
+  "dashboard.resources.form.translation.value.label": "Value",
+  "dashboard.resources.form.translation.value.placeholder":
+    "Write the dashboard copy here.",
   "dashboard.users.actionBlockedTitle": "Action blocked",
   "dashboard.users.createActionLabel": "Create new user",
   "dashboard.users.createDescription":
@@ -1085,6 +1307,23 @@ const en: Record<keyof typeof tr, string> = {
   "validation.skill.summary.max": "Skill summary can be at most 180 characters.",
   "validation.skill.sortOrder.int": "Sort order must be an integer.",
   "validation.skill.sortOrder.min": "Sort order must be greater than or equal to 0.",
+  "validation.resource.locale.code": "Enter a valid locale code.",
+  "validation.resource.locale.label.min": "Locale label must be at least 2 characters.",
+  "validation.resource.locale.label.max": "Locale label can be at most 48 characters.",
+  "validation.resource.locale.sortOrder.int": "Sort order must be an integer.",
+  "validation.resource.locale.sortOrder.min":
+    "Sort order must be greater than or equal to 0.",
+  "validation.resource.locale.defaultActive": "Default locale cannot be inactive.",
+  "validation.resource.translation.key.min":
+    "Translation key must be at least 2 characters.",
+  "validation.resource.translation.key.max":
+    "Translation key can be at most 140 characters.",
+  "validation.resource.translation.key.pattern":
+    "Translation key may only include letters, numbers, dots, hyphens, and underscores.",
+  "validation.resource.translation.locale": "Select a valid locale.",
+  "validation.resource.translation.value.min": "Translation value cannot be empty.",
+  "validation.resource.translation.value.max":
+    "Translation value can be at most 4000 characters.",
   "validation.user.avatarUrl": "Enter a valid avatar URL.",
   "validation.user.bio.max": "Bio can be at most 500 characters.",
   "validation.user.displayName.min": "Display name must be at least 2 characters.",
