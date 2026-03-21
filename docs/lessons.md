@@ -43,6 +43,9 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Slug yonetiminde en iyi desen, DB unique constraint hatasini son savunma olarak tutup once server tarafinda on-dogrulama ve slug onerisi yapmak oldu.
 - Kullanici yonetiminde rol kapilari, `isActive` modeli ve "last active admin" trigger'i gibi veri tabani destekli korumalar olmadan yalnizca UI tabanli bir kontrol yetersiz kaliyor.
 - Logout akisinin server-side `POST` davranisi ve cookie temizligi ile yapilmasi, mevcut session mimarisiyle en tutarli cozum oldu.
+- Skills gibi hafif dashboard registry'lerinde en dusuk riskli desen, ayni CRUD iskeletini role gate ile sarmalayip DB'de yalnizca string key saklayan merkezi bir icon registry ile Lucide bileşenlerini UI katmaninda cozmeye ve sira kontrolunu numeric `sortOrder` ile veri katmaninda tutmaya devam etmek oldu.
+- Action seviyesinde ayni `SkillFormState` seklini donen hata dallari cogalmaya basladiginda, ortak response factory ile `400/403/409` state'lerini tek yerden uretmek degisiklik maliyetini belirgin sekilde dusurdu.
+- Create/update action'lari ayni duplicate-check ve unique-constraint fallback desenini tasimaya basladiginda, mutation orchestration helper'i ve paylasilan persistence payload builder'i drift riskini azaltip yeni alan eklemeyi daha guvenli hale getirdi.
 
 ## 6. UI System Lessons
 

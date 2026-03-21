@@ -5,6 +5,7 @@ import {
   Newspaper,
   Settings,
   Users,
+  Wrench,
   type LucideIcon,
 } from "lucide-react";
 
@@ -52,6 +53,13 @@ const DASHBOARD_BASE_NAVIGATION: readonly DashboardNavigationItem[] = [
 ];
 
 const DASHBOARD_ADMIN_NAVIGATION: readonly DashboardNavigationItem[] = [
+  {
+    icon: Wrench,
+    kind: "link",
+    label: "Skills",
+    statusLabel: "Live",
+    to: "/dashboard/skills",
+  },
   {
     icon: Users,
     kind: "link",

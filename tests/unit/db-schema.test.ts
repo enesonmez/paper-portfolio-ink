@@ -7,6 +7,7 @@ import {
   projects,
   schema,
   sessions,
+  skills,
   users,
   verifications,
 } from "../../db/schema";
@@ -22,6 +23,7 @@ describe("database schema", () => {
       posts,
       projects,
       sessions,
+      skills,
       users,
       verifications,
     });
@@ -89,6 +91,24 @@ describe("database schema", () => {
       ]),
     );
     expect(config.indexes).toHaveLength(3);
+  });
+
+  it("defines the skills table with unique slug metadata", () => {
+    const config = getTableConfig(skills);
+
+    expect(getColumnNames(skills)).toEqual(
+      expect.arrayContaining([
+        "id",
+        "icon_key",
+        "name",
+        "sort_order",
+        "slug",
+        "summary",
+        "created_at",
+        "updated_at",
+      ]),
+    );
+    expect(config.indexes).toHaveLength(2);
   });
 
   it("defines the sessions table with Better Auth session columns", () => {

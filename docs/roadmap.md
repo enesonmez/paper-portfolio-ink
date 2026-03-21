@@ -22,6 +22,7 @@
 - [x] Ana sayfanın (Hero section, öne çıkan projeler, yetenekler/tech stack, sosyal medya ve özgeçmiş bölümü) geliştirilmesi.
 - [x] Projeler sayfası (`/projects`) ve proje kartları bileşenlerinin oluşturulması.
 - [x] Blog listeleme sayfası (`/blog`) ve SEO/Metadata uyumlu Blog Detay (`/blog/:slug`) sayfasının kodlanması.
+- [ ] Ana sayfadaki skill kısmı db'ye bağlansın. Eğer skill yoksa bu bölüm gösterilmesin.
 
 ## Phase 4: Admin Dashboard
 
@@ -33,7 +34,7 @@
 - [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı yap. Mock şekilde.
 - [x] Kullanıcılar için CRUD işlemlerinin yapılması.
 - [x] Logout yapısının oluşturulması.
-- [ ] Beceriler için `/skills` menüsü altında listeleme, create ve delete işlemleri.
+- [x] Beceriler için `/skills` menüsü altında listeleme, create ve delete işlemleri.
 - [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı içine `/account` tabı ekle. İçerisinde email, linkedin, github, x, instagram linklerini alacak yapı olsun. Form şeklinde olmasın. Listelensin üzerine tıklayınca po-up çıksın ve orada kayıt edilsin. DB de configuration-parameter tablosu oluştur ve oraya key-value şeklinde kaydet.
 
 ## Phase 5: Optimization & Launch

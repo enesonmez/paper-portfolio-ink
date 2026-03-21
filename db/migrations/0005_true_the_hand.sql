@@ -1,0 +1,1 @@
+ALTER TABLE `skills` ADD `sort_order` integer DEFAULT 0 NOT NULL;

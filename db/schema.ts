@@ -94,6 +94,23 @@ export const projects = sqliteTable(
   ],
 );
 
+export const skills = sqliteTable(
+  "skills",
+  {
+    id: createIdColumn(),
+    iconKey: text("icon_key").notNull().default("workflow"),
+    name: text("name").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+    slug: text("slug").notNull(),
+    summary: text("summary").notNull().default(""),
+    ...createTimestampColumns(),
+  },
+  (table) => [
+    uniqueIndex("skills_slug_unique").on(table.slug),
+    index("skills_name_idx").on(table.name),
+  ],
+);
+
 export const sessions = sqliteTable(
   "sessions",
   {
@@ -165,6 +182,7 @@ export const schema = {
   users,
   posts,
   projects,
+  skills,
   sessions,
   accounts,
   verifications,

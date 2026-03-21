@@ -44,6 +44,7 @@ describe("dashboard layout", () => {
     ).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("link", { name: "Dashboard Live" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Posts Live" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Skills Live" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Users Live" })).toBeInTheDocument();
     expect(screen.getByText("System Status: Logged In")).toBeInTheDocument();
     expect(screen.getByText("Enes Admin")).toBeInTheDocument();
@@ -88,6 +89,8 @@ describe("dashboard layout", () => {
 
     render(<RouterProvider router={router} />);
 
+    await screen.findByText("Admin Portal");
     expect(screen.queryByRole("link", { name: "Users Live" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Skills Live" })).not.toBeInTheDocument();
   });
 });
