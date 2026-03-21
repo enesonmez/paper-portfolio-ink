@@ -15,11 +15,20 @@ const featuredProjects = [
   },
 ];
 
+const skills = [
+  {
+    iconKey: "workflow" as const,
+    name: "React Router",
+    sortOrder: 0,
+    summary: "Typed routing, loader/action data flows, and SSR-first delivery.",
+  },
+];
+
 describe("HomePage", () => {
   it("renders the hero, featured work, stack, and resume sections", () => {
     render(
       <MemoryRouter>
-        <PublicHomeScreen featuredProjects={featuredProjects} />
+        <PublicHomeScreen featuredProjects={featuredProjects} skills={skills} />
       </MemoryRouter>,
     );
 
@@ -52,7 +61,7 @@ describe("HomePage", () => {
   it("omits the featured projects section when there is no featured project", () => {
     render(
       <MemoryRouter>
-        <PublicHomeScreen featuredProjects={[]} />
+        <PublicHomeScreen featuredProjects={[]} skills={skills} />
       </MemoryRouter>,
     );
 
@@ -61,6 +70,21 @@ describe("HomePage", () => {
     ).not.toBeInTheDocument();
     expect(
       screen.getByRole("heading", { level: 2, name: "Tech Stack" }),
+    ).toBeInTheDocument();
+  });
+
+  it("omits the tech stack section when there is no skill entry", () => {
+    render(
+      <MemoryRouter>
+        <PublicHomeScreen featuredProjects={featuredProjects} skills={[]} />
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.queryByRole("heading", { level: 2, name: "Tech Stack" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Resume Snapshot" }),
     ).toBeInTheDocument();
   });
 });

@@ -30,6 +30,7 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Public shell'i dashboard ve login gibi yonetim yuzeylerinden ayirmak, hem tema yonetimini hem de route seviyesinde layout kararlarini sadeleştirdi.
 - Theme yonetiminde cookie tabanli server-first akisin kullanilmasi client storage ihtiyacini ortadan kaldirdi ve security ile UX arasinda iyi bir denge kurdu.
 - Ana sayfa, projects ve blog icin ortak basari kalibi su oldu: ilk HTML icinde SSR veri ver, sonrasinda sadece gerekli leaf component'lerde lazy loading kullan.
+- Dashboard tarafinda yonetilen hafif registry verileri public experience'a tasinacaksa, ayni domain server lib'i icinden ayrik bir public view model cikarmak kod tekrarini azaltirken admin'e ozel alanlari public route'lara sizdirmadan reuse sagladi.
 - `IntersectionObserver + useFetcher.load()` modeli, tum route'u client-side hale getirmeden progressive feed deneyimi sagladi.
 - Public blog detayinda semantic HTML, metadata uretimi, guvenli link protokolleri ve server-safe rich content render'i SEO ile guvenligi birlikte cozmeyi sagladi.
 

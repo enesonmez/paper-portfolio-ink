@@ -19,5 +19,10 @@ export async function loader({ context }: Route.LoaderArgs) {
 export default function HomePage() {
   const loaderData = useLoaderData<typeof loader>();
 
-  return <PublicHomeScreen featuredProjects={loaderData.featuredProjects} />;
+  return (
+    <PublicHomeScreen
+      featuredProjects={loaderData.featuredProjects}
+      skills={loaderData.skills}
+    />
+  );
 }

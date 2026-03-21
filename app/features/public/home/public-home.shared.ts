@@ -56,45 +56,6 @@ export const PUBLIC_HOME_FEATURED_PROJECTS_COPY = {
   repoCta: "View Repo",
 } as const;
 
-export const PUBLIC_HOME_TECH_STACK = [
-  {
-    description:
-      "Typed routing, loader/action data flows, and SSR-first delivery tailored for edge runtimes.",
-    key: "react-router",
-    title: "React Router",
-  },
-  {
-    description:
-      "Pages, Workers, D1, and R2 for globally distributed applications with pragmatic operational overhead.",
-    key: "cloudflare",
-    title: "Cloudflare",
-  },
-  {
-    description:
-      "Schema-first data models and query ergonomics that keep D1 integrations explicit and testable.",
-    key: "drizzle",
-    title: "Drizzle ORM",
-  },
-  {
-    description:
-      "Session-based authentication with portable server-side flows and strict route protection.",
-    key: "auth",
-    title: "Better Auth",
-  },
-  {
-    description:
-      "Fast component composition with custom design tokens adapted to a sharp neo-brutalist language.",
-    key: "tailwind",
-    title: "Tailwind CSS",
-  },
-  {
-    description:
-      "End-to-end type safety across route modules, validation schemas, and UI behavior.",
-    key: "typescript",
-    title: "TypeScript",
-  },
-] as const;
-
 export const PUBLIC_HOME_SOCIAL_CARDS = [
   {
     description: "Code, experiments, and implementation details.",

@@ -7,6 +7,13 @@ import { suggestSlugFromTitle } from "~/lib/slug";
 
 import type { SkillSubmission } from "./skill-form.server";
 
+export interface PublicSkill {
+  iconKey: SkillIconKey;
+  name: string;
+  sortOrder: number;
+  summary: string;
+}
+
 export interface SkillOverview {
   createdAtLabel: string;
   iconKey: SkillIconKey;
@@ -31,6 +38,40 @@ function buildSkillPersistenceValues(submission: SkillSubmission) {
   };
 }
 
+const SKILLS_ORDER_BY = [
+  asc(skills.sortOrder),
+  asc(skills.name),
+  asc(skills.createdAt),
+] as const;
+
+function mapPublicSkill(skill: {
+  iconKey: string;
+  name: string;
+  sortOrder: number;
+  summary: string;
+}): PublicSkill {
+  return {
+    iconKey: skill.iconKey as SkillIconKey,
+    name: skill.name,
+    sortOrder: skill.sortOrder,
+    summary: skill.summary,
+  };
+}
+
+export async function listPublicSkills(db: AppDb): Promise<PublicSkill[]> {
+  const result = await db
+    .select({
+      iconKey: skills.iconKey,
+      name: skills.name,
+      sortOrder: skills.sortOrder,
+      summary: skills.summary,
+    })
+    .from(skills)
+    .orderBy(...SKILLS_ORDER_BY);
+
+  return result.map(mapPublicSkill);
+}
+
 export async function listSkills(db: AppDb): Promise<SkillOverview[]> {
   const result = await db
     .select({
@@ -43,16 +84,13 @@ export async function listSkills(db: AppDb): Promise<SkillOverview[]> {
       summary: skills.summary,
     })
     .from(skills)
-    .orderBy(asc(skills.sortOrder), asc(skills.name), asc(skills.createdAt));
+    .orderBy(...SKILLS_ORDER_BY);
 
   return result.map((skill) => ({
     createdAtLabel: formatSkillDate(skill.createdAt),
-    iconKey: skill.iconKey as SkillIconKey,
     id: skill.id,
-    name: skill.name,
     slug: skill.slug,
-    sortOrder: skill.sortOrder,
-    summary: skill.summary,
+    ...mapPublicSkill(skill),
   }));
 }
 

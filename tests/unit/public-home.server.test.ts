@@ -1,16 +1,21 @@
 import type { AppLoadContext } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
-const { listPublicFeaturedProjectsMock } = vi.hoisted(() => ({
+const { listPublicFeaturedProjectsMock, listPublicSkillsMock } = vi.hoisted(() => ({
   listPublicFeaturedProjectsMock: vi.fn(),
+  listPublicSkillsMock: vi.fn(),
 }));
 
 vi.mock("~/lib/projects/projects.server", () => ({
   listPublicFeaturedProjects: listPublicFeaturedProjectsMock,
 }));
 
+vi.mock("~/lib/skills/skills.server", () => ({
+  listPublicSkills: listPublicSkillsMock,
+}));
+
 describe("public home server", () => {
-  it("loads featured projects from the database context", async () => {
+  it("loads featured projects and skills from the database context", async () => {
     const db = { select: vi.fn() };
     const featuredProjects = [
       {
@@ -23,8 +28,17 @@ describe("public home server", () => {
         title: "Paper Enes Ink",
       },
     ];
+    const skills = [
+      {
+        iconKey: "workflow" as const,
+        name: "React Router",
+        sortOrder: 0,
+        summary: "Typed routing, loader/action data flows, and SSR-first delivery.",
+      },
+    ];
 
     listPublicFeaturedProjectsMock.mockResolvedValue(featuredProjects);
+    listPublicSkillsMock.mockResolvedValue(skills);
 
     const { loadPublicHomeData } =
       await import("../../app/features/public/home/public-home.server");
@@ -33,8 +47,10 @@ describe("public home server", () => {
       loadPublicHomeData({ db } as unknown as AppLoadContext),
     ).resolves.toEqual({
       featuredProjects,
+      skills,
     });
 
     expect(listPublicFeaturedProjectsMock).toHaveBeenCalledWith(db);
+    expect(listPublicSkillsMock).toHaveBeenCalledWith(db);
   });
 });
