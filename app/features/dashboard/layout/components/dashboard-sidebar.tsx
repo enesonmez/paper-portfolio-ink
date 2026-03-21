@@ -1,10 +1,11 @@
 import { Form, NavLink } from "react-router";
 import { X } from "lucide-react";
 
+import { useLocale, useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 import {
-  DASHBOARD_LAYOUT_COPY,
   DASHBOARD_LAYOUT_ICON,
   getDashboardNavigation,
+  useDashboardLayoutCopy,
 } from "../dashboard-layout.constants";
 import type { DashboardIdentity } from "../dashboard-layout.shared";
 import { Button } from "~/components/ui/button";
@@ -20,8 +21,12 @@ export function DashboardSidebar({
   onClose,
   user,
 }: DashboardSidebarProps) {
+  const copy = useDashboardLayoutCopy();
+  const locale = useLocale();
+  const to = useLocalizedPath();
+  const t = useT();
   const LogoutIcon = DASHBOARD_LAYOUT_ICON.logout;
-  const navigation = getDashboardNavigation(user.role);
+  const navigation = getDashboardNavigation(locale, user.role, t);
 
   return (
     <aside
@@ -38,16 +43,16 @@ export function DashboardSidebar({
             </div>
             <div>
               <p className="font-display text-foreground text-3xl leading-none uppercase">
-                {DASHBOARD_LAYOUT_COPY.shellTitle}
+                {copy.shellTitle}
               </p>
               <p className="text-muted-foreground font-sans text-[11px] font-bold tracking-[0.18em] uppercase">
-                {DASHBOARD_LAYOUT_COPY.shellVersion}
+                {copy.shellVersion}
               </p>
             </div>
           </div>
           <button
             type="button"
-            aria-label={DASHBOARD_LAYOUT_COPY.closeMenuAriaLabel}
+            aria-label={copy.closeMenuAriaLabel}
             className="bg-card text-foreground flex size-10 items-center justify-center border-2 border-black md:hidden dark:bg-stone-800"
             onClick={onClose}
           >
@@ -58,7 +63,7 @@ export function DashboardSidebar({
 
       <nav
         className="flex flex-1 flex-col gap-2 p-4"
-        aria-label={DASHBOARD_LAYOUT_COPY.navigationAriaLabel}
+        aria-label={copy.navigationAriaLabel}
       >
         {navigation.map((item) => {
           const ItemIcon = item.icon;
@@ -105,16 +110,16 @@ export function DashboardSidebar({
       </nav>
 
       <div className="border-t-2 border-black p-4">
-        <Form action="/logout" method="post">
+        <Form action={to("/logout")} method="post">
           <Button
             type="submit"
             variant="destructive"
             className="flex w-full cursor-pointer items-center justify-between px-4 py-3 tracking-[0.12em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            aria-label={DASHBOARD_LAYOUT_COPY.logoutAriaLabel}
+            aria-label={copy.logoutAriaLabel}
           >
             <span className="flex items-center gap-3">
               <LogoutIcon className="size-4" aria-hidden="true" />
-              <span>{DASHBOARD_LAYOUT_COPY.logoutLabel}</span>
+              <span>{copy.logoutLabel}</span>
             </span>
           </Button>
         </Form>

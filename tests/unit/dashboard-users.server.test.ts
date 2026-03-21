@@ -229,7 +229,7 @@ describe("dashboard users server", () => {
       }),
     );
     expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe("/dashboard/users");
+    expect(response.headers.get("Location")).toBe("/tr/dashboard/users");
   });
 
   it("returns a 403 form error for non-admin action attempts", async () => {
@@ -263,7 +263,7 @@ describe("dashboard users server", () => {
     expect(response).toMatchObject({
       data: {
         errors: {
-          form: "Bu flow'a erişim yetkiniz yoktur.",
+          form: "Bu flow icin erisim yetkiniz yoktur.",
         },
       },
       init: {
@@ -306,7 +306,7 @@ describe("dashboard users server", () => {
     }
 
     expect(deactivateUserMock).toHaveBeenCalledWith({ query: {} }, "user-author");
-    expect(response.headers.get("Location")).toBe("/dashboard/users");
+    expect(response.headers.get("Location")).toBe("/tr/dashboard/users");
     expect(cacheDeleteMock).toHaveBeenCalledWith(
       "http://localhost:3000/__cache/public/blog/page-1",
     );

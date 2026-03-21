@@ -1,3 +1,6 @@
+import { useT } from "~/features/i18n/i18n-react";
+import type { I18nTranslator } from "~/features/i18n/i18n.shared";
+
 type ValueOf<T> = T[keyof T];
 
 export const USER_ROLE = {
@@ -9,16 +12,24 @@ export type UserRole = ValueOf<typeof USER_ROLE>;
 
 export const USER_ROLE_VALUES = [USER_ROLE.admin, USER_ROLE.author] as const;
 
-export const USER_ROLE_OPTIONS = [
-  {
-    label: "Admin",
-    value: USER_ROLE.admin,
-  },
-  {
-    label: "Author",
-    value: USER_ROLE.author,
-  },
-] as const;
+export function buildUserRoleOptions(t: I18nTranslator) {
+  return [
+    {
+      label: t("model.userRole.admin"),
+      value: USER_ROLE.admin,
+    },
+    {
+      label: t("model.userRole.author"),
+      value: USER_ROLE.author,
+    },
+  ] as const;
+}
+
+export function useUserRoleOptions() {
+  const t = useT();
+
+  return buildUserRoleOptions(t);
+}
 
 export const USER_MUTATION_INTENT = {
   create: "create",

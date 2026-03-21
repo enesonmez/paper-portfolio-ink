@@ -9,16 +9,14 @@ import {
   TextField,
   TextareaField,
 } from "~/components/ui/form-field";
+import { useLocalizedPath } from "~/features/i18n/i18n-react";
 import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/features/users/user.shared";
 
-import {
-  DASHBOARD_USERS_COPY,
-  DASHBOARD_USERS_FORM_COPY,
-} from "../dashboard-users.constants";
+import { useDashboardUsersCopy } from "../dashboard-users.constants";
 import {
   buildDashboardUsersHref,
-  dashboardUserRoleOptions,
   type DashboardUsersFormState,
+  useDashboardUserRoleOptions,
 } from "../dashboard-users.shared";
 
 interface DashboardUsersModalProps {
@@ -26,25 +24,26 @@ interface DashboardUsersModalProps {
 }
 
 export function DashboardUsersModalView({ form }: DashboardUsersModalProps) {
+  const to = useLocalizedPath();
+  const { copy, formCopy } = useDashboardUsersCopy();
+  const roleOptions = useDashboardUserRoleOptions();
+
   if (!form.isOpen || !form.mode) {
     return null;
   }
 
   const actionLabel =
-    form.mode === "edit"
-      ? DASHBOARD_USERS_COPY.editActionLabel
-      : DASHBOARD_USERS_COPY.createActionLabel;
-  const title =
-    form.mode === "edit"
-      ? DASHBOARD_USERS_COPY.editTitle
-      : DASHBOARD_USERS_COPY.createTitle;
+    form.mode === "edit" ? copy.editActionLabel : copy.createActionLabel;
+  const title = form.mode === "edit" ? copy.editTitle : copy.createTitle;
   const description =
-    form.mode === "edit"
-      ? DASHBOARD_USERS_COPY.editDescription
-      : DASHBOARD_USERS_COPY.createDescription;
+    form.mode === "edit" ? copy.editDescription : copy.createDescription;
 
   return (
-    <DashboardModal description={description} title={title} to="/dashboard/users">
+    <DashboardModal
+      description={description}
+      title={title}
+      to={to(buildDashboardUsersHref())}
+    >
       <Form method="post" className="space-y-4">
         <input
           type="hidden"
@@ -67,16 +66,16 @@ export function DashboardUsersModalView({ form }: DashboardUsersModalProps) {
           <TextField
             defaultValue={form.values.displayName}
             error={form.errors?.displayName}
-            label={DASHBOARD_USERS_FORM_COPY.displayName.label}
+            label={formCopy.displayName.label}
             name={USER_FORM_FIELD.displayName}
-            placeholder={DASHBOARD_USERS_FORM_COPY.displayName.placeholder}
+            placeholder={formCopy.displayName.placeholder}
           />
           <TextField
             defaultValue={form.values.email}
             error={form.errors?.email}
-            label={DASHBOARD_USERS_FORM_COPY.email.label}
+            label={formCopy.email.label}
             name={USER_FORM_FIELD.email}
-            placeholder={DASHBOARD_USERS_FORM_COPY.email.placeholder}
+            placeholder={formCopy.email.placeholder}
             type="email"
           />
         </div>
@@ -86,23 +85,23 @@ export function DashboardUsersModalView({ form }: DashboardUsersModalProps) {
             <TextField
               defaultValue={form.values.password}
               error={form.errors?.password}
-              label={DASHBOARD_USERS_FORM_COPY.password.label}
+              label={formCopy.password.label}
               name={USER_FORM_FIELD.password}
-              placeholder={DASHBOARD_USERS_FORM_COPY.password.placeholder}
+              placeholder={formCopy.password.placeholder}
               type="password"
             />
             {form.mode === "edit" ? (
               <p className="text-muted-foreground font-sans text-[11px] font-bold tracking-[0.14em] uppercase">
-                {DASHBOARD_USERS_FORM_COPY.password.editHint}
+                {formCopy.password.editHint}
               </p>
             ) : null}
           </div>
           <SelectField
             defaultValue={form.values.role}
             error={form.errors?.role}
-            label={DASHBOARD_USERS_FORM_COPY.role.label}
+            label={formCopy.role.label}
             name={USER_FORM_FIELD.role}
-            options={dashboardUserRoleOptions}
+            options={roleOptions}
           />
         </div>
 
@@ -113,22 +112,22 @@ export function DashboardUsersModalView({ form }: DashboardUsersModalProps) {
             defaultChecked={form.values.isActive}
             className="size-4 border-2 border-black"
           />
-          {DASHBOARD_USERS_FORM_COPY.statusLabel}
+          {formCopy.statusLabel}
         </label>
 
         <TextField
           defaultValue={form.values.avatarUrl}
           error={form.errors?.avatarUrl}
-          label={DASHBOARD_USERS_FORM_COPY.avatarUrl.label}
+          label={formCopy.avatarUrl.label}
           name={USER_FORM_FIELD.avatarUrl}
-          placeholder={DASHBOARD_USERS_FORM_COPY.avatarUrl.placeholder}
+          placeholder={formCopy.avatarUrl.placeholder}
         />
         <TextareaField
           defaultValue={form.values.bio}
           error={form.errors?.bio}
-          label={DASHBOARD_USERS_FORM_COPY.bio.label}
+          label={formCopy.bio.label}
           name={USER_FORM_FIELD.bio}
-          placeholder={DASHBOARD_USERS_FORM_COPY.bio.placeholder}
+          placeholder={formCopy.bio.placeholder}
           rows={5}
         />
 
@@ -136,9 +135,7 @@ export function DashboardUsersModalView({ form }: DashboardUsersModalProps) {
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button asChild variant="secondary" className="tracking-[0.14em]">
-            <Link to={buildDashboardUsersHref()}>
-              {DASHBOARD_USERS_FORM_COPY.cancelLabel}
-            </Link>
+            <Link to={to(buildDashboardUsersHref())}>{formCopy.cancelLabel}</Link>
           </Button>
           <Button
             type="submit"

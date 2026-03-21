@@ -128,12 +128,12 @@ describe("login route", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: "Access Granted Only To Admins",
+        name: "Access Admins Only",
       }),
     ).toBeInTheDocument();
     expect(screen.getByText("Security Level: Alpha")).toBeInTheDocument();
-    expect(screen.getByLabelText("E-posta")).toBeInTheDocument();
-    expect(screen.getByLabelText("Parola")).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Password")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Login_To_Terminal" }),
     ).toBeInTheDocument();

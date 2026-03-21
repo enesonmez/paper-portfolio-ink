@@ -228,7 +228,7 @@ describe("dashboard skills server", () => {
     expect(response).toMatchObject({
       data: {
         errors: {
-          form: "Bu flow'a erisim yetkiniz yoktur.",
+          form: "Bu flow icin erisim yetkiniz yoktur.",
         },
       },
       init: {
@@ -288,7 +288,7 @@ describe("dashboard skills server", () => {
       }),
     );
     expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe("/dashboard/skills");
+    expect(response.headers.get("Location")).toBe("/tr/dashboard/skills");
     expect(cacheDeleteMock).toHaveBeenCalledWith(
       "http://localhost:3000/__cache/public/home-data",
     );
@@ -324,7 +324,7 @@ describe("dashboard skills server", () => {
 
     expect(deleteSkillMock).toHaveBeenCalledWith({ query: {} }, "skill-1");
     expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe("/dashboard/skills");
+    expect(response.headers.get("Location")).toBe("/tr/dashboard/skills");
     expect(cacheDeleteMock).toHaveBeenCalledWith(
       "http://localhost:3000/__cache/public/home-data",
     );

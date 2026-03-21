@@ -5,8 +5,8 @@ import {
   redirectLoggedOutUsers,
 } from "~/features/auth/logout/logout.server";
 
-export function loader({ request }: Route.LoaderArgs) {
-  return redirectLoggedOutUsers(request);
+export function loader({ context, request }: Route.LoaderArgs) {
+  return redirectLoggedOutUsers(context, request);
 }
 
 export function action({ context, request }: Route.ActionArgs) {

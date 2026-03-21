@@ -1,6 +1,8 @@
 import { data, redirect, type AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
+import { loadI18nPayload } from "~/features/i18n/i18n.server";
+import { buildLocalizedPath, createTranslator } from "~/features/i18n/i18n.shared";
 import { purgePublicBlogDataCache } from "~/features/public/blog/public-blog.server";
 import { buildLoginRedirect } from "~/lib/auth/login.server";
 import { requireSession } from "~/lib/auth/session.server";
@@ -21,7 +23,7 @@ import {
 } from "~/lib/posts/posts.server";
 import { isUniqueSlugConstraintError } from "~/lib/slug";
 
-import { DASHBOARD_POSTS_FORM_COPY } from "./dashboard-posts.constants";
+import { buildDashboardPostsFormCopy } from "./dashboard-posts.constants";
 import {
   buildDashboardPostsMetrics,
   resolveDashboardPostsForm,
@@ -41,6 +43,7 @@ function buildPostActionValues(values: PostFormState["values"]) {
 async function buildDuplicatePostSlugState(
   context: AppLoadContext,
   values: PostFormState["values"],
+  duplicateMessage: string,
   postId?: string,
 ) {
   const db = getDbFromContext(context);
@@ -48,7 +51,7 @@ async function buildDuplicatePostSlugState(
   return data<PostFormState>(
     {
       errors: {
-        slug: "Bu slug zaten kullanimda. Baska bir slug sec.",
+        slug: duplicateMessage,
       },
       slugSuggestion: await findAvailablePostSlug(db, values.title, postId),
       values: buildPostActionValues(values),
@@ -62,7 +65,7 @@ export async function loadDashboardPostsData(
   request: Request,
 ): Promise<DashboardPostsLoaderData | Response> {
   const session = await requireSession(request, context, {
-    redirectTo: buildLoginRedirect(request),
+    redirectTo: await buildLoginRedirect(context, request),
   });
 
   if (session instanceof Response) {
@@ -88,9 +91,16 @@ export async function handleDashboardPostsAction(
   context: AppLoadContext,
   request: Request,
 ) {
+  const { locale, messages, supportedLocales } = await loadI18nPayload(
+    context,
+    request,
+  );
+  const t = createTranslator(messages);
+  const formCopy = buildDashboardPostsFormCopy(t);
   const session = await requireSession(request, context, {
-    redirectTo: buildLoginRedirect(request),
+    redirectTo: await buildLoginRedirect(context, request),
   });
+  const supportedLocaleCodes = supportedLocales.map((item) => item.code);
 
   if (session instanceof Response) {
     return session;
@@ -106,7 +116,7 @@ export async function handleDashboardPostsAction(
       return data<PostFormState>(
         {
           errors: {
-            form: DASHBOARD_POSTS_FORM_COPY.errors.deleteMissingPost,
+            form: formCopy.errors.deleteMissingPost,
           },
           values: buildPostFormValues(),
         },
@@ -117,10 +127,12 @@ export async function handleDashboardPostsAction(
     await deletePost(db, postId);
     await purgePublicBlogDataCache(context, request);
 
-    return redirect("/dashboard/posts");
+    return redirect(
+      buildLocalizedPath(locale, "/dashboard/posts", supportedLocaleCodes),
+    );
   }
 
-  const submission = parsePostFormData(formData);
+  const submission = parsePostFormData(formData, t);
 
   if (!hasParsedPostData(submission)) {
     return data<PostFormState>(submission, { status: 400 });
@@ -131,7 +143,7 @@ export async function handleDashboardPostsAction(
       return data<PostFormState>(
         {
           errors: {
-            form: DASHBOARD_POSTS_FORM_COPY.errors.updateMissingPost,
+            form: formCopy.errors.updateMissingPost,
           },
           values: buildPostActionValues(submission.data),
         },
@@ -140,14 +152,24 @@ export async function handleDashboardPostsAction(
     }
 
     if (await isPostSlugTaken(db, submission.data.slug, postId)) {
-      return buildDuplicatePostSlugState(context, submission.data, postId);
+      return buildDuplicatePostSlugState(
+        context,
+        submission.data,
+        t("validation.slug.taken"),
+        postId,
+      );
     }
 
     try {
       await updatePost(db, postId, submission.data);
     } catch (error) {
       if (isUniqueSlugConstraintError(error, "posts")) {
-        return buildDuplicatePostSlugState(context, submission.data, postId);
+        return buildDuplicatePostSlugState(
+          context,
+          submission.data,
+          t("validation.slug.taken"),
+          postId,
+        );
       }
 
       throw error;
@@ -155,7 +177,9 @@ export async function handleDashboardPostsAction(
 
     await purgePublicBlogDataCache(context, request);
 
-    return redirect("/dashboard/posts");
+    return redirect(
+      buildLocalizedPath(locale, "/dashboard/posts", supportedLocaleCodes),
+    );
   }
 
   const authorId = getSessionUserId(session);
@@ -164,7 +188,7 @@ export async function handleDashboardPostsAction(
     return data<PostFormState>(
       {
         errors: {
-          form: DASHBOARD_POSTS_FORM_COPY.errors.missingAuthor,
+          form: formCopy.errors.missingAuthor,
         },
         values: buildPostActionValues(submission.data),
       },
@@ -173,14 +197,22 @@ export async function handleDashboardPostsAction(
   }
 
   if (await isPostSlugTaken(db, submission.data.slug)) {
-    return buildDuplicatePostSlugState(context, submission.data);
+    return buildDuplicatePostSlugState(
+      context,
+      submission.data,
+      t("validation.slug.taken"),
+    );
   }
 
   try {
     await createPost(db, authorId, submission.data);
   } catch (error) {
     if (isUniqueSlugConstraintError(error, "posts")) {
-      return buildDuplicatePostSlugState(context, submission.data);
+      return buildDuplicatePostSlugState(
+        context,
+        submission.data,
+        t("validation.slug.taken"),
+      );
     }
 
     throw error;
@@ -188,5 +220,5 @@ export async function handleDashboardPostsAction(
 
   await purgePublicBlogDataCache(context, request);
 
-  return redirect("/dashboard/posts");
+  return redirect(buildLocalizedPath(locale, "/dashboard/posts", supportedLocaleCodes));
 }

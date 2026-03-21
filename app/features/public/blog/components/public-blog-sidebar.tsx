@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 
+import { useLocalizedPath } from "~/features/i18n/i18n-react";
 import type { PublicPostListItem } from "~/lib/posts/posts.server";
-import { PUBLIC_BLOG_COPY, PUBLIC_BLOG_TOPICS } from "../public-blog.shared";
+import { usePublicBlogCopy } from "../public-blog.shared";
 
 interface PublicBlogSidebarProps {
   posts: PublicPostListItem[];
@@ -18,9 +19,12 @@ function SidebarCard({ children, title }: { children: ReactNode; title: string }
 }
 
 export function PublicBlogSidebar({ posts }: PublicBlogSidebarProps) {
+  const to = useLocalizedPath();
+  const { copy, topics } = usePublicBlogCopy();
+
   return (
     <aside className="grid gap-6">
-      <SidebarCard title={PUBLIC_BLOG_COPY.notebookIndexTitle}>
+      <SidebarCard title={copy.notebookIndexTitle}>
         <div className="grid gap-4">
           {posts.slice(0, 4).map((post) => (
             <div
@@ -31,7 +35,7 @@ export function PublicBlogSidebar({ posts }: PublicBlogSidebarProps) {
                 {post.publishedAtLabel}
               </p>
               <Link
-                to={`/blog/${post.slug}`}
+                to={to(`/blog/${post.slug}`)}
                 className="focus-visible:ring-destructive focus-visible:ring-offset-background font-sans text-base leading-tight font-black underline-offset-4 hover:underline focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:outline-none"
               >
                 {post.title}
@@ -41,9 +45,9 @@ export function PublicBlogSidebar({ posts }: PublicBlogSidebarProps) {
         </div>
       </SidebarCard>
 
-      <SidebarCard title={PUBLIC_BLOG_COPY.recentTopicsTitle}>
+      <SidebarCard title={copy.recentTopicsTitle}>
         <div className="flex flex-wrap gap-3">
-          {PUBLIC_BLOG_TOPICS.map((topic) => (
+          {topics.map((topic) => (
             <span
               key={topic}
               className="bg-background border-2 border-black px-3 py-2 text-xs font-bold tracking-[0.12em] uppercase"

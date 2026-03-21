@@ -66,7 +66,7 @@ describe("logout server helper", () => {
     });
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe("/login");
+    expect(response.headers.get("location")).toBe("/tr/login");
     expect(response.headers.get("set-cookie")).toContain("better-auth.session_token=");
   });
 
@@ -75,9 +75,15 @@ describe("logout server helper", () => {
     const { redirectLoggedOutUsers } =
       await import("../../app/features/auth/logout/logout.server");
 
-    const response = redirectLoggedOutUsers(request);
+    const response = await redirectLoggedOutUsers(
+      {
+        db: { query: {} },
+        runtime: { platform: "node" },
+      } as never,
+      request,
+    );
 
     expect(response.status).toBe(302);
-    expect(response.headers.get("location")).toBe("/login");
+    expect(response.headers.get("location")).toBe("/tr/login");
   });
 });

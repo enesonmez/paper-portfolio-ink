@@ -1,3 +1,6 @@
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
+import { stripLocalePrefix } from "~/features/i18n/i18n.shared";
+
 type ValueOf<T> = T[keyof T];
 
 export const PUBLIC_THEME = {
@@ -19,56 +22,65 @@ export const PUBLIC_THEME_INTENT = {
 
 export type PublicThemeIntent = ValueOf<typeof PUBLIC_THEME_INTENT>;
 
-export const PUBLIC_LAYOUT_COPY = {
-  footerCaption:
-    "Edge-first notlar, piksel sertliginde arayuzler ve gerektiginden fazla kahve.",
-  footerCta: "Back To Top",
-  footerEyebrow: "Paper / Ink / Code",
-  footerName: "Enes Ink",
-  footerYear: "© 2026",
-  navBlog: "Blog",
-  navHome: "Home",
-  navMenuLabel: "Toggle navigation",
-  navMenuText: "Menu",
-  navProjects: "Projects",
-  navResume: "Resume",
-  themeDarkLabel: "Comic Noir",
-  themeLightLabel: "Paper Comic",
-  themeToggle: "Theme",
-  themeToggleAction: "/theme",
-} as const;
+export function usePublicLayoutCopy() {
+  const t = useT();
+  const to = useLocalizedPath();
 
-export const PUBLIC_NAV_ITEMS = [
-  {
-    label: PUBLIC_LAYOUT_COPY.navHome,
-    to: "/",
-  },
-  {
-    label: PUBLIC_LAYOUT_COPY.navProjects,
-    to: "/projects",
-  },
-  {
-    label: PUBLIC_LAYOUT_COPY.navBlog,
-    to: "/blog",
-  },
-  {
-    label: PUBLIC_LAYOUT_COPY.navResume,
-    to: "/#resume",
-  },
-] as const;
+  const copy = {
+    footerCaption: t("public.layout.footerCaption"),
+    footerCta: t("public.layout.footerCta"),
+    footerEyebrow: t("public.layout.footerEyebrow"),
+    footerName: t("public.layout.footerName"),
+    footerYear: t("public.layout.footerYear"),
+    navBlog: t("public.layout.navBlog"),
+    navHome: t("public.layout.navHome"),
+    navMenuLabel: t("public.layout.navMenuLabel"),
+    navMenuText: t("public.layout.navMenuText"),
+    navMobileAriaLabel: t("public.layout.navMobileAriaLabel"),
+    navPrimaryAriaLabel: t("public.layout.navPrimaryAriaLabel"),
+    navProjects: t("public.layout.navProjects"),
+    navResume: t("public.layout.navResume"),
+    themeDarkLabel: t("public.layout.themeDarkLabel"),
+    themeLightLabel: t("public.layout.themeLightLabel"),
+    themeToggle: t("public.layout.themeToggle"),
+    themeToggleAction: to("/theme"),
+  } as const;
+
+  return {
+    copy,
+    navItems: [
+      {
+        label: copy.navHome,
+        to: to("/"),
+      },
+      {
+        label: copy.navProjects,
+        to: to("/projects"),
+      },
+      {
+        label: copy.navBlog,
+        to: to("/blog"),
+      },
+      {
+        label: copy.navResume,
+        to: to("/#resume"),
+      },
+    ] as const,
+  };
+}
 
 export const PUBLIC_SOCIAL_LINKS = [
   {
     href: "https://github.com/enesonmez",
-    label: "GitHub",
+    key: "github",
   },
   {
     href: "https://www.linkedin.com/in/enesonmez/",
-    label: "LinkedIn",
+    key: "linkedin",
   },
   {
     href: "mailto:hello@paper-portfolio-ink.dev",
-    label: "Mail",
+    key: "mail",
   },
 ] as const;
 
@@ -77,7 +89,11 @@ export function normalizePublicTheme(value: string | null | undefined): PublicTh
 }
 
 export function isPublicPathname(pathname: string) {
+  const normalizedPathname = stripLocalePrefix(pathname);
+
   return (
-    pathname === "/" || pathname.startsWith("/projects") || pathname.startsWith("/blog")
+    normalizedPathname === "/" ||
+    normalizedPathname.startsWith("/projects") ||
+    normalizedPathname.startsWith("/blog")
   );
 }

@@ -1,6 +1,6 @@
 import { lazy, Suspense, useSyncExternalStore } from "react";
 
-import { DASHBOARD_POSTS_FORM_COPY } from "../dashboard-posts.constants";
+import { useDashboardPostsCopy } from "../dashboard-posts.constants";
 import { cn } from "~/lib/utils";
 
 interface DashboardPostsEditorProps {
@@ -24,9 +24,11 @@ const DashboardPostsRichTextSurface = lazy(async () => {
 });
 
 function EditorFallback() {
+  const { formCopy } = useDashboardPostsCopy();
+
   return (
     <div className="px-6 py-10 font-sans text-sm font-bold tracking-[0.18em] text-stone-500 uppercase dark:text-stone-400">
-      {DASHBOARD_POSTS_FORM_COPY.editor.loadingLabel}
+      {formCopy.editor.loadingLabel}
     </div>
   );
 }

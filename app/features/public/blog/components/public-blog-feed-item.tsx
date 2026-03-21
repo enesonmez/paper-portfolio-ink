@@ -1,8 +1,9 @@
 import { Link } from "react-router";
 import { ArrowUpRight, Clock3 } from "lucide-react";
 
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 import type { PublicPostListItem } from "~/lib/posts/posts.server";
-import { PUBLIC_BLOG_COPY } from "../public-blog.shared";
+import { usePublicBlogCopy } from "../public-blog.shared";
 
 interface PublicBlogFeedItemProps {
   post: PublicPostListItem;
@@ -13,26 +14,29 @@ export function PublicBlogFeedItem({
   post,
   variant = "list",
 }: PublicBlogFeedItemProps) {
+  const t = useT();
+  const to = useLocalizedPath();
+  const { copy } = usePublicBlogCopy();
   const isLead = variant === "lead";
 
   return (
     <article className="grid gap-5 border-b-2 border-black/10 pb-8 last:border-b-0 last:pb-0 md:grid-cols-[minmax(0,1fr)_13rem] md:items-start">
       <div className="grid gap-4">
         <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs font-bold tracking-[0.16em] uppercase">
-          <span>{PUBLIC_BLOG_COPY.authorLabel}</span>
+          <span>{copy.authorLabel}</span>
           <span className="text-foreground">{post.authorName}</span>
           <span aria-hidden="true">/</span>
           <time dateTime={post.publishedAtIso}>{post.publishedAtLabel}</time>
           <span aria-hidden="true">/</span>
           <span className="inline-flex items-center gap-2">
             <Clock3 className="size-3.5" aria-hidden="true" />
-            {post.readingTimeMinutes} {PUBLIC_BLOG_COPY.readTimeSuffix}
+            {post.readingTimeMinutes} {copy.readTimeSuffix}
           </span>
         </div>
 
         <div className="grid gap-3">
           <Link
-            to={`/blog/${post.slug}`}
+            to={to(`/blog/${post.slug}`)}
             className="group focus-visible:ring-destructive focus-visible:ring-offset-background inline-flex items-start gap-2 focus-visible:ring-4 focus-visible:ring-offset-4 focus-visible:outline-none"
           >
             <h2
@@ -62,8 +66,8 @@ export function PublicBlogFeedItem({
       </div>
 
       <Link
-        to={`/blog/${post.slug}`}
-        aria-label={`${post.title} cover image`}
+        to={to(`/blog/${post.slug}`)}
+        aria-label={`${post.title} ${t("aria.publicBlog.cover")}`}
         className="group focus-visible:ring-destructive focus-visible:ring-offset-background block focus-visible:ring-4 focus-visible:ring-offset-4 focus-visible:outline-none"
       >
         <div className="bg-muted overflow-hidden border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover:translate-x-1 group-hover:translate-y-1 group-hover:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">

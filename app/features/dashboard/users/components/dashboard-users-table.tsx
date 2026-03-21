@@ -5,10 +5,11 @@ import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/features/users/user.shared";
 import type { UserOverview } from "~/lib/users/users.server";
 
-import { DASHBOARD_USERS_COPY } from "../dashboard-users.constants";
+import { useDashboardUsersCopy } from "../dashboard-users.constants";
 import {
   buildDashboardUsersHref,
   formatDashboardUserRole,
@@ -19,10 +20,13 @@ interface DashboardUsersTableProps {
 }
 
 export function DashboardUsersTable({ users }: DashboardUsersTableProps) {
+  const to = useLocalizedPath();
+  const t = useT();
+  const { copy } = useDashboardUsersCopy();
   const columns: DataTableColumn<UserOverview>[] = [
     {
       cellClassName: "align-top",
-      header: DASHBOARD_USERS_COPY.tableIdentityLabel,
+      header: copy.tableIdentityLabel,
       id: "identity",
       render: (user) => (
         <div className="space-y-2">
@@ -38,11 +42,11 @@ export function DashboardUsersTable({ users }: DashboardUsersTableProps) {
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_USERS_COPY.tableRoleLabel,
+      header: copy.tableRoleLabel,
       id: "role",
       render: (user) => (
         <DashboardStatusBadge
-          label={`${formatDashboardUserRole(user.role)} / ${user.isActive ? "ACTIVE" : "INACTIVE"}`}
+          label={`${formatDashboardUserRole(user.role)} / ${user.isActive ? t("common.active") : t("common.inactive")}`}
           tone={
             !user.isActive ? "danger" : user.role === "admin" ? "warning" : "neutral"
           }
@@ -51,20 +55,28 @@ export function DashboardUsersTable({ users }: DashboardUsersTableProps) {
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_USERS_COPY.tableMetaLabel,
+      header: copy.tableMetaLabel,
       id: "meta",
       render: (user) => (
         <div className="text-muted-foreground space-y-2 font-sans text-[11px] font-bold tracking-[0.14em] uppercase">
-          <p>Created {user.createdAtLabel}</p>
-          <p>Updated {user.updatedAtLabel}</p>
-          {user.avatarUrl ? <p>Avatar Bound</p> : <p>No Avatar</p>}
-          <p>{user.isActive ? "Session Enabled" : "Session Disabled"}</p>
+          <p>{`${t("dashboard.users.metaCreatedPrefix")} ${user.createdAtLabel}`}</p>
+          <p>{`${t("dashboard.users.metaUpdatedPrefix")} ${user.updatedAtLabel}`}</p>
+          {user.avatarUrl ? (
+            <p>{t("dashboard.users.metaAvatarBound")}</p>
+          ) : (
+            <p>{t("dashboard.users.metaNoAvatar")}</p>
+          )}
+          <p>
+            {user.isActive
+              ? t("dashboard.users.metaSessionEnabled")
+              : t("dashboard.users.metaSessionDisabled")}
+          </p>
         </div>
       ),
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_USERS_COPY.tableActionsLabel,
+      header: copy.tableActionsLabel,
       headerClassName: "text-right",
       id: "actions",
       render: (user) => (
@@ -73,9 +85,9 @@ export function DashboardUsersTable({ users }: DashboardUsersTableProps) {
             asChild
             size="iconSm"
             className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            aria-label={`Edit ${user.email}`}
+            aria-label={`${t("common.edit")} ${user.email}`}
           >
-            <Link to={buildDashboardUsersHref({ editId: user.id })}>
+            <Link to={to(buildDashboardUsersHref({ editId: user.id }))}>
               <Pencil className="size-4" aria-hidden="true" />
             </Link>
           </Button>
@@ -91,7 +103,7 @@ export function DashboardUsersTable({ users }: DashboardUsersTableProps) {
               variant="destructive"
               size="iconSm"
               className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              aria-label={`Deactivate ${user.email}`}
+              aria-label={`${t("common.deactivate")} ${user.email}`}
             >
               <Trash2 className="size-4" aria-hidden="true" />
             </Button>
@@ -106,7 +118,7 @@ export function DashboardUsersTable({ users }: DashboardUsersTableProps) {
       <DataTable
         bodyClassName="font-sans"
         columns={columns}
-        emptyState={DASHBOARD_USERS_COPY.emptyState}
+        emptyState={copy.emptyState}
         getRowKey={(user) => user.id}
         rows={users}
       />

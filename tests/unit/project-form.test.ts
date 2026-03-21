@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
 
+import { createTranslator, getSeedMessages } from "../../app/features/i18n/i18n.shared";
+
+const t = createTranslator(getSeedMessages("tr"));
+
 describe("project form parser", () => {
   it("parses valid project submissions into typed values", async () => {
     const { parseProjectFormData } =
@@ -20,7 +24,7 @@ describe("project form parser", () => {
     formData.set("isFeatured", "on");
     formData.set("sortOrder", "4");
 
-    expect(parseProjectFormData(formData)).toEqual({
+    expect(parseProjectFormData(formData, t)).toEqual({
       data: {
         coverImageUrl: "https://images.paper-portfolio-ink.dev/cyber-store-front.webp",
         description: "A detailed dashboard-managed commerce project.",
@@ -47,7 +51,7 @@ describe("project form parser", () => {
     formData.set("status", "invalid");
     formData.set("sortOrder", "-2");
 
-    expect(parseProjectFormData(formData)).toEqual({
+    expect(parseProjectFormData(formData, t)).toEqual({
       errors: {
         slug: "Slug sadece kucuk harf, rakam ve tire icerebilir.",
         sortOrder: "Siralama degeri 0 veya daha buyuk olmali.",

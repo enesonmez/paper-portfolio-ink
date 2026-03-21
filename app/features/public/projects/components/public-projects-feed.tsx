@@ -2,13 +2,14 @@ import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { useFetcher } from "react-router";
 
+import { useLocalizedPath } from "~/features/i18n/i18n-react";
 import type { PublicProjectCard as PublicProjectCardData } from "~/lib/projects/projects.server";
 
 import {
   buildPublicProjectsFeedHref,
   mergePublicProjects,
-  PUBLIC_PROJECTS_COPY,
   type PublicProjectsFeedLoaderData,
+  usePublicProjectsCopy,
 } from "../public-projects.shared";
 import { PublicProjectCard } from "./public-project-card";
 
@@ -21,6 +22,8 @@ export function PublicProjectsFeed({
   initialNextCursor,
   initialProjects,
 }: PublicProjectsFeedProps) {
+  const to = useLocalizedPath();
+  const copy = usePublicProjectsCopy();
   const fetcher = useFetcher<PublicProjectsFeedLoaderData>();
   const [projects, setProjects] = useState(initialProjects);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
@@ -71,7 +74,7 @@ export function PublicProjectsFeed({
     }
 
     inFlightCursorRef.current = nextCursor;
-    void fetcher.load(buildPublicProjectsFeedHref(nextCursor));
+    void fetcher.load(to(buildPublicProjectsFeedHref(nextCursor)));
   });
 
   useEffect(() => {
@@ -109,15 +112,13 @@ export function PublicProjectsFeed({
           {fetcher.state === "loading" ? (
             <div className="inline-flex items-center gap-2 text-sm font-bold uppercase">
               <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-              {PUBLIC_PROJECTS_COPY.feedLoading}
+              {copy.feedLoading}
             </div>
           ) : (
-            <p className="text-sm font-bold uppercase">
-              {PUBLIC_PROJECTS_COPY.feedReady}
-            </p>
+            <p className="text-sm font-bold uppercase">{copy.feedReady}</p>
           )}
           <p className="text-muted-foreground text-xs tracking-[0.18em] uppercase">
-            {PUBLIC_PROJECTS_COPY.scrollHint}
+            {copy.scrollHint}
           </p>
         </div>
       ) : null}

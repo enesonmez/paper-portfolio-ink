@@ -17,7 +17,7 @@ export async function loadDashboardLayoutData(
   context: AppLoadContext,
 ): Promise<DashboardLayoutLoaderData | Response> {
   const session = await requireSession(request, context, {
-    redirectTo: buildLoginRedirect(request),
+    redirectTo: await buildLoginRedirect(context, request),
   });
 
   if (session instanceof Response) {

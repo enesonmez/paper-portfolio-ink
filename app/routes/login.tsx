@@ -1,11 +1,20 @@
 import type { Route } from "./+types/login";
 
-import { LOGIN_META } from "~/features/auth/login/login.constants";
+import { buildLoginMeta } from "~/features/auth/login/login.constants";
+import type { loader as rootLoader } from "~/root";
+import { createTranslator } from "~/features/i18n/i18n.shared";
 import LoginRoute, { LoginScreen } from "~/features/auth/login/login-route";
 import { handleLoginAction, loadLoginData } from "~/features/auth/login/login.server";
 
-export function meta() {
-  return [...LOGIN_META];
+export function meta({ matches }: Route.MetaArgs) {
+  for (const match of matches) {
+    if (match && match.id === "root") {
+      const rootData = match.data as Awaited<ReturnType<typeof rootLoader>>;
+      return [...buildLoginMeta(createTranslator(rootData.messages))];
+    }
+  }
+
+  return [];
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {

@@ -12,26 +12,29 @@ import {
   type UserMutationIntent,
   type UserRole,
 } from "~/features/users/user.shared";
+import type { I18nTranslator } from "~/features/i18n/i18n.shared";
 
-const userFormSchema = z.object({
-  avatarUrl: z.string().trim().url("Gecerli bir avatar URL gir.").or(z.literal("")),
-  bio: z.string().trim().max(500, "Biyografi en fazla 500 karakter olabilir."),
-  displayName: z
-    .string()
-    .trim()
-    .min(2, "Gorunen ad en az 2 karakter olmali.")
-    .max(80, "Gorunen ad en fazla 80 karakter olabilir."),
-  email: z
-    .email("Gecerli bir e-posta adresi gir.")
-    .transform((value) => value.trim().toLowerCase()),
-  isActive: z.boolean(),
-  password: z.string().trim().max(128, "Parola en fazla 128 karakter olabilir."),
-  role: z.enum(USER_ROLE_VALUES, {
-    error: () => "Gecerli bir kullanici rolu sec.",
-  }),
-});
+function createUserFormSchema(t: I18nTranslator) {
+  return z.object({
+    avatarUrl: z.string().trim().url(t("validation.user.avatarUrl")).or(z.literal("")),
+    bio: z.string().trim().max(500, t("validation.user.bio.max")),
+    displayName: z
+      .string()
+      .trim()
+      .min(2, t("validation.user.displayName.min"))
+      .max(80, t("validation.user.displayName.max")),
+    email: z
+      .email(t("validation.user.email"))
+      .transform((value) => value.trim().toLowerCase()),
+    isActive: z.boolean(),
+    password: z.string().trim().max(128, t("validation.user.password.max")),
+    role: z.enum(USER_ROLE_VALUES, {
+      error: () => t("validation.user.role"),
+    }),
+  });
+}
 
-export type UserSubmission = z.infer<typeof userFormSchema>;
+export type UserSubmission = z.infer<ReturnType<typeof createUserFormSchema>>;
 
 function compactFieldErrors<T extends Record<string, string | undefined>>(errors: T) {
   return Object.fromEntries(
@@ -45,9 +48,13 @@ function readStringField(formData: FormData, field: string) {
   return typeof value === "string" ? value : "";
 }
 
-function buildPasswordError(intent: UserMutationIntent, password: string) {
+function buildPasswordError(
+  intent: UserMutationIntent,
+  password: string,
+  t: I18nTranslator,
+) {
   if (intent === USER_MUTATION_INTENT.create && password.length < 8) {
-    return "Parola en az 8 karakter olmali.";
+    return t("validation.user.password.createMin");
   }
 
   if (
@@ -55,7 +62,7 @@ function buildPasswordError(intent: UserMutationIntent, password: string) {
     password.length > 0 &&
     password.length < 8
   ) {
-    return "Parola degistirilecekse en az 8 karakter olmali.";
+    return t("validation.user.password.updateMin");
   }
 
   return undefined;
@@ -64,6 +71,7 @@ function buildPasswordError(intent: UserMutationIntent, password: string) {
 export function parseUserFormData(
   formData: FormData,
   intent: UserMutationIntent,
+  t: I18nTranslator,
 ): { data: UserSubmission } | UserFormState {
   const rawValues = {
     avatarUrl: readStringField(formData, USER_FORM_FIELD.avatarUrl),
@@ -75,8 +83,8 @@ export function parseUserFormData(
     role: readStringField(formData, USER_FORM_FIELD.role) || USER_ROLE.author,
   };
 
-  const parsed = userFormSchema.safeParse(rawValues);
-  const passwordError = buildPasswordError(intent, rawValues.password.trim());
+  const parsed = createUserFormSchema(t).safeParse(rawValues);
+  const passwordError = buildPasswordError(intent, rawValues.password.trim(), t);
 
   if (!parsed.success || passwordError) {
     const fieldErrors = parsed.success ? {} : parsed.error.flatten().fieldErrors;

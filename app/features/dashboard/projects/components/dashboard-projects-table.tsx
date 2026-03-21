@@ -5,13 +5,14 @@ import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { Button } from "~/components/ui/button";
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 import {
   PROJECT_FORM_FIELD,
   PROJECT_MUTATION_INTENT,
 } from "~/features/projects/project.shared";
 import type { ProjectOverview } from "~/lib/projects/projects.server";
 
-import { DASHBOARD_PROJECTS_COPY } from "../dashboard-projects.constants";
+import { useDashboardProjectsCopy } from "../dashboard-projects.constants";
 import {
   buildDashboardProjectsHref,
   formatDashboardProjectTitle,
@@ -23,10 +24,14 @@ interface DashboardProjectsTableProps {
 }
 
 export function DashboardProjectsTable({ projects }: DashboardProjectsTableProps) {
+  const { copy } = useDashboardProjectsCopy();
+  const to = useLocalizedPath();
+  const t = useT();
+
   const columns: DataTableColumn<ProjectOverview>[] = [
     {
       cellClassName: "align-top",
-      header: DASHBOARD_PROJECTS_COPY.tableNameLabel,
+      header: copy.tableNameLabel,
       id: "title",
       render: (project) => (
         <div className="space-y-2">
@@ -35,34 +40,34 @@ export function DashboardProjectsTable({ projects }: DashboardProjectsTableProps
           </p>
           <div className="flex flex-wrap gap-2">
             {project.isFeatured ? (
-              <DashboardStatusBadge
-                label={DASHBOARD_PROJECTS_COPY.featuredLabel}
-                tone="warning"
-              />
+              <DashboardStatusBadge label={copy.featuredLabel} tone="warning" />
             ) : null}
-            <DashboardStatusBadge label={`Sort ${project.sortOrder}`} tone="neutral" />
+            <DashboardStatusBadge
+              label={`${copy.tableSortPrefix} ${project.sortOrder}`}
+              tone="neutral"
+            />
           </div>
         </div>
       ),
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_PROJECTS_COPY.tableSummaryLabel,
+      header: copy.tableSummaryLabel,
       id: "summary",
       render: (project) => (
         <>
           <p className="text-foreground text-sm font-bold">{project.summary}</p>
           <div className="text-muted-foreground mt-2 flex flex-wrap gap-3 text-[11px] font-bold tracking-[0.12em] uppercase">
             <span>{project.createdAtLabel}</span>
-            {project.repositoryUrl ? <span>Repo</span> : null}
-            {project.liveUrl ? <span>Live</span> : null}
+            {project.repositoryUrl ? <span>{copy.tableRepositoryFlag}</span> : null}
+            {project.liveUrl ? <span>{copy.tableLiveFlag}</span> : null}
           </div>
         </>
       ),
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_PROJECTS_COPY.tableStatusLabel,
+      header: copy.tableStatusLabel,
       id: "status",
       render: (project) => (
         <DashboardStatusBadge
@@ -73,7 +78,7 @@ export function DashboardProjectsTable({ projects }: DashboardProjectsTableProps
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_PROJECTS_COPY.tableActionsLabel,
+      header: copy.tableActionsLabel,
       headerClassName: "text-right",
       id: "actions",
       render: (project) => (
@@ -82,9 +87,9 @@ export function DashboardProjectsTable({ projects }: DashboardProjectsTableProps
             asChild
             size="iconSm"
             className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            aria-label={`Edit ${formatDashboardProjectTitle(project.title)}`}
+            aria-label={`${t("aria.projects.edit")} ${formatDashboardProjectTitle(project.title)}`}
           >
-            <Link to={buildDashboardProjectsHref({ editId: project.id })}>
+            <Link to={to(buildDashboardProjectsHref({ editId: project.id }))}>
               <Pencil className="size-4" aria-hidden="true" />
             </Link>
           </Button>
@@ -104,7 +109,7 @@ export function DashboardProjectsTable({ projects }: DashboardProjectsTableProps
               variant="destructive"
               size="iconSm"
               className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              aria-label={`Delete ${formatDashboardProjectTitle(project.title)}`}
+              aria-label={`${t("aria.projects.delete")} ${formatDashboardProjectTitle(project.title)}`}
             >
               <Trash2 className="size-4" aria-hidden="true" />
             </Button>
@@ -118,7 +123,7 @@ export function DashboardProjectsTable({ projects }: DashboardProjectsTableProps
     <DashboardPanel className="overflow-x-auto p-0">
       <DataTable
         columns={columns}
-        emptyState={DASHBOARD_PROJECTS_COPY.emptyState}
+        emptyState={copy.emptyState}
         getRowKey={(project) => project.id}
         rows={projects}
         bodyClassName="font-sans"

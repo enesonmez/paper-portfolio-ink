@@ -3,19 +3,20 @@ import { Outlet, useLoaderData } from "react-router";
 
 import { DashboardHeader } from "./components/dashboard-header";
 import { DashboardSidebar } from "./components/dashboard-sidebar";
-import { DASHBOARD_LAYOUT_COPY } from "./dashboard-layout.constants";
+import { useDashboardLayoutCopy } from "./dashboard-layout.constants";
 import type { DashboardLayoutLoaderData } from "./dashboard-layout.server";
 
 export default function DashboardLayoutRoute() {
   const { user } = useLoaderData<DashboardLayoutLoaderData>();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const copy = useDashboardLayoutCopy();
 
   return (
     <div className="bg-background flex min-h-screen overflow-x-hidden">
       {isSidebarOpen ? (
         <button
           type="button"
-          aria-label={DASHBOARD_LAYOUT_COPY.closeOverlayAriaLabel}
+          aria-label={copy.closeOverlayAriaLabel}
           className="fixed inset-0 z-20 bg-black/50 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />

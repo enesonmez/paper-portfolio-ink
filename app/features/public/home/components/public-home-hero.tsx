@@ -2,47 +2,50 @@ import { ArrowRight, Boxes, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 
 import { Button } from "~/components/ui/button";
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 
 import {
-  PUBLIC_HOME_COPY,
-  PUBLIC_HOME_HIGHLIGHTS,
-  PUBLIC_HOME_METRICS,
   PUBLIC_HOME_SURFACE_CLASSNAME,
+  usePublicHomeCopy,
 } from "../public-home.shared";
 
 export function PublicHomeHero() {
+  const t = useT();
+  const to = useLocalizedPath();
+  const { copy, highlights, metrics } = usePublicHomeCopy();
+
   return (
     <section className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:px-8 md:py-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)] lg:px-12 lg:py-28">
       <div className="order-2 grid content-start gap-8 lg:order-1">
         <div className="grid gap-5">
           <span className="bg-primary w-fit border-2 border-black px-3 py-1 text-xs font-bold uppercase">
-            {PUBLIC_HOME_COPY.heroBadge}
+            {copy.heroBadge}
           </span>
 
           <h1 className="font-display text-6xl leading-[0.92] uppercase sm:text-7xl md:text-[5.75rem]">
-            {PUBLIC_HOME_COPY.heroTitle}
+            {copy.heroTitle}
           </h1>
 
           <p className="text-muted-foreground max-w-2xl border-l-4 border-black pl-5 text-base leading-8 md:text-lg">
-            {PUBLIC_HOME_COPY.heroBody}
+            {copy.heroBody}
           </p>
         </div>
 
         <div className="flex flex-wrap gap-4">
           <Button asChild size="lg">
-            <Link to="/projects">
-              {PUBLIC_HOME_COPY.heroPrimary}
+            <Link to={to("/projects")}>
+              {copy.heroPrimary}
               <ArrowRight className="size-5" aria-hidden="true" />
             </Link>
           </Button>
 
           <Button asChild size="lg" variant="secondary">
-            <Link to="/#resume">{PUBLIC_HOME_COPY.heroSecondary}</Link>
+            <Link to={to("/#resume")}>{copy.heroSecondary}</Link>
           </Button>
         </div>
 
         <ul className="grid gap-3 text-sm font-bold uppercase md:grid-cols-3">
-          {PUBLIC_HOME_HIGHLIGHTS.map((item) => (
+          {highlights.map((item) => (
             <li
               key={item}
               className={`${PUBLIC_HOME_SURFACE_CLASSNAME} flex min-h-20 items-center px-4 py-3`}
@@ -63,11 +66,9 @@ export function PublicHomeHero() {
             <div className="flex items-start justify-between">
               <div className="grid gap-2">
                 <span className="bg-card w-fit border-2 border-black px-3 py-1 text-[11px] font-bold uppercase">
-                  {PUBLIC_HOME_COPY.visualLabel}
+                  {copy.visualLabel}
                 </span>
-                <span className="text-sm font-bold uppercase">
-                  {PUBLIC_HOME_COPY.availability}
-                </span>
+                <span className="text-sm font-bold uppercase">{copy.availability}</span>
               </div>
               <span className="bg-card flex size-14 items-center justify-center border-2 border-black">
                 <Boxes className="size-7" aria-hidden="true" />
@@ -77,11 +78,11 @@ export function PublicHomeHero() {
             <div className="mt-auto grid gap-4">
               <div className="bg-card grid gap-3 border-2 border-black p-4">
                 <div className="flex items-center justify-between text-[11px] font-bold uppercase">
-                  <span>System</span>
-                  <span>Ready</span>
+                  <span>{t("public.home.metric.systemLabel")}</span>
+                  <span>{t("public.home.metric.systemValue")}</span>
                 </div>
                 <div className="grid gap-3">
-                  {PUBLIC_HOME_METRICS.map((metric) => (
+                  {metrics.map((metric) => (
                     <div
                       key={metric.label}
                       className="flex items-center justify-between border-b-2 border-black pb-2 text-xs font-bold uppercase last:border-b-0 last:pb-0"
@@ -96,10 +97,10 @@ export function PublicHomeHero() {
               <div className="text-primary border-2 border-black bg-black p-4">
                 <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase">
                   <Sparkles className="size-4" aria-hidden="true" />
-                  Runtime command
+                  {t("public.home.runtimeCommandLabel")}
                 </div>
                 <code className="font-sans text-sm md:text-base">
-                  {PUBLIC_HOME_COPY.visualCommand}
+                  {copy.visualCommand}
                 </code>
               </div>
             </div>

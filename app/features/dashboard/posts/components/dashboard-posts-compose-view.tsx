@@ -4,14 +4,12 @@ import { ArrowLeft, PenSquare, X } from "lucide-react";
 import { SlugSuggestionField } from "~/components/dashboard/slug-suggestion-field";
 import { Button } from "~/components/ui/button";
 import { FormError, SelectField, TextField } from "~/components/ui/form-field";
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/features/posts/post.shared";
 
+import { useDashboardPostsCopy } from "../dashboard-posts.constants";
 import {
-  DASHBOARD_POSTS_COPY,
-  DASHBOARD_POSTS_FORM_COPY,
-} from "../dashboard-posts.constants";
-import {
-  dashboardPostStatusOptions,
+  useDashboardPostStatusOptions,
   type DashboardPostsFormState,
 } from "../dashboard-posts.shared";
 import { DashboardPostsEditor } from "./dashboard-posts-editor";
@@ -21,18 +19,17 @@ interface DashboardPostsComposeViewProps {
 }
 
 export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewProps) {
+  const to = useLocalizedPath();
+  const t = useT();
+  const { copy, formCopy } = useDashboardPostsCopy();
+  const statusOptions = useDashboardPostStatusOptions();
+
   if (!form.isOpen || !form.mode) {
     return null;
   }
 
-  const title =
-    form.mode === "edit"
-      ? DASHBOARD_POSTS_COPY.editTitle
-      : DASHBOARD_POSTS_COPY.createTitle;
-  const submitLabel =
-    form.mode === "edit"
-      ? DASHBOARD_POSTS_COPY.editActionLabel
-      : DASHBOARD_POSTS_COPY.createTitle;
+  const title = form.mode === "edit" ? copy.editTitle : copy.createTitle;
+  const submitLabel = form.mode === "edit" ? copy.editActionLabel : copy.createTitle;
   const titleInputId = "dashboard-post-title";
 
   return (
@@ -40,7 +37,7 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
       className="fixed inset-0 z-50 overflow-y-auto bg-stone-100 dark:bg-stone-900"
       role="dialog"
       aria-modal="true"
-      aria-label={`${title} Editor`}
+      aria-label={`${title} ${t("dashboard.posts.flowTitle")}`}
     >
       <Form method="post" className="min-h-screen">
         <input
@@ -64,24 +61,23 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
             <div className="flex items-center gap-3">
               <Button asChild variant="secondary" size="iconSm">
-                <Link
-                  to="/dashboard/posts"
-                  aria-label={DASHBOARD_POSTS_FORM_COPY.backToListLabel}
-                >
+                <Link to={to("/dashboard/posts")} aria-label={formCopy.backToListLabel}>
                   <ArrowLeft className="size-4" aria-hidden="true" />
                 </Link>
               </Button>
               <div>
-                <p className="font-display text-4xl leading-none uppercase">Compose</p>
+                <p className="font-display text-4xl leading-none uppercase">
+                  {t("dashboard.posts.composeTitle")}
+                </p>
                 <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.16em] uppercase">
-                  {DASHBOARD_POSTS_COPY.composeEyebrow}
+                  {copy.composeEyebrow}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
               <p className="text-muted-foreground hidden font-sans text-xs font-bold tracking-[0.16em] uppercase md:block">
-                {DASHBOARD_POSTS_FORM_COPY.heroHelper}
+                {formCopy.heroHelper}
               </p>
               <Button
                 type="submit"
@@ -92,8 +88,8 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
               </Button>
               <Button asChild variant="secondary" size="iconSm">
                 <Link
-                  to="/dashboard/posts"
-                  aria-label={DASHBOARD_POSTS_FORM_COPY.closeFullscreenLabel}
+                  to={to("/dashboard/posts")}
+                  aria-label={formCopy.closeFullscreenLabel}
                 >
                   <X className="size-4" aria-hidden="true" />
                 </Link>
@@ -109,7 +105,7 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
                 id={titleInputId}
                 name={POST_FORM_FIELD.title}
                 defaultValue={form.values.title}
-                placeholder={DASHBOARD_POSTS_FORM_COPY.fullscreenTitlePlaceholder}
+                placeholder={formCopy.fullscreenTitlePlaceholder}
                 className="font-display w-full border-0 bg-transparent p-0 text-6xl leading-none text-stone-950 outline-none placeholder:text-stone-400 md:text-7xl dark:text-stone-50 dark:placeholder:text-stone-500"
               />
               <FormError message={form.errors?.title} />
@@ -117,7 +113,7 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
                 name={POST_FORM_FIELD.excerpt}
                 defaultValue={form.values.excerpt}
                 rows={3}
-                placeholder={DASHBOARD_POSTS_FORM_COPY.excerpt.placeholder}
+                placeholder={formCopy.excerpt.placeholder}
                 className="w-full resize-none border-0 bg-transparent p-0 font-sans text-lg leading-8 text-stone-700 outline-none placeholder:text-stone-400 dark:text-stone-300 dark:placeholder:text-stone-500"
               />
               <FormError message={form.errors?.excerpt} />
@@ -135,7 +131,7 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
           <aside className="mx-auto w-full max-w-3xl space-y-6">
             <section className="bg-card border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-stone-800 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
               <p className="font-sans text-xs font-bold tracking-[0.18em] uppercase">
-                Story Setup
+                {t("dashboard.posts.setupTitle")}
               </p>
               <div className="mt-4 grid gap-4">
                 <SlugSuggestionField
@@ -143,32 +139,32 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
                   error={form.errors?.slug}
                   id={POST_FORM_FIELD.slug}
                   initialTitleValue={form.values.title}
-                  label={DASHBOARD_POSTS_FORM_COPY.slug.label}
+                  label={formCopy.slug.label}
                   name={POST_FORM_FIELD.slug}
-                  placeholder={DASHBOARD_POSTS_FORM_COPY.slug.placeholder}
+                  placeholder={formCopy.slug.placeholder}
                   serverSuggestion={form.slugSuggestion}
                   titleInputId={titleInputId}
                 />
                 <TextField
                   error={form.errors?.coverImageUrl}
-                  label={DASHBOARD_POSTS_FORM_COPY.coverImageUrl.label}
+                  label={formCopy.coverImageUrl.label}
                   name={POST_FORM_FIELD.coverImageUrl}
                   defaultValue={form.values.coverImageUrl}
-                  placeholder={DASHBOARD_POSTS_FORM_COPY.coverImageUrl.placeholder}
+                  placeholder={formCopy.coverImageUrl.placeholder}
                 />
                 <SelectField
                   error={form.errors?.status}
-                  label={DASHBOARD_POSTS_FORM_COPY.status.label}
+                  label={formCopy.status.label}
                   name={POST_FORM_FIELD.status}
                   defaultValue={form.values.status}
-                  options={dashboardPostStatusOptions}
+                  options={statusOptions}
                 />
               </div>
             </section>
 
             <section className="bg-card border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-stone-800 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
               <p className="font-sans text-xs font-bold tracking-[0.18em] uppercase">
-                Editor Flow
+                {t("dashboard.posts.flowTitle")}
               </p>
               <div className="mt-4 grid gap-3">
                 <Button
@@ -176,8 +172,8 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
                   variant="secondary"
                   className="justify-between tracking-[0.12em]"
                 >
-                  <Link to="/dashboard/posts">
-                    {DASHBOARD_POSTS_FORM_COPY.backToListLabel}
+                  <Link to={to("/dashboard/posts")}>
+                    {formCopy.backToListLabel}
                     <ArrowLeft className="size-4" aria-hidden="true" />
                   </Link>
                 </Button>

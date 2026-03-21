@@ -1,103 +1,131 @@
-export const PUBLIC_HOME_COPY = {
-  availability: "Available for selected freelance and product collaborations.",
-  ctaBody:
-    "Need a portfolio, technical blog, dashboard, or editorial workflow with sharp edges and reliable delivery?",
-  ctaEyebrow: "Collaboration / Shipping / Maintenance",
-  ctaPrimary: "Start A Project",
-  ctaSecondary: "Read The Blog",
-  ctaTitle: "Build Something That Feels Deliberate.",
-  featuredEyebrow: "Selected Work",
-  featuredTitle: "Featured Projects",
-  heroBadge: "Edge-First Since 2016",
-  heroBody:
-    "I design and ship sharp digital products with React Router, Cloudflare, and TypeScript. The focus is speed, accessibility, and systems that stay readable after launch.",
-  heroPrimary: "View Projects",
-  heroSecondary: "Open Resume",
-  heroTitle: "Hello, I am Enes. I Build Useful Things With Code.",
-  resumeBody:
-    "Senior full-stack engineer focused on product systems, admin workflows, and editorial platforms with strong performance and maintainability constraints.",
-  resumeCta: "Request PDF Resume",
-  resumeEyebrow: "Profile / Resume / Signals",
-  resumeMetaLabel: "Current Focus",
-  resumeTitle: "Resume Snapshot",
-  socialTitle: "Around The Web",
-  techEyebrow: "Modules Loaded",
-  techTitle: "Tech Stack",
-  visualCommand: "deploy --edge --typed --accessible",
-  visualLabel: "Paper Comic Runtime",
-} as const;
+import { useT } from "~/features/i18n/i18n-react";
+import type { I18nTranslator } from "~/features/i18n/i18n.shared";
 
-export const PUBLIC_HOME_HIGHLIGHTS = [
-  "SSR-first route architecture",
-  "Accessible neo-brutalist interfaces",
-  "Cloudflare-native deployment workflows",
-] as const;
+export function buildPublicHomeCopy(t: I18nTranslator) {
+  return {
+    availability: t("public.home.availability"),
+    ctaBody: t("public.home.ctaBody"),
+    ctaEyebrow: t("public.home.ctaEyebrow"),
+    ctaPrimary: t("public.home.ctaPrimary"),
+    ctaSecondary: t("public.home.ctaSecondary"),
+    ctaTitle: t("public.home.ctaTitle"),
+    featuredEyebrow: t("public.home.featuredEyebrow"),
+    featuredTitle: t("public.home.featuredTitle"),
+    heroBadge: t("public.home.heroBadge"),
+    heroBody: t("public.home.heroBody"),
+    heroPrimary: t("public.home.heroPrimary"),
+    heroSecondary: t("public.home.heroSecondary"),
+    heroTitle: t("public.home.heroTitle"),
+    resumeBody: t("public.home.resumeBody"),
+    resumeCta: t("public.home.resumeCta"),
+    resumeEyebrow: t("public.home.resumeEyebrow"),
+    resumeMetaLabel: t("public.home.resumeMetaLabel"),
+    resumeTitle: t("public.home.resumeTitle"),
+    socialTitle: t("public.home.socialTitle"),
+    techEyebrow: t("public.home.techEyebrow"),
+    techTitle: t("public.home.techTitle"),
+    visualCommand: t("public.home.visualCommand"),
+    visualLabel: t("public.home.visualLabel"),
+  } as const;
+}
 
-export const PUBLIC_HOME_METRICS = [
-  {
-    label: "Focus",
-    value: "Edge Apps",
-  },
-  {
-    label: "Stack",
-    value: "React Router",
-  },
-  {
-    label: "Style",
-    value: "Neo-Brutal",
-  },
-] as const;
+export function buildPublicHomeHighlights(t: I18nTranslator) {
+  return [
+    t("public.home.highlight.1"),
+    t("public.home.highlight.2"),
+    t("public.home.highlight.3"),
+  ] as const;
+}
 
-export const PUBLIC_HOME_FEATURED_PROJECTS_COPY = {
-  browseAll: "Browse all project work",
-  featuredSince: "Featured",
-  liveCta: "Open Live",
-  projectsCta: "Open Projects",
-  repoCta: "View Repo",
-} as const;
+export function buildPublicHomeMetrics(t: I18nTranslator) {
+  return [
+    {
+      label: t("public.home.metric.focus.label"),
+      value: t("public.home.metric.focus.value"),
+    },
+    {
+      label: t("public.home.metric.stack.label"),
+      value: t("public.home.metric.stack.value"),
+    },
+    {
+      label: t("public.home.metric.style.label"),
+      value: t("public.home.metric.style.value"),
+    },
+  ] as const;
+}
 
-export const PUBLIC_HOME_SOCIAL_CARDS = [
-  {
-    description: "Code, experiments, and implementation details.",
-    href: "https://github.com/enesonmez",
-    key: "github",
-    label: "GitHub",
-  },
-  {
-    description: "Professional profile, experience, and network.",
-    href: "https://www.linkedin.com/in/enesonmez/",
-    key: "linkedin",
-    label: "LinkedIn",
-  },
-  {
-    description: "Project inquiries, resume requests, and direct contact.",
-    href: "mailto:hello@paper-portfolio-ink.dev",
-    key: "mail",
-    label: "Email",
-  },
-] as const;
+export function buildPublicHomeFeaturedProjectsCopy(t: I18nTranslator) {
+  return {
+    browseAll: t("public.home.featuredProjects.browseAll"),
+    featuredSince: t("public.home.featuredProjects.featuredSince"),
+    liveCta: t("public.home.featuredProjects.liveCta"),
+    projectsCta: t("public.home.featuredProjects.projectsCta"),
+    repoCta: t("public.home.featuredProjects.repoCta"),
+  } as const;
+}
 
-export const PUBLIC_HOME_RESUME_POINTS = [
-  "Full-stack product engineering",
-  "Admin workflow design",
-  "Performance and SEO hardening",
-  "Technical writing systems",
-] as const;
+export function buildPublicHomeSocialCards(t: I18nTranslator) {
+  return [
+    {
+      description: t("public.home.social.github.description"),
+      href: "https://github.com/enesonmez",
+      key: "github",
+      label: t("public.home.social.github.label"),
+    },
+    {
+      description: t("public.home.social.linkedin.description"),
+      href: "https://www.linkedin.com/in/enesonmez/",
+      key: "linkedin",
+      label: t("public.home.social.linkedin.label"),
+    },
+    {
+      description: t("public.home.social.mail.description"),
+      href: "mailto:hello@paper-portfolio-ink.dev",
+      key: "mail",
+      label: t("public.home.social.mail.label"),
+    },
+  ] as const;
+}
 
-export const PUBLIC_HOME_RESUME_META = [
-  {
-    label: "Based In",
-    value: "Istanbul / Remote",
-  },
-  {
-    label: "Working With",
-    value: "Founders, agencies, product teams",
-  },
-  {
-    label: "Delivery",
-    value: "Design systems, apps, content platforms",
-  },
-] as const;
+export function buildPublicHomeResumePoints(t: I18nTranslator) {
+  return [
+    t("public.home.resumePoint.1"),
+    t("public.home.resumePoint.2"),
+    t("public.home.resumePoint.3"),
+    t("public.home.resumePoint.4"),
+  ] as const;
+}
+
+export function buildPublicHomeResumeMeta(t: I18nTranslator) {
+  return [
+    {
+      label: t("public.home.resumeMeta.basedIn.label"),
+      value: t("public.home.resumeMeta.basedIn.value"),
+    },
+    {
+      label: t("public.home.resumeMeta.workingWith.label"),
+      value: t("public.home.resumeMeta.workingWith.value"),
+    },
+    {
+      label: t("public.home.resumeMeta.delivery.label"),
+      value: t("public.home.resumeMeta.delivery.value"),
+    },
+  ] as const;
+}
+
+export function usePublicHomeCopy() {
+  const t = useT();
+
+  return {
+    copy: buildPublicHomeCopy(t),
+    featuredProjectsCopy: buildPublicHomeFeaturedProjectsCopy(t),
+    highlights: buildPublicHomeHighlights(t),
+    metrics: buildPublicHomeMetrics(t),
+    resumeMeta: buildPublicHomeResumeMeta(t),
+    resumePoints: buildPublicHomeResumePoints(t),
+    socialCards: buildPublicHomeSocialCards(t),
+  };
+}
 
 export const PUBLIC_HOME_SURFACE_CLASSNAME =
   "border-2 border-black bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]";

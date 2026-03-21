@@ -14,46 +14,46 @@ import {
   POST_STATUS_VALUES,
   type PostStatus,
 } from "~/features/posts/post.shared";
+import type { I18nTranslator } from "~/features/i18n/i18n.shared";
 
-const postFormSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(3, "Yazi basligi en az 3 karakter olmali.")
-    .max(120, "Yazi basligi en fazla 120 karakter olabilir."),
-  slug: z
-    .string()
-    .trim()
-    .regex(/^[a-z0-9-]+$/, "Slug sadece kucuk harf, rakam ve tire icerebilir.")
-    .min(3, "Slug en az 3 karakter olmali."),
-  excerpt: z
-    .string()
-    .trim()
-    .min(12, "Ozet en az 12 karakter olmali.")
-    .max(240, "Ozet en fazla 240 karakter olabilir."),
-  content: z
-    .string()
-    .trim()
-    .refine(
-      (value) => getPostContentCharacterCount(value) >= 20,
-      "Yazi govdesi en az 20 karakter olmali.",
-    )
-    .refine(
-      (value) => value.length <= 100000,
-      "Yazi govdesi en fazla 100000 karakter olabilir.",
-    )
-    .transform((value) => normalizePostContentValue(value)),
-  coverImageUrl: z
-    .string()
-    .trim()
-    .url("Gecerli bir kapak gorseli URL gir.")
-    .or(z.literal("")),
-  status: z.enum(POST_STATUS_VALUES, {
-    error: () => "Gecerli bir yayin durumu sec.",
-  }),
-});
+function createPostFormSchema(t: I18nTranslator) {
+  return z.object({
+    title: z
+      .string()
+      .trim()
+      .min(3, t("validation.post.title.min"))
+      .max(120, t("validation.post.title.max")),
+    slug: z
+      .string()
+      .trim()
+      .regex(/^[a-z0-9-]+$/, t("validation.post.slug.pattern"))
+      .min(3, t("validation.post.slug.min")),
+    excerpt: z
+      .string()
+      .trim()
+      .min(12, t("validation.post.excerpt.min"))
+      .max(240, t("validation.post.excerpt.max")),
+    content: z
+      .string()
+      .trim()
+      .refine(
+        (value) => getPostContentCharacterCount(value) >= 20,
+        t("validation.post.content.min"),
+      )
+      .refine((value) => value.length <= 100000, t("validation.post.content.max"))
+      .transform((value) => normalizePostContentValue(value)),
+    coverImageUrl: z
+      .string()
+      .trim()
+      .url(t("validation.post.coverImageUrl"))
+      .or(z.literal("")),
+    status: z.enum(POST_STATUS_VALUES, {
+      error: () => t("validation.post.status"),
+    }),
+  });
+}
 
-export type PostSubmission = z.infer<typeof postFormSchema>;
+export type PostSubmission = z.infer<ReturnType<typeof createPostFormSchema>>;
 
 function compactFieldErrors<T extends Record<string, string | undefined>>(errors: T) {
   return Object.fromEntries(
@@ -69,6 +69,7 @@ function readStringField(formData: FormData, field: string) {
 
 export function parsePostFormData(
   formData: FormData,
+  t: I18nTranslator,
 ): { data: PostSubmission } | PostFormState {
   const rawValues = {
     content: readStringField(formData, POST_FORM_FIELD.content),
@@ -80,7 +81,7 @@ export function parsePostFormData(
     title: readStringField(formData, POST_FORM_FIELD.title),
   };
 
-  const parsed = postFormSchema.safeParse(rawValues);
+  const parsed = createPostFormSchema(t).safeParse(rawValues);
 
   if (!parsed.success) {
     const fieldErrors = parsed.error.flatten().fieldErrors;

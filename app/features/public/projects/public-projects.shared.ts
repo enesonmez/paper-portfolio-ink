@@ -1,5 +1,7 @@
 import type { PublicProjectCard } from "~/lib/projects/projects.server";
 import { z } from "zod";
+import { useT } from "~/features/i18n/i18n-react";
+import type { I18nTranslator } from "~/features/i18n/i18n.shared";
 
 export const PUBLIC_PROJECTS_PAGE_SIZE = 6;
 
@@ -7,26 +9,32 @@ export const PUBLIC_PROJECTS_QUERY_PARAM = {
   cursor: "cursor",
 } as const;
 
-export const PUBLIC_PROJECTS_COPY = {
-  emptyBody:
-    "Published project cards will appear here as soon as the first public case studies are ready.",
-  emptyEyebrow: "Project Registry",
-  emptyTitle: "No public projects yet.",
-  feedLoading: "Loading next set...",
-  feedReady: "Scroll to load more projects",
-  featuredBadge: "Featured",
-  heroBody:
-    "A public registry of shipped interfaces, content systems, and dashboard flows built for fast routes, clear data contracts, and maintainable delivery.",
-  heroEyebrow: "Selected Builds / Public Registry",
-  heroTitle: "Projects That Ship With Sharp Edges.",
-  liveCta: "Live Build",
-  repoCta: "Source",
-  scrollHint: "Automatic loading continues as you scroll down.",
-  statFeatured: "Featured",
-  statLive: "Live Links",
-  statTotal: "Published",
-  techLabel: "Stack Focus",
-} as const;
+export function buildPublicProjectsCopy(t: I18nTranslator) {
+  return {
+    emptyBody: t("public.projects.emptyBody"),
+    emptyEyebrow: t("public.projects.emptyEyebrow"),
+    emptyTitle: t("public.projects.emptyTitle"),
+    feedLoading: t("public.projects.feedLoading"),
+    feedReady: t("public.projects.feedReady"),
+    featuredBadge: t("public.projects.featuredBadge"),
+    heroBody: t("public.projects.heroBody"),
+    heroEyebrow: t("public.projects.heroEyebrow"),
+    heroTitle: t("public.projects.heroTitle"),
+    liveCta: t("public.projects.liveCta"),
+    repoCta: t("public.projects.repoCta"),
+    scrollHint: t("public.projects.scrollHint"),
+    statFeatured: t("public.projects.statFeatured"),
+    statLive: t("public.projects.statLive"),
+    statTotal: t("public.projects.statTotal"),
+    techLabel: t("public.projects.techLabel"),
+  } as const;
+}
+
+export function usePublicProjectsCopy() {
+  const t = useT();
+
+  return buildPublicProjectsCopy(t);
+}
 
 export interface PublicProjectsLoaderData {
   nextCursor: string | null;

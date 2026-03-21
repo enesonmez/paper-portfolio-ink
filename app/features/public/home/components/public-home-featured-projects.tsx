@@ -1,12 +1,12 @@
 import { ArrowUpRight, Globe, Github } from "lucide-react";
 import { Link } from "react-router";
 
+import { useLocalizedPath } from "~/features/i18n/i18n-react";
 import type { PublicFeaturedProject } from "~/lib/projects/projects.server";
 
 import {
-  PUBLIC_HOME_COPY,
-  PUBLIC_HOME_FEATURED_PROJECTS_COPY,
   PUBLIC_HOME_SURFACE_CLASSNAME,
+  usePublicHomeCopy,
 } from "../public-home.shared";
 
 interface PublicHomeFeaturedProjectsProps {
@@ -16,6 +16,9 @@ interface PublicHomeFeaturedProjectsProps {
 export function PublicHomeFeaturedProjects({
   projects,
 }: PublicHomeFeaturedProjectsProps) {
+  const to = useLocalizedPath();
+  const { copy, featuredProjectsCopy } = usePublicHomeCopy();
+
   if (projects.length === 0) {
     return null;
   }
@@ -25,17 +28,17 @@ export function PublicHomeFeaturedProjects({
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div className="grid gap-3">
           <p className="text-muted-foreground text-xs font-bold tracking-[0.18em] uppercase">
-            {PUBLIC_HOME_COPY.featuredEyebrow}
+            {copy.featuredEyebrow}
           </p>
           <h2 className="font-display text-5xl uppercase md:text-6xl">
-            {PUBLIC_HOME_COPY.featuredTitle}
+            {copy.featuredTitle}
           </h2>
         </div>
         <Link
-          to="/projects"
+          to={to("/projects")}
           className="decoration-primary text-sm font-bold uppercase underline decoration-4 underline-offset-4"
         >
-          {PUBLIC_HOME_FEATURED_PROJECTS_COPY.browseAll}
+          {featuredProjectsCopy.browseAll}
         </Link>
       </div>
 
@@ -47,8 +50,7 @@ export function PublicHomeFeaturedProjects({
           >
             <div className="flex items-center justify-between gap-3">
               <p className="text-muted-foreground text-[11px] font-bold tracking-[0.18em] uppercase">
-                {PUBLIC_HOME_FEATURED_PROJECTS_COPY.featuredSince} /{" "}
-                {project.createdAtLabel}
+                {featuredProjectsCopy.featuredSince} / {project.createdAtLabel}
               </p>
               <span className="bg-primary border-2 border-black px-2 py-1 text-[10px] font-bold text-black uppercase">
                 {project.slug}
@@ -63,10 +65,10 @@ export function PublicHomeFeaturedProjects({
             ) : null}
             <div className="flex flex-wrap gap-3">
               <Link
-                to="/projects"
+                to={to("/projects")}
                 className="inline-flex items-center gap-2 text-sm font-bold uppercase"
               >
-                {PUBLIC_HOME_FEATURED_PROJECTS_COPY.projectsCta}
+                {featuredProjectsCopy.projectsCta}
                 <ArrowUpRight className="size-4" aria-hidden="true" />
               </Link>
               {project.liveUrl ? (
@@ -77,7 +79,7 @@ export function PublicHomeFeaturedProjects({
                   className="inline-flex items-center gap-2 text-sm font-bold uppercase"
                 >
                   <Globe className="size-4" aria-hidden="true" />
-                  {PUBLIC_HOME_FEATURED_PROJECTS_COPY.liveCta}
+                  {featuredProjectsCopy.liveCta}
                 </a>
               ) : null}
               {project.repositoryUrl ? (
@@ -88,7 +90,7 @@ export function PublicHomeFeaturedProjects({
                   className="inline-flex items-center gap-2 text-sm font-bold uppercase"
                 >
                   <Github className="size-4" aria-hidden="true" />
-                  {PUBLIC_HOME_FEATURED_PROJECTS_COPY.repoCta}
+                  {featuredProjectsCopy.repoCta}
                 </a>
               ) : null}
             </div>

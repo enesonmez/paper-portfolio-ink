@@ -5,10 +5,11 @@ import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/features/posts/post.shared";
 import type { PostOverview } from "~/lib/posts/posts.server";
 
-import { DASHBOARD_POSTS_COPY } from "../dashboard-posts.constants";
+import { useDashboardPostsCopy } from "../dashboard-posts.constants";
 import {
   buildDashboardPostsHref,
   formatDashboardPostTitle,
@@ -20,10 +21,14 @@ interface DashboardPostsTableProps {
 }
 
 export function DashboardPostsTable({ posts }: DashboardPostsTableProps) {
+  const { copy } = useDashboardPostsCopy();
+  const to = useLocalizedPath();
+  const t = useT();
+
   const columns: DataTableColumn<PostOverview>[] = [
     {
       cellClassName: "align-top",
-      header: DASHBOARD_POSTS_COPY.tableNameLabel,
+      header: copy.tableNameLabel,
       id: "title",
       render: (post) => (
         <div className="space-y-2">
@@ -32,22 +37,28 @@ export function DashboardPostsTable({ posts }: DashboardPostsTableProps) {
           </p>
           <div className="text-muted-foreground flex flex-wrap gap-3 text-[11px] font-bold tracking-[0.12em] uppercase">
             <span>{post.slug}</span>
-            <span>Created {post.createdAtLabel}</span>
+            <span>
+              {t("dashboard.posts.createdLabel")} {post.createdAtLabel}
+            </span>
           </div>
         </div>
       ),
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_POSTS_COPY.tableSummaryLabel,
+      header: copy.tableSummaryLabel,
       id: "summary",
       render: (post) => (
         <>
           <p className="text-foreground text-sm font-bold">{post.excerpt}</p>
           <div className="text-muted-foreground mt-2 flex flex-wrap gap-3 text-[11px] font-bold tracking-[0.12em] uppercase">
-            <span>Updated {post.updatedAtLabel}</span>
+            <span>
+              {t("dashboard.posts.updatedLabel")} {post.updatedAtLabel}
+            </span>
             {post.publishedAtLabel ? (
-              <span>Published {post.publishedAtLabel}</span>
+              <span>
+                {t("dashboard.posts.publishedAtLabel")} {post.publishedAtLabel}
+              </span>
             ) : null}
           </div>
         </>
@@ -55,7 +66,7 @@ export function DashboardPostsTable({ posts }: DashboardPostsTableProps) {
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_POSTS_COPY.tableStatusLabel,
+      header: copy.tableStatusLabel,
       id: "status",
       render: (post) => (
         <DashboardStatusBadge
@@ -66,7 +77,7 @@ export function DashboardPostsTable({ posts }: DashboardPostsTableProps) {
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_POSTS_COPY.tableActionsLabel,
+      header: copy.tableActionsLabel,
       headerClassName: "text-right",
       id: "actions",
       render: (post) => (
@@ -75,9 +86,9 @@ export function DashboardPostsTable({ posts }: DashboardPostsTableProps) {
             asChild
             size="iconSm"
             className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            aria-label={`Edit ${formatDashboardPostTitle(post.title)}`}
+            aria-label={`${t("aria.projects.edit")} ${formatDashboardPostTitle(post.title)}`}
           >
-            <Link to={buildDashboardPostsHref({ editId: post.id })}>
+            <Link to={to(buildDashboardPostsHref({ editId: post.id }))}>
               <Pencil className="size-4" aria-hidden="true" />
             </Link>
           </Button>
@@ -93,7 +104,7 @@ export function DashboardPostsTable({ posts }: DashboardPostsTableProps) {
               variant="destructive"
               size="iconSm"
               className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              aria-label={`Delete ${formatDashboardPostTitle(post.title)}`}
+              aria-label={`${t("aria.projects.delete")} ${formatDashboardPostTitle(post.title)}`}
             >
               <Trash2 className="size-4" aria-hidden="true" />
             </Button>
@@ -107,7 +118,7 @@ export function DashboardPostsTable({ posts }: DashboardPostsTableProps) {
     <DashboardPanel className="overflow-x-auto p-0">
       <DataTable
         columns={columns}
-        emptyState={DASHBOARD_POSTS_COPY.emptyState}
+        emptyState={copy.emptyState}
         getRowKey={(post) => post.id}
         rows={posts}
         bodyClassName="font-sans"

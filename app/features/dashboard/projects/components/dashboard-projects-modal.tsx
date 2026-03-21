@@ -10,18 +10,16 @@ import {
   TextField,
   TextareaField,
 } from "~/components/ui/form-field";
+import { useLocalizedPath } from "~/features/i18n/i18n-react";
 import {
   PROJECT_FORM_FIELD,
   PROJECT_MUTATION_INTENT,
 } from "~/features/projects/project.shared";
 
-import {
-  DASHBOARD_PROJECTS_COPY,
-  DASHBOARD_PROJECTS_FORM_COPY,
-} from "../dashboard-projects.constants";
+import { useDashboardProjectsCopy } from "../dashboard-projects.constants";
 import {
   buildDashboardProjectsHref,
-  dashboardProjectStatusOptions,
+  useDashboardProjectStatusOptions,
   type DashboardProjectsFormState,
 } from "../dashboard-projects.shared";
 
@@ -30,26 +28,27 @@ interface DashboardProjectsModalProps {
 }
 
 export function DashboardProjectsModalView({ form }: DashboardProjectsModalProps) {
+  const to = useLocalizedPath();
+  const { copy, formCopy } = useDashboardProjectsCopy();
+  const statusOptions = useDashboardProjectStatusOptions();
+
   if (!form.isOpen || !form.mode) {
     return null;
   }
 
   const actionLabel =
-    form.mode === "edit"
-      ? DASHBOARD_PROJECTS_COPY.editActionLabel
-      : DASHBOARD_PROJECTS_COPY.createActionLabel;
-  const title =
-    form.mode === "edit"
-      ? DASHBOARD_PROJECTS_COPY.editTitle
-      : DASHBOARD_PROJECTS_COPY.createTitle;
+    form.mode === "edit" ? copy.editActionLabel : copy.createActionLabel;
+  const title = form.mode === "edit" ? copy.editTitle : copy.createTitle;
   const description =
-    form.mode === "edit"
-      ? DASHBOARD_PROJECTS_COPY.editDescription
-      : DASHBOARD_PROJECTS_COPY.createDescription;
+    form.mode === "edit" ? copy.editDescription : copy.createDescription;
   const titleInputId = "dashboard-project-title";
 
   return (
-    <DashboardModal description={description} title={title} to="/dashboard/projects">
+    <DashboardModal
+      description={description}
+      title={title}
+      to={to("/dashboard/projects")}
+    >
       <Form method="post" className="space-y-4">
         <input
           type="hidden"
@@ -72,9 +71,9 @@ export function DashboardProjectsModalView({ form }: DashboardProjectsModalProps
           error={form.errors?.title}
           id={titleInputId}
           inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
-          label={DASHBOARD_PROJECTS_FORM_COPY.title.label}
+          label={formCopy.title.label}
           name={PROJECT_FORM_FIELD.title}
-          placeholder={DASHBOARD_PROJECTS_FORM_COPY.title.placeholder}
+          placeholder={formCopy.title.placeholder}
           defaultValue={form.values.title}
         />
         <SlugSuggestionField
@@ -83,23 +82,23 @@ export function DashboardProjectsModalView({ form }: DashboardProjectsModalProps
           id={PROJECT_FORM_FIELD.slug}
           initialTitleValue={form.values.title}
           inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
-          label={DASHBOARD_PROJECTS_FORM_COPY.slug.label}
+          label={formCopy.slug.label}
           name={PROJECT_FORM_FIELD.slug}
-          placeholder={DASHBOARD_PROJECTS_FORM_COPY.slug.placeholder}
+          placeholder={formCopy.slug.placeholder}
           serverSuggestion={form.slugSuggestion}
           titleInputId={titleInputId}
         />
         <TextField
           error={form.errors?.summary}
           inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
-          label={DASHBOARD_PROJECTS_FORM_COPY.summary.label}
+          label={formCopy.summary.label}
           name={PROJECT_FORM_FIELD.summary}
-          placeholder={DASHBOARD_PROJECTS_FORM_COPY.summary.placeholder}
+          placeholder={formCopy.summary.placeholder}
           defaultValue={form.values.summary}
         />
         <TextareaField
           error={form.errors?.description}
-          label={DASHBOARD_PROJECTS_FORM_COPY.description.label}
+          label={formCopy.description.label}
           name={PROJECT_FORM_FIELD.description}
           defaultValue={form.values.description}
           rows={5}
@@ -108,17 +107,17 @@ export function DashboardProjectsModalView({ form }: DashboardProjectsModalProps
           <TextField
             error={form.errors?.repositoryUrl}
             inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
-            label={DASHBOARD_PROJECTS_FORM_COPY.repositoryUrl.label}
+            label={formCopy.repositoryUrl.label}
             name={PROJECT_FORM_FIELD.repositoryUrl}
-            placeholder={DASHBOARD_PROJECTS_FORM_COPY.repositoryUrl.placeholder}
+            placeholder={formCopy.repositoryUrl.placeholder}
             defaultValue={form.values.repositoryUrl}
           />
           <TextField
             error={form.errors?.liveUrl}
             inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
-            label={DASHBOARD_PROJECTS_FORM_COPY.liveUrl.label}
+            label={formCopy.liveUrl.label}
             name={PROJECT_FORM_FIELD.liveUrl}
-            placeholder={DASHBOARD_PROJECTS_FORM_COPY.liveUrl.placeholder}
+            placeholder={formCopy.liveUrl.placeholder}
             defaultValue={form.values.liveUrl}
           />
         </div>
@@ -126,24 +125,24 @@ export function DashboardProjectsModalView({ form }: DashboardProjectsModalProps
           <TextField
             error={form.errors?.coverImageUrl}
             inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
-            label={DASHBOARD_PROJECTS_FORM_COPY.coverImageUrl.label}
+            label={formCopy.coverImageUrl.label}
             name={PROJECT_FORM_FIELD.coverImageUrl}
-            placeholder={DASHBOARD_PROJECTS_FORM_COPY.coverImageUrl.placeholder}
+            placeholder={formCopy.coverImageUrl.placeholder}
             defaultValue={form.values.coverImageUrl}
           />
           <SelectField
             error={form.errors?.status}
-            label={DASHBOARD_PROJECTS_FORM_COPY.status.label}
+            label={formCopy.status.label}
             name={PROJECT_FORM_FIELD.status}
-            options={dashboardProjectStatusOptions}
+            options={statusOptions}
             defaultValue={form.values.status}
           />
           <TextField
             error={form.errors?.sortOrder}
             inputClassName="tracking-[0.04em] sm:tracking-[0.06em]"
-            label={DASHBOARD_PROJECTS_FORM_COPY.sortOrder.label}
+            label={formCopy.sortOrder.label}
             name={PROJECT_FORM_FIELD.sortOrder}
-            placeholder={DASHBOARD_PROJECTS_FORM_COPY.sortOrder.placeholder}
+            placeholder={formCopy.sortOrder.placeholder}
             type="number"
             defaultValue={form.values.sortOrder}
           />
@@ -156,16 +155,14 @@ export function DashboardProjectsModalView({ form }: DashboardProjectsModalProps
             defaultChecked={form.values.isFeatured}
             className="size-4 border-2 border-black"
           />
-          {DASHBOARD_PROJECTS_COPY.featuredToggleLabel}
+          {copy.featuredToggleLabel}
         </label>
 
         <FormError message={form.errors?.form} />
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button asChild variant="secondary" className="tracking-[0.14em]">
-            <Link to={buildDashboardProjectsHref()}>
-              {DASHBOARD_PROJECTS_FORM_COPY.cancelLabel}
-            </Link>
+            <Link to={to(buildDashboardProjectsHref())}>{formCopy.cancelLabel}</Link>
           </Button>
           <Button
             type="submit"

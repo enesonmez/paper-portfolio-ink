@@ -6,6 +6,7 @@ import {
   type PostContentMark,
   type PostContentNode,
 } from "~/features/posts/post-content.shared";
+import { useT } from "~/features/i18n/i18n-react";
 
 function getNodeText(node: PostContentNode): string {
   const directText = node.text ?? "";
@@ -142,6 +143,7 @@ function renderNode(node: PostContentNode, key: string): ReactNode {
 }
 
 export function PublicBlogPostBody({ content }: { content: string }) {
+  const t = useT();
   const document = coercePostContentDocument(content);
   const hasRenderableContent = document.content.some((node) => hasRenderableNode(node));
 
@@ -169,7 +171,7 @@ export function PublicBlogPostBody({ content }: { content: string }) {
             renderNode(node, `${node.type}-${index}`),
           )
         ) : (
-          <p>Yazi govdesi yakinda guncellenecek.</p>
+          <p>{t("public.blog.emptyContent")}</p>
         )}
       </div>
     </div>

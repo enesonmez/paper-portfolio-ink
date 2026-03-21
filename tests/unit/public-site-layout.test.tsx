@@ -1,6 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 
+import { AppI18nProvider } from "../../app/features/i18n/i18n-react";
+import {
+  getSeedMessages,
+  getSeedLocaleOptions,
+} from "../../app/features/i18n/i18n.shared";
 import { PUBLIC_THEME } from "../../app/features/public/layout/public-layout.shared";
 import { PublicSiteLayout } from "../../app/features/public/layout/public-site-layout";
 
@@ -33,12 +38,135 @@ describe("PublicSiteLayout", () => {
     expect(
       screen.getByRole("button", { name: /Theme: Comic Noir/i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Back To Top" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Back to top" })).toHaveAttribute(
       "href",
       "#top",
     );
     expect(
-      screen.getByText(/Edge-first notlar, piksel sertliginde arayuzler/i),
+      screen.getByText(/Edge-first notes, pixel-sharp interfaces/i),
     ).toBeInTheDocument();
+  });
+
+  it("uses locale-prefixed links and form actions when wrapped with i18n context", () => {
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/:locale/projects",
+          element: (
+            <AppI18nProvider
+              value={{
+                locale: "tr",
+                messages: getSeedMessages("tr"),
+                supportedLocales: getSeedLocaleOptions(),
+              }}
+            >
+              <PublicSiteLayout theme={PUBLIC_THEME.light}>
+                <div>Projects content</div>
+              </PublicSiteLayout>
+            </AppI18nProvider>
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/tr/projects"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen
+        .getAllByRole("link", { name: "Ana sayfa" })
+        .some((link) => link.getAttribute("href") === "/tr"),
+    ).toBe(true);
+    expect(
+      screen
+        .getAllByRole("link", { name: "Blog" })
+        .some((link) => link.getAttribute("href") === "/tr/blog"),
+    ).toBe(true);
+    expect(
+      screen
+        .getAllByRole("link", { name: "Projeler" })
+        .some((link) => link.getAttribute("href") === "/tr/projects"),
+    ).toBe(true);
+
+    const themeForm = screen.getByRole("button", { name: /Tema:/i }).closest("form");
+    expect(themeForm).toHaveAttribute("action", "/tr/theme");
+
+    expect(
+      screen
+        .getAllByRole("button", { name: "EN" })
+        .some(
+          (button) => button.closest("form")?.getAttribute("action") === "/tr/locale",
+        ),
+    ).toBe(true);
+  });
+
+  it("keeps the home nav item inactive on the projects page", () => {
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/projects",
+          element: (
+            <PublicSiteLayout theme={PUBLIC_THEME.light}>
+              <div>Projects content</div>
+            </PublicSiteLayout>
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/projects"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen
+        .getAllByRole("link", { name: "Home" })
+        .every((link) => link.getAttribute("aria-current") !== "page"),
+    ).toBe(true);
+    expect(
+      screen
+        .getAllByRole("link", { name: "Projects" })
+        .some((link) => link.getAttribute("aria-current") === "page"),
+    ).toBe(true);
+  });
+
+  it("renders locale switching inside the mobile menu panel", () => {
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/:locale/projects",
+          element: (
+            <AppI18nProvider
+              value={{
+                locale: "tr",
+                messages: getSeedMessages("tr"),
+                supportedLocales: getSeedLocaleOptions(),
+              }}
+            >
+              <PublicSiteLayout theme={PUBLIC_THEME.light}>
+                <div>Projects content</div>
+              </PublicSiteLayout>
+            </AppI18nProvider>
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/tr/projects"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    const mobileNavigation = screen.getByRole("navigation", {
+      name: /Mobil public navigasyon/i,
+    });
+    const localeButtons = within(mobileNavigation).getAllByRole("button", {
+      name: /TR|EN/,
+    });
+
+    expect(localeButtons).toHaveLength(2);
   });
 });

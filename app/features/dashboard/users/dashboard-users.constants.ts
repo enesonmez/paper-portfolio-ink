@@ -1,61 +1,77 @@
-export const DASHBOARD_USERS_COPY = {
-  actionBlockedTitle: "Action Blocked",
-  createActionLabel: "Create New User",
-  createDescription:
-    "Create a credential-backed dashboard user with scoped role access.",
-  createTitle: "Create User",
-  currentRoleLabel: "Current role",
-  editActionLabel: "Update User",
-  editDescription:
-    "Update identity fields, role access, or rotate the credential password.",
-  editTitle: "Edit User",
-  emptyState: "No dashboard users provisioned yet.",
-  inventoryEyebrow: "Access Control",
-  registryTitle: "User Registry",
-  restrictedDescription: "Bu flow'a erişim yetkiniz yoktur.",
-  restrictedTitle: "Restricted Flow",
-  selfLabel: "You",
-  tableActionsLabel: "Actions",
-  tableIdentityLabel: "Identity",
-  tableMetaLabel: "Meta",
-  tableRoleLabel: "Role",
-} as const;
+import { useT } from "~/features/i18n/i18n-react";
+import type { I18nTranslator } from "~/features/i18n/i18n.shared";
 
-export const DASHBOARD_USERS_FORM_COPY = {
-  avatarUrl: {
-    label: "Avatar URL",
-    placeholder: "https://images.paper-portfolio-ink.dev/avatar.webp",
-  },
-  bio: {
-    label: "Bio",
-    placeholder: "Short operational context for the dashboard team.",
-  },
-  cancelLabel: "Cancel",
-  displayName: {
-    label: "Display Name",
-    placeholder: "Ayla Author",
-  },
-  email: {
-    label: "Email",
-    placeholder: "author@paper-portfolio-ink.dev",
-  },
-  errors: {
-    createDuplicateEmail: "Bu e-posta adresi zaten kullanimda.",
-    deactivateMissingUser: "Pasiflestirilecek kullanici bulunamadi.",
-    forbidden: "Bu flow'a erişim yetkiniz yoktur.",
-    lastActiveAdminDeactivate: "Son aktif admin hesabi pasiflestirilemez.",
-    lastActiveAdminDemotion: "Son aktif admin hesabi author rolune dusurulemez.",
-    lastActiveAdminDelete: "Son aktif admin hesabi kaldirilamaz.",
-    updateDuplicateEmail: "Bu e-posta adresi baska bir kullaniciya ait.",
-    updateMissingUser: "Guncellenecek kullanici bulunamadi.",
-  },
-  password: {
-    editHint: "Bos birakilirsa mevcut parola korunur.",
-    label: "Password",
-    placeholder: "PaperInk1234!",
-  },
-  role: {
-    label: "Role",
-  },
-  statusLabel: "Keep account active",
-} as const;
+export function buildDashboardUsersCopy(t: I18nTranslator) {
+  return {
+    actionBlockedTitle: t("dashboard.users.actionBlockedTitle"),
+    createActionLabel: t("dashboard.users.createActionLabel"),
+    createDescription: t("dashboard.users.createDescription"),
+    createTitle: t("dashboard.users.createTitle"),
+    currentRoleLabel: t("dashboard.users.currentRoleLabel"),
+    editActionLabel: t("dashboard.users.editActionLabel"),
+    editDescription: t("dashboard.users.editDescription"),
+    editTitle: t("dashboard.users.editTitle"),
+    emptyState: t("dashboard.users.emptyState"),
+    inventoryEyebrow: t("dashboard.users.inventoryEyebrow"),
+    registryTitle: t("dashboard.users.registryTitle"),
+    restrictedDescription: t("dashboard.users.restrictedDescription"),
+    restrictedTitle: t("dashboard.users.restrictedTitle"),
+    selfLabel: t("dashboard.users.selfLabel"),
+    tableActionsLabel: t("dashboard.users.tableActionsLabel"),
+    tableIdentityLabel: t("dashboard.users.tableIdentityLabel"),
+    tableMetaLabel: t("dashboard.users.tableMetaLabel"),
+    tableRoleLabel: t("dashboard.users.tableRoleLabel"),
+  } as const;
+}
+
+export function buildDashboardUsersFormCopy(t: I18nTranslator) {
+  return {
+    avatarUrl: {
+      label: t("dashboard.users.form.avatarUrl.label"),
+      placeholder: t("dashboard.users.form.avatarUrl.placeholder"),
+    },
+    bio: {
+      label: t("dashboard.users.form.bio.label"),
+      placeholder: t("dashboard.users.form.bio.placeholder"),
+    },
+    cancelLabel: t("dashboard.users.form.cancelLabel"),
+    displayName: {
+      label: t("dashboard.users.form.displayName.label"),
+      placeholder: t("dashboard.users.form.displayName.placeholder"),
+    },
+    email: {
+      label: t("dashboard.users.form.email.label"),
+      placeholder: t("dashboard.users.form.email.placeholder"),
+    },
+    errors: {
+      createDuplicateEmail: t("dashboard.users.form.error.createDuplicateEmail"),
+      deactivateMissingUser: t("dashboard.users.form.error.deactivateMissingUser"),
+      forbidden: t("dashboard.users.form.error.forbidden"),
+      lastActiveAdminDeactivate: t(
+        "dashboard.users.form.error.lastActiveAdminDeactivate",
+      ),
+      lastActiveAdminDemotion: t("dashboard.users.form.error.lastActiveAdminDemotion"),
+      lastActiveAdminDelete: t("dashboard.users.form.error.lastActiveAdminDelete"),
+      updateDuplicateEmail: t("dashboard.users.form.error.updateDuplicateEmail"),
+      updateMissingUser: t("dashboard.users.form.error.updateMissingUser"),
+    },
+    password: {
+      editHint: t("dashboard.users.form.password.editHint"),
+      label: t("dashboard.users.form.password.label"),
+      placeholder: t("dashboard.users.form.password.placeholder"),
+    },
+    role: {
+      label: t("dashboard.users.form.role.label"),
+    },
+    statusLabel: t("dashboard.users.form.statusLabel"),
+  } as const;
+}
+
+export function useDashboardUsersCopy() {
+  const t = useT();
+
+  return {
+    copy: buildDashboardUsersCopy(t),
+    formCopy: buildDashboardUsersFormCopy(t),
+  };
+}

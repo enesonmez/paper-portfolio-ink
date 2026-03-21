@@ -13,6 +13,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { useT } from "~/features/i18n/i18n-react";
+import type { I18nTranslator } from "~/features/i18n/i18n.shared";
+
 type ValueOf<T> = T[keyof T];
 
 export const SKILL_ICON = {
@@ -40,83 +43,91 @@ export interface SkillIconOption {
 
 export const SKILL_DEFAULT_ICON = SKILL_ICON.workflow;
 
-export const SKILL_ICON_OPTIONS: readonly SkillIconOption[] = [
-  {
-    description: "Distributed systems, edge services, and platform delivery.",
-    icon: Cloud,
-    label: "Cloud",
-    value: SKILL_ICON.cloud,
-  },
-  {
-    description: "Database design, query workflows, and storage layers.",
-    icon: Database,
-    label: "Database",
-    value: SKILL_ICON.database,
-  },
-  {
-    description: "Typed frontend and backend implementation details.",
-    icon: Code2,
-    label: "Code",
-    value: SKILL_ICON.code,
-  },
-  {
-    description: "Architecture stitching, orchestration, and flow modeling.",
-    icon: Workflow,
-    label: "Workflow",
-    value: SKILL_ICON.workflow,
-  },
-  {
-    description: "System hardening, trust boundaries, and access control.",
-    icon: ShieldCheck,
-    label: "Security",
-    value: SKILL_ICON.shield,
-  },
-  {
-    description: "Deployment pipelines, launch readiness, and product momentum.",
-    icon: Rocket,
-    label: "Launch",
-    value: SKILL_ICON.rocket,
-  },
-  {
-    description: "Composable UI systems and reusable surface primitives.",
-    icon: Layers3,
-    label: "Interface",
-    value: SKILL_ICON.layers,
-  },
-  {
-    description: "Content systems, editorial tooling, and writing workflows.",
-    icon: PenTool,
-    label: "Editorial",
-    value: SKILL_ICON.pen,
-  },
-  {
-    description: "Infrastructure modules, platform parts, and shared building blocks.",
-    icon: Blocks,
-    label: "Modules",
-    value: SKILL_ICON.blocks,
-  },
-  {
-    description: "Operations, runtime maintenance, and practical engineering work.",
-    icon: Wrench,
-    label: "Operations",
-    value: SKILL_ICON.wrench,
-  },
-  {
-    description: "Public-facing systems, reach, and globally accessible experiences.",
-    icon: Globe,
-    label: "Web",
-    value: SKILL_ICON.globe,
-  },
-] as const;
+export function buildSkillIconOptions(t: I18nTranslator): readonly SkillIconOption[] {
+  return [
+    {
+      description: t("skillIcon.cloud.description"),
+      icon: Cloud,
+      label: t("skillIcon.cloud.label"),
+      value: SKILL_ICON.cloud,
+    },
+    {
+      description: t("skillIcon.database.description"),
+      icon: Database,
+      label: t("skillIcon.database.label"),
+      value: SKILL_ICON.database,
+    },
+    {
+      description: t("skillIcon.code.description"),
+      icon: Code2,
+      label: t("skillIcon.code.label"),
+      value: SKILL_ICON.code,
+    },
+    {
+      description: t("skillIcon.workflow.description"),
+      icon: Workflow,
+      label: t("skillIcon.workflow.label"),
+      value: SKILL_ICON.workflow,
+    },
+    {
+      description: t("skillIcon.shield.description"),
+      icon: ShieldCheck,
+      label: t("skillIcon.shield.label"),
+      value: SKILL_ICON.shield,
+    },
+    {
+      description: t("skillIcon.rocket.description"),
+      icon: Rocket,
+      label: t("skillIcon.rocket.label"),
+      value: SKILL_ICON.rocket,
+    },
+    {
+      description: t("skillIcon.layers.description"),
+      icon: Layers3,
+      label: t("skillIcon.layers.label"),
+      value: SKILL_ICON.layers,
+    },
+    {
+      description: t("skillIcon.pen.description"),
+      icon: PenTool,
+      label: t("skillIcon.pen.label"),
+      value: SKILL_ICON.pen,
+    },
+    {
+      description: t("skillIcon.blocks.description"),
+      icon: Blocks,
+      label: t("skillIcon.blocks.label"),
+      value: SKILL_ICON.blocks,
+    },
+    {
+      description: t("skillIcon.wrench.description"),
+      icon: Wrench,
+      label: t("skillIcon.wrench.label"),
+      value: SKILL_ICON.wrench,
+    },
+    {
+      description: t("skillIcon.globe.description"),
+      icon: Globe,
+      label: t("skillIcon.globe.label"),
+      value: SKILL_ICON.globe,
+    },
+  ] as const;
+}
+
+export function useSkillIconOptions() {
+  const t = useT();
+
+  return buildSkillIconOptions(t);
+}
 
 export function isSkillIconKey(value: string): value is SkillIconKey {
-  return SKILL_ICON_OPTIONS.some((option) => option.value === value);
+  return Object.values(SKILL_ICON).some((option) => option === value);
 }
 
 export function getSkillIconOption(value: SkillIconKey) {
-  return (
-    SKILL_ICON_OPTIONS.find((option) => option.value === value) ?? SKILL_ICON_OPTIONS[0]
-  );
+  const options = buildSkillIconOptions((key) => key);
+
+  return options.find((option) => option.value === value) ?? options[0];
 }
 
 export function getSkillIcon(value: string) {

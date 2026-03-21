@@ -1,6 +1,8 @@
 import { data, redirect, type AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
+import { loadI18nPayload } from "~/features/i18n/i18n.server";
+import { buildLocalizedPath, createTranslator } from "~/features/i18n/i18n.shared";
 import { purgePublicHomeDataCache } from "~/features/public/home/public-home.server";
 import { buildLoginRedirect } from "~/lib/auth/login.server";
 import { requireSession } from "~/lib/auth/session.server";
@@ -23,7 +25,7 @@ import {
 } from "~/lib/skills/skills.server";
 import { isUniqueSlugConstraintError, suggestSlugFromTitle } from "~/lib/slug";
 
-import { DASHBOARD_SKILLS_FORM_COPY } from "./dashboard-skills.constants";
+import { buildDashboardSkillsFormCopy } from "./dashboard-skills.constants";
 import {
   buildDashboardSkillsMetrics,
   resolveDashboardSkillsForm,
@@ -111,10 +113,10 @@ async function runSkillMutation({
   return null;
 }
 
-function buildForbiddenState() {
+function buildForbiddenState(message: string) {
   return buildSkillFormStateResponse({
     errors: {
-      form: DASHBOARD_SKILLS_FORM_COPY.errors.forbidden,
+      form: message,
     },
     status: 403,
   });
@@ -125,7 +127,7 @@ export async function loadDashboardSkillsData(
   request: Request,
 ): Promise<DashboardSkillsLoaderData | Response> {
   const session = await requireSession(request, context, {
-    redirectTo: buildLoginRedirect(request),
+    redirectTo: await buildLoginRedirect(context, request),
   });
 
   if (session instanceof Response) {
@@ -158,16 +160,23 @@ export async function handleDashboardSkillsAction(
   context: AppLoadContext,
   request: Request,
 ) {
+  const { locale, messages, supportedLocales } = await loadI18nPayload(
+    context,
+    request,
+  );
+  const t = createTranslator(messages);
+  const formCopy = buildDashboardSkillsFormCopy(t);
   const session = await requireSession(request, context, {
-    redirectTo: buildLoginRedirect(request),
+    redirectTo: await buildLoginRedirect(context, request),
   });
+  const supportedLocaleCodes = supportedLocales.map((item) => item.code);
 
   if (session instanceof Response) {
     return session;
   }
 
   if (!isSessionUserAdmin(session)) {
-    return buildForbiddenState();
+    return buildForbiddenState(formCopy.errors.forbidden);
   }
 
   const db = getDbFromContext(context);
@@ -179,7 +188,7 @@ export async function handleDashboardSkillsAction(
     if (!skillId) {
       return buildSkillFormStateResponse({
         errors: {
-          form: DASHBOARD_SKILLS_FORM_COPY.errors.deleteMissingSkill,
+          form: formCopy.errors.deleteMissingSkill,
         },
         status: 400,
       });
@@ -188,10 +197,12 @@ export async function handleDashboardSkillsAction(
     await deleteSkill(db, skillId);
     await purgePublicHomeDataCache(context, request);
 
-    return redirect("/dashboard/skills");
+    return redirect(
+      buildLocalizedPath(locale, "/dashboard/skills", supportedLocaleCodes),
+    );
   }
 
-  const submission = parseSkillFormData(formData);
+  const submission = parseSkillFormData(formData, t);
 
   if (!hasParsedSkillData(submission)) {
     return data<SkillFormState>(submission, { status: 400 });
@@ -201,7 +212,7 @@ export async function handleDashboardSkillsAction(
     if (!skillId) {
       return buildSkillFormStateResponse({
         errors: {
-          form: DASHBOARD_SKILLS_FORM_COPY.errors.updateMissingSkill,
+          form: formCopy.errors.updateMissingSkill,
         },
         status: 400,
         values: submission.data,
@@ -210,7 +221,7 @@ export async function handleDashboardSkillsAction(
 
     const mutationError = await runSkillMutation({
       db,
-      duplicateMessage: DASHBOARD_SKILLS_FORM_COPY.errors.updateDuplicateSkill,
+      duplicateMessage: formCopy.errors.updateDuplicateSkill,
       excludedSkillId: skillId,
       mutate: () => updateSkill(db, skillId, submission.data),
       values: submission.data,
@@ -222,12 +233,14 @@ export async function handleDashboardSkillsAction(
 
     await purgePublicHomeDataCache(context, request);
 
-    return redirect("/dashboard/skills");
+    return redirect(
+      buildLocalizedPath(locale, "/dashboard/skills", supportedLocaleCodes),
+    );
   }
 
   const mutationError = await runSkillMutation({
     db,
-    duplicateMessage: DASHBOARD_SKILLS_FORM_COPY.errors.createDuplicateSkill,
+    duplicateMessage: formCopy.errors.createDuplicateSkill,
     mutate: () => createSkill(db, submission.data),
     values: submission.data,
   });
@@ -238,5 +251,7 @@ export async function handleDashboardSkillsAction(
 
   await purgePublicHomeDataCache(context, request);
 
-  return redirect("/dashboard/skills");
+  return redirect(
+    buildLocalizedPath(locale, "/dashboard/skills", supportedLocaleCodes),
+  );
 }

@@ -2,6 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, vi } from "vitest";
 
+import {
+  getSeedMessages,
+  getSeedLocaleOptions,
+} from "../../app/features/i18n/i18n.shared";
 import { PublicBlogScreen } from "../../app/features/public/blog/public-blog-screen";
 import { meta } from "../../app/routes/blog";
 
@@ -75,26 +79,30 @@ describe("blog route", () => {
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Field Notes From The Edge" }),
+      screen.getByRole("heading", { level: 1, name: "Field Notes From the Edge" }),
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("link", { name: "Edge Observability Playbook" })[0],
     ).toHaveAttribute("href", "/blog/edge-observability-playbook");
-    expect(screen.getByText("Notebook Index")).toBeInTheDocument();
-    expect(screen.getByText("Recent Topics")).toBeInTheDocument();
+    expect(screen.getByText("Notebook index")).toBeInTheDocument();
+    expect(screen.getByText("Recent topics")).toBeInTheDocument();
     expect(screen.getByText("6 min read")).toBeInTheDocument();
     expect(screen.getByText("Scroll to load more notes")).toBeInTheDocument();
     expect(
-      screen.getByText("Automatic loading continues as you scroll down."),
+      screen.getByText("Automatic loading continues as you scroll."),
     ).toBeInTheDocument();
   });
 
   it("returns SEO metadata for the public blog index", () => {
+    const rootData = {
+      locale: "tr" as const,
+      messages: getSeedMessages("tr"),
+      supportedLocales: getSeedLocaleOptions(),
+      theme: "light" as const,
+    };
+
     expect(
       meta({
-        data: undefined,
-        error: undefined,
-        loaderData: undefined,
         location: {
           hash: "",
           key: "default",
@@ -103,9 +111,8 @@ describe("blog route", () => {
           state: null,
           unstable_mask: undefined,
         },
-        matches: [],
-        params: {},
-      }),
+        matches: [{ data: rootData, id: "root" }],
+      } as never),
     ).toEqual(
       expect.arrayContaining([
         { title: "Blog | Enes Ink" },
