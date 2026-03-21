@@ -41,7 +41,7 @@
 - Veri akışı mümkün olduğunca React Router `loader` ve `action` ile zero-JS yaklaşımında tasarlanmalıdır.
 - D1 sorguları için indeksleme ve query optimization göz önünde bulundurulmalıdır.
 - Görseller Cloudflare Images/R2 hattında optimize formatlarla servis edilmelidir.
-- Client'a gereksiz paket yüklemelerden kaçın. 
+- Client'a gereksiz paket yüklemelerden kaçın.
 - Projede kullanılmayan kütüphaneleri kaldır.
 - LCP/FID/CLS optimizasyonunu her zaman göz önünde bulundur.
 - Liste gibi yapılar lazy loading şekilde yüklenmeli.
