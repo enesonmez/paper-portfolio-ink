@@ -23,7 +23,7 @@ export default function ProjectsPage() {
 
   return (
     <PublicProjectsScreen
-      nextPage={loaderData.nextPage}
+      nextCursor={loaderData.nextCursor}
       projects={loaderData.projects}
       stats={loaderData.stats}
     />

@@ -1,11 +1,17 @@
 import type { AppLoadContext } from "react-router";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
+  cacheDeleteMock,
+  cacheGetMock,
+  cacheSetMock,
   getPublicPostBySlugMock,
   listPublicCompanionPostsMock,
   listPublicPostsPageMock,
 } = vi.hoisted(() => ({
+  cacheDeleteMock: vi.fn(),
+  cacheGetMock: vi.fn(),
+  cacheSetMock: vi.fn(),
   getPublicPostBySlugMock: vi.fn(),
   listPublicCompanionPostsMock: vi.fn(),
   listPublicPostsPageMock: vi.fn(),
@@ -18,9 +24,28 @@ vi.mock("~/lib/posts/posts.server", () => ({
 }));
 
 describe("public blog server", () => {
-  const context = { db: { query: {} } } as unknown as AppLoadContext;
+  const context = {
+    cache: {
+      delete: cacheDeleteMock,
+      get: cacheGetMock,
+      set: cacheSetMock,
+    },
+    db: { query: {} },
+    runtime: { platform: "node" as const },
+  } as unknown as AppLoadContext;
+
+  beforeEach(() => {
+    cacheDeleteMock.mockReset();
+    cacheGetMock.mockReset();
+    cacheSetMock.mockReset();
+    getPublicPostBySlugMock.mockReset();
+    listPublicCompanionPostsMock.mockReset();
+    listPublicPostsPageMock.mockReset();
+  });
 
   it("loads the first public blog page from the database context", async () => {
+    cacheGetMock.mockResolvedValue(null);
+
     const pageData = {
       items: [
         {
@@ -34,7 +59,12 @@ describe("public blog server", () => {
           title: "Edge Observability Playbook",
         },
       ],
-      nextPage: 2,
+      nextCursor: JSON.stringify({
+        createdAtIso: "2026-03-18T10:00:00.000Z",
+        publishedAtIso: "2026-03-18T10:00:00.000Z",
+        slug: "edge-observability-playbook",
+        updatedAtIso: "2026-03-19T10:00:00.000Z",
+      }),
     };
 
     listPublicPostsPageMock.mockResolvedValue(pageData);
@@ -48,14 +78,71 @@ describe("public blog server", () => {
         new Request("https://paper-portfolio-ink.dev/blog?page=7"),
       ),
     ).resolves.toEqual({
-      nextPage: 2,
+      nextCursor: pageData.nextCursor,
       posts: pageData.items,
     });
 
-    expect(listPublicPostsPageMock).toHaveBeenCalledWith(context.db, 5, 1);
+    expect(listPublicPostsPageMock).toHaveBeenCalledWith(context.db, 5);
+  });
+
+  it("returns the cached first public blog page without touching the database", async () => {
+    cacheGetMock.mockResolvedValue({
+      nextCursor: JSON.stringify({
+        createdAtIso: "2026-03-18T10:00:00.000Z",
+        publishedAtIso: "2026-03-18T10:00:00.000Z",
+        slug: "edge-observability-playbook",
+        updatedAtIso: "2026-03-19T10:00:00.000Z",
+      }),
+      posts: [
+        {
+          authorName: "Enes Sonmez",
+          coverImageUrl: null,
+          excerpt: "Edge cache invalidation notlari.",
+          publishedAtIso: "2026-03-18T10:00:00.000Z",
+          publishedAtLabel: "18 Mar 2026",
+          readingTimeMinutes: 6,
+          slug: "edge-observability-playbook",
+          title: "Edge Observability Playbook",
+        },
+      ],
+    });
+
+    const { loadPublicBlogData } =
+      await import("../../app/features/public/blog/public-blog.server");
+
+    await expect(
+      loadPublicBlogData(context, new Request("https://paper-portfolio-ink.dev/blog")),
+    ).resolves.toEqual({
+      nextCursor: JSON.stringify({
+        createdAtIso: "2026-03-18T10:00:00.000Z",
+        publishedAtIso: "2026-03-18T10:00:00.000Z",
+        slug: "edge-observability-playbook",
+        updatedAtIso: "2026-03-19T10:00:00.000Z",
+      }),
+      posts: [
+        {
+          authorName: "Enes Sonmez",
+          coverImageUrl: null,
+          excerpt: "Edge cache invalidation notlari.",
+          publishedAtIso: "2026-03-18T10:00:00.000Z",
+          publishedAtLabel: "18 Mar 2026",
+          readingTimeMinutes: 6,
+          slug: "edge-observability-playbook",
+          title: "Edge Observability Playbook",
+        },
+      ],
+    });
+
+    expect(listPublicPostsPageMock).not.toHaveBeenCalled();
   });
 
   it("loads feed pages independently for lazy scrolling", async () => {
+    const cursor = JSON.stringify({
+      createdAtIso: "2026-03-12T10:00:00.000Z",
+      publishedAtIso: "2026-03-12T10:00:00.000Z",
+      slug: "zero-downtime-d1-migrations",
+      updatedAtIso: "2026-03-12T11:00:00.000Z",
+    });
     const pageData = {
       items: [
         {
@@ -69,7 +156,7 @@ describe("public blog server", () => {
           title: "Cache Purge Window",
         },
       ],
-      nextPage: null,
+      nextCursor: null,
     };
 
     listPublicPostsPageMock.mockResolvedValue(pageData);
@@ -80,15 +167,22 @@ describe("public blog server", () => {
     await expect(
       loadPublicBlogFeedData(
         context,
-        new Request("https://paper-portfolio-ink.dev/blog/feed?page=3"),
+        new Request(
+          `https://paper-portfolio-ink.dev/blog/feed?cursor=${encodeURIComponent(cursor)}`,
+        ),
       ),
     ).resolves.toEqual({
-      nextPage: null,
-      page: 3,
+      cursor,
+      nextCursor: null,
       posts: pageData.items,
     });
 
-    expect(listPublicPostsPageMock).toHaveBeenCalledWith(context.db, 5, 3);
+    expect(listPublicPostsPageMock).toHaveBeenCalledWith(context.db, 5, {
+      createdAt: new Date("2026-03-12T10:00:00.000Z"),
+      publishedAt: new Date("2026-03-12T10:00:00.000Z"),
+      slug: "zero-downtime-d1-migrations",
+      updatedAt: new Date("2026-03-12T11:00:00.000Z"),
+    });
   });
 
   it("loads a public blog post and companion notes", async () => {
@@ -152,5 +246,21 @@ describe("public blog server", () => {
       name: "PublicBlogPostNotFoundError",
       status: 404,
     });
+  });
+
+  it("purges the first blog page cache with a stable key", async () => {
+    cacheDeleteMock.mockResolvedValue(true);
+
+    const { purgePublicBlogDataCache } =
+      await import("../../app/features/public/blog/public-blog.server");
+
+    await purgePublicBlogDataCache(
+      context,
+      new Request("https://paper-portfolio-ink.dev/dashboard/posts"),
+    );
+
+    expect(cacheDeleteMock).toHaveBeenCalledWith(
+      "https://paper-portfolio-ink.dev/__cache/public/blog/page-1",
+    );
   });
 });

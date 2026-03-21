@@ -1,23 +1,37 @@
 import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
+import { invalidateCachedData, loadCachedData } from "~/lib/cache/data-cache.server";
 import {
   listPublicCompanionPosts,
   getPublicPostBySlug,
   listPublicPostsPage,
 } from "~/lib/posts/posts.server";
+import {
+  buildPublicBlogCacheKey,
+  PUBLIC_BLOG_CACHE_OPTIONS,
+  publicBlogDataSchema,
+} from "./public-blog.cache";
 
 import { PublicBlogPostNotFoundError } from "./public-blog.errors";
-import { normalizePublicBlogPage, PUBLIC_BLOG_PAGE_SIZE } from "./public-blog.shared";
+import { parsePublicBlogCursor, PUBLIC_BLOG_PAGE_SIZE } from "./public-blog.shared";
 
-export async function loadPublicBlogData(context: AppLoadContext, _request: Request) {
-  const db = getDbFromContext(context);
-  const result = await listPublicPostsPage(db, PUBLIC_BLOG_PAGE_SIZE, 1);
+export async function loadPublicBlogData(context: AppLoadContext, request: Request) {
+  return loadCachedData({
+    context,
+    key: buildPublicBlogCacheKey(request),
+    load: async () => {
+      const db = getDbFromContext(context);
+      const result = await listPublicPostsPage(db, PUBLIC_BLOG_PAGE_SIZE);
 
-  return {
-    nextPage: result.nextPage,
-    posts: result.items,
-  };
+      return {
+        nextCursor: result.nextCursor,
+        posts: result.items,
+      };
+    },
+    options: PUBLIC_BLOG_CACHE_OPTIONS,
+    schema: publicBlogDataSchema,
+  });
 }
 
 export async function loadPublicBlogFeedData(
@@ -26,12 +40,24 @@ export async function loadPublicBlogFeedData(
 ) {
   const db = getDbFromContext(context);
   const url = new URL(request.url);
-  const page = normalizePublicBlogPage(url.searchParams.get("page"));
-  const result = await listPublicPostsPage(db, PUBLIC_BLOG_PAGE_SIZE, page);
+  const rawCursor = url.searchParams.get("cursor");
+  const cursor = parsePublicBlogCursor(rawCursor);
+  const result = await listPublicPostsPage(
+    db,
+    PUBLIC_BLOG_PAGE_SIZE,
+    cursor
+      ? {
+          createdAt: new Date(cursor.createdAtIso),
+          publishedAt: new Date(cursor.publishedAtIso),
+          slug: cursor.slug,
+          updatedAt: new Date(cursor.updatedAtIso),
+        }
+      : null,
+  );
 
   return {
-    nextPage: result.nextPage,
-    page,
+    cursor: rawCursor && cursor ? rawCursor : null,
+    nextCursor: result.nextCursor,
     posts: result.items,
   };
 }
@@ -50,4 +76,11 @@ export async function loadPublicBlogPostData(context: AppLoadContext, slug: stri
     morePosts,
     post,
   };
+}
+
+export async function purgePublicBlogDataCache(
+  context: Pick<AppLoadContext, "cache" | "runtime">,
+  request: Request,
+) {
+  return invalidateCachedData(context, buildPublicBlogCacheKey(request));
 }

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, ne } from "drizzle-orm";
+import { and, asc, desc, eq, gt, lt, ne, or } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { posts, users } from "../../../db/schema";
@@ -41,7 +41,7 @@ export interface PublicPostDetail extends PublicPostListItem {
 
 export interface PublicPostsPage {
   items: PublicPostListItem[];
-  nextPage: number | null;
+  nextCursor: string | null;
 }
 
 interface PublicPostRecord {
@@ -79,6 +79,45 @@ function formatDateIso(value: Date) {
 
 function normalizeNullableUrl(value: string) {
   return value.length > 0 ? value : null;
+}
+
+interface PublicPostsCursorInput {
+  createdAtIso: string;
+  publishedAtIso: string;
+  slug: string;
+  updatedAtIso: string;
+}
+
+interface PublicPostsCursorRecord {
+  createdAt: Date;
+  publishedAt: Date;
+  slug: string;
+  updatedAt: Date;
+}
+
+function encodePublicPostsCursor(cursor: PublicPostsCursorInput) {
+  return JSON.stringify(cursor);
+}
+
+function buildPublicPostsCursorWhere(cursor: PublicPostsCursorRecord) {
+  return or(
+    lt(posts.publishedAt, cursor.publishedAt),
+    and(
+      eq(posts.publishedAt, cursor.publishedAt),
+      lt(posts.updatedAt, cursor.updatedAt),
+    ),
+    and(
+      eq(posts.publishedAt, cursor.publishedAt),
+      eq(posts.updatedAt, cursor.updatedAt),
+      lt(posts.createdAt, cursor.createdAt),
+    ),
+    and(
+      eq(posts.publishedAt, cursor.publishedAt),
+      eq(posts.updatedAt, cursor.updatedAt),
+      eq(posts.createdAt, cursor.createdAt),
+      gt(posts.slug, cursor.slug),
+    ),
+  );
 }
 
 function getContentReadingTimeMinutes(content: string) {
@@ -205,9 +244,8 @@ export async function listPublicPosts(db: AppDb): Promise<PublicPostListItem[]> 
 export async function listPublicPostsPage(
   db: AppDb,
   pageSize: number,
-  page: number,
+  cursor?: PublicPostsCursorRecord | null,
 ): Promise<PublicPostsPage> {
-  const offset = (page - 1) * pageSize;
   const result = await db
     .select({
       authorName: users.displayName,
@@ -222,22 +260,38 @@ export async function listPublicPostsPage(
     })
     .from(posts)
     .innerJoin(users, eq(posts.authorId, users.id))
-    .where(eq(posts.status, POST_STATUS.published))
+    .where(
+      cursor
+        ? and(
+            eq(posts.status, POST_STATUS.published),
+            buildPublicPostsCursorWhere(cursor),
+          )
+        : eq(posts.status, POST_STATUS.published),
+    )
     .orderBy(
       desc(posts.publishedAt),
       desc(posts.updatedAt),
       desc(posts.createdAt),
       asc(posts.slug),
     )
-    .limit(pageSize + 1)
-    .offset(offset);
+    .limit(pageSize + 1);
 
   const hasMore = result.length > pageSize;
-  const items = result.slice(0, pageSize).map((post) => toPublicPostListItem(post));
+  const visibleItems = result.slice(0, pageSize);
+  const items = visibleItems.map((post) => toPublicPostListItem(post));
+  const lastVisibleItem = visibleItems.at(-1);
 
   return {
     items,
-    nextPage: hasMore ? page + 1 : null,
+    nextCursor:
+      hasMore && lastVisibleItem?.publishedAt
+        ? encodePublicPostsCursor({
+            createdAtIso: lastVisibleItem.createdAt.toISOString(),
+            publishedAtIso: lastVisibleItem.publishedAt.toISOString(),
+            slug: lastVisibleItem.slug,
+            updatedAtIso: lastVisibleItem.updatedAt.toISOString(),
+          })
+        : null,
   };
 }
 

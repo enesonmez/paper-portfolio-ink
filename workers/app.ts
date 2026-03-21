@@ -1,6 +1,7 @@
 import type { ServerBuild } from "react-router";
 import { createRequestHandler } from "@react-router/cloudflare";
 
+import { createCloudflareCacheStore } from "./cache-store";
 import { createCloudflareLoadContext } from "./load-context";
 import type { CloudflareAppBindings } from "./bindings";
 
@@ -13,6 +14,7 @@ export default createRequestHandler<CloudflareAppBindings>({
   build,
   getLoadContext({ context, request }) {
     return createCloudflareLoadContext({
+      cache: createCloudflareCacheStore(context.cloudflare.caches.default),
       env: context.cloudflare.env,
       request,
     });

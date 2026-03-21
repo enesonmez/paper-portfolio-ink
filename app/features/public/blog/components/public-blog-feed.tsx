@@ -13,68 +13,71 @@ import { PublicBlogFeedItem } from "./public-blog-feed-item";
 import { PublicBlogSidebar } from "./public-blog-sidebar";
 
 interface PublicBlogFeedProps {
-  initialNextPage: number | null;
+  initialNextCursor: string | null;
   initialPosts: PublicPostListItem[];
 }
 
-export function PublicBlogFeed({ initialNextPage, initialPosts }: PublicBlogFeedProps) {
+export function PublicBlogFeed({
+  initialNextCursor,
+  initialPosts,
+}: PublicBlogFeedProps) {
   const fetcher = useFetcher<PublicBlogFeedLoaderData>();
   const [posts, setPosts] = useState(initialPosts);
-  const [nextPage, setNextPage] = useState<number | null>(initialNextPage);
+  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const inFlightPageRef = useRef<number | null>(null);
+  const inFlightCursorRef = useRef<string | null>(null);
 
   useEffect(() => {
     setPosts(initialPosts);
   }, [initialPosts]);
 
   useEffect(() => {
-    setNextPage(initialNextPage);
-    inFlightPageRef.current = null;
-  }, [initialNextPage]);
+    setNextCursor(initialNextCursor);
+    inFlightCursorRef.current = null;
+  }, [initialNextCursor]);
 
   useEffect(() => {
     if (fetcher.state !== "idle") {
       return;
     }
 
-    const requestedPage = inFlightPageRef.current;
+    const requestedCursor = inFlightCursorRef.current;
 
-    if (requestedPage === null) {
+    if (requestedCursor === null) {
       return;
     }
 
-    inFlightPageRef.current = null;
+    inFlightCursorRef.current = null;
 
     const fetcherData = fetcher.data;
 
-    if (!fetcherData || fetcherData.page !== requestedPage) {
+    if (!fetcherData || fetcherData.cursor !== requestedCursor) {
       return;
     }
 
     setPosts((current) => mergePublicBlogPosts(current, fetcherData.posts));
-    setNextPage(fetcherData.nextPage);
+    setNextCursor(fetcherData.nextCursor);
   }, [fetcher.data, fetcher.state]);
 
   const handleIntersection = useEffectEvent((entries: IntersectionObserverEntry[]) => {
     const [entry] = entries;
 
-    if (!entry?.isIntersecting || fetcher.state !== "idle" || nextPage === null) {
+    if (!entry?.isIntersecting || fetcher.state !== "idle" || nextCursor === null) {
       return;
     }
 
-    if (inFlightPageRef.current !== null) {
+    if (inFlightCursorRef.current !== null) {
       return;
     }
 
-    inFlightPageRef.current = nextPage;
-    void fetcher.load(buildPublicBlogFeedHref(nextPage));
+    inFlightCursorRef.current = nextCursor;
+    void fetcher.load(buildPublicBlogFeedHref(nextCursor));
   });
 
   useEffect(() => {
     const node = sentinelRef.current;
 
-    if (!node || nextPage === null) {
+    if (!node || nextCursor === null) {
       return;
     }
 
@@ -87,7 +90,7 @@ export function PublicBlogFeed({ initialNextPage, initialPosts }: PublicBlogFeed
     return () => {
       observer.disconnect();
     };
-  }, [nextPage]);
+  }, [nextCursor]);
 
   const [leadPost, ...remainingPosts] = posts;
 
@@ -104,7 +107,7 @@ export function PublicBlogFeed({ initialNextPage, initialPosts }: PublicBlogFeed
           </div>
         ) : null}
 
-        {nextPage !== null ? (
+        {nextCursor !== null ? (
           <div
             ref={sentinelRef}
             aria-live="polite"

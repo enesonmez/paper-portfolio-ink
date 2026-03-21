@@ -1,6 +1,7 @@
 import { data, redirect, type AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
+import { purgePublicHomeDataCache } from "~/features/public/home/public-home.server";
 import { buildLoginRedirect } from "~/lib/auth/login.server";
 import { requireSession } from "~/lib/auth/session.server";
 import { isSessionUserAdmin } from "~/lib/auth/session-user";
@@ -185,6 +186,7 @@ export async function handleDashboardSkillsAction(
     }
 
     await deleteSkill(db, skillId);
+    await purgePublicHomeDataCache(context, request);
 
     return redirect("/dashboard/skills");
   }
@@ -218,6 +220,8 @@ export async function handleDashboardSkillsAction(
       return mutationError;
     }
 
+    await purgePublicHomeDataCache(context, request);
+
     return redirect("/dashboard/skills");
   }
 
@@ -231,6 +235,8 @@ export async function handleDashboardSkillsAction(
   if (mutationError) {
     return mutationError;
   }
+
+  await purgePublicHomeDataCache(context, request);
 
   return redirect("/dashboard/skills");
 }

@@ -1,9 +1,10 @@
 import type { PublicProjectCard } from "~/lib/projects/projects.server";
+import { z } from "zod";
 
 export const PUBLIC_PROJECTS_PAGE_SIZE = 6;
 
 export const PUBLIC_PROJECTS_QUERY_PARAM = {
-  page: "page",
+  cursor: "cursor",
 } as const;
 
 export const PUBLIC_PROJECTS_COPY = {
@@ -28,7 +29,7 @@ export const PUBLIC_PROJECTS_COPY = {
 } as const;
 
 export interface PublicProjectsLoaderData {
-  nextPage: number | null;
+  nextCursor: string | null;
   projects: PublicProjectCard[];
   stats: {
     featuredCount: number;
@@ -38,23 +39,39 @@ export interface PublicProjectsLoaderData {
 }
 
 export interface PublicProjectsFeedLoaderData {
-  page: number;
-  nextPage: number | null;
+  cursor: string | null;
+  nextCursor: string | null;
   projects: PublicProjectCard[];
 }
 
-export function normalizePublicProjectsPage(value: string | null) {
-  const parsed = Number(value);
+const publicProjectsCursorSchema = z.object({
+  createdAtIso: z.string().datetime(),
+  isFeatured: z.boolean(),
+  slug: z.string().min(1),
+  sortOrder: z.number().int().nonnegative(),
+});
 
-  if (!Number.isInteger(parsed) || parsed < 1) {
-    return 1;
+export type PublicProjectsCursor = z.infer<typeof publicProjectsCursorSchema>;
+
+export function parsePublicProjectsCursor(value: string | null) {
+  if (!value) {
+    return null;
   }
 
-  return parsed;
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    const result = publicProjectsCursorSchema.safeParse(parsed);
+
+    return result.success ? result.data : null;
+  } catch {
+    return null;
+  }
 }
 
-export function buildPublicProjectsFeedHref(page: number) {
-  return `/projects/feed?${PUBLIC_PROJECTS_QUERY_PARAM.page}=${page}`;
+export function buildPublicProjectsFeedHref(cursor: string) {
+  return `/projects/feed?${new URLSearchParams({
+    [PUBLIC_PROJECTS_QUERY_PARAM.cursor]: cursor,
+  }).toString()}`;
 }
 
 export function mergePublicProjects(

@@ -3,6 +3,9 @@ import type * as UserFormServerModule from "../../app/lib/users/user-form.server
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
+  cacheDeleteMock,
+  cacheGetMock,
+  cacheSetMock,
   countActiveAdminsMock,
   createUserMock,
   deactivateUserMock,
@@ -14,6 +17,9 @@ const {
   updateUserMock,
 } = vi.hoisted(() => {
   return {
+    cacheDeleteMock: vi.fn(),
+    cacheGetMock: vi.fn(),
+    cacheSetMock: vi.fn(),
     countActiveAdminsMock: vi.fn(),
     createUserMock: vi.fn(),
     deactivateUserMock: vi.fn(),
@@ -57,11 +63,19 @@ vi.mock("../../app/lib/auth/session.server", () => {
 
 describe("dashboard users server", () => {
   const context = {
+    cache: {
+      delete: cacheDeleteMock,
+      get: cacheGetMock,
+      set: cacheSetMock,
+    },
     db: { query: {} } as never,
     runtime: { platform: "node" },
   } as unknown as AppLoadContext;
 
   beforeEach(() => {
+    cacheDeleteMock.mockReset();
+    cacheGetMock.mockReset();
+    cacheSetMock.mockReset();
     countActiveAdminsMock.mockReset();
     createUserMock.mockReset();
     deactivateUserMock.mockReset();
@@ -293,6 +307,9 @@ describe("dashboard users server", () => {
 
     expect(deactivateUserMock).toHaveBeenCalledWith({ query: {} }, "user-author");
     expect(response.headers.get("Location")).toBe("/dashboard/users");
+    expect(cacheDeleteMock).toHaveBeenCalledWith(
+      "http://localhost:3000/__cache/public/blog/page-1",
+    );
   });
 
   it("blocks deactivating the last active admin", async () => {
@@ -395,5 +412,67 @@ describe("dashboard users server", () => {
         status: 409,
       },
     });
+  });
+
+  it("purges the cached blog archive after a user update", async () => {
+    const { handleDashboardUsersAction } =
+      await import("../../app/features/dashboard/users/dashboard-users.server");
+
+    const request = new Request("http://localhost:3000/dashboard/users", {
+      body: new URLSearchParams({
+        displayName: "Updated Author",
+        email: "author@example.com",
+        intent: "update",
+        isActive: "on",
+        password: "",
+        role: "author",
+        userId: "user-author",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-admin",
+        role: "admin",
+      },
+    });
+    parseUserFormDataMock.mockReturnValue({
+      data: {
+        avatarUrl: "",
+        bio: "",
+        displayName: "Updated Author",
+        email: "author@example.com",
+        isActive: true,
+        password: "",
+        role: "author",
+      },
+    });
+    getUserByIdMock.mockResolvedValue({
+      id: "user-author",
+      isActive: true,
+      role: "author",
+    });
+    isUserEmailTakenMock.mockResolvedValue(false);
+
+    const response = await handleDashboardUsersAction(context, request);
+
+    if (!(response instanceof Response)) {
+      throw new Error("Expected redirect response after update action");
+    }
+
+    expect(updateUserMock).toHaveBeenCalledWith(
+      { query: {} },
+      "user-author",
+      expect.objectContaining({
+        displayName: "Updated Author",
+      }),
+    );
+    expect(cacheDeleteMock).toHaveBeenCalledWith(
+      "http://localhost:3000/__cache/public/blog/page-1",
+    );
   });
 });

@@ -1,6 +1,7 @@
 import { data, redirect, type AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
+import { purgePublicBlogDataCache } from "~/features/public/blog/public-blog.server";
 import { buildLoginRedirect } from "~/lib/auth/login.server";
 import { requireSession } from "~/lib/auth/session.server";
 import { getSessionUserId } from "~/lib/auth/session-user";
@@ -114,6 +115,7 @@ export async function handleDashboardPostsAction(
     }
 
     await deletePost(db, postId);
+    await purgePublicBlogDataCache(context, request);
 
     return redirect("/dashboard/posts");
   }
@@ -151,6 +153,8 @@ export async function handleDashboardPostsAction(
       throw error;
     }
 
+    await purgePublicBlogDataCache(context, request);
+
     return redirect("/dashboard/posts");
   }
 
@@ -181,6 +185,8 @@ export async function handleDashboardPostsAction(
 
     throw error;
   }
+
+  await purgePublicBlogDataCache(context, request);
 
   return redirect("/dashboard/posts");
 }

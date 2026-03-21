@@ -3,6 +3,9 @@ import type * as PostFormServerModule from "../../app/lib/posts/post-form.server
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
+  cacheDeleteMock,
+  cacheGetMock,
+  cacheSetMock,
   createPostMock,
   deletePostMock,
   findAvailablePostSlugMock,
@@ -13,6 +16,9 @@ const {
   updatePostMock,
 } = vi.hoisted(() => {
   return {
+    cacheDeleteMock: vi.fn(),
+    cacheGetMock: vi.fn(),
+    cacheSetMock: vi.fn(),
     createPostMock: vi.fn(),
     deletePostMock: vi.fn(),
     findAvailablePostSlugMock: vi.fn(),
@@ -54,11 +60,19 @@ vi.mock("../../app/lib/auth/session.server", () => {
 
 describe("dashboard posts server", () => {
   const context = {
+    cache: {
+      delete: cacheDeleteMock,
+      get: cacheGetMock,
+      set: cacheSetMock,
+    },
     db: { query: {} } as never,
     runtime: { platform: "node" },
   } as unknown as AppLoadContext;
 
   beforeEach(() => {
+    cacheDeleteMock.mockReset();
+    cacheGetMock.mockReset();
+    cacheSetMock.mockReset();
     createPostMock.mockReset();
     deletePostMock.mockReset();
     findAvailablePostSlugMock.mockReset();
@@ -182,6 +196,9 @@ describe("dashboard posts server", () => {
     );
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe("/dashboard/posts");
+    expect(cacheDeleteMock).toHaveBeenCalledWith(
+      "http://localhost:3000/__cache/public/blog/page-1",
+    );
   });
 
   it("returns a 400 state when validation fails", async () => {

@@ -13,71 +13,71 @@ import {
 import { PublicProjectCard } from "./public-project-card";
 
 interface PublicProjectsFeedProps {
-  initialNextPage: number | null;
+  initialNextCursor: string | null;
   initialProjects: PublicProjectCardData[];
 }
 
 export function PublicProjectsFeed({
-  initialNextPage,
+  initialNextCursor,
   initialProjects,
 }: PublicProjectsFeedProps) {
   const fetcher = useFetcher<PublicProjectsFeedLoaderData>();
   const [projects, setProjects] = useState(initialProjects);
-  const [nextPage, setNextPage] = useState<number | null>(initialNextPage);
+  const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const inFlightPageRef = useRef<number | null>(null);
+  const inFlightCursorRef = useRef<string | null>(null);
 
   useEffect(() => {
     setProjects(initialProjects);
   }, [initialProjects]);
 
   useEffect(() => {
-    setNextPage(initialNextPage);
-    inFlightPageRef.current = null;
-  }, [initialNextPage]);
+    setNextCursor(initialNextCursor);
+    inFlightCursorRef.current = null;
+  }, [initialNextCursor]);
 
   useEffect(() => {
     if (fetcher.state !== "idle") {
       return;
     }
 
-    const requestedPage = inFlightPageRef.current;
+    const requestedCursor = inFlightCursorRef.current;
 
-    if (requestedPage === null) {
+    if (requestedCursor === null) {
       return;
     }
 
-    inFlightPageRef.current = null;
+    inFlightCursorRef.current = null;
 
     const fetcherData = fetcher.data;
 
-    if (!fetcherData || fetcherData.page !== requestedPage) {
+    if (!fetcherData || fetcherData.cursor !== requestedCursor) {
       return;
     }
 
     setProjects((current) => mergePublicProjects(current, fetcherData.projects));
-    setNextPage(fetcherData.nextPage);
+    setNextCursor(fetcherData.nextCursor);
   }, [fetcher.data, fetcher.state]);
 
   const handleIntersection = useEffectEvent((entries: IntersectionObserverEntry[]) => {
     const [entry] = entries;
 
-    if (!entry?.isIntersecting || fetcher.state !== "idle" || nextPage === null) {
+    if (!entry?.isIntersecting || fetcher.state !== "idle" || nextCursor === null) {
       return;
     }
 
-    if (inFlightPageRef.current !== null) {
+    if (inFlightCursorRef.current !== null) {
       return;
     }
 
-    inFlightPageRef.current = nextPage;
-    void fetcher.load(buildPublicProjectsFeedHref(nextPage));
+    inFlightCursorRef.current = nextCursor;
+    void fetcher.load(buildPublicProjectsFeedHref(nextCursor));
   });
 
   useEffect(() => {
     const node = sentinelRef.current;
 
-    if (!node || nextPage === null) {
+    if (!node || nextCursor === null) {
       return;
     }
 
@@ -90,7 +90,7 @@ export function PublicProjectsFeed({
     return () => {
       observer.disconnect();
     };
-  }, [nextPage]);
+  }, [nextCursor]);
 
   return (
     <div className="grid gap-8">
@@ -100,7 +100,7 @@ export function PublicProjectsFeed({
         ))}
       </div>
 
-      {nextPage !== null ? (
+      {nextCursor !== null ? (
         <div
           ref={sentinelRef}
           aria-live="polite"

@@ -60,6 +60,8 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Bu projede en iyi sonuc veren akış, once testleri tanimlayip sonra feature'i loader/action davranisina gore implement etmek oldu.
 - En degerli testler saf helper'lari, server orkestrasyonunu ve route-level render sonucunu ayri ayri kilitleyen testler oldu.
 - Her feature'da tum kalite kapilarinin kosulsuz temiz olmadigi goruldu; bazen hedefli test, typecheck ve secili lint calistirmalariyla ilerlenmis. Bu, proje genel CI hatti eksik oldugunda kabul edilebilir ama uzun vadede risk biriktirir.
+- Public cache katmani runtime'a gomulmek yerine typed bir adapter sozlesmesi ile kurulunca ayni loader kodu Cloudflare Cache API ve node process-memory fallback arasinda tasinabilir kaldi; platform ayrimi worker entrypoint'te sinirli tutulmali.
+- Cache'li ilk sayfa ile lazy feed ayni listeyi besliyorsa offset pagination kirilganlasiyor; ara sira veri degisimlerinde duplicate/gap riskini dusurmek icin feed tarafi cursor tabanli ilerlemeli ve mutation invalidation'lari ilgili public liste cache'lerini de kapsamalidir.
 - Feature dokumantasyonu her adimda yazildigi icin proje evrimi okunabilir kaldi; bu pratik korunmali.
 
 ## 8. What To Preserve Going Forward
@@ -68,6 +70,7 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Route dosyasini ince tut; action, loader ve shared state'i feature katmanina tasi.
 - Form ve API girislerinde Zod zorunlulugunu bozma.
 - Public sayfalarda once SSR, sonra gerekirse leaf-level progressive enhancement kullan.
+- Public loader verileri yavas degisiyorsa tam HTML cache yerine typed loader payload cache'ini tercih et; tema veya cookie gibi response varyantlarini veri cache'i ile karistirma.
 - Dashboard alaninda auth ve role gate'i loader/action seviyesinde uygula.
 - Ortak UI desenleri tekrar etmeye basladigi anda primitive katmanina geri tasi.
 - Veritabani kurallarini sadece uygulama katmaninda degil, gerekliyse migration ve trigger seviyesinde de guvenceye al.

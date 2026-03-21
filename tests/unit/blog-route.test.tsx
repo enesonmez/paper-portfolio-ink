@@ -59,7 +59,12 @@ describe("blog route", () => {
       [
         {
           path: "/blog",
-          element: <PublicBlogScreen nextPage={2} posts={posts} />,
+          element: (
+            <PublicBlogScreen
+              nextCursor='{"createdAtIso":"2026-03-18T10:00:00.000Z","publishedAtIso":"2026-03-18T10:00:00.000Z","slug":"edge-observability-playbook","updatedAtIso":"2026-03-19T10:00:00.000Z"}'
+              posts={posts}
+            />
+          ),
         },
       ],
       {

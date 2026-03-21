@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { getAppDataCache } from "../../app/lib/cache/data-cache.server";
 import { createRuntimeContext } from "../../app/runtime.server";
 import type { AppDb } from "../../db";
 import { getDbFromContext } from "../../db/context";
@@ -18,5 +19,16 @@ describe("app load context", () => {
     expect(createRuntimeContext("node")).toEqual({
       platform: "node",
     });
+  });
+
+  it("returns a shared cache adapter for node runtimes", () => {
+    const firstCache = getAppDataCache({
+      runtime: createRuntimeContext("node"),
+    });
+    const secondCache = getAppDataCache({
+      runtime: createRuntimeContext("node"),
+    });
+
+    expect(firstCache).toBe(secondCache);
   });
 });
