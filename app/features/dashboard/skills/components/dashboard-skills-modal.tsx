@@ -5,9 +5,10 @@ import { Form, Link } from "react-router";
 import { DashboardModal } from "~/components/dashboard/modal";
 import { Button } from "~/components/ui/button";
 import { FormError, TextField, TextareaField } from "~/components/ui/form-field";
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 import {
   getSkillIcon,
-  getSkillIconOption,
+  useSkillIconOptions,
   type SkillIconKey,
 } from "~/features/skills/skill-icon.shared";
 import {
@@ -16,10 +17,7 @@ import {
 } from "~/features/skills/skill.shared";
 import { suggestSlugFromTitle } from "~/lib/slug";
 
-import {
-  DASHBOARD_SKILLS_COPY,
-  DASHBOARD_SKILLS_FORM_COPY,
-} from "../dashboard-skills.constants";
+import { useDashboardSkillsCopy } from "../dashboard-skills.constants";
 import {
   buildDashboardSkillsHref,
   type DashboardSkillsFormState,
@@ -46,15 +44,24 @@ function DashboardSkillsModalForm({
   isEditMode,
   title,
 }: DashboardSkillsModalFormProps) {
+  const to = useLocalizedPath();
+  const t = useT();
+  const { formCopy } = useDashboardSkillsCopy();
+  const iconOptions = useSkillIconOptions();
   const [name, setName] = useState(form.values.name);
   const [sortOrder, setSortOrder] = useState(form.values.sortOrder);
   const [summary, setSummary] = useState(form.values.summary);
   const [iconKey, setIconKey] = useState<SkillIconKey>(form.values.iconKey);
   const slugPreview = suggestSlugFromTitle(name);
-  const selectedIconOption = getSkillIconOption(iconKey);
+  const selectedIconOption =
+    iconOptions.find((option) => option.value === iconKey) ?? iconOptions[0];
 
   return (
-    <DashboardModal description={description} title={title} to="/dashboard/skills">
+    <DashboardModal
+      description={description}
+      title={title}
+      to={to(buildDashboardSkillsHref())}
+    >
       <Form method="post" className="space-y-4">
         <input type="hidden" name={SKILL_FORM_FIELD.intent} value={intent} />
         {isEditMode && form.editingSkillId ? (
@@ -67,34 +74,36 @@ function DashboardSkillsModalForm({
 
         <TextField
           error={form.errors?.name}
-          label={DASHBOARD_SKILLS_FORM_COPY.name.label}
+          label={formCopy.name.label}
           name={SKILL_FORM_FIELD.name}
-          placeholder={DASHBOARD_SKILLS_FORM_COPY.name.placeholder}
+          placeholder={formCopy.name.placeholder}
           value={name}
           onChange={(event) => setName(event.currentTarget.value)}
         />
         <div className="grid gap-2 border-2 border-black bg-white p-4 dark:bg-stone-800">
           <p className="font-sans text-xs font-bold tracking-[0.18em] uppercase">
-            Generated Key
+            {t("dashboard.skills.generatedKeyLabel")}
           </p>
           <p className="font-sans text-sm font-bold">
-            {slugPreview.length > 0 ? slugPreview : "Awaiting valid skill name"}
+            {slugPreview.length > 0
+              ? slugPreview
+              : t("dashboard.skills.generatedKeyPlaceholder")}
           </p>
         </div>
         <TextField
           error={form.errors?.sortOrder}
-          label={DASHBOARD_SKILLS_FORM_COPY.sortOrder.label}
+          label={formCopy.sortOrder.label}
           name={SKILL_FORM_FIELD.sortOrder}
-          placeholder={DASHBOARD_SKILLS_FORM_COPY.sortOrder.placeholder}
+          placeholder={formCopy.sortOrder.placeholder}
           type="number"
           value={sortOrder}
           onChange={(event) => setSortOrder(event.currentTarget.value)}
         />
         <TextareaField
           error={form.errors?.summary}
-          label={DASHBOARD_SKILLS_FORM_COPY.summary.label}
+          label={formCopy.summary.label}
           name={SKILL_FORM_FIELD.summary}
-          placeholder={DASHBOARD_SKILLS_FORM_COPY.summary.placeholder}
+          placeholder={formCopy.summary.placeholder}
           rows={4}
           value={summary}
           onChange={(event) => setSummary(event.currentTarget.value)}
@@ -107,7 +116,7 @@ function DashboardSkillsModalForm({
         />
         <div className="grid gap-3 border-2 border-black bg-white p-4 dark:bg-stone-800">
           <p className="font-sans text-xs font-bold tracking-[0.18em] uppercase">
-            Selected Icon
+            {t("dashboard.skills.selectedIconLabel")}
           </p>
           <div className="flex items-center gap-3">
             <div className="bg-primary flex size-12 items-center justify-center border-2 border-black text-black">
@@ -129,9 +138,7 @@ function DashboardSkillsModalForm({
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button asChild variant="secondary" className="tracking-[0.14em]">
-            <Link to={buildDashboardSkillsHref()}>
-              {DASHBOARD_SKILLS_FORM_COPY.cancelLabel}
-            </Link>
+            <Link to={to(buildDashboardSkillsHref())}>{formCopy.cancelLabel}</Link>
           </Button>
           <Button
             type="submit"
@@ -147,6 +154,8 @@ function DashboardSkillsModalForm({
 }
 
 export function DashboardSkillsModalView({ form }: DashboardSkillsModalProps) {
+  const { copy } = useDashboardSkillsCopy();
+
   if (!form.isOpen || !form.mode) {
     return null;
   }
@@ -154,16 +163,16 @@ export function DashboardSkillsModalView({ form }: DashboardSkillsModalProps) {
   const isEditMode = form.mode === "edit";
   const modalVariant = isEditMode
     ? {
-        actionLabel: DASHBOARD_SKILLS_COPY.editActionLabel,
-        description: DASHBOARD_SKILLS_COPY.editDescription,
+        actionLabel: copy.editActionLabel,
+        description: copy.editDescription,
         intent: SKILL_MUTATION_INTENT.update,
-        title: DASHBOARD_SKILLS_COPY.editTitle,
+        title: copy.editTitle,
       }
     : {
-        actionLabel: DASHBOARD_SKILLS_COPY.createActionLabel,
-        description: DASHBOARD_SKILLS_COPY.createDescription,
+        actionLabel: copy.createActionLabel,
+        description: copy.createDescription,
         intent: SKILL_MUTATION_INTENT.create,
-        title: DASHBOARD_SKILLS_COPY.createTitle,
+        title: copy.createTitle,
       };
 
   return (

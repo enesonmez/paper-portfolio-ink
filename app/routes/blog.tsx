@@ -1,37 +1,52 @@
 import { useLoaderData } from "react-router";
-import type { MetaFunction } from "react-router";
+import type { Route } from "./+types/blog";
 
+import type { loader as rootLoader } from "~/root";
+import { createTranslator } from "~/features/i18n/i18n.shared";
 import { PublicBlogScreen } from "~/features/public/blog/public-blog-screen";
 import { loadPublicBlogData } from "~/features/public/blog/public-blog.server";
 import { siteConfig } from "~/lib/site";
 
-export const meta: MetaFunction = (_args) => [
-  { title: "Blog | Enes Ink" },
-  {
-    name: "description",
-    content: "Edge-first teknik notlar, mimari denemeler ve uygulama gunlukleri.",
-  },
-  {
-    property: "og:title",
-    content: "Blog | Enes Ink",
-  },
-  {
-    property: "og:description",
-    content: "Edge-first teknik notlar, mimari denemeler ve uygulama gunlukleri.",
-  },
-  {
-    property: "og:type",
-    content: "website",
-  },
-  {
-    property: "og:url",
-    content: `${siteConfig.url}/blog`,
-  },
-  {
-    property: "twitter:card",
-    content: "summary",
-  },
-];
+export function meta({ location, matches }: Route.MetaArgs) {
+  for (const match of matches) {
+    if (match && match.id === "root") {
+      const rootData = match.data as Awaited<ReturnType<typeof rootLoader>>;
+      const t = createTranslator(rootData.messages);
+      const title = t("site.title.blog");
+      const description = t("site.description.blog");
+
+      return [
+        { title },
+        {
+          name: "description",
+          content: description,
+        },
+        {
+          property: "og:title",
+          content: title,
+        },
+        {
+          property: "og:description",
+          content: description,
+        },
+        {
+          property: "og:type",
+          content: "website",
+        },
+        {
+          property: "og:url",
+          content: new URL(location.pathname, siteConfig.url).toString(),
+        },
+        {
+          property: "twitter:card",
+          content: "summary",
+        },
+      ];
+    }
+  }
+
+  return [];
+}
 
 export async function loader({
   context,

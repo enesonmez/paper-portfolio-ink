@@ -1,3 +1,6 @@
+import { useT } from "~/features/i18n/i18n-react";
+import type { I18nTranslator } from "~/features/i18n/i18n.shared";
+
 type ValueOf<T> = T[keyof T];
 
 export const POST_STATUS = {
@@ -21,20 +24,28 @@ export interface PostStatusOption {
   value: PostStatus;
 }
 
-export const POST_STATUS_OPTIONS: readonly PostStatusOption[] = [
-  {
-    label: "Draft",
-    value: POST_STATUS.draft,
-  },
-  {
-    label: "Published",
-    value: POST_STATUS.published,
-  },
-  {
-    label: "Archived",
-    value: POST_STATUS.archived,
-  },
-];
+export function buildPostStatusOptions(t: I18nTranslator): readonly PostStatusOption[] {
+  return [
+    {
+      label: t("model.postStatus.draft"),
+      value: POST_STATUS.draft,
+    },
+    {
+      label: t("model.postStatus.published"),
+      value: POST_STATUS.published,
+    },
+    {
+      label: t("model.postStatus.archived"),
+      value: POST_STATUS.archived,
+    },
+  ];
+}
+
+export function usePostStatusOptions() {
+  const t = useT();
+
+  return buildPostStatusOptions(t);
+}
 
 export const POST_MUTATION_INTENT = {
   create: "create",

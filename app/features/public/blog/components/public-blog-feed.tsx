@@ -2,12 +2,13 @@ import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { useFetcher } from "react-router";
 
+import { useLocalizedPath } from "~/features/i18n/i18n-react";
 import type { PublicPostListItem } from "~/lib/posts/posts.server";
 import {
   buildPublicBlogFeedHref,
   mergePublicBlogPosts,
-  PUBLIC_BLOG_COPY,
   type PublicBlogFeedLoaderData,
+  usePublicBlogCopy,
 } from "../public-blog.shared";
 import { PublicBlogFeedItem } from "./public-blog-feed-item";
 import { PublicBlogSidebar } from "./public-blog-sidebar";
@@ -21,6 +22,8 @@ export function PublicBlogFeed({
   initialNextCursor,
   initialPosts,
 }: PublicBlogFeedProps) {
+  const to = useLocalizedPath();
+  const { copy } = usePublicBlogCopy();
   const fetcher = useFetcher<PublicBlogFeedLoaderData>();
   const [posts, setPosts] = useState(initialPosts);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
@@ -71,7 +74,7 @@ export function PublicBlogFeed({
     }
 
     inFlightCursorRef.current = nextCursor;
-    void fetcher.load(buildPublicBlogFeedHref(nextCursor));
+    void fetcher.load(to(buildPublicBlogFeedHref(nextCursor)));
   });
 
   useEffect(() => {
@@ -116,15 +119,13 @@ export function PublicBlogFeed({
             {fetcher.state === "loading" ? (
               <div className="inline-flex items-center gap-2 text-sm font-bold uppercase">
                 <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-                {PUBLIC_BLOG_COPY.feedLoading}
+                {copy.feedLoading}
               </div>
             ) : (
-              <p className="text-sm font-bold uppercase">
-                {PUBLIC_BLOG_COPY.feedReady}
-              </p>
+              <p className="text-sm font-bold uppercase">{copy.feedReady}</p>
             )}
             <p className="text-muted-foreground text-xs tracking-[0.18em] uppercase">
-              {PUBLIC_BLOG_COPY.scrollHint}
+              {copy.scrollHint}
             </p>
           </div>
         ) : null}

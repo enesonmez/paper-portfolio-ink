@@ -1,13 +1,11 @@
 import { ArrowUpRight, FileUser, Github, Linkedin, Mail } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
+import { useT } from "~/features/i18n/i18n-react";
 
 import {
-  PUBLIC_HOME_COPY,
-  PUBLIC_HOME_RESUME_META,
-  PUBLIC_HOME_RESUME_POINTS,
-  PUBLIC_HOME_SOCIAL_CARDS,
   PUBLIC_HOME_SURFACE_CLASSNAME,
+  usePublicHomeCopy,
 } from "../public-home.shared";
 
 const SOCIAL_CARD_ICONS = {
@@ -17,6 +15,9 @@ const SOCIAL_CARD_ICONS = {
 } as const;
 
 export function PublicHomeResume() {
+  const t = useT();
+  const { copy, resumeMeta, resumePoints, socialCards } = usePublicHomeCopy();
+
   return (
     <section
       id="resume"
@@ -28,10 +29,10 @@ export function PublicHomeResume() {
         <div className="flex items-start justify-between gap-4">
           <div className="grid min-w-0 gap-3">
             <p className="text-muted-foreground text-xs font-bold tracking-[0.18em] uppercase">
-              {PUBLIC_HOME_COPY.resumeEyebrow}
+              {copy.resumeEyebrow}
             </p>
             <h2 className="font-display text-[2.5rem] leading-[0.92] uppercase min-[420px]:text-5xl md:text-6xl">
-              {PUBLIC_HOME_COPY.resumeTitle}
+              {copy.resumeTitle}
             </h2>
           </div>
           <span className="bg-primary flex size-14 shrink-0 items-center justify-center border-2 border-black text-black min-[420px]:size-16">
@@ -40,11 +41,11 @@ export function PublicHomeResume() {
         </div>
 
         <p className="text-muted-foreground max-w-2xl text-sm leading-7 min-[420px]:text-base min-[420px]:leading-8">
-          {PUBLIC_HOME_COPY.resumeBody}
+          {copy.resumeBody}
         </p>
 
         <div className="grid gap-3 md:grid-cols-2">
-          {PUBLIC_HOME_RESUME_POINTS.map((item) => (
+          {resumePoints.map((item) => (
             <div
               key={item}
               className="bg-background border-2 border-black px-4 py-3 text-sm font-bold wrap-break-word uppercase"
@@ -55,7 +56,7 @@ export function PublicHomeResume() {
         </div>
 
         <div className="grid gap-3 border-t-2 border-black pt-5 md:grid-cols-3">
-          {PUBLIC_HOME_RESUME_META.map((item) => (
+          {resumeMeta.map((item) => (
             <div key={item.label} className="grid min-w-0 gap-2">
               <span className="text-muted-foreground text-[11px] font-bold tracking-[0.18em] uppercase">
                 {item.label}
@@ -74,12 +75,12 @@ export function PublicHomeResume() {
             className="w-full text-center leading-5 whitespace-normal sm:w-auto"
           >
             <a href="mailto:hello@paper-portfolio-ink.dev" className="w-full">
-              {PUBLIC_HOME_COPY.resumeCta}
+              {copy.resumeCta}
               <ArrowUpRight className="size-5" aria-hidden="true" />
             </a>
           </Button>
           <span className="text-sm font-bold wrap-break-word uppercase">
-            {PUBLIC_HOME_COPY.resumeMetaLabel}: product systems, dashboards, publishing
+            {copy.resumeMetaLabel}: {t("public.home.resumeFocusValue")}
           </span>
         </div>
       </article>
@@ -89,10 +90,10 @@ export function PublicHomeResume() {
           className={`${PUBLIC_HOME_SURFACE_CLASSNAME} grid min-w-0 gap-5 p-5 min-[420px]:p-6 md:p-8`}
         >
           <h3 className="text-2xl font-bold uppercase min-[420px]:text-3xl">
-            {PUBLIC_HOME_COPY.socialTitle}
+            {copy.socialTitle}
           </h3>
           <div className="grid gap-4">
-            {PUBLIC_HOME_SOCIAL_CARDS.map((card) => {
+            {socialCards.map((card) => {
               const Icon = SOCIAL_CARD_ICONS[card.key];
 
               return (
@@ -121,10 +122,10 @@ export function PublicHomeResume() {
 
         <div className="bg-primary border-2 border-black p-5 text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] min-[420px]:p-6">
           <p className="mb-3 text-xs font-bold tracking-[0.18em] uppercase">
-            Availability
+            {t("public.home.availabilityLabel")}
           </p>
           <p className="text-xl leading-tight font-bold wrap-break-word uppercase min-[420px]:text-2xl">
-            {PUBLIC_HOME_COPY.availability}
+            {copy.availability}
           </p>
         </div>
       </aside>

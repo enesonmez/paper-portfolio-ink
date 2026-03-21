@@ -5,24 +5,30 @@ import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 
-import {
-  DASHBOARD_OVERVIEW_LOGS,
-  DASHBOARD_OVERVIEW_POSTS,
-  DASHBOARD_OVERVIEW_STATS,
-} from "./dashboard-overview.constants";
+import { useDashboardOverviewCopy } from "./dashboard-overview.constants";
 
 export default function DashboardOverviewScreen() {
-  const columns: DataTableColumn<(typeof DASHBOARD_OVERVIEW_POSTS)[number]>[] = [
+  const t = useT();
+  const to = useLocalizedPath();
+  const {
+    columns: columnLabels,
+    copy,
+    logs,
+    posts,
+    stats,
+  } = useDashboardOverviewCopy();
+  const columns: DataTableColumn<(typeof posts)[number]>[] = [
     {
-      header: "Post Title",
+      header: columnLabels.title,
       id: "title",
       render: (post) => (
         <p className="text-foreground font-sans text-sm font-bold">{post.title}</p>
       ),
     },
     {
-      header: "Category",
+      header: columnLabels.category,
       id: "category",
       render: (post) => (
         <span className="bg-primary/20 text-foreground inline-flex border-2 border-black px-2 py-1 font-sans text-[10px] font-bold tracking-[0.14em] uppercase">
@@ -31,7 +37,7 @@ export default function DashboardOverviewScreen() {
       ),
     },
     {
-      header: "Status",
+      header: columnLabels.status,
       id: "status",
       render: (post) => (
         <span
@@ -42,26 +48,28 @@ export default function DashboardOverviewScreen() {
       ),
     },
     {
-      header: "Actions",
+      header: columnLabels.actions,
       headerClassName: "text-right",
       id: "actions",
-      render: () => (
+      render: (post) => (
         <div className="flex justify-end gap-2">
           <Button
             type="button"
             variant="default"
             size="sm"
             className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            aria-label={`${t("common.edit")} ${post.title}`}
           >
-            Edit
+            {t("common.edit")}
           </Button>
           <Button
             type="button"
             variant="destructive"
             size="sm"
             className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+            aria-label={`${t("common.delete")} ${post.title}`}
           >
-            Delete
+            {t("common.delete")}
           </Button>
         </div>
       ),
@@ -71,7 +79,7 @@ export default function DashboardOverviewScreen() {
   return (
     <div className="space-y-8">
       <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {DASHBOARD_OVERVIEW_STATS.map((stat) => (
+        {stats.map((stat) => (
           <DashboardMetricCard
             key={stat.label}
             label={stat.label}
@@ -89,34 +97,40 @@ export default function DashboardOverviewScreen() {
                 asChild
                 className="w-full tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none md:w-auto"
               >
-                <Link to="/dashboard/posts?modal=create">Create New Post</Link>
+                <Link to={to("/dashboard/posts?modal=create")}>
+                  {copy.createPostActionLabel}
+                </Link>
               </Button>
             }
-            eyebrow="Content Pipeline"
-            title="Manage Content"
+            eyebrow={copy.contentPipelineEyebrow}
+            title={copy.contentPipelineTitle}
           />
 
           <DashboardPanel className="overflow-x-auto p-0">
             <DataTable
               columns={columns}
               getRowKey={(post) => post.title}
-              rows={DASHBOARD_OVERVIEW_POSTS}
+              rows={posts}
             />
           </DashboardPanel>
         </section>
 
         <aside className="space-y-4">
-          <DashboardSectionHeading eyebrow="Runtime Feed" level={2} title="Logs" />
+          <DashboardSectionHeading
+            eyebrow={copy.runtimeFeedEyebrow}
+            level={2}
+            title={copy.runtimeFeedTitle}
+          />
 
           <div className="space-y-4">
-            {DASHBOARD_OVERVIEW_LOGS.map((log) => (
+            {logs.map((log) => (
               <DashboardPanel key={log.title}>
                 <div className="flex items-start gap-4">
                   <div
                     className={`shrink-0 border-2 border-black px-3 py-2 ${log.toneClassName}`}
                   >
                     <span className="font-sans text-[10px] font-bold uppercase">
-                      Log
+                      {copy.logBadge}
                     </span>
                   </div>
                   <div>

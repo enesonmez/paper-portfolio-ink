@@ -38,23 +38,23 @@ describe("HomePage", () => {
         name: /Hello, I am Enes/i,
       }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "View Projects" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "View projects" })).toHaveAttribute(
       "href",
       "/projects",
     );
-    expect(screen.getByRole("link", { name: "Read The Blog" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Read the blog" })).toHaveAttribute(
       "href",
       "/blog",
     );
     expect(
-      screen.getByRole("heading", { level: 2, name: "Featured Projects" }),
+      screen.getByRole("heading", { level: 2, name: "Featured projects" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Paper Enes Ink")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 2, name: "Tech Stack" }),
+      screen.getByRole("heading", { level: 2, name: "Tech stack" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 2, name: "Resume Snapshot" }),
+      screen.getByRole("heading", { level: 2, name: "Resume snapshot" }),
     ).toBeInTheDocument();
   });
 
@@ -66,10 +66,10 @@ describe("HomePage", () => {
     );
 
     expect(
-      screen.queryByRole("heading", { level: 2, name: "Featured Projects" }),
+      screen.queryByRole("heading", { level: 2, name: "Featured projects" }),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 2, name: "Tech Stack" }),
+      screen.getByRole("heading", { level: 2, name: "Tech stack" }),
     ).toBeInTheDocument();
   });
 
@@ -81,10 +81,10 @@ describe("HomePage", () => {
     );
 
     expect(
-      screen.queryByRole("heading", { level: 2, name: "Tech Stack" }),
+      screen.queryByRole("heading", { level: 2, name: "Tech stack" }),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 2, name: "Resume Snapshot" }),
+      screen.getByRole("heading", { level: 2, name: "Resume snapshot" }),
     ).toBeInTheDocument();
   });
 });

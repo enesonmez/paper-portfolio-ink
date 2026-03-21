@@ -9,6 +9,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { useT } from "~/features/i18n/i18n-react";
+import type { AppLocale, I18nTranslator } from "~/features/i18n/i18n.shared";
+import { buildLocalizedPath } from "~/features/i18n/i18n.shared";
+
 export interface DashboardNavigationLinkItem {
   icon: LucideIcon;
   kind: "link";
@@ -28,76 +32,87 @@ export type DashboardNavigationItem =
   | DashboardNavigationLinkItem
   | DashboardNavigationStaticItem;
 
-const DASHBOARD_BASE_NAVIGATION: readonly DashboardNavigationItem[] = [
-  {
-    icon: LayoutDashboard,
-    kind: "link",
-    label: "Dashboard",
-    statusLabel: "Live",
-    to: "/dashboard",
-  },
-  {
-    icon: Newspaper,
-    kind: "link",
-    label: "Posts",
-    statusLabel: "Live",
-    to: "/dashboard/posts",
-  },
-  {
-    icon: FolderKanban,
-    kind: "link",
-    label: "Projects",
-    statusLabel: "Live",
-    to: "/dashboard/projects",
-  },
-];
+export function getDashboardNavigation(
+  locale: AppLocale,
+  role: string,
+  t: I18nTranslator,
+): DashboardNavigationItem[] {
+  const baseNavigation: readonly DashboardNavigationItem[] = [
+    {
+      icon: LayoutDashboard,
+      kind: "link",
+      label: t("dashboard.layout.navDashboard"),
+      statusLabel: t("dashboard.layout.navStatusLive"),
+      to: buildLocalizedPath(locale, "/dashboard"),
+    },
+    {
+      icon: Newspaper,
+      kind: "link",
+      label: t("dashboard.layout.navPosts"),
+      statusLabel: t("dashboard.layout.navStatusLive"),
+      to: buildLocalizedPath(locale, "/dashboard/posts"),
+    },
+    {
+      icon: FolderKanban,
+      kind: "link",
+      label: t("dashboard.layout.navProjects"),
+      statusLabel: t("dashboard.layout.navStatusLive"),
+      to: buildLocalizedPath(locale, "/dashboard/projects"),
+    },
+  ];
+  const adminNavigation: readonly DashboardNavigationItem[] = [
+    {
+      icon: Wrench,
+      kind: "link",
+      label: t("dashboard.layout.navSkills"),
+      statusLabel: t("dashboard.layout.navStatusLive"),
+      to: buildLocalizedPath(locale, "/dashboard/skills"),
+    },
+    {
+      icon: Users,
+      kind: "link",
+      label: t("dashboard.layout.navUsers"),
+      statusLabel: t("dashboard.layout.navStatusLive"),
+      to: buildLocalizedPath(locale, "/dashboard/users"),
+    },
+  ];
+  const staticNavigation: readonly DashboardNavigationItem[] = [
+    {
+      icon: Settings,
+      kind: "static",
+      label: t("dashboard.layout.navSettings"),
+      note: t("dashboard.layout.navStatusLater"),
+    },
+  ];
 
-const DASHBOARD_ADMIN_NAVIGATION: readonly DashboardNavigationItem[] = [
-  {
-    icon: Wrench,
-    kind: "link",
-    label: "Skills",
-    statusLabel: "Live",
-    to: "/dashboard/skills",
-  },
-  {
-    icon: Users,
-    kind: "link",
-    label: "Users",
-    statusLabel: "Live",
-    to: "/dashboard/users",
-  },
-];
-
-const DASHBOARD_STATIC_NAVIGATION: readonly DashboardNavigationItem[] = [
-  {
-    icon: Settings,
-    kind: "static",
-    label: "Settings",
-    note: "Later",
-  },
-];
-
-export function getDashboardNavigation(role: string): DashboardNavigationItem[] {
   return [
-    ...DASHBOARD_BASE_NAVIGATION,
-    ...(role === "admin" ? DASHBOARD_ADMIN_NAVIGATION : []),
-    ...DASHBOARD_STATIC_NAVIGATION,
+    ...baseNavigation,
+    ...(role === "admin" ? adminNavigation : []),
+    ...staticNavigation,
   ];
 }
 
-export const DASHBOARD_LAYOUT_COPY = {
-  closeMenuAriaLabel: "Close navigation menu",
-  closeOverlayAriaLabel: "Close navigation overlay",
-  logoutAriaLabel: "Logout current admin session",
-  logoutLabel: "Logout",
-  menuOpenAriaLabel: "Open navigation menu",
-  navigationAriaLabel: "Dashboard",
-  shellTitle: "Admin Portal",
-  shellVersion: "V1.0.4-stable",
-  statusDescription: "Session secured / dashboard shell active",
-  statusTitle: "System Status: Logged In",
-} as const;
+export function buildDashboardLayoutCopy(t: I18nTranslator) {
+  return {
+    closeMenuAriaLabel: t("dashboard.layout.closeMenuAriaLabel"),
+    closeOverlayAriaLabel: t("dashboard.layout.closeOverlayAriaLabel"),
+    logoutAriaLabel: t("dashboard.layout.logoutAriaLabel"),
+    logoutLabel: t("dashboard.layout.logoutLabel"),
+    menuOpenAriaLabel: t("dashboard.layout.menuOpenAriaLabel"),
+    navigationAriaLabel: t("dashboard.layout.navigationAriaLabel"),
+    shellTitle: t("dashboard.layout.shellTitle"),
+    shellVersion: t("dashboard.layout.shellVersion"),
+    statusDescription: t("dashboard.layout.statusDescription"),
+    statusTitle: t("dashboard.layout.statusTitle"),
+    roleAccessSuffix: t("dashboard.layout.roleAccessSuffix"),
+  } as const;
+}
+
+export function useDashboardLayoutCopy() {
+  const t = useT();
+
+  return buildDashboardLayoutCopy(t);
+}
 
 export const DASHBOARD_LAYOUT_ICON = {
   logout: LogOut,

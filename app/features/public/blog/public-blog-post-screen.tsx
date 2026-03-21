@@ -2,8 +2,9 @@ import { Link } from "react-router";
 import { ArrowLeft, Clock3 } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
+import { useLocalizedPath } from "~/features/i18n/i18n-react";
 import type { PublicPostDetail, PublicPostListItem } from "~/lib/posts/posts.server";
-import { PUBLIC_BLOG_COPY } from "./public-blog.shared";
+import { usePublicBlogCopy } from "./public-blog.shared";
 import { PublicBlogPostBody } from "./components/public-blog-post-body";
 
 interface PublicBlogPostScreenProps {
@@ -12,12 +13,15 @@ interface PublicBlogPostScreenProps {
 }
 
 export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenProps) {
+  const to = useLocalizedPath();
+  const { copy } = usePublicBlogCopy();
+
   return (
     <main className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:px-8 md:py-16 lg:px-12 lg:py-20">
       <Button asChild variant="secondary" className="w-fit">
-        <Link to="/blog">
+        <Link to={to("/blog")}>
           <ArrowLeft className="size-4" aria-hidden="true" />
-          {PUBLIC_BLOG_COPY.backToBlog}
+          {copy.backToBlog}
         </Link>
       </Button>
 
@@ -25,14 +29,14 @@ export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenPr
         <div className="grid gap-8">
           <header className="bg-card grid gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
             <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs font-bold tracking-[0.16em] uppercase">
-              <span>{PUBLIC_BLOG_COPY.authorLabel}</span>
+              <span>{copy.authorLabel}</span>
               <span className="text-foreground">{post.authorName}</span>
               <span aria-hidden="true">/</span>
               <time dateTime={post.publishedAtIso}>{post.publishedAtLabel}</time>
               <span aria-hidden="true">/</span>
               <span className="inline-flex items-center gap-2">
                 <Clock3 className="size-3.5" aria-hidden="true" />
-                {post.readingTimeMinutes} {PUBLIC_BLOG_COPY.readTimeSuffix}
+                {post.readingTimeMinutes} {copy.readTimeSuffix}
               </span>
             </div>
             <h1 className="font-display text-6xl leading-[0.92] uppercase md:text-7xl">
@@ -42,7 +46,7 @@ export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenPr
               {post.excerpt}
             </p>
             <p className="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase">
-              {PUBLIC_BLOG_COPY.updatedLabel}: {post.updatedAtLabel}
+              {copy.updatedLabel}: {post.updatedAtLabel}
             </p>
           </header>
 
@@ -67,15 +71,14 @@ export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenPr
               {post.authorName}
             </h2>
             <p className="text-muted-foreground text-sm leading-7">
-              {post.authorBio ??
-                "Edge-native uygulamalar ve editor deneyimi etrafinda calisiyor."}
+              {post.authorBio ?? copy.authorFallbackBio}
             </p>
           </section>
 
           {morePosts.length > 0 ? (
             <section className="bg-card grid gap-4 border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
               <h2 className="font-sans text-lg font-black uppercase">
-                {PUBLIC_BLOG_COPY.moreNotesTitle}
+                {copy.moreNotesTitle}
               </h2>
               <div className="grid gap-4">
                 {morePosts.map((morePost) => (
@@ -87,7 +90,7 @@ export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenPr
                       {morePost.publishedAtLabel}
                     </p>
                     <Link
-                      to={`/blog/${morePost.slug}`}
+                      to={to(`/blog/${morePost.slug}`)}
                       className="focus-visible:ring-destructive focus-visible:ring-offset-background font-sans text-base leading-tight font-black underline-offset-4 hover:underline focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:outline-none"
                     >
                       {morePost.title}

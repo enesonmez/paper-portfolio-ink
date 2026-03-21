@@ -7,10 +7,11 @@ import {
   DASHBOARD_USERS_MODAL,
   DASHBOARD_USERS_QUERY_PARAM,
   USER_ROLE,
-  USER_ROLE_OPTIONS,
+  buildUserRoleOptions,
   type DashboardUsersModalMode,
   type UserRole,
 } from "~/features/users/user.shared";
+import { useT } from "~/features/i18n/i18n-react";
 import type { UserOverview } from "~/lib/users/users.server";
 
 export interface DashboardUsersMetrics {
@@ -138,4 +139,8 @@ export function mergeDashboardUsersFormState(
   };
 }
 
-export const dashboardUserRoleOptions = USER_ROLE_OPTIONS;
+export function useDashboardUserRoleOptions() {
+  const t = useT();
+
+  return buildUserRoleOptions(t);
+}

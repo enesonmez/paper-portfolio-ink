@@ -21,11 +21,11 @@ describe("dashboard index route", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByText("Total Posts")).toBeInTheDocument();
+    expect(screen.getByText("Total posts")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 1, name: "Manage Content" }),
+      screen.getByRole("heading", { level: 1, name: "Manage content" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Create New Post" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Create new post" })).toHaveAttribute(
       "href",
       "/dashboard/posts?modal=create",
     );

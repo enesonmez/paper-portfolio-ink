@@ -24,6 +24,7 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - `route -> server -> shared -> screen -> components -> lib` akisi hem dashboard hem public alanlarda tekrarli olarak basarili oldu.
 - Refactor'larin en faydali sonucu route modullerinin sade kalmasi ve client/server sinirlarinin netlesmesi oldu.
 - Feature buyudukce ortak string sabitleri, form alan adlari, status degerleri ve query param isimleri shared katmana alinmadan kod hizla kirilganlasiyor.
+- Path-prefix i18n gereksiniminde en dusuk riskli desen, locale cozumunu tek tek link helper'larina birakmak yerine route agacini `/:locale/*` etrafinda kurmak oldu; boylece loader, redirect ve meta uretimi ayni locale kontrati uzerinden ilerledi.
 
 ## 4. Public Experience Lessons
 
@@ -33,6 +34,8 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Dashboard tarafinda yonetilen hafif registry verileri public experience'a tasinacaksa, ayni domain server lib'i icinden ayrik bir public view model cikarmak kod tekrarini azaltirken admin'e ozel alanlari public route'lara sizdirmadan reuse sagladi.
 - `IntersectionObserver + useFetcher.load()` modeli, tum route'u client-side hale getirmeden progressive feed deneyimi sagladi.
 - Public blog detayinda semantic HTML, metadata uretimi, guvenli link protokolleri ve server-safe rich content render'i SEO ile guvenligi birlikte cozmeyi sagladi.
+- Locale-aware public navigasyonda ana sayfa linki `NavLink` icin exact-match olmadan birakilirsa `/` butun alt rotalarda aktif gorunur; root nav item'i `end` ile sinirlandirmak ve bunu route testiyle kilitlemek gerekir.
+- Mobil public header'da utility kontrolleri logo satirina dogrudan eklenirse dar ekranlarda brand text alani ezilir; locale switch gibi ikincil aksiyonlari mobil menu paneline tasimak daha dayanikli bir yerlesim saglar.
 
 ## 5. Admin Dashboard Lessons
 
@@ -62,6 +65,14 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Her feature'da tum kalite kapilarinin kosulsuz temiz olmadigi goruldu; bazen hedefli test, typecheck ve secili lint calistirmalariyla ilerlenmis. Bu, proje genel CI hatti eksik oldugunda kabul edilebilir ama uzun vadede risk biriktirir.
 - Public cache katmani runtime'a gomulmek yerine typed bir adapter sozlesmesi ile kurulunca ayni loader kodu Cloudflare Cache API ve node process-memory fallback arasinda tasinabilir kaldi; platform ayrimi worker entrypoint'te sinirli tutulmali.
 - Cache'li ilk sayfa ile lazy feed ayni listeyi besliyorsa offset pagination kirilganlasiyor; ara sira veri degisimlerinde duplicate/gap riskini dusurmek icin feed tarafi cursor tabanli ilerlemeli ve mutation invalidation'lari ilgili public liste cache'lerini de kapsamalidir.
+- DB merkezli i18n akisi, migration ile seed edilen baslangic mesajlarini runtime fallback sozlesmesi olarak da korudugunda daha guvenli hale geliyor; Cloudflare tarafinda "startup preload" garantisi olmadigi icin locale payload'lari request-time cache miss uzerinden isitilmali ve test mock'larinda DB yoksa seed fallback devreye girmelidir.
+- Diller sonradan admin veya migration ile artabilecekse locale listesini kod sabiti yerine ayrik bir `locales` tablosunda tutmak daha dogru; `translations` yalnizca mesajlari, `locales` ise hangi dilin aktif/default oldugunu tasimalidir.
+- Locale registry DB'den okunuyorsa, request icinde ayni listeyi tekrar tekrar sorgulamak yerine request-scope memoization ile tek runtime state uretmek daha temiz; ayni helper redirect, loader ve action kararlarinin tek kaynakta kalmasini saglar.
+- `translations.locale` gibi enum-benzeri alanlar ayrik registry tablosuna tasindiginda foreign key ile baglanmali; aksi halde cache katmani yetim locale verilerini sessizce tasimaya devam eder.
+- Locale prefix'e gecis yaparken mevcut unprefixed public ve auth URL'leri bir anda kaldirmak kirici olur; eski deep link'leri locale-aware hedeflere yonlendiren dar kapsamli bir compatibility route katmani korunmalidir.
+- DB merkezli fallback sadece "db nesnesi yok" durumunu degil, migration henuz uygulanmamis preview/veritabani senaryolarini da kapsamalidir; `no such table` turu i18n schema hatalarinda seed locale ve seed message fallback'i calismaya devam etmelidir.
+- Izole component ve route testlerinde i18n provider zorunlulugu maliyetli hale geliyor; hook seviyesinde guvenli fallback davranisi saglamak testleri sade tutarken uygulama runtime'indaki DB/cache akisini bozmadan ilerlemeyi sagladi.
+- Sonradan yapilan i18n auditlerinde sadece gorunen baslik ve butonlar degil, `aria-label`, modal eyebrow'lari, rich text toolbar etiketleri ve bos-icerik fallback'leri de ayni seed kataloguna alinmali; izole component testleri de provider yoksa fallback locale kontratina gore assertion yapmalidir.
 - Feature dokumantasyonu her adimda yazildigi icin proje evrimi okunabilir kaldi; bu pratik korunmali.
 
 ## 8. What To Preserve Going Forward

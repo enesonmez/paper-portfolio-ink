@@ -4,14 +4,15 @@ import { Form, Link } from "react-router";
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
-import { getSkillIcon, getSkillIconOption } from "~/features/skills/skill-icon.shared";
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
+import { getSkillIcon, useSkillIconOptions } from "~/features/skills/skill-icon.shared";
 import {
   SKILL_FORM_FIELD,
   SKILL_MUTATION_INTENT,
 } from "~/features/skills/skill.shared";
 import type { SkillOverview } from "~/lib/skills/skills.server";
 
-import { DASHBOARD_SKILLS_COPY } from "../dashboard-skills.constants";
+import { useDashboardSkillsCopy } from "../dashboard-skills.constants";
 import {
   buildDashboardSkillsHref,
   formatDashboardSkillName,
@@ -22,14 +23,20 @@ interface DashboardSkillsTableProps {
 }
 
 export function DashboardSkillsTable({ skills }: DashboardSkillsTableProps) {
+  const to = useLocalizedPath();
+  const t = useT();
+  const { copy } = useDashboardSkillsCopy();
+  const iconOptions = useSkillIconOptions();
   const columns: DataTableColumn<SkillOverview>[] = [
     {
       cellClassName: "align-top",
-      header: DASHBOARD_SKILLS_COPY.tableIconLabel,
+      header: copy.tableIconLabel,
       id: "iconKey",
       render: (skill) => {
         const Icon = getSkillIcon(skill.iconKey);
-        const iconOption = getSkillIconOption(skill.iconKey);
+        const iconOption =
+          iconOptions.find((option) => option.value === skill.iconKey) ??
+          iconOptions[0];
 
         return (
           <div className="space-y-2">
@@ -45,7 +52,7 @@ export function DashboardSkillsTable({ skills }: DashboardSkillsTableProps) {
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_SKILLS_COPY.tableNameLabel,
+      header: copy.tableNameLabel,
       id: "name",
       render: (skill) => (
         <div className="space-y-2">
@@ -60,13 +67,13 @@ export function DashboardSkillsTable({ skills }: DashboardSkillsTableProps) {
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_SKILLS_COPY.tableSummaryLabel,
+      header: copy.tableSummaryLabel,
       id: "summary",
       render: (skill) => <p className="font-sans text-sm font-bold">{skill.summary}</p>,
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_SKILLS_COPY.tableSortLabel,
+      header: copy.tableSortLabel,
       id: "sortOrder",
       render: (skill) => (
         <p className="font-sans text-sm font-bold">{skill.sortOrder}</p>
@@ -74,7 +81,7 @@ export function DashboardSkillsTable({ skills }: DashboardSkillsTableProps) {
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_SKILLS_COPY.tableCreatedLabel,
+      header: copy.tableCreatedLabel,
       id: "createdAtLabel",
       render: (skill) => (
         <p className="font-sans text-sm font-bold">{skill.createdAtLabel}</p>
@@ -82,7 +89,7 @@ export function DashboardSkillsTable({ skills }: DashboardSkillsTableProps) {
     },
     {
       cellClassName: "align-top",
-      header: DASHBOARD_SKILLS_COPY.tableActionsLabel,
+      header: copy.tableActionsLabel,
       headerClassName: "text-right",
       id: "actions",
       render: (skill) => (
@@ -91,9 +98,9 @@ export function DashboardSkillsTable({ skills }: DashboardSkillsTableProps) {
             asChild
             size="iconSm"
             className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            aria-label={`Edit ${formatDashboardSkillName(skill.name)}`}
+            aria-label={`${t("common.edit")} ${formatDashboardSkillName(skill.name)}`}
           >
-            <Link to={buildDashboardSkillsHref({ editId: skill.id })}>
+            <Link to={to(buildDashboardSkillsHref({ editId: skill.id }))}>
               <Pencil className="size-4" aria-hidden="true" />
             </Link>
           </Button>
@@ -109,7 +116,7 @@ export function DashboardSkillsTable({ skills }: DashboardSkillsTableProps) {
               variant="destructive"
               size="iconSm"
               className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              aria-label={`Delete ${formatDashboardSkillName(skill.name)}`}
+              aria-label={`${t("common.delete")} ${formatDashboardSkillName(skill.name)}`}
             >
               <Trash2 className="size-4" aria-hidden="true" />
             </Button>
@@ -123,7 +130,7 @@ export function DashboardSkillsTable({ skills }: DashboardSkillsTableProps) {
     <DashboardPanel className="overflow-x-auto p-0">
       <DataTable
         columns={columns}
-        emptyState={DASHBOARD_SKILLS_COPY.emptyState}
+        emptyState={copy.emptyState}
         getRowKey={(skill) => skill.id}
         rows={skills}
         bodyClassName="font-sans"

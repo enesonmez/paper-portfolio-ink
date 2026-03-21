@@ -1,6 +1,8 @@
 import { data, redirect, type AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
+import { loadI18nPayload } from "~/features/i18n/i18n.server";
+import { buildLocalizedPath, createTranslator } from "~/features/i18n/i18n.shared";
 import { purgePublicBlogDataCache } from "~/features/public/blog/public-blog.server";
 import { buildLoginRedirect } from "~/lib/auth/login.server";
 import { requireSession } from "~/lib/auth/session.server";
@@ -23,7 +25,7 @@ import {
   updateUser,
 } from "~/lib/users/users.server";
 
-import { DASHBOARD_USERS_FORM_COPY } from "./dashboard-users.constants";
+import { buildDashboardUsersFormCopy } from "./dashboard-users.constants";
 import {
   buildDashboardUsersMetrics,
   resolveDashboardUsersForm,
@@ -48,11 +50,11 @@ function buildDuplicateEmailState(values: UserFormState["values"], message: stri
   );
 }
 
-function buildForbiddenState() {
+function buildForbiddenState(forbiddenMessage: string) {
   return data<UserFormState>(
     {
       errors: {
-        form: DASHBOARD_USERS_FORM_COPY.errors.forbidden,
+        form: forbiddenMessage,
       },
       values: buildUserFormValues(),
     },
@@ -75,6 +77,7 @@ function buildAdminProtectionState(message: string) {
 async function ensureAdminInvariant(
   context: AppLoadContext,
   userId: string,
+  formCopy: ReturnType<typeof buildDashboardUsersFormCopy>,
   nextState: {
     isActive: boolean;
     role: string;
@@ -98,14 +101,10 @@ async function ensureAdminInvariant(
   }
 
   if (!nextState.isActive) {
-    return buildAdminProtectionState(
-      DASHBOARD_USERS_FORM_COPY.errors.lastActiveAdminDeactivate,
-    );
+    return buildAdminProtectionState(formCopy.errors.lastActiveAdminDeactivate);
   }
 
-  return buildAdminProtectionState(
-    DASHBOARD_USERS_FORM_COPY.errors.lastActiveAdminDemotion,
-  );
+  return buildAdminProtectionState(formCopy.errors.lastActiveAdminDemotion);
 }
 
 export async function loadDashboardUsersData(
@@ -113,7 +112,7 @@ export async function loadDashboardUsersData(
   request: Request,
 ): Promise<DashboardUsersLoaderData | Response> {
   const session = await requireSession(request, context, {
-    redirectTo: buildLoginRedirect(request),
+    redirectTo: await buildLoginRedirect(context, request),
   });
 
   if (session instanceof Response) {
@@ -146,16 +145,23 @@ export async function handleDashboardUsersAction(
   context: AppLoadContext,
   request: Request,
 ) {
+  const { locale, messages, supportedLocales } = await loadI18nPayload(
+    context,
+    request,
+  );
+  const t = createTranslator(messages);
+  const formCopy = buildDashboardUsersFormCopy(t);
   const session = await requireSession(request, context, {
-    redirectTo: buildLoginRedirect(request),
+    redirectTo: await buildLoginRedirect(context, request),
   });
+  const supportedLocaleCodes = supportedLocales.map((item) => item.code);
 
   if (session instanceof Response) {
     return session;
   }
 
   if (!isSessionUserAdmin(session)) {
-    return buildForbiddenState();
+    return buildForbiddenState(formCopy.errors.forbidden);
   }
 
   const db = getDbFromContext(context);
@@ -168,7 +174,7 @@ export async function handleDashboardUsersAction(
       return data<UserFormState>(
         {
           errors: {
-            form: DASHBOARD_USERS_FORM_COPY.errors.deactivateMissingUser,
+            form: formCopy.errors.deactivateMissingUser,
           },
           values: buildUserFormValues(),
         },
@@ -176,7 +182,7 @@ export async function handleDashboardUsersAction(
       );
     }
 
-    const adminInvariantState = await ensureAdminInvariant(context, userId, {
+    const adminInvariantState = await ensureAdminInvariant(context, userId, formCopy, {
       isActive: false,
       role: "admin",
     });
@@ -189,9 +195,7 @@ export async function handleDashboardUsersAction(
       await deactivateUser(db, userId);
     } catch (error) {
       if (isLastActiveAdminConstraintError(error)) {
-        return buildAdminProtectionState(
-          DASHBOARD_USERS_FORM_COPY.errors.lastActiveAdminDelete,
-        );
+        return buildAdminProtectionState(formCopy.errors.lastActiveAdminDelete);
       }
 
       throw error;
@@ -199,7 +203,9 @@ export async function handleDashboardUsersAction(
 
     await purgePublicBlogDataCache(context, request);
 
-    return redirect("/dashboard/users");
+    return redirect(
+      buildLocalizedPath(locale, "/dashboard/users", supportedLocaleCodes),
+    );
   }
 
   const submission = parseUserFormData(
@@ -207,6 +213,7 @@ export async function handleDashboardUsersAction(
     intent === USER_MUTATION_INTENT.update
       ? USER_MUTATION_INTENT.update
       : USER_MUTATION_INTENT.create,
+    t,
   );
 
   if (!hasParsedUserData(submission)) {
@@ -218,7 +225,7 @@ export async function handleDashboardUsersAction(
       return data<UserFormState>(
         {
           errors: {
-            form: DASHBOARD_USERS_FORM_COPY.errors.updateMissingUser,
+            form: formCopy.errors.updateMissingUser,
           },
           values: buildUserFormValues(submission.data),
         },
@@ -226,7 +233,7 @@ export async function handleDashboardUsersAction(
       );
     }
 
-    const adminInvariantState = await ensureAdminInvariant(context, userId, {
+    const adminInvariantState = await ensureAdminInvariant(context, userId, formCopy, {
       isActive: submission.data.isActive,
       role: submission.data.role,
     });
@@ -238,7 +245,7 @@ export async function handleDashboardUsersAction(
     if (await isUserEmailTaken(db, submission.data.email, userId)) {
       return buildDuplicateEmailState(
         submission.data,
-        DASHBOARD_USERS_FORM_COPY.errors.updateDuplicateEmail,
+        formCopy.errors.updateDuplicateEmail,
       );
     }
 
@@ -248,15 +255,15 @@ export async function handleDashboardUsersAction(
       if (isLastActiveAdminConstraintError(error)) {
         return buildAdminProtectionState(
           submission.data.isActive
-            ? DASHBOARD_USERS_FORM_COPY.errors.lastActiveAdminDemotion
-            : DASHBOARD_USERS_FORM_COPY.errors.lastActiveAdminDeactivate,
+            ? formCopy.errors.lastActiveAdminDemotion
+            : formCopy.errors.lastActiveAdminDeactivate,
         );
       }
 
       if (isUniqueUserEmailConstraintError(error)) {
         return buildDuplicateEmailState(
           submission.data,
-          DASHBOARD_USERS_FORM_COPY.errors.updateDuplicateEmail,
+          formCopy.errors.updateDuplicateEmail,
         );
       }
 
@@ -265,13 +272,15 @@ export async function handleDashboardUsersAction(
 
     await purgePublicBlogDataCache(context, request);
 
-    return redirect("/dashboard/users");
+    return redirect(
+      buildLocalizedPath(locale, "/dashboard/users", supportedLocaleCodes),
+    );
   }
 
   if (await isUserEmailTaken(db, submission.data.email)) {
     return buildDuplicateEmailState(
       submission.data,
-      DASHBOARD_USERS_FORM_COPY.errors.createDuplicateEmail,
+      formCopy.errors.createDuplicateEmail,
     );
   }
 
@@ -281,12 +290,12 @@ export async function handleDashboardUsersAction(
     if (isUniqueUserEmailConstraintError(error)) {
       return buildDuplicateEmailState(
         submission.data,
-        DASHBOARD_USERS_FORM_COPY.errors.createDuplicateEmail,
+        formCopy.errors.createDuplicateEmail,
       );
     }
 
     throw error;
   }
 
-  return redirect("/dashboard/users");
+  return redirect(buildLocalizedPath(locale, "/dashboard/users", supportedLocaleCodes));
 }

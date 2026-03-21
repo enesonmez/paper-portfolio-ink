@@ -1,5 +1,7 @@
 import { data, redirect, type AppLoadContext } from "react-router";
 
+import { loadI18nPayload } from "~/features/i18n/i18n.server";
+import { createTranslator } from "~/features/i18n/i18n.shared";
 import {
   hasParsedLoginData,
   normalizeRedirectTarget,
@@ -14,9 +16,12 @@ export async function loadLoginData(
   request: Request,
   context: AppLoadContext,
 ): Promise<LoginLoaderData | Response> {
+  const { locale, supportedLocales } = await loadI18nPayload(context, request);
   const session = await getSessionForRequest(request, context);
   const redirectTo = normalizeRedirectTarget(
     new URL(request.url).searchParams.get("redirectTo"),
+    locale,
+    supportedLocales.map((item) => item.code),
   );
 
   if (session) {
@@ -29,8 +34,14 @@ export async function loadLoginData(
 }
 
 export async function handleLoginAction(request: Request, context: AppLoadContext) {
+  const { locale, messages, supportedLocales } = await loadI18nPayload(
+    context,
+    request,
+  );
+  const t = createTranslator(messages);
   const formData = await request.formData();
-  const submission = parseLoginFormData(formData);
+  const supportedLocaleCodes = supportedLocales.map((item) => item.code);
+  const submission = parseLoginFormData(formData, locale, t, supportedLocaleCodes);
 
   if (!hasParsedLoginData(submission)) {
     return data(submission, {
@@ -40,7 +51,10 @@ export async function handleLoginAction(request: Request, context: AppLoadContex
 
   return signInWithEmail({
     context,
+    locale,
     request,
     submission: submission.data,
+    supportedLocaleCodes,
+    t,
   });
 }

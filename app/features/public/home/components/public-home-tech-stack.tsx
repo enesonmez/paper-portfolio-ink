@@ -1,13 +1,20 @@
 import { getSkillIcon } from "~/features/skills/skill-icon.shared";
+import { useT } from "~/features/i18n/i18n-react";
 import type { PublicSkill } from "~/lib/skills/skills.server";
 
-import { PUBLIC_HOME_COPY, PUBLIC_HOME_SURFACE_CLASSNAME } from "../public-home.shared";
+import {
+  PUBLIC_HOME_SURFACE_CLASSNAME,
+  usePublicHomeCopy,
+} from "../public-home.shared";
 
 interface PublicHomeTechStackProps {
   skills: PublicSkill[];
 }
 
 export function PublicHomeTechStack({ skills }: PublicHomeTechStackProps) {
+  const t = useT();
+  const { copy } = usePublicHomeCopy();
+
   if (skills.length === 0) {
     return null;
   }
@@ -18,15 +25,14 @@ export function PublicHomeTechStack({ skills }: PublicHomeTechStackProps) {
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="grid gap-3">
             <p className="text-muted-foreground text-xs font-bold tracking-[0.18em] uppercase">
-              {PUBLIC_HOME_COPY.techEyebrow}: {skills.length}
+              {copy.techEyebrow}: {skills.length}
             </p>
             <h2 className="font-display text-5xl uppercase md:text-6xl">
-              {PUBLIC_HOME_COPY.techTitle}
+              {copy.techTitle}
             </h2>
           </div>
           <p className="text-muted-foreground max-w-xl text-sm leading-7 md:text-right">
-            Core tools I reach for when the product needs sharp routing, typed
-            contracts, and deployment paths that stay boring in production.
+            {t("public.home.techDescription")}
           </p>
         </div>
 

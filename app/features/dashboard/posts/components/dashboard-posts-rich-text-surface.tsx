@@ -25,7 +25,8 @@ import {
   normalizePostContentValue,
   sanitizePostLinkHref,
 } from "~/features/posts/post-content.shared";
-import { DASHBOARD_POSTS_FORM_COPY } from "../dashboard-posts.constants";
+import { useDashboardPostsCopy } from "../dashboard-posts.constants";
+import { useT } from "~/features/i18n/i18n-react";
 import { cn } from "~/lib/utils";
 
 interface DashboardPostsToolbarProps {
@@ -58,6 +59,7 @@ function ToolbarButton({
 }
 
 function DashboardPostsEditorToolbar({ editor }: DashboardPostsToolbarProps) {
+  const { formCopy } = useDashboardPostsCopy();
   const editorState = useEditorState({
     editor,
     selector: ({ editor: currentEditor }) => ({
@@ -82,14 +84,13 @@ function DashboardPostsEditorToolbar({ editor }: DashboardPostsToolbarProps) {
   }
 
   const activeEditor = editor;
+  const toolbarCopy = formCopy.editor.toolbar;
 
   function handleSetLink() {
     const currentHref = activeEditor.getAttributes("link").href as unknown;
     const nextHref = window.prompt(
-      DASHBOARD_POSTS_FORM_COPY.editor.linkPromptLabel,
-      typeof currentHref === "string"
-        ? currentHref
-        : DASHBOARD_POSTS_FORM_COPY.editor.urlDefaultValue,
+      formCopy.editor.linkPromptLabel,
+      typeof currentHref === "string" ? currentHref : formCopy.editor.urlDefaultValue,
     );
 
     if (nextHref === null) {
@@ -126,8 +127,8 @@ function DashboardPostsEditorToolbar({ editor }: DashboardPostsToolbarProps) {
 
   function handleInsertImage() {
     const nextSource = window.prompt(
-      DASHBOARD_POSTS_FORM_COPY.editor.imagePromptLabel,
-      DASHBOARD_POSTS_FORM_COPY.editor.urlDefaultValue,
+      formCopy.editor.imagePromptLabel,
+      formCopy.editor.urlDefaultValue,
     );
 
     if (nextSource === null) {
@@ -147,14 +148,14 @@ function DashboardPostsEditorToolbar({ editor }: DashboardPostsToolbarProps) {
     <div className="flex flex-wrap items-center gap-3 border-b-2 border-black bg-white px-4 py-3 dark:bg-stone-800">
       <div className="flex items-center gap-1 border-r-2 border-black pr-3">
         <ToolbarButton
-          aria-label="Undo"
+          aria-label={toolbarCopy.undo}
           disabled={!editorState.canUndo}
           onClick={() => activeEditor.chain().focus().undo().run()}
         >
           <RotateCcw className="size-4" aria-hidden="true" />
         </ToolbarButton>
         <ToolbarButton
-          aria-label="Redo"
+          aria-label={toolbarCopy.redo}
           disabled={!editorState.canRedo}
           onClick={() => activeEditor.chain().focus().redo().run()}
         >
@@ -165,21 +166,21 @@ function DashboardPostsEditorToolbar({ editor }: DashboardPostsToolbarProps) {
       <div className="flex items-center gap-1 border-r-2 border-black pr-3">
         <ToolbarButton
           active={editorState.isBold}
-          aria-label="Bold"
+          aria-label={toolbarCopy.bold}
           onClick={() => activeEditor.chain().focus().toggleBold().run()}
         >
           <Bold className="size-4" aria-hidden="true" />
         </ToolbarButton>
         <ToolbarButton
           active={editorState.isItalic}
-          aria-label="Italic"
+          aria-label={toolbarCopy.italic}
           onClick={() => activeEditor.chain().focus().toggleItalic().run()}
         >
           <Italic className="size-4" aria-hidden="true" />
         </ToolbarButton>
         <ToolbarButton
           active={editorState.isUnderline}
-          aria-label="Underline"
+          aria-label={toolbarCopy.underline}
           onClick={() => activeEditor.chain().focus().toggleUnderline().run()}
         >
           <UnderlineIcon className="size-4" aria-hidden="true" />
@@ -189,21 +190,21 @@ function DashboardPostsEditorToolbar({ editor }: DashboardPostsToolbarProps) {
       <div className="flex items-center gap-1 border-r-2 border-black pr-3">
         <ToolbarButton
           active={editorState.isHeading1}
-          aria-label="Heading 1"
+          aria-label={toolbarCopy.heading1}
           onClick={() => activeEditor.chain().focus().toggleHeading({ level: 1 }).run()}
         >
           <span className="text-[11px] font-black">H1</span>
         </ToolbarButton>
         <ToolbarButton
           active={editorState.isHeading2}
-          aria-label="Heading 2"
+          aria-label={toolbarCopy.heading2}
           onClick={() => activeEditor.chain().focus().toggleHeading({ level: 2 }).run()}
         >
           <span className="text-[11px] font-black">H2</span>
         </ToolbarButton>
         <ToolbarButton
           active={editorState.isHeading3}
-          aria-label="Heading 3"
+          aria-label={toolbarCopy.heading3}
           onClick={() => activeEditor.chain().focus().toggleHeading({ level: 3 }).run()}
         >
           <span className="text-[11px] font-black">H3</span>
@@ -213,34 +214,34 @@ function DashboardPostsEditorToolbar({ editor }: DashboardPostsToolbarProps) {
       <div className="flex items-center gap-1 border-r-2 border-black pr-3">
         <ToolbarButton
           active={editorState.isBulletList}
-          aria-label="Bullet List"
+          aria-label={toolbarCopy.bulletList}
           onClick={() => activeEditor.chain().focus().toggleBulletList().run()}
         >
           <List className="size-4" aria-hidden="true" />
         </ToolbarButton>
         <ToolbarButton
           active={editorState.isOrderedList}
-          aria-label="Ordered List"
+          aria-label={toolbarCopy.orderedList}
           onClick={() => activeEditor.chain().focus().toggleOrderedList().run()}
         >
           <ListOrdered className="size-4" aria-hidden="true" />
         </ToolbarButton>
         <ToolbarButton
           active={editorState.isBlockquote}
-          aria-label="Blockquote"
+          aria-label={toolbarCopy.blockquote}
           onClick={() => activeEditor.chain().focus().toggleBlockquote().run()}
         >
           <Quote className="size-4" aria-hidden="true" />
         </ToolbarButton>
         <ToolbarButton
           active={editorState.isCodeBlock}
-          aria-label="Code Block"
+          aria-label={toolbarCopy.codeBlock}
           onClick={() => activeEditor.chain().focus().toggleCodeBlock().run()}
         >
           <span className="text-[11px] font-black">{"</>"}</span>
         </ToolbarButton>
         <ToolbarButton
-          aria-label="Horizontal Rule"
+          aria-label={toolbarCopy.horizontalRule}
           onClick={() => activeEditor.chain().focus().setHorizontalRule().run()}
         >
           <Minus className="size-4" aria-hidden="true" />
@@ -250,13 +251,13 @@ function DashboardPostsEditorToolbar({ editor }: DashboardPostsToolbarProps) {
       <div className="flex items-center gap-1">
         <ToolbarButton
           active={editorState.hasLink}
-          aria-label="Set Link"
+          aria-label={toolbarCopy.setLink}
           onClick={handleSetLink}
         >
           <Link2 className="size-4" aria-hidden="true" />
         </ToolbarButton>
         <ToolbarButton
-          aria-label="Unset Link"
+          aria-label={toolbarCopy.unsetLink}
           disabled={!editorState.hasLink}
           onClick={() =>
             activeEditor.chain().focus().extendMarkRange("link").unsetLink().run()
@@ -264,7 +265,7 @@ function DashboardPostsEditorToolbar({ editor }: DashboardPostsToolbarProps) {
         >
           <Unlink className="size-4" aria-hidden="true" />
         </ToolbarButton>
-        <ToolbarButton aria-label="Insert Image" onClick={handleInsertImage}>
+        <ToolbarButton aria-label={toolbarCopy.image} onClick={handleInsertImage}>
           <ImagePlus className="size-4" aria-hidden="true" />
         </ToolbarButton>
       </div>
@@ -277,6 +278,8 @@ export function DashboardPostsRichTextSurface({
   inputName,
   variant,
 }: DashboardPostsRichTextSurfaceProps) {
+  const t = useT();
+  const { formCopy } = useDashboardPostsCopy();
   const [serializedContent, setSerializedContent] = useState(() =>
     normalizePostContentValue(initialContent),
   );
@@ -330,17 +333,17 @@ export function DashboardPostsRichTextSurface({
         },
       }),
       Placeholder.configure({
-        placeholder: DASHBOARD_POSTS_FORM_COPY.content.placeholder,
+        placeholder: formCopy.content.placeholder,
       }),
     ],
-    [],
+    [formCopy.content.placeholder],
   );
   const editor = useEditor(
     {
       content: coercePostContentDocument(initialContent),
       editorProps: {
         attributes: {
-          "aria-label": "Story Body",
+          "aria-label": t("dashboard.posts.form.content.label"),
           class: editorClassName,
         },
       },
@@ -369,7 +372,7 @@ export function DashboardPostsRichTextSurface({
         />
       ) : (
         <div className="px-6 py-10 font-sans text-sm font-bold tracking-[0.18em] text-stone-500 uppercase dark:text-stone-400">
-          {DASHBOARD_POSTS_FORM_COPY.editor.loadingLabel}
+          {formCopy.editor.loadingLabel}
         </div>
       )}
     </>

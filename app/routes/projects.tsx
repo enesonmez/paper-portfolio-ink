@@ -1,17 +1,47 @@
 import { useLoaderData } from "react-router";
 import type { Route } from "./+types/projects";
 
+import type { loader as rootLoader } from "~/root";
+import { createTranslator } from "~/features/i18n/i18n.shared";
 import { PublicProjectsScreen } from "~/features/public/projects/public-projects-screen";
 import { loadPublicProjectsData } from "~/features/public/projects/public-projects.server";
+import { siteConfig } from "~/lib/site";
 
-export function meta() {
-  return [
-    { title: "Projects | Enes Ink" },
-    {
-      name: "description",
-      content: "Secili projeler, teknik ozetler ve uygulama notlari.",
-    },
-  ];
+export function meta({ location, matches }: Route.MetaArgs) {
+  for (const match of matches) {
+    if (match && match.id === "root") {
+      const rootData = match.data as Awaited<ReturnType<typeof rootLoader>>;
+      const t = createTranslator(rootData.messages);
+      const title = t("site.title.projects");
+      const description = t("site.description.projects");
+
+      return [
+        { title },
+        {
+          name: "description",
+          content: description,
+        },
+        {
+          property: "og:title",
+          content: title,
+        },
+        {
+          property: "og:description",
+          content: description,
+        },
+        {
+          property: "og:type",
+          content: "website",
+        },
+        {
+          property: "og:url",
+          content: new URL(location.pathname, siteConfig.url).toString(),
+        },
+      ];
+    }
+  }
+
+  return [];
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {

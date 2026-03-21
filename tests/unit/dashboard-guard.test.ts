@@ -58,7 +58,7 @@ describe("dashboard route guard", () => {
         db: { query: {} },
       }),
       {
-        redirectTo: "/login?redirectTo=%2Fdashboard",
+        redirectTo: "/tr/login?redirectTo=%2Fdashboard",
       },
     );
   });

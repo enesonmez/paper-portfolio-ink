@@ -6,9 +6,10 @@ import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
 import { Button } from "~/components/ui/button";
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 import type { SkillOverview } from "~/lib/skills/skills.server";
 
-import { DASHBOARD_SKILLS_COPY } from "./dashboard-skills.constants";
+import { useDashboardSkillsCopy } from "./dashboard-skills.constants";
 import {
   buildDashboardSkillsHref,
   type DashboardSkillsFormState,
@@ -30,10 +31,17 @@ export function DashboardSkillsScreen({
   metrics,
   skills,
 }: DashboardSkillsScreenProps) {
+  const t = useT();
+  const to = useLocalizedPath();
+  const { copy } = useDashboardSkillsCopy();
+
   return (
     <div className="space-y-8">
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <DashboardMetricCard label="Total Skills" value={String(metrics.totalCount)} />
+        <DashboardMetricCard
+          label={t("dashboard.skills.metricTotal")}
+          value={String(metrics.totalCount)}
+        />
       </section>
 
       <section className="space-y-4">
@@ -43,14 +51,14 @@ export function DashboardSkillsScreen({
               asChild
               className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
             >
-              <Link to={buildDashboardSkillsHref({ modal: "create" })}>
+              <Link to={to(buildDashboardSkillsHref({ modal: "create" }))}>
                 <Plus className="size-4" aria-hidden="true" />
-                {DASHBOARD_SKILLS_COPY.createActionLabel}
+                {copy.createActionLabel}
               </Link>
             </Button>
           }
-          eyebrow={DASHBOARD_SKILLS_COPY.inventoryEyebrow}
-          title={DASHBOARD_SKILLS_COPY.registryTitle}
+          eyebrow={copy.inventoryEyebrow}
+          title={copy.registryTitle}
         />
 
         <DashboardSkillsTable skills={skills} />
@@ -59,9 +67,9 @@ export function DashboardSkillsScreen({
       <DashboardSkillsModalView form={form} />
       {!form.isOpen && actionError ? (
         <DashboardModal
-          title={DASHBOARD_SKILLS_COPY.actionBlockedTitle}
+          title={copy.actionBlockedTitle}
           description={actionError}
-          to="/dashboard/skills"
+          to={to(buildDashboardSkillsHref())}
         >
           <div className="space-y-4">
             <DashboardPanel className="bg-destructive text-destructive-foreground">
@@ -71,7 +79,7 @@ export function DashboardSkillsScreen({
             </DashboardPanel>
             <div className="flex justify-end">
               <Button asChild className="tracking-[0.14em]">
-                <Link to="/dashboard/skills">Dismiss</Link>
+                <Link to={to(buildDashboardSkillsHref())}>{t("common.dismiss")}</Link>
               </Button>
             </div>
           </div>
@@ -86,18 +94,19 @@ export function DashboardSkillsAccessDeniedScreen({
 }: {
   viewerRole: string;
 }) {
+  const t = useT();
+  const { copy } = useDashboardSkillsCopy();
+
   return (
     <div className="space-y-4">
       <DashboardSectionHeading
-        eyebrow="Role Guard"
-        title={DASHBOARD_SKILLS_COPY.restrictedTitle}
+        eyebrow={t("common.roleGuard")}
+        title={copy.restrictedTitle}
       />
       <DashboardPanel className="space-y-3">
-        <p className="font-sans text-sm font-bold">
-          {DASHBOARD_SKILLS_COPY.restrictedDescription}
-        </p>
+        <p className="font-sans text-sm font-bold">{copy.restrictedDescription}</p>
         <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.14em] uppercase">
-          {DASHBOARD_SKILLS_COPY.currentRoleLabel}: {viewerRole}
+          {copy.currentRoleLabel}: {viewerRole}
         </p>
       </DashboardPanel>
     </div>

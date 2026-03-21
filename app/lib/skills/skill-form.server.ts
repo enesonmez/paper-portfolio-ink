@@ -6,44 +6,49 @@ import {
 } from "~/features/skills/skill-form.shared";
 import {
   SKILL_DEFAULT_ICON,
-  SKILL_ICON_OPTIONS,
+  buildSkillIconOptions,
   isSkillIconKey,
   type SkillIconKey,
 } from "~/features/skills/skill-icon.shared";
 import { SKILL_FORM_FIELD } from "~/features/skills/skill.shared";
 import { suggestSlugFromTitle } from "~/lib/slug";
+import type { I18nTranslator } from "~/features/i18n/i18n.shared";
 
-const skillFormSchema = z.object({
-  iconKey: z.enum(
-    SKILL_ICON_OPTIONS.map((option) => option.value) as [
-      SkillIconKey,
-      ...SkillIconKey[],
-    ],
-    {
-      error: () => "Gecerli bir ikon sec.",
-    },
-  ),
-  name: z
-    .string()
-    .trim()
-    .min(2, "Beceri adi en az 2 karakter olmali.")
-    .max(48, "Beceri adi en fazla 48 karakter olabilir.")
-    .refine(
-      (value) => suggestSlugFromTitle(value).length > 0,
-      "Beceri adi gecerli bir anahtar uretemedi.",
+function createSkillFormSchema(t: I18nTranslator) {
+  const skillIconOptions = buildSkillIconOptions(t);
+
+  return z.object({
+    iconKey: z.enum(
+      skillIconOptions.map((option) => option.value) as [
+        SkillIconKey,
+        ...SkillIconKey[],
+      ],
+      {
+        error: () => t("validation.skill.icon"),
+      },
     ),
-  summary: z
-    .string()
-    .trim()
-    .min(12, "Beceri ozeti en az 12 karakter olmali.")
-    .max(180, "Beceri ozeti en fazla 180 karakter olabilir."),
-  sortOrder: z.coerce
-    .number()
-    .int("Siralama tam sayi olmali.")
-    .min(0, "Siralama degeri 0 veya daha buyuk olmali."),
-});
+    name: z
+      .string()
+      .trim()
+      .min(2, t("validation.skill.name.min"))
+      .max(48, t("validation.skill.name.max"))
+      .refine(
+        (value) => suggestSlugFromTitle(value).length > 0,
+        t("validation.skill.name.slug"),
+      ),
+    summary: z
+      .string()
+      .trim()
+      .min(12, t("validation.skill.summary.min"))
+      .max(180, t("validation.skill.summary.max")),
+    sortOrder: z.coerce
+      .number()
+      .int(t("validation.skill.sortOrder.int"))
+      .min(0, t("validation.skill.sortOrder.min")),
+  });
+}
 
-export type SkillSubmission = z.infer<typeof skillFormSchema>;
+export type SkillSubmission = z.infer<ReturnType<typeof createSkillFormSchema>>;
 
 function compactFieldErrors<T extends Record<string, string | undefined>>(errors: T) {
   return Object.fromEntries(
@@ -59,6 +64,7 @@ function readStringField(formData: FormData, field: string) {
 
 export function parseSkillFormData(
   formData: FormData,
+  t: I18nTranslator,
 ): { data: SkillSubmission } | SkillFormState {
   const rawValues = {
     iconKey: readStringField(formData, SKILL_FORM_FIELD.iconKey) || SKILL_DEFAULT_ICON,
@@ -67,7 +73,7 @@ export function parseSkillFormData(
     summary: readStringField(formData, SKILL_FORM_FIELD.summary),
   };
 
-  const parsed = skillFormSchema.safeParse(rawValues);
+  const parsed = createSkillFormSchema(t).safeParse(rawValues);
 
   if (!parsed.success) {
     const fieldErrors = parsed.error.flatten().fieldErrors;

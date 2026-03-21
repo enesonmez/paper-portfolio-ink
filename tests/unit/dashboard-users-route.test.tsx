@@ -57,13 +57,13 @@ describe("dashboard users route", () => {
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "User Registry" }),
+      screen.getByRole("heading", { level: 1, name: "User registry" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Admin Seats")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Create New User" })).toBeInTheDocument();
+    expect(screen.getByText("Admin seats")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Create new user" })).toBeInTheDocument();
     expect(screen.getByText("admin@example.com")).toBeInTheDocument();
     expect(
-      screen.queryByRole("dialog", { name: "Create User" }),
+      screen.queryByRole("dialog", { name: "Create user" }),
     ).not.toBeInTheDocument();
   });
 
@@ -93,8 +93,8 @@ describe("dashboard users route", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("dialog", { name: "Create User" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Display Name")).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Create user" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Display name")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
   });
 
@@ -105,9 +105,11 @@ describe("dashboard users route", () => {
     render(<DashboardUsersAccessDeniedScreen viewerRole="author" />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Restricted Flow" }),
+      screen.getByRole("heading", { level: 1, name: "Restricted flow" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Bu flow'a erişim yetkiniz yoktur.")).toBeInTheDocument();
+    expect(
+      screen.getByText("You do not have permission to access this flow."),
+    ).toBeInTheDocument();
     expect(screen.getByText("Current role: author")).toBeInTheDocument();
   });
 
@@ -133,7 +135,7 @@ describe("dashboard users route", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("dialog", { name: "Action Blocked" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Action blocked" })).toBeInTheDocument();
     expect(
       screen.getByRole("alert", {
         name: "",

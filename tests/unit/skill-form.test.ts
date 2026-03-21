@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
 
+import { createTranslator, getSeedMessages } from "../../app/features/i18n/i18n.shared";
+
+const t = createTranslator(getSeedMessages("tr"));
+
 describe("skill form parser", () => {
   it("parses valid skill submissions into typed values", async () => {
     const { parseSkillFormData } =
@@ -14,7 +18,7 @@ describe("skill form parser", () => {
       "Distributed relational data workflows for edge-hosted applications.",
     );
 
-    expect(parseSkillFormData(formData)).toEqual({
+    expect(parseSkillFormData(formData, t)).toEqual({
       data: {
         iconKey: "database",
         name: "Cloudflare D1",
@@ -34,7 +38,7 @@ describe("skill form parser", () => {
     formData.set("sortOrder", "-1");
     formData.set("summary", "short");
 
-    expect(parseSkillFormData(formData)).toEqual({
+    expect(parseSkillFormData(formData, t)).toEqual({
       errors: {
         iconKey: "Gecerli bir ikon sec.",
         name: "Beceri adi gecerli bir anahtar uretemedi.",

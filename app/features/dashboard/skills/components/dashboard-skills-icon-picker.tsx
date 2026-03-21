@@ -1,11 +1,9 @@
 import type { ChangeEventHandler } from "react";
 
 import { FormError } from "~/components/ui/form-field";
+import { useSkillIconOptions } from "~/features/skills/skill-icon.shared";
 import { cn } from "~/lib/utils";
-import {
-  SKILL_ICON_OPTIONS,
-  type SkillIconKey,
-} from "~/features/skills/skill-icon.shared";
+import type { SkillIconKey } from "~/features/skills/skill-icon.shared";
 
 interface DashboardSkillsIconPickerProps {
   error?: string;
@@ -20,13 +18,15 @@ export function DashboardSkillsIconPicker({
   onChange,
   value,
 }: DashboardSkillsIconPickerProps) {
+  const options = useSkillIconOptions();
+
   return (
     <fieldset className="grid gap-3">
       <legend className="font-sans text-xs font-bold tracking-[0.18em] uppercase">
         Icon
       </legend>
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {SKILL_ICON_OPTIONS.map((option) => {
+        {options.map((option) => {
           const Icon = option.icon;
           const inputId = `${name}-${option.value}`;
 

@@ -4,7 +4,10 @@ import {
   createEmptyPostContentDocument,
   serializePostContent,
 } from "../../app/features/posts/post-content.shared";
+import { createTranslator, getSeedMessages } from "../../app/features/i18n/i18n.shared";
 import { parsePostFormData } from "../../app/lib/posts/post-form.server";
+
+const t = createTranslator(getSeedMessages("tr"));
 
 function buildFormData(entries: Array<[string, string]>) {
   const formData = new FormData();
@@ -43,6 +46,7 @@ describe("post form parser", () => {
         ["status", "published"],
         ["publishedAt", "2026-03-17"],
       ]),
+      t,
     );
 
     expect(submission).toEqual({
@@ -67,6 +71,7 @@ describe("post form parser", () => {
         ["coverImageUrl", "notaurl"],
         ["status", "draft"],
       ]),
+      t,
     );
 
     expect("data" in submission).toBe(false);

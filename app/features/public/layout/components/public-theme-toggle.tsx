@@ -4,10 +4,10 @@ import { Form, useLocation } from "react-router";
 import { Button } from "~/components/ui/button";
 
 import {
-  PUBLIC_LAYOUT_COPY,
   PUBLIC_THEME,
   PUBLIC_THEME_FORM_FIELD,
   PUBLIC_THEME_INTENT,
+  usePublicLayoutCopy,
   type PublicTheme,
 } from "../public-layout.shared";
 
@@ -17,16 +17,15 @@ interface PublicThemeToggleProps {
 
 export function PublicThemeToggle({ theme }: PublicThemeToggleProps) {
   const location = useLocation();
+  const { copy } = usePublicLayoutCopy();
   const nextTheme =
     theme === PUBLIC_THEME.light ? PUBLIC_THEME.dark : PUBLIC_THEME.light;
   const redirectTo = `${location.pathname}${location.search}${location.hash}`;
   const themeLabel =
-    nextTheme === PUBLIC_THEME.dark
-      ? PUBLIC_LAYOUT_COPY.themeDarkLabel
-      : PUBLIC_LAYOUT_COPY.themeLightLabel;
+    nextTheme === PUBLIC_THEME.dark ? copy.themeDarkLabel : copy.themeLightLabel;
 
   return (
-    <Form action={PUBLIC_LAYOUT_COPY.themeToggleAction} method="post" replace>
+    <Form action={copy.themeToggleAction} method="post" replace>
       <input
         type="hidden"
         name={PUBLIC_THEME_FORM_FIELD.intent}
@@ -42,7 +41,7 @@ export function PublicThemeToggle({ theme }: PublicThemeToggleProps) {
         type="submit"
         variant="secondary"
         size="sm"
-        aria-label={`${PUBLIC_LAYOUT_COPY.themeToggle}: ${themeLabel}`}
+        aria-label={`${copy.themeToggle}: ${themeLabel}`}
         className="gap-1.5 px-2 py-2 text-[11px] min-[420px]:gap-2 min-[420px]:px-3"
       >
         <Contrast className="hidden size-4 min-[420px]:block" aria-hidden="true" />
@@ -51,7 +50,7 @@ export function PublicThemeToggle({ theme }: PublicThemeToggleProps) {
         ) : (
           <SunMedium className="size-4" aria-hidden="true" />
         )}
-        <span className="hidden sm:inline">{PUBLIC_LAYOUT_COPY.themeToggle}</span>
+        <span className="hidden sm:inline">{copy.themeToggle}</span>
       </Button>
     </Form>
   );

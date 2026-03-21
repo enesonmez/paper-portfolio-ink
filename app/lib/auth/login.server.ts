@@ -3,21 +3,31 @@ import { data, redirect, type AppLoadContext } from "react-router";
 import { z } from "zod";
 
 import type { LoginFormState } from "~/features/auth/login/login.shared";
+import {
+  buildLocaleDashboardPath,
+  loadI18nRuntimeState,
+} from "~/features/i18n/i18n.server";
+import {
+  buildLocalizedPath,
+  sanitizeLocalizedRedirectTarget,
+  type AppLocale,
+  type I18nTranslator,
+} from "~/features/i18n/i18n.shared";
 import { findUserByEmail } from "~/lib/users/users.server";
 
 import { resolveAuthConfig } from "./auth-config.server";
 import { createAuth } from "./auth.server";
 
-const DASHBOARD_HOME = "/dashboard";
-
-const loginSchema = z.object({
-  email: z.string().trim().email("Gecerli bir e-posta gir."),
-  password: z
-    .string()
-    .min(8, "Parola en az 8 karakter olmali.")
-    .max(128, "Parola en fazla 128 karakter olabilir."),
-  redirectTo: z.string().optional(),
-});
+function createLoginSchema(t: I18nTranslator) {
+  return z.object({
+    email: z.string().trim().email(t("validation.login.email")),
+    password: z
+      .string()
+      .min(8, t("validation.login.password.min"))
+      .max(128, t("validation.login.password.max")),
+    redirectTo: z.string().optional(),
+  });
+}
 
 export interface LoginSubmission {
   email: string;
@@ -27,8 +37,11 @@ export interface LoginSubmission {
 
 interface SignInWithEmailOptions {
   context: AppLoadContext;
+  locale?: AppLocale;
   request: Request;
   submission: LoginSubmission;
+  supportedLocaleCodes?: readonly string[];
+  t: I18nTranslator;
 }
 
 function readJsonField(formData: FormData, name: string) {
@@ -82,22 +95,32 @@ async function readAuthErrorPayload(response: Response) {
   }
 }
 
-export function normalizeRedirectTarget(redirectTo?: string | null) {
+export function normalizeRedirectTarget(
+  redirectTo: string | null | undefined,
+  locale: AppLocale,
+  supportedLocales?: readonly string[],
+) {
   if (!redirectTo || !redirectTo.startsWith("/") || redirectTo.startsWith("//")) {
-    return DASHBOARD_HOME;
+    return buildLocaleDashboardPath(locale);
   }
 
-  return redirectTo;
+  return sanitizeLocalizedRedirectTarget(redirectTo, locale, supportedLocales);
 }
 
-export function buildLoginRedirect(request: Request) {
+export async function buildLoginRedirect(context: AppLoadContext, request: Request) {
   const url = new URL(request.url);
   const redirectTo = `${url.pathname}${url.search}`;
+  const { locale, supportedLocaleCodes } = await loadI18nRuntimeState(context, request);
 
-  return `/login?redirectTo=${encodeURIComponent(redirectTo)}`;
+  return `${buildLocalizedPath(locale, "/login", supportedLocaleCodes)}?redirectTo=${encodeURIComponent(redirectTo)}`;
 }
 
-export function parseLoginFormData(formData: FormData):
+export function parseLoginFormData(
+  formData: FormData,
+  locale: AppLocale,
+  t: I18nTranslator,
+  supportedLocales?: readonly string[],
+):
   | {
       data: LoginSubmission;
     }
@@ -107,7 +130,7 @@ export function parseLoginFormData(formData: FormData):
     password: readJsonField(formData, "password"),
     redirectTo: readJsonField(formData, "redirectTo"),
   };
-  const parsed = loginSchema.safeParse(rawValues);
+  const parsed = createLoginSchema(t).safeParse(rawValues);
 
   if (!parsed.success) {
     const fieldErrors = parsed.error.flatten().fieldErrors;
@@ -119,7 +142,11 @@ export function parseLoginFormData(formData: FormData):
       },
       values: {
         email: rawValues.email,
-        redirectTo: normalizeRedirectTarget(rawValues.redirectTo),
+        redirectTo: normalizeRedirectTarget(
+          rawValues.redirectTo,
+          locale,
+          supportedLocales,
+        ),
       },
     };
   }
@@ -127,7 +154,11 @@ export function parseLoginFormData(formData: FormData):
   return {
     data: {
       ...parsed.data,
-      redirectTo: normalizeRedirectTarget(parsed.data.redirectTo),
+      redirectTo: normalizeRedirectTarget(
+        parsed.data.redirectTo,
+        locale,
+        supportedLocales,
+      ),
     },
   };
 }
@@ -157,7 +188,12 @@ function resolveApiErrorStatus(error: {
   return 500;
 }
 
-function resolveLoginErrorMessage(status: number, code?: string, message?: string) {
+function resolveLoginErrorMessage(
+  status: number,
+  t: I18nTranslator,
+  code?: string,
+  message?: string,
+) {
   if (
     status === 400 ||
     status === 401 ||
@@ -168,16 +204,19 @@ function resolveLoginErrorMessage(status: number, code?: string, message?: strin
     code === "INVALID_PASSWORD" ||
     message === "User not found"
   ) {
-    return "E-posta veya parola hatali.";
+    return t("validation.login.invalidCredentials");
   }
 
-  return "Giris su anda tamamlanamadi.";
+  return t("validation.login.unavailable");
 }
 
 export async function signInWithEmail({
   context,
+  locale,
   request,
   submission,
+  supportedLocaleCodes,
+  t,
 }: SignInWithEmailOptions) {
   try {
     const existingUser = await findUserByEmail(context.db, submission.email);
@@ -186,7 +225,7 @@ export async function signInWithEmail({
       return data<LoginFormState>(
         {
           errors: {
-            form: resolveLoginErrorMessage(403),
+            form: resolveLoginErrorMessage(403, t),
           },
           values: {
             email: submission.email,
@@ -222,6 +261,7 @@ export async function signInWithEmail({
           errors: {
             form: resolveLoginErrorMessage(
               response.status,
+              t,
               errorPayload?.code,
               errorPayload?.message,
             ),
@@ -237,8 +277,17 @@ export async function signInWithEmail({
       );
     }
 
+    const localeState =
+      locale && supportedLocaleCodes
+        ? {
+            locale,
+            supportedLocaleCodes,
+          }
+        : await loadI18nRuntimeState(context, request);
     const redirectTarget = normalizeRedirectTarget(
       (await readSignInRedirect(response)) ?? submission.redirectTo,
+      localeState.locale,
+      localeState.supportedLocaleCodes,
     );
     const headers = new Headers(response.headers);
 
@@ -252,7 +301,7 @@ export async function signInWithEmail({
       return data<LoginFormState>(
         {
           errors: {
-            form: resolveLoginErrorMessage(status),
+            form: resolveLoginErrorMessage(status, t),
           },
           values: {
             email: submission.email,

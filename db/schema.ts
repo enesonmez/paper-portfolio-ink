@@ -1,7 +1,9 @@
 import { sql } from "drizzle-orm";
 import {
+  check,
   index,
   integer,
+  primaryKey,
   sqliteTable,
   text,
   uniqueIndex,
@@ -178,6 +180,51 @@ export const verifications = sqliteTable(
   ],
 );
 
+export const locales = sqliteTable(
+  "locales",
+  {
+    code: text("code").primaryKey(),
+    label: text("label").notNull(),
+    isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+    isDefault: integer("is_default", { mode: "boolean" }).notNull().default(false),
+    sortOrder: integer("sort_order").notNull().default(0),
+    ...createTimestampColumns(),
+  },
+  (table) => [
+    index("locales_is_active_idx").on(table.isActive),
+    index("locales_sort_order_idx").on(table.sortOrder),
+    check("locales_code_lowercase_check", sql`${table.code} = lower(${table.code})`),
+    check("locales_code_length_check", sql`length(${table.code}) between 2 and 35`),
+    check("locales_code_spacing_check", sql`instr(${table.code}, ' ') = 0`),
+    check(
+      "locales_code_dash_check",
+      sql`${table.code} not like '-%' and ${table.code} not like '%-' and ${table.code} not like '%--%'`,
+    ),
+  ],
+);
+
+export const translations = sqliteTable(
+  "translations",
+  {
+    locale: text("locale")
+      .notNull()
+      .references(() => locales.code, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    key: text("key").notNull(),
+    value: text("value").notNull(),
+    ...createTimestampColumns(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.locale, table.key],
+      name: "translations_locale_key_pk",
+    }),
+    index("translations_locale_idx").on(table.locale),
+  ],
+);
+
 export const schema = {
   users,
   posts,
@@ -186,4 +233,6 @@ export const schema = {
   sessions,
   accounts,
   verifications,
+  locales,
+  translations,
 };

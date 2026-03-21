@@ -69,10 +69,10 @@ describe("dashboard posts route", () => {
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Post Registry" }),
+      screen.getByRole("heading", { level: 1, name: "Post registry" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Published Posts")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Create New Post" })).toBeInTheDocument();
+    expect(screen.getByText("Published posts")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Create new post" })).toBeInTheDocument();
     expect(screen.getByText("EDGE_TELEMETRY")).toBeInTheDocument();
     expect(
       screen.queryByRole("dialog", { name: "Create Post" }),
@@ -116,17 +116,17 @@ describe("dashboard posts route", () => {
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("dialog", { name: "Edit Post Editor" }),
+      screen.getByRole("dialog", { name: "Edit post Editor flow" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Draft / Saved locally")).toBeInTheDocument();
     expect(
-      screen.queryByRole("heading", { level: 1, name: "Post Registry" }),
+      screen.queryByRole("heading", { level: 1, name: "Post registry" }),
     ).not.toBeInTheDocument();
-    const backLinks = screen.getAllByRole("link", { name: "Back To Posts" });
+    const backLinks = screen.getAllByRole("link", { name: "Back to posts" });
     expect(backLinks).toHaveLength(2);
     expect(backLinks[0]).toHaveAttribute("href", "/dashboard/posts");
     expect(backLinks[1]).toHaveAttribute("href", "/dashboard/posts");
-    expect(screen.getByRole("button", { name: "Update Post" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Update post" })).toBeInTheDocument();
   });
 
   it("shows a title-based slug suggestion in the post compose view", async () => {

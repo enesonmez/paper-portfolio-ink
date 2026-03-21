@@ -65,11 +65,11 @@ describe("dashboard projects route", () => {
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Project Registry" }),
+      screen.getByRole("heading", { level: 1, name: "Project registry" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Total Projects")).toBeInTheDocument();
+    expect(screen.getByText("Total projects")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Create New Project" }),
+      screen.getByRole("link", { name: "Create new project" }),
     ).toBeInTheDocument();
     expect(screen.getByText("CYBER_STORE_FRONT")).toBeInTheDocument();
     expect(screen.queryByLabelText("Project Name")).not.toBeInTheDocument();
@@ -102,10 +102,10 @@ describe("dashboard projects route", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("dialog", { name: "Create Project" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Project Name")).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Create project" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Project name")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Create New Project" }),
+      screen.getByRole("button", { name: "Create new project" }),
     ).toBeInTheDocument();
   });
 
@@ -190,7 +190,7 @@ describe("dashboard projects route", () => {
       }),
     ).toBeInTheDocument();
 
-    fireEvent.input(screen.getByLabelText("Project Name"), {
+    fireEvent.input(screen.getByLabelText("Project name"), {
       target: {
         value: "Portfolio Radar",
       },

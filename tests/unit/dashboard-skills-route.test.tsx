@@ -50,10 +50,10 @@ describe("dashboard skills route", () => {
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Skills Registry" }),
+      screen.getByRole("heading", { level: 1, name: "Skills registry" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Total Skills")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Create Skill" })).toBeInTheDocument();
+    expect(screen.getByText("Total skills")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Create skill" })).toBeInTheDocument();
     expect(screen.getByText("CLOUDFLARE_D1")).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -90,11 +90,11 @@ describe("dashboard skills route", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("dialog", { name: "Create Skill" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Skill Name")).toBeInTheDocument();
-    expect(screen.getByLabelText("Sort Order")).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Create skill" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Skill name")).toBeInTheDocument();
+    expect(screen.getByLabelText("Sort order")).toBeInTheDocument();
     expect(screen.getByLabelText("Summary")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Create Skill" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Create skill" })).toBeInTheDocument();
   });
 
   it("renders the edit modal with existing values when requested", async () => {
@@ -131,10 +131,10 @@ describe("dashboard skills route", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("dialog", { name: "Edit Skill" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Edit skill" })).toBeInTheDocument();
     expect(screen.getByDisplayValue("Cloudflare D1")).toBeInTheDocument();
     expect(screen.getByDisplayValue("3")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Update Skill" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Update skill" })).toBeInTheDocument();
   });
 
   it("renders a restricted screen for non-admin viewers", async () => {
@@ -156,7 +156,7 @@ describe("dashboard skills route", () => {
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Restricted Flow" }),
+      screen.getByRole("heading", { level: 1, name: "Restricted flow" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Current role: author")).toBeInTheDocument();
   });

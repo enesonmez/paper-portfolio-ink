@@ -1,3 +1,6 @@
+import { useT } from "~/features/i18n/i18n-react";
+import type { I18nTranslator } from "~/features/i18n/i18n.shared";
+
 type ValueOf<T> = T[keyof T];
 
 export const PROJECT_STATUS = {
@@ -21,20 +24,30 @@ export interface ProjectStatusOption {
   value: ProjectStatus;
 }
 
-export const PROJECT_STATUS_OPTIONS: readonly ProjectStatusOption[] = [
-  {
-    label: "Draft",
-    value: PROJECT_STATUS.draft,
-  },
-  {
-    label: "Published",
-    value: PROJECT_STATUS.published,
-  },
-  {
-    label: "Archived",
-    value: PROJECT_STATUS.archived,
-  },
-];
+export function buildProjectStatusOptions(
+  t: I18nTranslator,
+): readonly ProjectStatusOption[] {
+  return [
+    {
+      label: t("model.projectStatus.draft"),
+      value: PROJECT_STATUS.draft,
+    },
+    {
+      label: t("model.projectStatus.published"),
+      value: PROJECT_STATUS.published,
+    },
+    {
+      label: t("model.projectStatus.archived"),
+      value: PROJECT_STATUS.archived,
+    },
+  ];
+}
+
+export function useProjectStatusOptions() {
+  const t = useT();
+
+  return buildProjectStatusOptions(t);
+}
 
 export const PROJECT_MUTATION_INTENT = {
   create: "create",

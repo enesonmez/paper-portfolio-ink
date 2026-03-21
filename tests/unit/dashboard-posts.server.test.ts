@@ -195,7 +195,7 @@ describe("dashboard posts server", () => {
       }),
     );
     expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe("/dashboard/posts");
+    expect(response.headers.get("Location")).toBe("/tr/dashboard/posts");
     expect(cacheDeleteMock).toHaveBeenCalledWith(
       "http://localhost:3000/__cache/public/blog/page-1",
     );

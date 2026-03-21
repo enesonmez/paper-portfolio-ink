@@ -7,10 +7,11 @@ import {
   DASHBOARD_PROJECTS_MODAL,
   DASHBOARD_PROJECTS_QUERY_PARAM,
   PROJECT_STATUS,
-  PROJECT_STATUS_OPTIONS,
+  buildProjectStatusOptions,
   type DashboardProjectsModalMode,
   type ProjectStatus,
 } from "~/features/projects/project.shared";
+import { useT } from "~/features/i18n/i18n-react";
 import type { ProjectOverview } from "~/lib/projects/projects.server";
 
 export type DashboardStatusTone = "danger" | "neutral" | "success" | "warning";
@@ -148,4 +149,8 @@ export function mergeDashboardProjectsFormState(
   };
 }
 
-export const dashboardProjectStatusOptions = PROJECT_STATUS_OPTIONS;
+export function useDashboardProjectStatusOptions() {
+  const t = useT();
+
+  return buildProjectStatusOptions(t);
+}

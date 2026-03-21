@@ -1,8 +1,13 @@
 import { ArrowUpRight, ArrowUpToLine, TerminalSquare } from "lucide-react";
 
-import { PUBLIC_LAYOUT_COPY, PUBLIC_SOCIAL_LINKS } from "../public-layout.shared";
+import { useT } from "~/features/i18n/i18n-react";
+
+import { PUBLIC_SOCIAL_LINKS, usePublicLayoutCopy } from "../public-layout.shared";
 
 export function PublicSiteFooter() {
+  const t = useT();
+  const { copy } = usePublicLayoutCopy();
+
   return (
     <footer className="bg-background border-t-2 border-black">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:px-8 lg:px-12">
@@ -13,10 +18,10 @@ export function PublicSiteFooter() {
             </span>
             <div className="grid gap-1">
               <span className="font-display text-3xl leading-none uppercase">
-                {PUBLIC_LAYOUT_COPY.footerName}
+                {copy.footerName}
               </span>
               <span className="text-muted-foreground text-[11px] font-bold tracking-[0.18em] uppercase">
-                {PUBLIC_LAYOUT_COPY.footerEyebrow} {PUBLIC_LAYOUT_COPY.footerYear}
+                {copy.footerEyebrow} {copy.footerYear}
               </span>
             </div>
           </div>
@@ -30,7 +35,7 @@ export function PublicSiteFooter() {
                 rel={link.href.startsWith("http") ? "noreferrer" : undefined}
                 className="bg-card inline-flex items-center gap-2 border-2 border-black px-3 py-2 text-[11px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
               >
-                {link.label}
+                {t(`public.layout.social.${link.key}`)}
                 <ArrowUpRight className="size-4" aria-hidden="true" />
               </a>
             ))}
@@ -39,14 +44,14 @@ export function PublicSiteFooter() {
 
         <div className="flex flex-col gap-4 border-t-2 border-black pt-6 md:flex-row md:items-center md:justify-between">
           <p className="text-muted-foreground max-w-3xl text-xs leading-6 uppercase">
-            {PUBLIC_LAYOUT_COPY.footerCaption}
+            {copy.footerCaption}
           </p>
           <a
             href="#top"
             className="bg-card inline-flex items-center gap-2 self-start border-2 border-black px-3 py-2 text-[11px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
           >
             <ArrowUpToLine className="size-4" aria-hidden="true" />
-            {PUBLIC_LAYOUT_COPY.footerCta}
+            {copy.footerCta}
           </a>
         </div>
       </div>

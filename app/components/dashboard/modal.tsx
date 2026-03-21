@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { X } from "lucide-react";
 import { Link } from "react-router";
 
+import { useT } from "~/features/i18n/i18n-react";
 import { cn } from "~/lib/utils";
 
 interface DashboardModalProps {
@@ -18,6 +19,8 @@ export function DashboardModal({
   title,
   to,
 }: DashboardModalProps) {
+  const t = useT();
+
   return (
     <div
       className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-black/55 p-4 md:p-8"
@@ -27,7 +30,7 @@ export function DashboardModal({
     >
       <Link
         to={to}
-        aria-label="Close dashboard modal overlay"
+        aria-label={t("aria.dashboardModal.closeOverlay")}
         className="absolute inset-0"
       />
       <section
@@ -39,7 +42,7 @@ export function DashboardModal({
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.18em] uppercase">
-              Project Forge
+              {t("dashboard.modal.eyebrow")}
             </p>
             <h2 className="font-display text-foreground text-5xl leading-none uppercase">
               {title}
@@ -52,7 +55,7 @@ export function DashboardModal({
           </div>
           <Link
             to={to}
-            aria-label="Close dashboard modal"
+            aria-label={t("aria.dashboardModal.close")}
             className="bg-card text-foreground flex size-10 shrink-0 items-center justify-center border-2 border-black"
           >
             <X className="size-4" aria-hidden="true" />

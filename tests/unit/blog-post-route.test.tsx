@@ -1,6 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
+import {
+  getSeedMessages,
+  getSeedLocaleOptions,
+} from "../../app/features/i18n/i18n.shared";
 import { PublicBlogPostScreen } from "../../app/features/public/blog/public-blog-post-screen";
 import {
   createEmptyPostContentDocument,
@@ -84,14 +88,14 @@ describe("blog detail route", () => {
       screen.getByRole("heading", { level: 1, name: "Edge Observability Playbook" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("article")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Back To Blog" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Back to blog" })).toHaveAttribute(
       "href",
       "/blog",
     );
     expect(
       screen.getByRole("heading", { level: 2, name: "Deploy checklist" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("More Notes")).toBeInTheDocument();
+    expect(screen.getByText("More notes")).toBeInTheDocument();
     expect(screen.getByText("6 min read")).toBeInTheDocument();
   });
 
@@ -141,11 +145,15 @@ describe("blog detail route", () => {
   });
 
   it("falls back to a safe document when loader data is missing", () => {
+    const rootData = {
+      locale: "en" as const,
+      messages: getSeedMessages("en"),
+      supportedLocales: getSeedLocaleOptions(),
+      theme: "light" as const,
+    };
+
     expect(
       meta({
-        data: undefined,
-        error: undefined,
-        loaderData: undefined,
         location: {
           hash: "",
           key: "default",
@@ -154,11 +162,11 @@ describe("blog detail route", () => {
           state: null,
           unstable_mask: undefined,
         },
-        matches: [] as never,
+        matches: [{ data: rootData, id: "root" }] as never,
         params: {
           slug: "missing-story",
         },
-      }),
+      } as never),
     ).toEqual(expect.arrayContaining([{ title: "Blog Post | Enes Ink" }]));
   });
 
@@ -175,7 +183,7 @@ describe("blog detail route", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText("Yazi govdesi yakinda guncellenecek.")).toBeInTheDocument();
+    expect(screen.getByText("The post body will be updated soon.")).toBeInTheDocument();
   });
 
   it("renders image-only documents instead of falling back to the empty message", () => {
@@ -204,7 +212,7 @@ describe("blog detail route", () => {
 
     expect(screen.getByRole("img", { name: "Deployment board" })).toBeInTheDocument();
     expect(
-      screen.queryByText("Yazi govdesi yakinda guncellenecek."),
+      screen.queryByText("The post body will be updated soon."),
     ).not.toBeInTheDocument();
   });
 

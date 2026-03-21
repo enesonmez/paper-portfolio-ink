@@ -1,6 +1,8 @@
 import { isRouteErrorResponse } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { createTranslator, getSeedMessages } from "../../app/features/i18n/i18n.shared";
+
 const { createAuthMock, findUserByEmailMock, signInEmailMock } = vi.hoisted(() => {
   return {
     createAuthMock: vi.fn(),
@@ -31,6 +33,8 @@ vi.mock("../../app/lib/users/users.server", () => {
   };
 });
 
+const t = createTranslator(getSeedMessages("tr"));
+
 describe("login server helpers", () => {
   beforeEach(() => {
     createAuthMock.mockReset();
@@ -42,17 +46,25 @@ describe("login server helpers", () => {
     const request = new Request("http://localhost:3000/dashboard?tab=posts");
     const { buildLoginRedirect } = await import("../../app/lib/auth/login.server");
 
-    expect(buildLoginRedirect(request)).toBe(
-      "/login?redirectTo=%2Fdashboard%3Ftab%3Dposts",
-    );
+    await expect(
+      buildLoginRedirect(
+        {
+          db: { query: {} },
+          runtime: { platform: "node" },
+        } as never,
+        request,
+      ),
+    ).resolves.toBe("/tr/login?redirectTo=%2Fdashboard%3Ftab%3Dposts");
   });
 
   it("normalizes unsafe redirect targets back to the dashboard root", async () => {
     const { normalizeRedirectTarget } = await import("../../app/lib/auth/login.server");
 
-    expect(normalizeRedirectTarget("https://evil.example")).toBe("/dashboard");
-    expect(normalizeRedirectTarget("//evil.example")).toBe("/dashboard");
-    expect(normalizeRedirectTarget("/dashboard/projects")).toBe("/dashboard/projects");
+    expect(normalizeRedirectTarget("https://evil.example", "tr")).toBe("/tr/dashboard");
+    expect(normalizeRedirectTarget("//evil.example", "tr")).toBe("/tr/dashboard");
+    expect(normalizeRedirectTarget("/dashboard/projects", "tr")).toBe(
+      "/tr/dashboard/projects",
+    );
   });
 
   it("returns field errors for invalid login submissions", async () => {
@@ -62,14 +74,14 @@ describe("login server helpers", () => {
     formData.set("redirectTo", "https://evil.example");
     const { parseLoginFormData } = await import("../../app/lib/auth/login.server");
 
-    expect(parseLoginFormData(formData)).toEqual({
+    expect(parseLoginFormData(formData, "tr", t)).toEqual({
       errors: {
         email: "Gecerli bir e-posta gir.",
         password: "Parola en az 8 karakter olmali.",
       },
       values: {
         email: "not-an-email",
-        redirectTo: "/dashboard",
+        redirectTo: "/tr/dashboard",
       },
     });
   });
@@ -115,11 +127,14 @@ describe("login server helpers", () => {
         db: { query: {} },
         runtime: { platform: "node" },
       } as never,
+      locale: "tr",
       submission: {
         email: "admin@example.com",
         password: "password1234",
         redirectTo: "/dashboard",
       },
+      supportedLocaleCodes: ["tr", "en"],
+      t,
     });
 
     expect(signInEmailMock).toHaveBeenCalledWith({
@@ -134,7 +149,7 @@ describe("login server helpers", () => {
     });
     expect(response).toBeInstanceOf(Response);
     expect((response as Response).status).toBe(302);
-    expect((response as Response).headers.get("location")).toBe("/dashboard");
+    expect((response as Response).headers.get("location")).toBe("/tr/dashboard");
     expect((response as Response).headers.get("set-cookie")).toContain(
       "better-auth.session_token=abc",
     );
@@ -172,11 +187,14 @@ describe("login server helpers", () => {
         db: { query: {} },
         runtime: { platform: "node" },
       } as never,
+      locale: "tr",
       submission: {
         email: "enesonmezx@gmail.com",
         password: "password1234",
         redirectTo: "/dashboard",
       },
+      supportedLocaleCodes: ["tr", "en"],
+      t,
     });
 
     expect(isRouteErrorResponse(result)).toBe(false);
@@ -215,11 +233,14 @@ describe("login server helpers", () => {
         db: { query: {} },
         runtime: { platform: "node" },
       } as never,
+      locale: "tr",
       submission: {
         email: "disabled@example.com",
         password: "password1234",
         redirectTo: "/dashboard",
       },
+      supportedLocaleCodes: ["tr", "en"],
+      t,
     });
 
     expect(createAuthMock).not.toHaveBeenCalled();

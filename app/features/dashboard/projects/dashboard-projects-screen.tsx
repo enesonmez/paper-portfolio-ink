@@ -4,9 +4,10 @@ import { Plus } from "lucide-react";
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
 import { Button } from "~/components/ui/button";
+import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
 import type { ProjectOverview } from "~/lib/projects/projects.server";
 
-import { DASHBOARD_PROJECTS_COPY } from "./dashboard-projects.constants";
+import { useDashboardProjectsCopy } from "./dashboard-projects.constants";
 import {
   buildDashboardProjectsHref,
   type DashboardProjectsFormState,
@@ -26,33 +27,40 @@ export function DashboardProjectsScreen({
   metrics,
   projects,
 }: DashboardProjectsScreenProps) {
+  const t = useT();
+  const to = useLocalizedPath();
+  const { copy } = useDashboardProjectsCopy();
+
   return (
     <div className="space-y-8">
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <DashboardMetricCard
-          label="Total Projects"
+          label={t("dashboard.projects.metricTotal")}
           value={String(metrics.totalCount)}
         />
         <DashboardMetricCard
           accent="primary"
-          label="Featured Nodes"
+          label={t("dashboard.projects.metricFeatured")}
           value={String(metrics.featuredCount)}
         />
-        <DashboardMetricCard label="Live Links" value={String(metrics.liveCount)} />
+        <DashboardMetricCard
+          label={t("dashboard.projects.metricLive")}
+          value={String(metrics.liveCount)}
+        />
       </section>
 
       <section className="space-y-4">
         <DashboardSectionHeading
-          eyebrow={DASHBOARD_PROJECTS_COPY.inventoryEyebrow}
-          title={DASHBOARD_PROJECTS_COPY.registryTitle}
+          eyebrow={copy.inventoryEyebrow}
+          title={copy.registryTitle}
           action={
             <Button
               asChild
               className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
             >
-              <Link to={buildDashboardProjectsHref({ modal: "create" })}>
+              <Link to={to(buildDashboardProjectsHref({ modal: "create" }))}>
                 <Plus className="size-4" aria-hidden="true" />
-                {DASHBOARD_PROJECTS_COPY.createActionLabel}
+                {copy.createActionLabel}
               </Link>
             </Button>
           }
