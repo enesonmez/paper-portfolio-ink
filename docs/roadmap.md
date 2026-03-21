@@ -22,7 +22,7 @@
 - [x] Ana sayfanın (Hero section, öne çıkan projeler, yetenekler/tech stack, sosyal medya ve özgeçmiş bölümü) geliştirilmesi.
 - [x] Projeler sayfası (`/projects`) ve proje kartları bileşenlerinin oluşturulması.
 - [x] Blog listeleme sayfası (`/blog`) ve SEO/Metadata uyumlu Blog Detay (`/blog/:slug`) sayfasının kodlanması.
-- [ ] Ana sayfadaki skill kısmı db'ye bağlansın. Eğer skill yoksa bu bölüm gösterilmesin.
+- [x] Ana sayfadaki skill kısmı db'ye bağlansın. Eğer skill yoksa bu bölüm gösterilmesin.
 
 ## Phase 4: Admin Dashboard
 
