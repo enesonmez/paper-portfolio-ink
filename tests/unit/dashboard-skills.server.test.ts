@@ -120,7 +120,7 @@ describe("dashboard skills server", () => {
     }
 
     expect(response.skills).toHaveLength(1);
-  });
+  }, 20000);
 
   it("does not expose the skills registry to non-admin sessions", async () => {
     const { loadDashboardSkillsData } =

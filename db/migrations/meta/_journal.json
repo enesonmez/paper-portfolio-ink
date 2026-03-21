@@ -71,6 +71,20 @@
       "when": 1774137600000,
       "tag": "0009_solid_sasquatch",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1774141200000,
+      "tag": "0010_sparkling_nova",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1774144800000,
+      "tag": "0011_steady_quasar",
+      "breakpoints": true
     }
   ]
 }

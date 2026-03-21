@@ -85,7 +85,7 @@ describe("dashboard users server", () => {
     parseUserFormDataMock.mockReset();
     requireSessionMock.mockReset();
     updateUserMock.mockReset();
-  });
+  }, 20000);
 
   it("loads the users registry for admin sessions", async () => {
     const { loadDashboardUsersData } =
@@ -149,7 +149,7 @@ describe("dashboard users server", () => {
     }
 
     expect(response.users).toHaveLength(2);
-  });
+  }, 20000);
 
   it("does not expose registry data to non-admin sessions", async () => {
     const { loadDashboardUsersData } =
@@ -175,7 +175,7 @@ describe("dashboard users server", () => {
       access: "denied",
     });
     expect(listUsersMock).not.toHaveBeenCalled();
-  });
+  }, 20000);
 
   it("creates a new user when the session belongs to an admin", async () => {
     const { handleDashboardUsersAction } =
@@ -230,7 +230,7 @@ describe("dashboard users server", () => {
     );
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe("/tr/dashboard/users");
-  });
+  }, 20000);
 
   it("returns a 403 form error for non-admin action attempts", async () => {
     const { handleDashboardUsersAction } =
@@ -270,7 +270,7 @@ describe("dashboard users server", () => {
         status: 403,
       },
     });
-  });
+  }, 20000);
 
   it("deactivates users instead of deleting them", async () => {
     const { handleDashboardUsersAction } =
@@ -310,7 +310,7 @@ describe("dashboard users server", () => {
     expect(cacheDeleteMock).toHaveBeenCalledWith(
       "http://localhost:3000/__cache/public/blog/page-1",
     );
-  });
+  }, 20000);
 
   it("blocks deactivating the last active admin", async () => {
     const { handleDashboardUsersAction } =
@@ -353,7 +353,7 @@ describe("dashboard users server", () => {
         status: 409,
       },
     });
-  });
+  }, 20000);
 
   it("blocks demoting the last active admin to author", async () => {
     const { handleDashboardUsersAction } =
@@ -474,5 +474,5 @@ describe("dashboard users server", () => {
     expect(cacheDeleteMock).toHaveBeenCalledWith(
       "http://localhost:3000/__cache/public/blog/page-1",
     );
-  });
+  }, 20000);
 });

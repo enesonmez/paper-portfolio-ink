@@ -17,6 +17,7 @@ export default [
       index("./routes/dashboard._index.tsx"),
       route("posts", "./routes/dashboard.posts.tsx"),
       route("projects", "./routes/dashboard.projects.tsx"),
+      route("resources", "./routes/dashboard.resources.tsx"),
       route("skills", "./routes/dashboard.skills.tsx"),
       route("users", "./routes/dashboard.users.tsx"),
     ]),

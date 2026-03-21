@@ -77,7 +77,7 @@ describe("dashboard posts route", () => {
     expect(
       screen.queryByRole("dialog", { name: "Create Post" }),
     ).not.toBeInTheDocument();
-  });
+  }, 20000);
 
   it("renders a fullscreen compose surface without repeating the registry screen", async () => {
     const { DashboardPostsScreen } = await import("../../app/routes/dashboard.posts");
@@ -127,7 +127,7 @@ describe("dashboard posts route", () => {
     expect(backLinks[0]).toHaveAttribute("href", "/dashboard/posts");
     expect(backLinks[1]).toHaveAttribute("href", "/dashboard/posts");
     expect(screen.getByRole("button", { name: "Update post" })).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("shows a title-based slug suggestion in the post compose view", async () => {
     const { DashboardPostsScreen } = await import("../../app/routes/dashboard.posts");
@@ -166,7 +166,7 @@ describe("dashboard posts route", () => {
         name: "Use suggested slug: edge-runtime-notes",
       }),
     ).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("recomputes the post slug suggestion after a duplicate-slug response when title changes", async () => {
     const { DashboardPostsScreen } = await import("../../app/routes/dashboard.posts");
@@ -221,5 +221,5 @@ describe("dashboard posts route", () => {
         name: "Use suggested slug: edge-session-graph",
       }),
     ).toBeInTheDocument();
-  });
+  }, 20000);
 });

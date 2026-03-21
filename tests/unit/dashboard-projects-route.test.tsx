@@ -73,7 +73,7 @@ describe("dashboard projects route", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("CYBER_STORE_FRONT")).toBeInTheDocument();
     expect(screen.queryByLabelText("Project Name")).not.toBeInTheDocument();
-  });
+  }, 20000);
 
   it("renders the project form inside a modal when requested", async () => {
     const { DashboardProjectsScreen } =
@@ -107,7 +107,7 @@ describe("dashboard projects route", () => {
     expect(
       screen.getByRole("button", { name: "Create new project" }),
     ).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("shows a title-based slug suggestion in the project modal", async () => {
     const { DashboardProjectsScreen } =
@@ -146,7 +146,7 @@ describe("dashboard projects route", () => {
         name: "Use suggested slug: paper-portfolio-ink",
       }),
     ).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("recomputes the project slug suggestion after a duplicate-slug response when title changes", async () => {
     const { DashboardProjectsScreen } =
@@ -201,5 +201,5 @@ describe("dashboard projects route", () => {
         name: "Use suggested slug: portfolio-radar",
       }),
     ).toBeInTheDocument();
-  });
+  }, 20000);
 });

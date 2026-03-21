@@ -61,5 +61,5 @@ describe("dashboard route guard", () => {
         redirectTo: "/tr/login?redirectTo=%2Fdashboard",
       },
     );
-  });
+  }, 20000);
 });

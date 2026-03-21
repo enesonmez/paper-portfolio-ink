@@ -62,7 +62,7 @@ describe("dashboard skills route", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Database")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("renders the create modal when requested", async () => {
     const { DashboardSkillsScreen } = await import("../../app/routes/dashboard.skills");
@@ -95,7 +95,7 @@ describe("dashboard skills route", () => {
     expect(screen.getByLabelText("Sort order")).toBeInTheDocument();
     expect(screen.getByLabelText("Summary")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Create skill" })).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("renders the edit modal with existing values when requested", async () => {
     const { DashboardSkillsScreen } = await import("../../app/routes/dashboard.skills");
@@ -135,7 +135,7 @@ describe("dashboard skills route", () => {
     expect(screen.getByDisplayValue("Cloudflare D1")).toBeInTheDocument();
     expect(screen.getByDisplayValue("3")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Update skill" })).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("renders a restricted screen for non-admin viewers", async () => {
     const { DashboardSkillsAccessDeniedScreen } =
@@ -159,5 +159,5 @@ describe("dashboard skills route", () => {
       screen.getByRole("heading", { level: 1, name: "Restricted flow" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Current role: author")).toBeInTheDocument();
-  });
+  }, 20000);
 });

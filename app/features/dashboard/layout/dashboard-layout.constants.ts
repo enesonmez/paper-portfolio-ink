@@ -1,5 +1,6 @@
 import {
   FolderKanban,
+  Languages,
   LayoutDashboard,
   LogOut,
   Newspaper,
@@ -61,6 +62,13 @@ export function getDashboardNavigation(
     },
   ];
   const adminNavigation: readonly DashboardNavigationItem[] = [
+    {
+      icon: Languages,
+      kind: "link",
+      label: t("dashboard.layout.navResources"),
+      statusLabel: t("dashboard.layout.navStatusLive"),
+      to: buildLocalizedPath(locale, "/dashboard/resources"),
+    },
     {
       icon: Wrench,
       kind: "link",
