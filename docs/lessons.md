@@ -79,7 +79,6 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 
 - Bu projede en iyi sonuc veren akış, once testleri tanimlayip sonra feature'i loader/action davranisina gore implement etmek oldu.
 - En degerli testler saf helper'lari, server orkestrasyonunu ve route-level render sonucunu ayri ayri kilitleyen testler oldu.
-- Her feature'da tum kalite kapilarinin kosulsuz temiz olmadigi goruldu; bazen hedefli test, typecheck ve secili lint calistirmalariyla ilerlenmis. Bu, proje genel CI hatti eksik oldugunda kabul edilebilir ama uzun vadede risk biriktirir.
 - Public cache katmani runtime'a gomulmek yerine typed bir adapter sozlesmesi ile kurulunca ayni loader kodu Cloudflare Cache API ve node process-memory fallback arasinda tasinabilir kaldi; platform ayrimi worker entrypoint'te sinirli tutulmali.
 - Cache'li ilk sayfa ile lazy feed ayni listeyi besliyorsa offset pagination kirilganlasiyor; ara sira veri degisimlerinde duplicate/gap riskini dusurmek icin feed tarafi cursor tabanli ilerlemeli ve mutation invalidation'lari ilgili public liste cache'lerini de kapsamalidir.
 - DB merkezli i18n akisi, migration ile seed edilen baslangic mesajlarini runtime fallback sozlesmesi olarak da korudugunda daha guvenli hale geliyor; Cloudflare tarafinda "startup preload" garantisi olmadigi icin locale payload'lari request-time cache miss uzerinden isitilmali ve test mock'larinda DB yoksa seed fallback devreye girmelidir.
