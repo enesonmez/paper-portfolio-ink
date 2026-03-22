@@ -15,7 +15,11 @@
     "baseUrl": ".",
     "rootDirs": [".", "./.react-router/types"],
     "paths": {
-      "~/*": ["./app/*"]
+      "#db": ["./db/index.ts"],
+      "~/*": ["./app/*"],
+      "#db/*": ["./db/*"],
+      "#root/*": ["./*"],
+      "#workers/*": ["./workers/*"]
     },
     "types": [
       "node",

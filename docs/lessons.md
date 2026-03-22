@@ -92,6 +92,8 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Izole component ve route testlerinde i18n provider zorunlulugu maliyetli hale geliyor; hook seviyesinde guvenli fallback davranisi saglamak testleri sade tutarken uygulama runtime'indaki DB/cache akisini bozmadan ilerlemeyi sagladi.
 - Sonradan yapilan i18n auditlerinde sadece gorunen baslik ve butonlar degil, `aria-label`, modal eyebrow'lari, rich text toolbar etiketleri ve bos-icerik fallback'leri de ayni seed kataloguna alinmali; izole component testleri de provider yoksa fallback locale kontratina gore assertion yapmalidir.
 - Feature dokumantasyonu her adimda yazildigi icin proje evrimi okunabilir kaldi; bu pratik korunmali.
+- Test sayisi buyudukce duz `tests/unit` klasoru okunmaz hale geliyor; testler `unit` ve `integration` altinda da uygulama mimarisine paralel `components/shared/domain/features/routes/workers` slice'larina ayrildiginda kapsama bosluklarini gormek ve dogru test sinifini secmek belirgin sekilde kolaylasiyor.
+- Mock tabanli test disiplininde en dayanikli desen, route wrapper testlerinde yalnizca delegasyonu dogrulamak ve domain davranisini ilgili feature/shared server testinde tekrar kullanilan `vi.mock` sinirlari icinde izole etmektir; boylece integration testleri bile gercek DB/auth/network bagimliligi olmadan hizli ve deterministik kalir.
 
 ## 8. What To Preserve Going Forward
 
