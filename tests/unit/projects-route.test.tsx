@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { PublicProjectsScreen } from "../../app/features/public/projects/public-projects-screen";
+import { PublicProjectsScreen } from "../../app/features/public/projects/screen";
 
 const baseProjects = [
   {

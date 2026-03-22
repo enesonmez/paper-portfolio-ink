@@ -1,15 +1,12 @@
 import { z } from "zod";
 
-import {
-  buildProjectFormValues,
-  type ProjectFormState,
-} from "~/features/projects/project-form.shared";
+import { buildProjectFormValues, type ProjectFormState } from "~/domain/projects/form";
 import {
   PROJECT_DEFAULT_STATUS,
   PROJECT_FORM_FIELD,
   PROJECT_STATUS_VALUES,
   type ProjectStatus,
-} from "~/features/projects/project.shared";
+} from "~/domain/projects/model";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createProjectFormSchema(t: I18nTranslator) {

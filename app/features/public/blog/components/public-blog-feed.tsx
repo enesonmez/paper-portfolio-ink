@@ -8,8 +8,8 @@ import {
   buildPublicBlogFeedHref,
   mergePublicBlogPosts,
   type PublicBlogFeedLoaderData,
-  usePublicBlogCopy,
-} from "../public-blog.shared";
+} from "../feed";
+import { usePublicBlogCopy } from "../copy";
 import { PublicBlogFeedItem } from "./public-blog-feed-item";
 import { PublicBlogSidebar } from "./public-blog-sidebar";
 

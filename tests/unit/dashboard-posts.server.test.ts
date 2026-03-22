@@ -85,7 +85,7 @@ describe("dashboard posts server", () => {
 
   it("loads post inventory and metrics for the dashboard route", async () => {
     const { loadDashboardPostsData } =
-      await import("../../app/features/dashboard/posts/dashboard-posts.server");
+      await import("../../app/features/dashboard/posts/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -145,7 +145,7 @@ describe("dashboard posts server", () => {
 
   it("creates a post with the current session user as author", async () => {
     const { handleDashboardPostsAction } =
-      await import("../../app/features/dashboard/posts/dashboard-posts.server");
+      await import("../../app/features/dashboard/posts/server");
 
     const request = new Request("http://localhost:3000/dashboard/posts", {
       body: new URLSearchParams({
@@ -203,7 +203,7 @@ describe("dashboard posts server", () => {
 
   it("returns a 400 state when validation fails", async () => {
     const { handleDashboardPostsAction } =
-      await import("../../app/features/dashboard/posts/dashboard-posts.server");
+      await import("../../app/features/dashboard/posts/server");
 
     const request = new Request("http://localhost:3000/dashboard/posts", {
       body: new URLSearchParams({
@@ -256,7 +256,7 @@ describe("dashboard posts server", () => {
 
   it("returns a slug field error and suggestion when the submitted post slug is taken", async () => {
     const { handleDashboardPostsAction } =
-      await import("../../app/features/dashboard/posts/dashboard-posts.server");
+      await import("../../app/features/dashboard/posts/server");
 
     const request = new Request("http://localhost:3000/dashboard/posts", {
       body: new URLSearchParams({

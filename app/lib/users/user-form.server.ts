@@ -1,9 +1,6 @@
 import { z } from "zod";
 
-import {
-  buildUserFormValues,
-  type UserFormState,
-} from "~/features/users/user-form.shared";
+import { buildUserFormValues, type UserFormState } from "~/domain/users/form";
 import {
   USER_FORM_FIELD,
   USER_MUTATION_INTENT,
@@ -11,7 +8,7 @@ import {
   USER_ROLE_VALUES,
   type UserMutationIntent,
   type UserRole,
-} from "~/features/users/user.shared";
+} from "~/domain/users/model";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createUserFormSchema(t: I18nTranslator) {

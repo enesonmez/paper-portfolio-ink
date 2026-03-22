@@ -70,7 +70,7 @@ describe("public home server", () => {
     listPublicSkillsMock.mockResolvedValue(skills);
 
     const { loadPublicHomeData } =
-      await import("../../app/features/public/home/public-home.server");
+      await import("../../app/features/public/home/server");
 
     await expect(loadPublicHomeData(context, request)).resolves.toEqual({
       featuredProjects,
@@ -98,7 +98,7 @@ describe("public home server", () => {
     });
 
     const { loadPublicHomeData } =
-      await import("../../app/features/public/home/public-home.server");
+      await import("../../app/features/public/home/server");
 
     await expect(loadPublicHomeData(context, request)).resolves.toEqual({
       featuredProjects,
@@ -114,7 +114,7 @@ describe("public home server", () => {
     cacheDeleteMock.mockResolvedValue(true);
 
     const { purgePublicHomeDataCache } =
-      await import("../../app/features/public/home/public-home.server");
+      await import("../../app/features/public/home/server");
 
     await purgePublicHomeDataCache(
       context,

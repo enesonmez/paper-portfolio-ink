@@ -24,8 +24,8 @@ import {
   coercePostContentDocument,
   normalizePostContentValue,
   sanitizePostLinkHref,
-} from "~/features/posts/post-content.shared";
-import { useDashboardPostsCopy } from "../dashboard-posts.constants";
+} from "~/domain/posts/content";
+import { useDashboardPostsCopy } from "../copy";
 import { useT } from "~/shared/i18n/i18n-react";
 import { cn } from "~/lib/utils";
 

@@ -3,11 +3,11 @@ import type { Route } from "./+types/dashboard.users";
 import DashboardUsersRoute, {
   DashboardUsersAccessDeniedScreen,
   DashboardUsersScreen,
-} from "~/features/dashboard/users/dashboard-users-route";
+} from "~/features/dashboard/users/route";
 import {
   handleDashboardUsersAction,
   loadDashboardUsersData,
-} from "~/features/dashboard/users/dashboard-users.server";
+} from "~/features/dashboard/users/server";
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   return loadDashboardUsersData(context, request);

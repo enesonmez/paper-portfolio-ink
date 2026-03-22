@@ -7,14 +7,16 @@ import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import {
-  DASHBOARD_RESOURCES_MODAL,
-  DASHBOARD_RESOURCES_TAB,
   RESOURCE_FORM_FIELD,
   RESOURCE_MUTATION_INTENT,
-} from "~/features/resources/resource.shared";
+} from "~/domain/resources/contract";
 import type { LocaleResourceRecord } from "~/lib/resources/resources.server";
 
-import { buildDashboardResourcesHref } from "../dashboard-resources.shared";
+import {
+  DASHBOARD_RESOURCES_MODAL,
+  DASHBOARD_RESOURCES_TAB,
+  buildDashboardResourcesHref,
+} from "../href";
 
 export function DashboardResourcesLocalesTable({
   locales,

@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { LocaleSwitcher } from "~/shared/i18n/components/locale-switcher";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 
-import { useLoginCopy } from "../login.constants";
+import { useLoginCopy } from "../copy";
 
 export function LoginHeader() {
   const to = useLocalizedPath();

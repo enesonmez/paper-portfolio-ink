@@ -1,6 +1,6 @@
 import { lazy, Suspense, useSyncExternalStore } from "react";
 
-import { useDashboardPostsCopy } from "../dashboard-posts.constants";
+import { useDashboardPostsCopy } from "../copy";
 import { cn } from "~/lib/utils";
 
 interface DashboardPostsEditorProps {

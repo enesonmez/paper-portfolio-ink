@@ -10,14 +10,14 @@ import {
   TextareaField,
 } from "~/components/ui/form-field";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
-import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/features/users/user.shared";
+import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/domain/users/model";
 
-import { useDashboardUsersCopy } from "../dashboard-users.constants";
+import { useDashboardUsersCopy } from "../copy";
 import {
   buildDashboardUsersHref,
   type DashboardUsersFormState,
   useDashboardUserRoleOptions,
-} from "../dashboard-users.shared";
+} from "../state";
 
 interface DashboardUsersModalProps {
   form: DashboardUsersFormState;

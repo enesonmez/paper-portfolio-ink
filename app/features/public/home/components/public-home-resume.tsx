@@ -3,10 +3,7 @@ import { ArrowUpRight, FileUser, Github, Linkedin, Mail } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { useT } from "~/shared/i18n/i18n-react";
 
-import {
-  PUBLIC_HOME_SURFACE_CLASSNAME,
-  usePublicHomeCopy,
-} from "../public-home.shared";
+import { PUBLIC_HOME_SURFACE_CLASSNAME, usePublicHomeCopy } from "../copy";
 
 const SOCIAL_CARD_ICONS = {
   github: Github,

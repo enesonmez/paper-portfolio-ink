@@ -6,16 +6,13 @@ import { Button } from "~/components/ui/button";
 import { FormError, SelectField, TextField } from "~/components/ui/form-field";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import {
-  DASHBOARD_RESOURCES_TAB,
   RESOURCE_FORM_FIELD,
   RESOURCE_MUTATION_INTENT,
-} from "~/features/resources/resource.shared";
+} from "~/domain/resources/contract";
 
-import { useDashboardResourcesCopy } from "../dashboard-resources.constants";
-import {
-  buildDashboardResourcesHref,
-  type DashboardResourcesLocaleFormState,
-} from "../dashboard-resources.shared";
+import { useDashboardResourcesCopy } from "../copy";
+import { buildDashboardResourcesHref, DASHBOARD_RESOURCES_TAB } from "../href";
+import type { DashboardResourcesLocaleFormState } from "../state";
 
 export function DashboardResourcesLocaleModal({
   form,

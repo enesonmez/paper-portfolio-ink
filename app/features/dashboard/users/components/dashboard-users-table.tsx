@@ -6,14 +6,11 @@ import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
-import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/features/users/user.shared";
+import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/domain/users/model";
 import type { UserOverview } from "~/lib/users/users.server";
 
-import { useDashboardUsersCopy } from "../dashboard-users.constants";
-import {
-  buildDashboardUsersHref,
-  formatDashboardUserRole,
-} from "../dashboard-users.shared";
+import { useDashboardUsersCopy } from "../copy";
+import { buildDashboardUsersHref, formatDashboardUserRole } from "../state";
 
 interface DashboardUsersTableProps {
   users: UserOverview[];

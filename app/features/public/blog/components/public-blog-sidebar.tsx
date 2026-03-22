@@ -3,7 +3,7 @@ import { Link } from "react-router";
 
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import type { PublicPostListItem } from "~/lib/posts/posts.server";
-import { usePublicBlogCopy } from "../public-blog.shared";
+import { usePublicBlogCopy } from "../copy";
 
 interface PublicBlogSidebarProps {
   posts: PublicPostListItem[];

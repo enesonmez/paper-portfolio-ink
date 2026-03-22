@@ -13,14 +13,12 @@ import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import {
   RESOURCE_FORM_FIELD,
   RESOURCE_MUTATION_INTENT,
-} from "~/features/resources/resource.shared";
+} from "~/domain/resources/contract";
 import type { LocaleResourceRecord } from "~/lib/resources/resources.server";
 
-import { useDashboardResourcesCopy } from "../dashboard-resources.constants";
-import {
-  buildDashboardResourcesTranslationsHref,
-  type DashboardResourcesTranslationFormState,
-} from "../dashboard-resources.shared";
+import { useDashboardResourcesCopy } from "../copy";
+import { buildDashboardResourcesTranslationsHref } from "../href";
+import type { DashboardResourcesTranslationFormState } from "../state";
 
 export function DashboardResourcesTranslationModal({
   form,

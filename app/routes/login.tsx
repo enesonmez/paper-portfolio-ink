@@ -1,10 +1,10 @@
 import type { Route } from "./+types/login";
 
-import { buildLoginMeta } from "~/features/auth/login/login.constants";
+import { buildLoginMeta } from "~/features/auth/login/copy";
 import type { loader as rootLoader } from "~/root";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
-import LoginRoute, { LoginScreen } from "~/features/auth/login/login-route";
-import { handleLoginAction, loadLoginData } from "~/features/auth/login/login.server";
+import LoginRoute, { LoginScreen } from "~/features/auth/login/route";
+import { handleLoginAction, loadLoginData } from "~/features/auth/login/server";
 
 export function meta({ matches }: Route.MetaArgs) {
   for (const match of matches) {

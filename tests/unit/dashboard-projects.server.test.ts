@@ -72,7 +72,7 @@ describe("dashboard projects server", () => {
 
   it("returns a slug field error and suggestion when the submitted project slug is taken", async () => {
     const { handleDashboardProjectsAction } =
-      await import("../../app/features/dashboard/projects/dashboard-projects.server");
+      await import("../../app/features/dashboard/projects/server");
 
     const request = new Request("http://localhost:3000/dashboard/projects", {
       body: new URLSearchParams({
@@ -124,7 +124,7 @@ describe("dashboard projects server", () => {
 
   it("purges the public project caches after a delete mutation", async () => {
     const { handleDashboardProjectsAction } =
-      await import("../../app/features/dashboard/projects/dashboard-projects.server");
+      await import("../../app/features/dashboard/projects/server");
 
     const request = new Request("http://localhost:3000/dashboard/projects", {
       body: new URLSearchParams({

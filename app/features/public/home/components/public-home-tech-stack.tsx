@@ -1,11 +1,8 @@
-import { getSkillIcon } from "~/features/skills/skill-icon.shared";
+import { getSkillIcon } from "~/domain/skills/icons";
 import { useT } from "~/shared/i18n/i18n-react";
 import type { PublicSkill } from "~/lib/skills/skills.server";
 
-import {
-  PUBLIC_HOME_SURFACE_CLASSNAME,
-  usePublicHomeCopy,
-} from "../public-home.shared";
+import { PUBLIC_HOME_SURFACE_CLASSNAME, usePublicHomeCopy } from "../copy";
 
 interface PublicHomeTechStackProps {
   skills: PublicSkill[];

@@ -4,7 +4,8 @@ import { NavLink } from "react-router";
 import { LocaleSwitcher } from "~/shared/i18n/components/locale-switcher";
 import { cn } from "~/lib/utils";
 
-import { usePublicLayoutCopy, type PublicTheme } from "../public-layout.shared";
+import { usePublicLayoutCopy } from "../copy";
+import type { PublicTheme } from "../theme";
 import { PublicThemeToggle } from "./public-theme-toggle";
 
 interface PublicSiteHeaderProps {

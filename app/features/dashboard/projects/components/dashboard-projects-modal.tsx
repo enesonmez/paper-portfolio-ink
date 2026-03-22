@@ -11,17 +11,14 @@ import {
   TextareaField,
 } from "~/components/ui/form-field";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
-import {
-  PROJECT_FORM_FIELD,
-  PROJECT_MUTATION_INTENT,
-} from "~/features/projects/project.shared";
+import { PROJECT_FORM_FIELD, PROJECT_MUTATION_INTENT } from "~/domain/projects/model";
 
-import { useDashboardProjectsCopy } from "../dashboard-projects.constants";
+import { useDashboardProjectsCopy } from "../copy";
 import {
   buildDashboardProjectsHref,
   useDashboardProjectStatusOptions,
   type DashboardProjectsFormState,
-} from "../dashboard-projects.shared";
+} from "../state";
 
 interface DashboardProjectsModalProps {
   form: DashboardProjectsFormState;

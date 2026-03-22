@@ -4,9 +4,9 @@ import type { Route } from "./+types/blog_.$slug";
 import type { loader as rootLoader } from "~/root";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
-import { PublicBlogPostNotFoundError } from "~/features/public/blog/public-blog.errors";
-import { PublicBlogPostScreen } from "~/features/public/blog/public-blog-post-screen";
-import { loadPublicBlogPostData } from "~/features/public/blog/public-blog.server";
+import { PublicBlogPostNotFoundError } from "~/features/public/blog/errors";
+import { PublicBlogPostScreen } from "~/features/public/blog/post-screen";
+import { loadPublicBlogPostData } from "~/features/public/blog/server";
 import { siteConfig } from "~/lib/site";
 
 export const meta: Route.MetaFunction = ({ data, location, matches }) => {

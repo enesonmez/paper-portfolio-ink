@@ -10,18 +10,12 @@ import {
   getSkillIcon,
   useSkillIconOptions,
   type SkillIconKey,
-} from "~/features/skills/skill-icon.shared";
-import {
-  SKILL_FORM_FIELD,
-  SKILL_MUTATION_INTENT,
-} from "~/features/skills/skill.shared";
+} from "~/domain/skills/icons";
+import { SKILL_FORM_FIELD, SKILL_MUTATION_INTENT } from "~/domain/skills/model";
 import { suggestSlugFromTitle } from "~/lib/slug";
 
-import { useDashboardSkillsCopy } from "../dashboard-skills.constants";
-import {
-  buildDashboardSkillsHref,
-  type DashboardSkillsFormState,
-} from "../dashboard-skills.shared";
+import { useDashboardSkillsCopy } from "../copy";
+import { buildDashboardSkillsHref, type DashboardSkillsFormState } from "../state";
 import { DashboardSkillsIconPicker } from "./dashboard-skills-icon-picker";
 
 interface DashboardSkillsModalProps {

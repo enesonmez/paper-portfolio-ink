@@ -6,15 +6,15 @@ import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
-import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/features/posts/post.shared";
+import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/domain/posts/model";
 import type { PostOverview } from "~/lib/posts/posts.server";
 
-import { useDashboardPostsCopy } from "../dashboard-posts.constants";
+import { useDashboardPostsCopy } from "../copy";
 import {
   buildDashboardPostsHref,
   formatDashboardPostTitle,
   getPostStatusTone,
-} from "../dashboard-posts.shared";
+} from "../state";
 
 interface DashboardPostsTableProps {
   posts: PostOverview[];

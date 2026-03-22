@@ -2,12 +2,9 @@ import { Form, NavLink } from "react-router";
 import { X } from "lucide-react";
 
 import { useLocale, useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
-import {
-  DASHBOARD_LAYOUT_ICON,
-  getDashboardNavigation,
-  useDashboardLayoutCopy,
-} from "../dashboard-layout.constants";
-import type { DashboardIdentity } from "../dashboard-layout.shared";
+import { useDashboardLayoutCopy } from "../copy";
+import { DASHBOARD_LAYOUT_ICON, getDashboardNavigation } from "../navigation";
+import type { DashboardIdentity } from "../identity";
 import { Button } from "~/components/ui/button";
 
 interface DashboardSidebarProps {

@@ -2,7 +2,7 @@ import { and, asc, eq, ne } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { skills } from "../../../db/schema";
-import type { SkillIconKey } from "~/features/skills/skill-icon.shared";
+import type { SkillIconKey } from "~/domain/skills/icons";
 import { suggestSlugFromTitle } from "~/lib/slug";
 
 import type { SkillSubmission } from "./skill-form.server";

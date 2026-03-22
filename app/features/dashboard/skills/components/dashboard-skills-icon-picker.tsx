@@ -1,9 +1,9 @@
 import type { ChangeEventHandler } from "react";
 
 import { FormError } from "~/components/ui/form-field";
-import { useSkillIconOptions } from "~/features/skills/skill-icon.shared";
+import { useSkillIconOptions } from "~/domain/skills/icons";
 import { cn } from "~/lib/utils";
-import type { SkillIconKey } from "~/features/skills/skill-icon.shared";
+import type { SkillIconKey } from "~/domain/skills/icons";
 
 interface DashboardSkillsIconPickerProps {
   error?: string;

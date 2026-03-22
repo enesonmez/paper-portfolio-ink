@@ -5,18 +5,12 @@ import { DashboardPanel } from "~/components/dashboard/panel";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
-import { getSkillIcon, useSkillIconOptions } from "~/features/skills/skill-icon.shared";
-import {
-  SKILL_FORM_FIELD,
-  SKILL_MUTATION_INTENT,
-} from "~/features/skills/skill.shared";
+import { getSkillIcon, useSkillIconOptions } from "~/domain/skills/icons";
+import { SKILL_FORM_FIELD, SKILL_MUTATION_INTENT } from "~/domain/skills/model";
 import type { SkillOverview } from "~/lib/skills/skills.server";
 
-import { useDashboardSkillsCopy } from "../dashboard-skills.constants";
-import {
-  buildDashboardSkillsHref,
-  formatDashboardSkillName,
-} from "../dashboard-skills.shared";
+import { useDashboardSkillsCopy } from "../copy";
+import { buildDashboardSkillsHref, formatDashboardSkillName } from "../state";
 
 interface DashboardSkillsTableProps {
   skills: SkillOverview[];

@@ -3,7 +3,7 @@ import { ArrowUpRight, Globe, Github } from "lucide-react";
 import { useT } from "~/shared/i18n/i18n-react";
 import type { PublicProjectCard as PublicProjectCardData } from "~/lib/projects/projects.server";
 
-import { usePublicProjectsCopy } from "../public-projects.shared";
+import { usePublicProjectsCopy } from "../copy";
 
 interface PublicProjectCardProps {
   project: PublicProjectCardData;

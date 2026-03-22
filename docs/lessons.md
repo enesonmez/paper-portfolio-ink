@@ -28,6 +28,8 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Tum uygulamayi yatay kesen runtime davranislari bir feature altinda tutuldugunda domain sinirlari bulanabiliyor; `i18n` gibi root loader, route contract, DB cache ve UI hook'larini birlikte besleyen yapilar `app/shared/*` altinda konumlandirildiginda hem feature slice'lar daha temiz kaliyor hem de bu modullerin app-wide policy oldugu daha net gorunuyor.
 - Auth gibi app-wide policy modullerinde en kritik sinir, feature UI state'i ile auth runtime'ini birbirine baglamamaktir; `LoginFormState` benzeri kontratlar once `shared/auth` altina alinip sonra auth factory, session ve login orchestration kodu ayni yatay katmana tasindiginda bagimlilik yonu feature -> shared olarak temiz kalir.
 - Runtime'a gore adapter secen ve birden fazla feature ile worker entrypoint tarafindan paylasilan cache facade'lari da `lib` yerine `shared/cache` altinda konumlandirilmali; boylece cache key/payload politikasi ile platforma ozel adapterler ayni app-wide altyapi katmaninda toplanir.
+- `app/features/*` icinde hem route slice'i hem de domain kontrati tutmak semantik gurultu uretiyor; `posts/projects/users/skills/resources` gibi saf kontrat klasorleri `app/domain/*` altina tasinip `features` yalnizca gercek screen/loader/action slice'larini barindirdiginda import zinciri ve klasor agaci daha hizli okunuyor.
+- Slice klasoru zaten baglam verdigi icin `dashboard-posts.server.ts` benzeri tekrarlayan dosya adlari gereksiz; `server.ts`, `screen.tsx`, `copy.ts`, `state.ts`, `href.ts`, `feed.ts`, `theme.ts` gibi rollerine gore isimlendirilmis kucuk moduller, buyuyen `shared/constants` dosyalarindan daha dayanikli bir desen veriyor.
 
 ## 4. Public Experience Lessons
 

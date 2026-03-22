@@ -3,8 +3,8 @@ import { Form } from "react-router";
 import { Button } from "~/components/ui/button";
 import { FormError, TextField } from "~/components/ui/form-field";
 
-import { useLoginCopy } from "../login.constants";
-import type { LoginFormState } from "../login.shared";
+import { useLoginCopy } from "../copy";
+import type { LoginFormState } from "../state";
 
 interface LoginFormCardProps extends LoginFormState {
   isSubmitting: boolean;

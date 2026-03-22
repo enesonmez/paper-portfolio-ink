@@ -34,8 +34,7 @@ describe("login route", () => {
 
   it("redirects authenticated users away from the login page", async () => {
     const request = new Request("http://localhost:3000/login");
-    const { loadLoginData } =
-      await import("../../app/features/auth/login/login.server");
+    const { loadLoginData } = await import("../../app/features/auth/login/server");
 
     getSessionForRequestMock.mockResolvedValue({
       session: { id: "session-1" },
@@ -55,8 +54,7 @@ describe("login route", () => {
     const request = new Request(
       "http://localhost:3000/login?redirectTo=%2Fdashboard%2Fprojects",
     );
-    const { loadLoginData } =
-      await import("../../app/features/auth/login/login.server");
+    const { loadLoginData } = await import("../../app/features/auth/login/server");
 
     getSessionForRequestMock.mockResolvedValue(null);
     normalizeRedirectTargetMock.mockReturnValue("/dashboard/projects");
@@ -87,8 +85,7 @@ describe("login route", () => {
         location: "/dashboard",
       },
     });
-    const { handleLoginAction } =
-      await import("../../app/features/auth/login/login.server");
+    const { handleLoginAction } = await import("../../app/features/auth/login/server");
 
     signInWithEmailMock.mockResolvedValue(response);
 

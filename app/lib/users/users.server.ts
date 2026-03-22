@@ -3,7 +3,7 @@ import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { accounts, users } from "../../../db/schema";
-import { USER_ROLE, type UserRole } from "~/features/users/user.shared";
+import { USER_ROLE, type UserRole } from "~/domain/users/model";
 
 import type { UserSubmission } from "./user-form.server";
 

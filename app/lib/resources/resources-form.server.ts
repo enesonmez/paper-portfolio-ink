@@ -5,8 +5,8 @@ import {
   buildTranslationFormValues,
   type LocaleFormState,
   type TranslationFormState,
-} from "~/features/resources/resource-form.shared";
-import { RESOURCE_FORM_FIELD } from "~/features/resources/resource.shared";
+} from "~/domain/resources/form";
+import { RESOURCE_FORM_FIELD } from "~/domain/resources/contract";
 import {
   NORMALIZED_LOCALE_CODE_PATTERN,
   type I18nTranslator,

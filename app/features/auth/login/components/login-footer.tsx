@@ -1,4 +1,4 @@
-import { useLoginCopy } from "../login.constants";
+import { useLoginCopy } from "../copy";
 
 export function LoginFooter() {
   const copy = useLoginCopy();

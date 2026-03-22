@@ -4,10 +4,7 @@ import { Link } from "react-router";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import type { PublicFeaturedProject } from "~/lib/projects/projects.server";
 
-import {
-  PUBLIC_HOME_SURFACE_CLASSNAME,
-  usePublicHomeCopy,
-} from "../public-home.shared";
+import { PUBLIC_HOME_SURFACE_CLASSNAME, usePublicHomeCopy } from "../copy";
 
 interface PublicHomeFeaturedProjectsProps {
   projects: PublicFeaturedProject[];

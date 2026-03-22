@@ -6,13 +6,15 @@ import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import {
-  DASHBOARD_RESOURCES_MODAL,
   RESOURCE_FORM_FIELD,
   RESOURCE_MUTATION_INTENT,
-} from "~/features/resources/resource.shared";
+} from "~/domain/resources/contract";
 import type { TranslationResourceRecord } from "~/lib/resources/resources.server";
 
-import { buildDashboardResourcesTranslationsHref } from "../dashboard-resources.shared";
+import {
+  DASHBOARD_RESOURCES_MODAL,
+  buildDashboardResourcesTranslationsHref,
+} from "../href";
 
 function buildValuePreview(value: string) {
   return value.length > 100 ? `${value.slice(0, 100)}...` : value;

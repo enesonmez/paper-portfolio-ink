@@ -2,11 +2,11 @@ import type { Route } from "./+types/dashboard.projects";
 
 import DashboardProjectsRoute, {
   DashboardProjectsScreen,
-} from "~/features/dashboard/projects/dashboard-projects-route";
+} from "~/features/dashboard/projects/route";
 import {
   handleDashboardProjectsAction,
   loadDashboardProjectsData,
-} from "~/features/dashboard/projects/dashboard-projects.server";
+} from "~/features/dashboard/projects/server";
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   return loadDashboardProjectsData(context, request);

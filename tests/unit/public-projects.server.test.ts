@@ -73,7 +73,7 @@ describe("public projects server", () => {
     getPublicProjectsStatsMock.mockResolvedValue(stats);
 
     const { loadPublicProjectsData } =
-      await import("../../app/features/public/projects/public-projects.server");
+      await import("../../app/features/public/projects/server");
 
     await expect(
       loadPublicProjectsData(
@@ -98,7 +98,7 @@ describe("public projects server", () => {
     });
 
     const { loadPublicProjectsData } =
-      await import("../../app/features/public/projects/public-projects.server");
+      await import("../../app/features/public/projects/server");
 
     await expect(
       loadPublicProjectsData(
@@ -130,7 +130,7 @@ describe("public projects server", () => {
     listPublicProjectsPageMock.mockResolvedValue(pageData);
 
     const { loadPublicProjectsFeedData } =
-      await import("../../app/features/public/projects/public-projects.server");
+      await import("../../app/features/public/projects/server");
 
     await expect(
       loadPublicProjectsFeedData(
@@ -157,7 +157,7 @@ describe("public projects server", () => {
     cacheDeleteMock.mockResolvedValue(true);
 
     const { purgePublicProjectsDataCache } =
-      await import("../../app/features/public/projects/public-projects.server");
+      await import("../../app/features/public/projects/server");
 
     await purgePublicProjectsDataCache(
       context,

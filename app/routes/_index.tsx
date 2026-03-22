@@ -3,8 +3,8 @@ import type { Route } from "./+types/_index";
 
 import type { loader as rootLoader } from "~/root";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
-import { PublicHomeScreen } from "~/features/public/home/public-home-screen";
-import { loadPublicHomeData } from "~/features/public/home/public-home.server";
+import { PublicHomeScreen } from "~/features/public/home/screen";
+import { loadPublicHomeData } from "~/features/public/home/server";
 
 export function meta({ matches }: Route.MetaArgs) {
   let messages: Awaited<ReturnType<typeof rootLoader>>["messages"] | undefined;

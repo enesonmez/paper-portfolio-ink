@@ -1,1 +1,1 @@
-export { default } from "~/features/dashboard/overview/dashboard-overview-screen";
+export { default } from "~/features/dashboard/overview/screen";
