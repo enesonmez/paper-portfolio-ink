@@ -1,7 +1,7 @@
 import type { AppLoadContext } from "react-router";
 
-import { buildLoginRedirect } from "~/lib/auth/login.server";
-import { requireSession } from "~/lib/auth/session.server";
+import { buildLoginRedirect } from "~/shared/auth/login.server";
+import { requireSession } from "~/shared/auth/session.server";
 
 import {
   buildDashboardIdentity,

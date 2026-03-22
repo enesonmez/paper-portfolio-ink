@@ -7,8 +7,8 @@ import {
   normalizeRedirectTarget,
   parseLoginFormData,
   signInWithEmail,
-} from "~/lib/auth/login.server";
-import { getSessionForRequest } from "~/lib/auth/session.server";
+} from "~/shared/auth/login.server";
+import { getSessionForRequest } from "~/shared/auth/session.server";
 
 import type { LoginLoaderData } from "./login.shared";
 

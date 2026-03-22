@@ -12,9 +12,9 @@ import {
   createTranslator,
   getLocaleFromPathname,
 } from "~/shared/i18n/i18n.shared";
-import { buildLoginRedirect } from "~/lib/auth/login.server";
-import { requireSession } from "~/lib/auth/session.server";
-import { isSessionUserAdmin } from "~/lib/auth/session-user";
+import { buildLoginRedirect } from "~/shared/auth/login.server";
+import { requireSession } from "~/shared/auth/session.server";
+import { isSessionUserAdmin } from "~/shared/auth/session-user";
 import {
   hasParsedLocaleData,
   hasParsedTranslationData,

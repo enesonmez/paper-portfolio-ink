@@ -11,13 +11,13 @@ const { createAuthMock, findUserByEmailMock, signInEmailMock } = vi.hoisted(() =
   };
 });
 
-vi.mock("../../app/lib/auth/auth.server", () => {
+vi.mock("../../app/shared/auth/auth.server", () => {
   return {
     createAuth: createAuthMock,
   };
 });
 
-vi.mock("../../app/lib/auth/auth-config.server", () => {
+vi.mock("../../app/shared/auth/auth-config.server", () => {
   return {
     resolveAuthConfig: vi.fn((request: Request) => ({
       secret: "test-secret",
@@ -44,7 +44,7 @@ describe("login server helpers", () => {
 
   it("builds a dashboard login redirect url from a protected request", async () => {
     const request = new Request("http://localhost:3000/dashboard?tab=posts");
-    const { buildLoginRedirect } = await import("../../app/lib/auth/login.server");
+    const { buildLoginRedirect } = await import("../../app/shared/auth/login.server");
 
     await expect(
       buildLoginRedirect(
@@ -58,7 +58,8 @@ describe("login server helpers", () => {
   }, 20000);
 
   it("normalizes unsafe redirect targets back to the dashboard root", async () => {
-    const { normalizeRedirectTarget } = await import("../../app/lib/auth/login.server");
+    const { normalizeRedirectTarget } =
+      await import("../../app/shared/auth/login.server");
 
     expect(normalizeRedirectTarget("https://evil.example", "tr")).toBe("/tr/dashboard");
     expect(normalizeRedirectTarget("//evil.example", "tr")).toBe("/tr/dashboard");
@@ -72,7 +73,7 @@ describe("login server helpers", () => {
     formData.set("email", "not-an-email");
     formData.set("password", "short");
     formData.set("redirectTo", "https://evil.example");
-    const { parseLoginFormData } = await import("../../app/lib/auth/login.server");
+    const { parseLoginFormData } = await import("../../app/shared/auth/login.server");
 
     expect(parseLoginFormData(formData, "tr", t)).toEqual({
       errors: {
@@ -106,7 +107,7 @@ describe("login server helpers", () => {
         },
       },
     );
-    const { signInWithEmail } = await import("../../app/lib/auth/login.server");
+    const { signInWithEmail } = await import("../../app/shared/auth/login.server");
 
     createAuthMock.mockReturnValue({
       api: {
@@ -171,7 +172,7 @@ describe("login server helpers", () => {
         },
       },
     );
-    const { signInWithEmail } = await import("../../app/lib/auth/login.server");
+    const { signInWithEmail } = await import("../../app/shared/auth/login.server");
 
     createAuthMock.mockReturnValue({
       api: {
@@ -218,7 +219,7 @@ describe("login server helpers", () => {
     const request = new Request("http://localhost:3000/login", {
       method: "POST",
     });
-    const { signInWithEmail } = await import("../../app/lib/auth/login.server");
+    const { signInWithEmail } = await import("../../app/shared/auth/login.server");
 
     findUserByEmailMock.mockResolvedValue({
       email: "disabled@example.com",

@@ -52,7 +52,7 @@ vi.mock("../../app/lib/posts/post-form.server", async () => {
   };
 });
 
-vi.mock("../../app/lib/auth/session.server", () => {
+vi.mock("../../app/shared/auth/session.server", () => {
   return {
     requireSession: requireSessionMock,
   };

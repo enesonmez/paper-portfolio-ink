@@ -26,6 +26,7 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Feature buyudukce ortak string sabitleri, form alan adlari, status degerleri ve query param isimleri shared katmana alinmadan kod hizla kirilganlasiyor.
 - Path-prefix i18n gereksiniminde en dusuk riskli desen, locale cozumunu tek tek link helper'larina birakmak yerine route agacini `/:locale/*` etrafinda kurmak oldu; boylece loader, redirect ve meta uretimi ayni locale kontrati uzerinden ilerledi.
 - Tum uygulamayi yatay kesen runtime davranislari bir feature altinda tutuldugunda domain sinirlari bulanabiliyor; `i18n` gibi root loader, route contract, DB cache ve UI hook'larini birlikte besleyen yapilar `app/shared/*` altinda konumlandirildiginda hem feature slice'lar daha temiz kaliyor hem de bu modullerin app-wide policy oldugu daha net gorunuyor.
+- Auth gibi app-wide policy modullerinde en kritik sinir, feature UI state'i ile auth runtime'ini birbirine baglamamaktir; `LoginFormState` benzeri kontratlar once `shared/auth` altina alinip sonra auth factory, session ve login orchestration kodu ayni yatay katmana tasindiginda bagimlilik yonu feature -> shared olarak temiz kalir.
 
 ## 4. Public Experience Lessons
 

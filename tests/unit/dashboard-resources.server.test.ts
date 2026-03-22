@@ -70,7 +70,7 @@ vi.mock("../../app/lib/resources/resources-form.server", async () => {
   };
 });
 
-vi.mock("../../app/lib/auth/session.server", () => ({
+vi.mock("../../app/shared/auth/session.server", () => ({
   requireSession: requireSessionMock,
 }));
 

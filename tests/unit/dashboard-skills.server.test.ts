@@ -45,7 +45,7 @@ vi.mock("../../app/lib/skills/skill-form.server", async () => {
   };
 });
 
-vi.mock("../../app/lib/auth/session.server", () => ({
+vi.mock("../../app/shared/auth/session.server", () => ({
   requireSession: requireSessionMock,
 }));
 
