@@ -32,7 +32,7 @@ describe("auth server factory", () => {
     const db = { query: {} };
     const adapter = { type: "drizzle-adapter" };
     const authInstance = { handler: vi.fn(), api: { getSession: vi.fn() } };
-    const { createAuth } = await import("../../app/lib/auth/auth.server");
+    const { createAuth } = await import("../../app/shared/auth/auth.server");
 
     drizzleAdapterMock.mockReturnValue(adapter);
     betterAuthMock.mockReturnValue(authInstance);

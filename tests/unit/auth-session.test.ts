@@ -7,13 +7,13 @@ const { getSessionFromRequestMock, resolveAuthConfigMock } = vi.hoisted(() => {
   };
 });
 
-vi.mock("../../app/lib/auth/auth-config.server", () => {
+vi.mock("../../app/shared/auth/auth-config.server", () => {
   return {
     resolveAuthConfig: resolveAuthConfigMock,
   };
 });
 
-vi.mock("../../app/lib/auth/auth.server", () => {
+vi.mock("../../app/shared/auth/auth.server", () => {
   return {
     getSessionFromRequest: getSessionFromRequestMock,
   };
@@ -37,7 +37,7 @@ describe("requireSession", () => {
         email: "admin@example.com",
       },
     };
-    const { requireSession } = await import("../../app/lib/auth/session.server");
+    const { requireSession } = await import("../../app/shared/auth/session.server");
 
     resolveAuthConfigMock.mockReturnValue({
       secret: "test-secret",
@@ -56,7 +56,7 @@ describe("requireSession", () => {
 
   it("returns a redirect response for unauthenticated requests", async () => {
     const request = new Request("http://localhost:3000/dashboard");
-    const { requireSession } = await import("../../app/lib/auth/session.server");
+    const { requireSession } = await import("../../app/shared/auth/session.server");
 
     resolveAuthConfigMock.mockReturnValue({
       secret: "test-secret",
@@ -83,7 +83,7 @@ describe("requireSession", () => {
 
   it("returns a redirect response when the session user is inactive", async () => {
     const request = new Request("http://localhost:3000/dashboard");
-    const { requireSession } = await import("../../app/lib/auth/session.server");
+    const { requireSession } = await import("../../app/shared/auth/session.server");
 
     resolveAuthConfigMock.mockReturnValue({
       secret: "test-secret",

@@ -4,9 +4,9 @@ import { getDbFromContext } from "../../../../db/context";
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
 import { buildLocalizedPath, createTranslator } from "~/shared/i18n/i18n.shared";
 import { purgePublicBlogDataCache } from "~/features/public/blog/public-blog.server";
-import { buildLoginRedirect } from "~/lib/auth/login.server";
-import { requireSession } from "~/lib/auth/session.server";
-import { getSessionUserId } from "~/lib/auth/session-user";
+import { buildLoginRedirect } from "~/shared/auth/login.server";
+import { requireSession } from "~/shared/auth/session.server";
+import { getSessionUserId } from "~/shared/auth/session-user";
 import {
   buildPostFormValues,
   type PostFormState,

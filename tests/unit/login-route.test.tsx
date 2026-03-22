@@ -11,14 +11,14 @@ const { getSessionForRequestMock, signInWithEmailMock, normalizeRedirectTargetMo
     };
   });
 
-vi.mock("../../app/lib/auth/session.server", () => {
+vi.mock("../../app/shared/auth/session.server", () => {
   return {
     getSessionForRequest: getSessionForRequestMock,
   };
 });
 
-vi.mock("../../app/lib/auth/login.server", () => {
-  return import("../../app/lib/auth/login.server").then((actual) => ({
+vi.mock("../../app/shared/auth/login.server", () => {
+  return import("../../app/shared/auth/login.server").then((actual) => ({
     ...actual,
     normalizeRedirectTarget: normalizeRedirectTargetMock,
     signInWithEmail: signInWithEmailMock,

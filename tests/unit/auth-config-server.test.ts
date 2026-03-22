@@ -6,7 +6,8 @@ describe("auth config resolver", () => {
   });
 
   it("derives a safe local auth config from the request origin", async () => {
-    const { resolveAuthConfig } = await import("../../app/lib/auth/auth-config.server");
+    const { resolveAuthConfig } =
+      await import("../../app/shared/auth/auth-config.server");
     const request = new Request("http://localhost:5173/login");
 
     expect(resolveAuthConfig(request)).toEqual({
@@ -17,7 +18,8 @@ describe("auth config resolver", () => {
   });
 
   it("prefers auth environment variables over the development fallback", async () => {
-    const { resolveAuthConfig } = await import("../../app/lib/auth/auth-config.server");
+    const { resolveAuthConfig } =
+      await import("../../app/shared/auth/auth-config.server");
     const request = new Request("http://localhost:5173/login");
 
     vi.stubEnv("BETTER_AUTH_SECRET", "0123456789-0123456789-0123456789-0123");

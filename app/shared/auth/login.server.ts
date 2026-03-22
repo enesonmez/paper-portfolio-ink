@@ -2,7 +2,7 @@ import { isAPIError } from "better-auth/api";
 import { data, redirect, type AppLoadContext } from "react-router";
 import { z } from "zod";
 
-import type { LoginFormState } from "~/features/auth/login/login.shared";
+import type { LoginFormState } from "~/shared/auth/login.shared";
 import {
   buildLocaleDashboardPath,
   loadI18nRuntimeState,

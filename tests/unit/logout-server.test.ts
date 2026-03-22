@@ -7,13 +7,13 @@ const { createAuthMock, signOutMock } = vi.hoisted(() => {
   };
 });
 
-vi.mock("../../app/lib/auth/auth.server", () => {
+vi.mock("../../app/shared/auth/auth.server", () => {
   return {
     createAuth: createAuthMock,
   };
 });
 
-vi.mock("../../app/lib/auth/auth-config.server", () => {
+vi.mock("../../app/shared/auth/auth-config.server", () => {
   return {
     resolveAuthConfig: vi.fn((request: Request) => ({
       secret: "test-secret",

@@ -1,16 +1,6 @@
-export interface LoginFormValues {
-  email: string;
-  redirectTo: string;
-}
+import type { LoginFormState, LoginFormValues } from "~/shared/auth/login.shared";
 
-export interface LoginFormState {
-  errors?: {
-    email?: string;
-    form?: string;
-    password?: string;
-  };
-  values: LoginFormValues;
-}
+export type { LoginFormState, LoginFormValues };
 
 export interface LoginLoaderData {
   redirectTo: string;

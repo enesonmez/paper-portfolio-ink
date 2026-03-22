@@ -1,4 +1,4 @@
-import type { AuthRuntimeConfig } from "../app/lib/auth/auth-config";
+import type { AuthRuntimeConfig } from "../app/shared/auth/auth-config";
 
 export interface CloudflareAuthEnvBindings {
   BETTER_AUTH_SECRET?: string;
