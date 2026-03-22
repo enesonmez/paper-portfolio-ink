@@ -1,7 +1,7 @@
 import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
-import { invalidateCachedData, loadCachedData } from "~/lib/cache/data-cache.server";
+import { invalidateCachedData, loadCachedData } from "~/shared/cache/data-cache.server";
 import {
   listPublicCompanionPosts,
   getPublicPostBySlug,

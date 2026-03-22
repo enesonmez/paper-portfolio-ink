@@ -6,7 +6,7 @@ import {
   createMemoryDataCache,
   getAppDataCache,
   loadCachedData,
-} from "../../app/lib/cache/data-cache.server";
+} from "../../app/shared/cache/data-cache.server";
 
 const payloadSchema = z.object({
   value: z.string(),

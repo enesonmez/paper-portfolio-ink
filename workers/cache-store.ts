@@ -3,7 +3,7 @@ import type {
   Response as CloudflareResponse,
 } from "@cloudflare/workers-types";
 
-import type { CloudflareCacheStore } from "../app/lib/cache/contracts";
+import type { CloudflareCacheStore } from "../app/shared/cache/contracts";
 
 export function createCloudflareCacheStore(
   cache: CloudflareCache,
