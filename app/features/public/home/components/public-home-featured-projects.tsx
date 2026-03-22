@@ -1,7 +1,7 @@
 import { ArrowUpRight, Globe, Github } from "lucide-react";
 import { Link } from "react-router";
 
-import { useLocalizedPath } from "~/features/i18n/i18n-react";
+import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import type { PublicFeaturedProject } from "~/lib/projects/projects.server";
 
 import {

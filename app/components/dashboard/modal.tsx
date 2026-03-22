@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { X } from "lucide-react";
 import { Link } from "react-router";
 
-import { useT } from "~/features/i18n/i18n-react";
+import { useT } from "~/shared/i18n/i18n-react";
 import { cn } from "~/lib/utils";
 
 interface DashboardModalProps {

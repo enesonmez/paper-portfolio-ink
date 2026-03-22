@@ -1,8 +1,8 @@
 import { Outlet } from "react-router";
 import type { Route } from "./+types/locale-prefix";
 
-import { loadI18nRuntimeState } from "~/features/i18n/i18n.server";
-import { isSupportedLocale } from "~/features/i18n/i18n.shared";
+import { loadI18nRuntimeState } from "~/shared/i18n/i18n.server";
+import { isSupportedLocale } from "~/shared/i18n/i18n.shared";
 
 class LocaleNotFoundError extends Error {
   status = 404;

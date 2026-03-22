@@ -5,7 +5,7 @@ import { afterEach, beforeEach, vi } from "vitest";
 import {
   getSeedMessages,
   getSeedLocaleOptions,
-} from "../../app/features/i18n/i18n.shared";
+} from "../../app/shared/i18n/i18n.shared";
 import { PublicBlogScreen } from "../../app/features/public/blog/public-blog-screen";
 import { meta } from "../../app/routes/blog";
 

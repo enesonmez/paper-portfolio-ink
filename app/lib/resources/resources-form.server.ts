@@ -10,7 +10,7 @@ import { RESOURCE_FORM_FIELD } from "~/features/resources/resource.shared";
 import {
   NORMALIZED_LOCALE_CODE_PATTERN,
   type I18nTranslator,
-} from "~/features/i18n/i18n.shared";
+} from "~/shared/i18n/i18n.shared";
 
 function compactFieldErrors<T extends Record<string, string | undefined>>(errors: T) {
   return Object.fromEntries(

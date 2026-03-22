@@ -2,7 +2,7 @@ import type { Route } from "./+types/login";
 
 import { buildLoginMeta } from "~/features/auth/login/login.constants";
 import type { loader as rootLoader } from "~/root";
-import { createTranslator } from "~/features/i18n/i18n.shared";
+import { createTranslator } from "~/shared/i18n/i18n.shared";
 import LoginRoute, { LoginScreen } from "~/features/auth/login/login-route";
 import { handleLoginAction, loadLoginData } from "~/features/auth/login/login.server";
 

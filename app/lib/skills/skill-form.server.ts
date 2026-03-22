@@ -12,7 +12,7 @@ import {
 } from "~/features/skills/skill-icon.shared";
 import { SKILL_FORM_FIELD } from "~/features/skills/skill.shared";
 import { suggestSlugFromTitle } from "~/lib/slug";
-import type { I18nTranslator } from "~/features/i18n/i18n.shared";
+import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createSkillFormSchema(t: I18nTranslator) {
   const skillIconOptions = buildSkillIconOptions(t);

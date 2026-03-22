@@ -2,7 +2,7 @@ import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { useFetcher } from "react-router";
 
-import { useLocalizedPath } from "~/features/i18n/i18n-react";
+import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import type { PublicPostListItem } from "~/lib/posts/posts.server";
 import {
   buildPublicBlogFeedHref,

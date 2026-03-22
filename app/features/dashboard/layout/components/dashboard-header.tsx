@@ -1,6 +1,6 @@
 import { Menu } from "lucide-react";
 
-import { LocaleSwitcher } from "~/features/i18n/components/locale-switcher";
+import { LocaleSwitcher } from "~/shared/i18n/components/locale-switcher";
 import type { DashboardIdentity } from "../dashboard-layout.shared";
 import { useDashboardLayoutCopy } from "../dashboard-layout.constants";
 

@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { ArrowLeft, Clock3 } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
-import { useLocalizedPath } from "~/features/i18n/i18n-react";
+import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import type { PublicPostDetail, PublicPostListItem } from "~/lib/posts/posts.server";
 import { usePublicBlogCopy } from "./public-blog.shared";
 import { PublicBlogPostBody } from "./components/public-blog-post-body";

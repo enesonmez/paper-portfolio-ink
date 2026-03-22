@@ -6,12 +6,12 @@ import {
   buildTranslationFormValues,
   toResourceBooleanValue,
 } from "~/features/resources/resource-form.shared";
-import { loadI18nPayload, purgeI18nDataCache } from "~/features/i18n/i18n.server";
+import { loadI18nPayload, purgeI18nDataCache } from "~/shared/i18n/i18n.server";
 import {
   buildLocalizedPath,
   createTranslator,
   getLocaleFromPathname,
-} from "~/features/i18n/i18n.shared";
+} from "~/shared/i18n/i18n.shared";
 import { buildLoginRedirect } from "~/lib/auth/login.server";
 import { requireSession } from "~/lib/auth/session.server";
 import { isSessionUserAdmin } from "~/lib/auth/session-user";

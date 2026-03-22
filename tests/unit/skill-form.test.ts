@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createTranslator, getSeedMessages } from "../../app/features/i18n/i18n.shared";
+import { createTranslator, getSeedMessages } from "../../app/shared/i18n/i18n.shared";
 
 const t = createTranslator(getSeedMessages("tr"));
 

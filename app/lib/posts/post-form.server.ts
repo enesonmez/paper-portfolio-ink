@@ -14,7 +14,7 @@ import {
   POST_STATUS_VALUES,
   type PostStatus,
 } from "~/features/posts/post.shared";
-import type { I18nTranslator } from "~/features/i18n/i18n.shared";
+import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createPostFormSchema(t: I18nTranslator) {
   return z.object({

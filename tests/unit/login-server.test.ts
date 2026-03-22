@@ -1,7 +1,7 @@
 import { isRouteErrorResponse } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createTranslator, getSeedMessages } from "../../app/features/i18n/i18n.shared";
+import { createTranslator, getSeedMessages } from "../../app/shared/i18n/i18n.shared";
 
 const { createAuthMock, findUserByEmailMock, signInEmailMock } = vi.hoisted(() => {
   return {

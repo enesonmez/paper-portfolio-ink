@@ -1,7 +1,7 @@
 import { Form, NavLink } from "react-router";
 import { X } from "lucide-react";
 
-import { useLocale, useLocalizedPath, useT } from "~/features/i18n/i18n-react";
+import { useLocale, useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import {
   DASHBOARD_LAYOUT_ICON,
   getDashboardNavigation,

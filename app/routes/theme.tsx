@@ -1,8 +1,8 @@
 import { redirect } from "react-router";
 import type { Route } from "./+types/theme";
 
-import { buildLocalizedPath } from "~/features/i18n/i18n.shared";
-import { loadI18nRuntimeState } from "~/features/i18n/i18n.server";
+import { buildLocalizedPath } from "~/shared/i18n/i18n.shared";
+import { loadI18nRuntimeState } from "~/shared/i18n/i18n.server";
 import {
   buildThemeCookie,
   parseThemeFormData,

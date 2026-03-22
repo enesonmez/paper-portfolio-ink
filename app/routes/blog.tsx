@@ -2,7 +2,7 @@ import { useLoaderData } from "react-router";
 import type { Route } from "./+types/blog";
 
 import type { loader as rootLoader } from "~/root";
-import { createTranslator } from "~/features/i18n/i18n.shared";
+import { createTranslator } from "~/shared/i18n/i18n.shared";
 import { PublicBlogScreen } from "~/features/public/blog/public-blog-screen";
 import { loadPublicBlogData } from "~/features/public/blog/public-blog.server";
 import { siteConfig } from "~/lib/site";

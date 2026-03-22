@@ -1,7 +1,7 @@
 import { data, redirect, type AppLoadContext } from "react-router";
 
-import { loadI18nPayload } from "~/features/i18n/i18n.server";
-import { createTranslator } from "~/features/i18n/i18n.shared";
+import { loadI18nPayload } from "~/shared/i18n/i18n.server";
+import { createTranslator } from "~/shared/i18n/i18n.shared";
 import {
   hasParsedLoginData,
   normalizeRedirectTarget,

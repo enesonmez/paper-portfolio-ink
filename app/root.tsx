@@ -10,9 +10,9 @@ import {
   useRouteLoaderData,
 } from "react-router";
 
-import { AppI18nProvider } from "~/features/i18n/i18n-react";
-import { loadI18nPayload } from "~/features/i18n/i18n.server";
-import { createTranslator, getSeedMessages } from "~/features/i18n/i18n.shared";
+import { AppI18nProvider } from "~/shared/i18n/i18n-react";
+import { loadI18nPayload } from "~/shared/i18n/i18n.server";
+import { createTranslator, getSeedMessages } from "~/shared/i18n/i18n.shared";
 import {
   isPublicPathname,
   PUBLIC_THEME,

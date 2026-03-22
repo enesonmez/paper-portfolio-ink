@@ -26,7 +26,7 @@ import {
   sanitizePostLinkHref,
 } from "~/features/posts/post-content.shared";
 import { useDashboardPostsCopy } from "../dashboard-posts.constants";
-import { useT } from "~/features/i18n/i18n-react";
+import { useT } from "~/shared/i18n/i18n-react";
 import { cn } from "~/lib/utils";
 
 interface DashboardPostsToolbarProps {

@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router";
 import {
   getSeedMessages,
   getSeedLocaleOptions,
-} from "../../app/features/i18n/i18n.shared";
+} from "../../app/shared/i18n/i18n.shared";
 import { PublicBlogPostScreen } from "../../app/features/public/blog/public-blog-post-screen";
 import {
   createEmptyPostContentDocument,

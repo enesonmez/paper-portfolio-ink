@@ -12,7 +12,7 @@ import {
   type UserMutationIntent,
   type UserRole,
 } from "~/features/users/user.shared";
-import type { I18nTranslator } from "~/features/i18n/i18n.shared";
+import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createUserFormSchema(t: I18nTranslator) {
   return z.object({

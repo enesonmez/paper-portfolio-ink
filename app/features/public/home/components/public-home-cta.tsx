@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router";
 
 import { Button } from "~/components/ui/button";
-import { useLocalizedPath } from "~/features/i18n/i18n-react";
+import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 
 import { usePublicHomeCopy } from "../public-home.shared";
 

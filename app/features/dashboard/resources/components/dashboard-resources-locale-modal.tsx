@@ -4,7 +4,7 @@ import { Form, Link } from "react-router";
 import { DashboardModal } from "~/components/dashboard/modal";
 import { Button } from "~/components/ui/button";
 import { FormError, SelectField, TextField } from "~/components/ui/form-field";
-import { useLocalizedPath } from "~/features/i18n/i18n-react";
+import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import {
   DASHBOARD_RESOURCES_TAB,
   RESOURCE_FORM_FIELD,

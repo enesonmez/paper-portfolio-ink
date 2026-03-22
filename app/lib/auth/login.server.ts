@@ -6,13 +6,13 @@ import type { LoginFormState } from "~/features/auth/login/login.shared";
 import {
   buildLocaleDashboardPath,
   loadI18nRuntimeState,
-} from "~/features/i18n/i18n.server";
+} from "~/shared/i18n/i18n.server";
 import {
   buildLocalizedPath,
   sanitizeLocalizedRedirectTarget,
   type AppLocale,
   type I18nTranslator,
-} from "~/features/i18n/i18n.shared";
+} from "~/shared/i18n/i18n.shared";
 import { findUserByEmail } from "~/lib/users/users.server";
 
 import { resolveAuthConfig } from "./auth-config.server";

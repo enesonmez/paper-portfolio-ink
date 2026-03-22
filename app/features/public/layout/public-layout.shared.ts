@@ -1,5 +1,5 @@
-import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
-import { stripLocalePrefix } from "~/features/i18n/i18n.shared";
+import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
+import { stripLocalePrefix } from "~/shared/i18n/i18n.shared";
 
 type ValueOf<T> = T[keyof T];
 

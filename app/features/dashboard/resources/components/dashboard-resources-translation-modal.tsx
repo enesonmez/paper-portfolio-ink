@@ -9,7 +9,7 @@ import {
   TextField,
   TextareaField,
 } from "~/components/ui/form-field";
-import { useLocalizedPath } from "~/features/i18n/i18n-react";
+import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import {
   RESOURCE_FORM_FIELD,
   RESOURCE_MUTATION_INTENT,

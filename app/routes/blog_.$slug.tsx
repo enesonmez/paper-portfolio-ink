@@ -2,8 +2,8 @@ import { Link, useLoaderData, useRouteError } from "react-router";
 import type { Route } from "./+types/blog_.$slug";
 
 import type { loader as rootLoader } from "~/root";
-import { createTranslator } from "~/features/i18n/i18n.shared";
-import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
+import { createTranslator } from "~/shared/i18n/i18n.shared";
+import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import { PublicBlogPostNotFoundError } from "~/features/public/blog/public-blog.errors";
 import { PublicBlogPostScreen } from "~/features/public/blog/public-blog-post-screen";
 import { loadPublicBlogPostData } from "~/features/public/blog/public-blog.server";

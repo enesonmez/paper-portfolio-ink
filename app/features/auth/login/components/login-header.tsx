@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
-import { LocaleSwitcher } from "~/features/i18n/components/locale-switcher";
-import { useLocalizedPath } from "~/features/i18n/i18n-react";
+import { LocaleSwitcher } from "~/shared/i18n/components/locale-switcher";
+import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 
 import { useLoginCopy } from "../login.constants";
 

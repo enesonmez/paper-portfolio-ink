@@ -13,7 +13,7 @@ import {
   type DashboardPostsPresentationMode,
   type PostStatus,
 } from "~/features/posts/post.shared";
-import { useT } from "~/features/i18n/i18n-react";
+import { useT } from "~/shared/i18n/i18n-react";
 import type { PostOverview } from "~/lib/posts/posts.server";
 
 export type DashboardStatusTone = "danger" | "neutral" | "success" | "warning";
