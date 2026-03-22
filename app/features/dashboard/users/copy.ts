@@ -1,21 +1,24 @@
+import { buildDashboardAuthorizationCopy } from "~/shared/authz/copy";
 import { useT } from "~/shared/i18n/i18n-react";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 export function buildDashboardUsersCopy(t: I18nTranslator) {
+  const authzCopy = buildDashboardAuthorizationCopy(t);
+
   return {
-    actionBlockedTitle: t("dashboard.users.actionBlockedTitle"),
+    actionBlockedTitle: authzCopy.actionBlockedTitle,
     createActionLabel: t("dashboard.users.createActionLabel"),
     createDescription: t("dashboard.users.createDescription"),
     createTitle: t("dashboard.users.createTitle"),
-    currentRoleLabel: t("dashboard.users.currentRoleLabel"),
+    currentRoleLabel: authzCopy.currentRoleLabel,
     editActionLabel: t("dashboard.users.editActionLabel"),
     editDescription: t("dashboard.users.editDescription"),
     editTitle: t("dashboard.users.editTitle"),
     emptyState: t("dashboard.users.emptyState"),
     inventoryEyebrow: t("dashboard.users.inventoryEyebrow"),
     registryTitle: t("dashboard.users.registryTitle"),
-    restrictedDescription: t("dashboard.users.restrictedDescription"),
-    restrictedTitle: t("dashboard.users.restrictedTitle"),
+    restrictedDescription: authzCopy.restrictedDescription,
+    restrictedTitle: authzCopy.restrictedTitle,
     selfLabel: t("dashboard.users.selfLabel"),
     tableActionsLabel: t("dashboard.users.tableActionsLabel"),
     tableIdentityLabel: t("dashboard.users.tableIdentityLabel"),
@@ -25,6 +28,8 @@ export function buildDashboardUsersCopy(t: I18nTranslator) {
 }
 
 export function buildDashboardUsersFormCopy(t: I18nTranslator) {
+  const authzCopy = buildDashboardAuthorizationCopy(t);
+
   return {
     avatarUrl: {
       label: t("dashboard.users.form.avatarUrl.label"),
@@ -46,7 +51,7 @@ export function buildDashboardUsersFormCopy(t: I18nTranslator) {
     errors: {
       createDuplicateEmail: t("dashboard.users.form.error.createDuplicateEmail"),
       deactivateMissingUser: t("dashboard.users.form.error.deactivateMissingUser"),
-      forbidden: t("dashboard.users.form.error.forbidden"),
+      forbidden: authzCopy.forbiddenError,
       lastActiveAdminDeactivate: t(
         "dashboard.users.form.error.lastActiveAdminDeactivate",
       ),

@@ -14,37 +14,49 @@ import { DashboardResourcesLocalesTable } from "./components/dashboard-resources
 export default function DashboardResourcesLocalesScreen() {
   const to = useLocalizedPath();
   const { copy } = useDashboardResourcesCopy();
-  const { localeForm, locales } = useDashboardResourcesRouteContext();
+  const { localeForm, locales, permissions } = useDashboardResourcesRouteContext();
 
   return (
     <>
       <section className="space-y-4">
         <DashboardSectionHeading
           action={
-            <Button
-              asChild
-              className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            >
-              <Link
-                to={to(
-                  buildDashboardResourcesLocalesHref({
-                    modal: DASHBOARD_RESOURCES_MODAL.createLocale,
-                  }),
-                )}
+            permissions.locales.canCreate ? (
+              <Button
+                asChild
+                className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               >
-                <Plus className="size-4" aria-hidden="true" />
-                {copy.createLocaleActionLabel}
-              </Link>
-            </Button>
+                <Link
+                  to={to(
+                    buildDashboardResourcesLocalesHref({
+                      modal: DASHBOARD_RESOURCES_MODAL.createLocale,
+                    }),
+                  )}
+                >
+                  <Plus className="size-4" aria-hidden="true" />
+                  {copy.createLocaleActionLabel}
+                </Link>
+              </Button>
+            ) : null
           }
           eyebrow={copy.localeInventoryEyebrow}
           title={copy.registryTitle}
         />
 
-        <DashboardResourcesLocalesTable locales={locales} />
+        <DashboardResourcesLocalesTable
+          canDelete={permissions.locales.canDelete}
+          canUpdate={permissions.locales.canUpdate}
+          locales={locales}
+        />
       </section>
 
-      <DashboardResourcesLocaleModal form={localeForm} />
+      <DashboardResourcesLocaleModal
+        canSubmit={
+          permissions.locales.canCreate ||
+          (localeForm.mode === "edit" && permissions.locales.canUpdate)
+        }
+        form={localeForm}
+      />
     </>
   );
 }

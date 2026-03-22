@@ -27,6 +27,11 @@ const baseScreenProps = {
     liveCount: 2,
     totalCount: 3,
   },
+  permissions: {
+    canCreate: true,
+    canDelete: true,
+    canUpdate: true,
+  },
   projects: [
     {
       coverImageUrl: null,
@@ -72,6 +77,43 @@ describe("dashboard projects route", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("CYBER_STORE_FRONT")).toBeInTheDocument();
     expect(screen.queryByLabelText("Project Name")).not.toBeInTheDocument();
+  }, 20000);
+
+  it("hides project mutation controls when write permissions are missing", async () => {
+    const { DashboardProjectsScreen } = await import("~/routes/dashboard/projects");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/projects",
+          element: (
+            <DashboardProjectsScreen
+              {...baseScreenProps}
+              permissions={{
+                canCreate: false,
+                canDelete: false,
+                canUpdate: false,
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/projects"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen.queryByRole("link", { name: "Create new project" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /edit cyber_store_front/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /delete cyber_store_front/i }),
+    ).not.toBeInTheDocument();
   }, 20000);
 
   it("renders the project form inside a modal when requested", async () => {

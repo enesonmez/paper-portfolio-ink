@@ -1,12 +1,16 @@
+import { buildDashboardAuthorizationCopy } from "~/shared/authz/copy";
 import { useT } from "~/shared/i18n/i18n-react";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 export function buildDashboardPostsCopy(t: I18nTranslator) {
+  const authzCopy = buildDashboardAuthorizationCopy(t);
+
   return {
     createActionLabel: t("dashboard.posts.createActionLabel"),
     createDescription: t("dashboard.posts.createDescription"),
     composeEyebrow: t("dashboard.posts.composeEyebrow"),
     createTitle: t("dashboard.posts.createTitle"),
+    currentRoleLabel: authzCopy.currentRoleLabel,
     editActionLabel: t("dashboard.posts.editActionLabel"),
     editDescription: t("dashboard.posts.editDescription"),
     editTitle: t("dashboard.posts.editTitle"),
@@ -14,6 +18,8 @@ export function buildDashboardPostsCopy(t: I18nTranslator) {
     inventoryEyebrow: t("dashboard.posts.inventoryEyebrow"),
     publishedLabel: t("dashboard.posts.publishedLabel"),
     registryTitle: t("dashboard.posts.registryTitle"),
+    restrictedDescription: authzCopy.restrictedDescription,
+    restrictedTitle: authzCopy.restrictedTitle,
     tableActionsLabel: t("dashboard.posts.tableActionsLabel"),
     tableNameLabel: t("dashboard.posts.tableNameLabel"),
     tableStatusLabel: t("dashboard.posts.tableStatusLabel"),
@@ -22,6 +28,8 @@ export function buildDashboardPostsCopy(t: I18nTranslator) {
 }
 
 export function buildDashboardPostsFormCopy(t: I18nTranslator) {
+  const authzCopy = buildDashboardAuthorizationCopy(t);
+
   return {
     backToListLabel: t("dashboard.posts.form.backToListLabel"),
     closeFullscreenLabel: t("dashboard.posts.form.closeFullscreenLabel"),
@@ -35,6 +43,7 @@ export function buildDashboardPostsFormCopy(t: I18nTranslator) {
     },
     errors: {
       deleteMissingPost: t("dashboard.posts.form.error.deleteMissingPost"),
+      forbidden: authzCopy.forbiddenError,
       missingAuthor: t("dashboard.posts.form.error.missingAuthor"),
       updateMissingPost: t("dashboard.posts.form.error.updateMissingPost"),
     },

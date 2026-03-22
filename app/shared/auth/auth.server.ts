@@ -38,6 +38,11 @@ export function createAuth({ db, secret, baseURL, trustedOrigins }: CreateAuthOp
           input: false,
           required: false,
         },
+        authzVersion: {
+          type: "number",
+          input: false,
+          required: false,
+        },
       },
     },
     session: {

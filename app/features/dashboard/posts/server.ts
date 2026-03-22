@@ -4,9 +4,18 @@ import { getDbFromContext } from "../../../../db/context";
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
 import { buildLocalizedPath, createTranslator } from "~/shared/i18n/i18n.shared";
 import { purgePublicBlogDataCache } from "~/features/public/blog/server";
-import { buildLoginRedirect } from "~/shared/auth/login.server";
-import { requireSession } from "~/shared/auth/session.server";
-import { getSessionUserId } from "~/shared/auth/session-user";
+import {
+  actorHasAnyClaim,
+  buildForbiddenFormState,
+  requireDashboardActor,
+} from "~/shared/authz/authz.server";
+import {
+  canAccessDashboardPosts,
+  canCreatePosts,
+  canMutatePost,
+  listAuthorizedPosts,
+} from "~/shared/authz/post-policy.server";
+import { AUTHORIZATION_CLAIM } from "~/shared/authz/model";
 import { buildPostFormValues, type PostFormState } from "~/domain/posts/form";
 import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/domain/posts/model";
 import { hasParsedPostData, parsePostFormData } from "~/lib/posts/post-form.server";
@@ -15,7 +24,6 @@ import {
   deletePost,
   findAvailablePostSlug,
   isPostSlugTaken,
-  listPosts,
   updatePost,
 } from "~/lib/posts/posts.server";
 import { isUniqueSlugConstraintError } from "~/lib/slug";
@@ -26,12 +34,7 @@ import {
   resolveDashboardPostsForm,
   type DashboardPostsLoaderData,
 } from "./state";
-
-function readStringField(formData: FormData, field: string) {
-  const value = formData.get(field);
-
-  return typeof value === "string" ? value : "";
-}
+import { readStringField } from "~/shared/forms/form-data.server";
 
 function buildPostActionValues(values: PostFormState["values"]) {
   return buildPostFormValues(values);
@@ -61,25 +64,52 @@ export async function loadDashboardPostsData(
   context: AppLoadContext,
   request: Request,
 ): Promise<DashboardPostsLoaderData | Response> {
-  const session = await requireSession(request, context, {
-    redirectTo: await buildLoginRedirect(context, request),
-  });
+  const auth = await requireDashboardActor(context, request);
 
-  if (session instanceof Response) {
-    return session;
+  if (auth instanceof Response) {
+    return auth;
   }
 
-  const db = getDbFromContext(context);
-  const posts = await listPosts(db);
+  if (!canAccessDashboardPosts(auth.actor)) {
+    return {
+      access: "denied",
+      form: resolveDashboardPostsForm({
+        editId: null,
+        modal: null,
+        posts: [],
+      }),
+      metrics: buildDashboardPostsMetrics([]),
+      permissions: {
+        canCreate: false,
+        canDelete: false,
+        canUpdate: false,
+      },
+      posts: [],
+    };
+  }
+
+  const posts = await listAuthorizedPosts(context, auth.actor);
   const url = new URL(request.url);
 
   return {
+    access: "granted",
     form: resolveDashboardPostsForm({
       editId: url.searchParams.get("edit"),
       modal: url.searchParams.get("modal"),
       posts,
     }),
     metrics: buildDashboardPostsMetrics(posts),
+    permissions: {
+      canCreate: canCreatePosts(auth.actor),
+      canDelete: actorHasAnyClaim(auth.actor, [
+        AUTHORIZATION_CLAIM.postsDeleteAny,
+        AUTHORIZATION_CLAIM.postsDeleteOwn,
+      ]),
+      canUpdate: actorHasAnyClaim(auth.actor, [
+        AUTHORIZATION_CLAIM.postsUpdateAny,
+        AUTHORIZATION_CLAIM.postsUpdateOwn,
+      ]),
+    },
     posts,
   };
 }
@@ -94,13 +124,11 @@ export async function handleDashboardPostsAction(
   );
   const t = createTranslator(messages);
   const formCopy = buildDashboardPostsFormCopy(t);
-  const session = await requireSession(request, context, {
-    redirectTo: await buildLoginRedirect(context, request),
-  });
+  const auth = await requireDashboardActor(context, request);
   const supportedLocaleCodes = supportedLocales.map((item) => item.code);
 
-  if (session instanceof Response) {
-    return session;
+  if (auth instanceof Response) {
+    return auth;
   }
 
   const db = getDbFromContext(context);
@@ -119,6 +147,10 @@ export async function handleDashboardPostsAction(
         },
         { status: 400 },
       );
+    }
+
+    if (!(await canMutatePost(context, auth.actor, "delete", postId))) {
+      return buildForbiddenFormState(formCopy.errors.forbidden, buildPostFormValues());
     }
 
     await deletePost(db, postId);
@@ -145,6 +177,13 @@ export async function handleDashboardPostsAction(
           values: buildPostActionValues(submission.data),
         },
         { status: 400 },
+      );
+    }
+
+    if (!(await canMutatePost(context, auth.actor, "update", postId))) {
+      return buildForbiddenFormState(
+        formCopy.errors.forbidden,
+        buildPostActionValues(submission.data),
       );
     }
 
@@ -179,7 +218,14 @@ export async function handleDashboardPostsAction(
     );
   }
 
-  const authorId = getSessionUserId(session);
+  const authorId = auth.actor.userId;
+
+  if (!canCreatePosts(auth.actor)) {
+    return buildForbiddenFormState(
+      formCopy.errors.forbidden,
+      buildPostActionValues(submission.data),
+    );
+  }
 
   if (!authorId) {
     return data<PostFormState>(

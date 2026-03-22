@@ -34,7 +34,7 @@ export default defineConfig({
     },
     {
       name: "chromium-public",
-      testIgnore: [/setup\/.*\.setup\.ts/, /dashboard\.spec\.ts/],
+      testIgnore: [/setup\/.*\.setup\.ts/, /(dashboard|authorization)\.spec\.ts/],
       use: {
         ...devices["Desktop Chrome"],
       },
@@ -42,7 +42,7 @@ export default defineConfig({
     {
       name: "chromium-authenticated",
       dependencies: ["setup"],
-      testMatch: /dashboard\.spec\.ts/,
+      testMatch: /(dashboard|authorization)\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         storageState: "./tests/e2e/.auth/admin.json",

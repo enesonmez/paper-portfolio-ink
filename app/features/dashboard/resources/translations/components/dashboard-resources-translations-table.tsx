@@ -21,6 +21,8 @@ function buildValuePreview(value: string) {
 }
 
 export function DashboardResourcesTranslationsTable({
+  canDelete,
+  canUpdate,
   emptyState,
   pagination,
   selectedTranslationLocale,
@@ -30,6 +32,8 @@ export function DashboardResourcesTranslationsTable({
   translationSearchQuery,
   translations,
 }: {
+  canDelete: boolean;
+  canUpdate: boolean;
   emptyState?: string;
   pagination: {
     currentPage: number;
@@ -46,6 +50,7 @@ export function DashboardResourcesTranslationsTable({
 }) {
   const to = useLocalizedPath();
   const t = useT();
+  const canManageTranslations = canUpdate || canDelete;
   const translationsViewState = {
     translationLocale: selectedTranslationLocale,
     translationPage,
@@ -78,7 +83,7 @@ export function DashboardResourcesTranslationsTable({
       header: t("dashboard.resources.tableTranslationValueLabel"),
       id: "value",
       render: (translationRow) => (
-        <p className="font-sans text-sm font-bold break-words">
+        <p className="font-sans text-sm font-bold wrap-break-word">
           {buildValuePreview(translationRow.value)}
         </p>
       ),
@@ -94,61 +99,68 @@ export function DashboardResourcesTranslationsTable({
         </div>
       ),
     },
-    {
+  ];
+
+  if (canManageTranslations) {
+    columns.push({
       cellClassName: "align-top",
       header: t("dashboard.resources.tableActionsLabel"),
       headerClassName: "text-right",
       id: "actions",
       render: (translationRow) => (
         <div className="flex justify-end gap-2">
-          <Button
-            asChild
-            size="iconSm"
-            className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            aria-label={`${t("common.edit")} ${translationRow.key}`}
-          >
-            <Link
-              to={to(
-                buildDashboardResourcesTranslationsHref(translationsViewState, {
-                  editTranslationKey: translationRow.key,
-                  editTranslationLocale: translationRow.locale,
-                  modal: DASHBOARD_RESOURCES_MODAL.editTranslation,
-                }),
-              )}
-            >
-              <Pencil className="size-4" aria-hidden="true" />
-            </Link>
-          </Button>
-          <Form method="post">
-            <input
-              type="hidden"
-              name={RESOURCE_FORM_FIELD.intent}
-              value={RESOURCE_MUTATION_INTENT.deleteTranslation}
-            />
-            <input
-              type="hidden"
-              name={RESOURCE_FORM_FIELD.originalLocale}
-              value={translationRow.locale}
-            />
-            <input
-              type="hidden"
-              name={RESOURCE_FORM_FIELD.originalKey}
-              value={translationRow.key}
-            />
+          {canUpdate ? (
             <Button
-              type="submit"
-              variant="destructive"
+              asChild
               size="iconSm"
-              className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              aria-label={`${t("common.delete")} ${translationRow.key}`}
+              className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              aria-label={`${t("common.edit")} ${translationRow.key}`}
             >
-              <Trash2 className="size-4" aria-hidden="true" />
+              <Link
+                to={to(
+                  buildDashboardResourcesTranslationsHref(translationsViewState, {
+                    editTranslationKey: translationRow.key,
+                    editTranslationLocale: translationRow.locale,
+                    modal: DASHBOARD_RESOURCES_MODAL.editTranslation,
+                  }),
+                )}
+              >
+                <Pencil className="size-4" aria-hidden="true" />
+              </Link>
             </Button>
-          </Form>
+          ) : null}
+          {canDelete ? (
+            <Form method="post">
+              <input
+                type="hidden"
+                name={RESOURCE_FORM_FIELD.intent}
+                value={RESOURCE_MUTATION_INTENT.deleteTranslation}
+              />
+              <input
+                type="hidden"
+                name={RESOURCE_FORM_FIELD.originalLocale}
+                value={translationRow.locale}
+              />
+              <input
+                type="hidden"
+                name={RESOURCE_FORM_FIELD.originalKey}
+                value={translationRow.key}
+              />
+              <Button
+                type="submit"
+                variant="destructive"
+                size="iconSm"
+                className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                aria-label={`${t("common.delete")} ${translationRow.key}`}
+              >
+                <Trash2 className="size-4" aria-hidden="true" />
+              </Button>
+            </Form>
+          ) : null}
         </div>
       ),
-    },
-  ];
+    });
+  }
 
   return (
     <DashboardPanel className="space-y-4 overflow-x-auto p-4">

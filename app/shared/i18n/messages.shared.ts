@@ -212,10 +212,16 @@ const tr = {
   "dashboard.layout.statusDescription": "Oturum guvende / dashboard kabugu aktif",
   "dashboard.layout.statusTitle": "Sistem Durumu: Giris yapildi",
   "dashboard.layout.roleAccessSuffix": "erisim",
+  "dashboard.authz.actionBlockedTitle": "Islem reddedildi",
+  "dashboard.authz.currentRoleLabel": "Oturum rolu",
+  "dashboard.authz.forbiddenError": "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+  "dashboard.authz.restrictedDescription": "Bu alani goruntuleme yetkiniz bulunmuyor.",
+  "dashboard.authz.restrictedTitle": "Erisim reddedildi",
   "dashboard.projects.createActionLabel": "Yeni proje olustur",
   "dashboard.projects.createDescription":
     "Yeni bir proje olustur ve dashboard kaydina ekle.",
   "dashboard.projects.createTitle": "Proje olustur",
+  "dashboard.projects.currentRoleLabel": "Mevcut rol",
   "dashboard.projects.editActionLabel": "Projeyi guncelle",
   "dashboard.projects.editDescription":
     "Mevcut proje kaydini guncelle ve degisiklikleri server tarafinda kaydet.",
@@ -225,6 +231,8 @@ const tr = {
   "dashboard.projects.featuredToggleLabel": "One cikan proje",
   "dashboard.projects.inventoryEyebrow": "Canli envanter",
   "dashboard.projects.registryTitle": "Proje kayitlari",
+  "dashboard.projects.restrictedDescription": "Bu flow icin erisim yetkiniz yoktur.",
+  "dashboard.projects.restrictedTitle": "Kisitli akis",
   "dashboard.projects.tableActionsLabel": "Aksiyonlar",
   "dashboard.projects.tableNameLabel": "Proje adi",
   "dashboard.projects.tableLiveFlag": "Canli",
@@ -240,6 +248,7 @@ const tr = {
   "dashboard.projects.form.coverImageUrl.placeholder": "https://images...",
   "dashboard.projects.form.description.label": "Aciklama",
   "dashboard.projects.form.error.deleteMissingProject": "Silinecek proje bulunamadi.",
+  "dashboard.projects.form.error.forbidden": "Bu flow icin erisim yetkiniz yoktur.",
   "dashboard.projects.form.error.updateMissingProject":
     "Duzenlenecek proje bulunamadi.",
   "dashboard.projects.form.liveUrl.label": "Canli URL",
@@ -261,6 +270,7 @@ const tr = {
     "Yayin hattina yeni bir hikaye ekle ve durumunu dashboard icinden yonet.",
   "dashboard.posts.composeEyebrow": "Taslak / Yerelde kaydedildi",
   "dashboard.posts.createTitle": "Yazi olustur",
+  "dashboard.posts.currentRoleLabel": "Mevcut rol",
   "dashboard.posts.editActionLabel": "Yaziyi guncelle",
   "dashboard.posts.editDescription":
     "Mevcut hikayenin govdesini, yayin tarihini ve durumunu guncelle.",
@@ -269,6 +279,8 @@ const tr = {
   "dashboard.posts.inventoryEyebrow": "Yayin hatti",
   "dashboard.posts.publishedLabel": "Yayinda",
   "dashboard.posts.registryTitle": "Yazi kayitlari",
+  "dashboard.posts.restrictedDescription": "Bu flow icin erisim yetkiniz yoktur.",
+  "dashboard.posts.restrictedTitle": "Kisitli akis",
   "dashboard.posts.tableActionsLabel": "Aksiyonlar",
   "dashboard.posts.tableNameLabel": "Yazi adi",
   "dashboard.posts.tableStatusLabel": "Durum",
@@ -284,6 +296,7 @@ const tr = {
   "dashboard.posts.form.coverImageUrl.placeholder":
     "https://cdn.paper-portfolio-ink.dev/posts/edge-cache.webp",
   "dashboard.posts.form.error.deleteMissingPost": "Silinecek yazi bulunamadi.",
+  "dashboard.posts.form.error.forbidden": "Bu flow icin erisim yetkiniz yoktur.",
   "dashboard.posts.form.error.missingAuthor":
     "Aktif kullanici cozulemedi. Tekrar giris yap.",
   "dashboard.posts.form.error.updateMissingPost": "Duzenlenecek yazi kimligi eksik.",
@@ -876,10 +889,18 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.layout.statusDescription": "Session secured / dashboard shell active",
   "dashboard.layout.statusTitle": "System Status: Logged In",
   "dashboard.layout.roleAccessSuffix": "access",
+  "dashboard.authz.actionBlockedTitle": "Action denied",
+  "dashboard.authz.currentRoleLabel": "Session role",
+  "dashboard.authz.forbiddenError":
+    "You do not have permission to perform this action.",
+  "dashboard.authz.restrictedDescription":
+    "You do not have permission to view this area.",
+  "dashboard.authz.restrictedTitle": "Access denied",
   "dashboard.projects.createActionLabel": "Create new project",
   "dashboard.projects.createDescription":
     "Create a new project and add it to the dashboard registry.",
   "dashboard.projects.createTitle": "Create project",
+  "dashboard.projects.currentRoleLabel": "Current role",
   "dashboard.projects.editActionLabel": "Update project",
   "dashboard.projects.editDescription":
     "Update the existing project record and persist changes on the server.",
@@ -889,6 +910,9 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.projects.featuredToggleLabel": "Featured project",
   "dashboard.projects.inventoryEyebrow": "Live inventory",
   "dashboard.projects.registryTitle": "Project registry",
+  "dashboard.projects.restrictedDescription":
+    "You do not have permission to access this flow.",
+  "dashboard.projects.restrictedTitle": "Restricted flow",
   "dashboard.projects.tableActionsLabel": "Actions",
   "dashboard.projects.tableNameLabel": "Project name",
   "dashboard.projects.tableLiveFlag": "Live",
@@ -905,6 +929,8 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.projects.form.description.label": "Description",
   "dashboard.projects.form.error.deleteMissingProject":
     "The project to delete could not be found.",
+  "dashboard.projects.form.error.forbidden":
+    "You do not have permission to access this flow.",
   "dashboard.projects.form.error.updateMissingProject":
     "The project to update could not be found.",
   "dashboard.projects.form.liveUrl.label": "Live URL",
@@ -926,6 +952,7 @@ const en: Record<keyof typeof tr, string> = {
     "Add a new story to the publishing pipeline and manage its state from the dashboard.",
   "dashboard.posts.composeEyebrow": "Draft / Saved locally",
   "dashboard.posts.createTitle": "Create post",
+  "dashboard.posts.currentRoleLabel": "Current role",
   "dashboard.posts.editActionLabel": "Update post",
   "dashboard.posts.editDescription":
     "Update the body, publish date, and status of the existing story.",
@@ -934,6 +961,9 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.posts.inventoryEyebrow": "Publishing pipeline",
   "dashboard.posts.publishedLabel": "Published",
   "dashboard.posts.registryTitle": "Post registry",
+  "dashboard.posts.restrictedDescription":
+    "You do not have permission to access this flow.",
+  "dashboard.posts.restrictedTitle": "Restricted flow",
   "dashboard.posts.tableActionsLabel": "Actions",
   "dashboard.posts.tableNameLabel": "Post name",
   "dashboard.posts.tableStatusLabel": "Status",
@@ -950,6 +980,8 @@ const en: Record<keyof typeof tr, string> = {
     "https://cdn.paper-portfolio-ink.dev/posts/edge-cache.webp",
   "dashboard.posts.form.error.deleteMissingPost":
     "The post to delete could not be found.",
+  "dashboard.posts.form.error.forbidden":
+    "You do not have permission to access this flow.",
   "dashboard.posts.form.error.missingAuthor":
     "Active user could not be resolved. Please sign in again.",
   "dashboard.posts.form.error.updateMissingPost": "The post id to update is missing.",

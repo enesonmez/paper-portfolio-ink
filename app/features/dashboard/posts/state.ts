@@ -43,6 +43,12 @@ export interface DashboardPostsMetrics {
   totalCount: number;
 }
 
+export interface DashboardPostsPermissions {
+  canCreate: boolean;
+  canDelete: boolean;
+  canUpdate: boolean;
+}
+
 export interface DashboardPostsFormState {
   editingPostId: string | null;
   errors?: PostFormState["errors"];
@@ -54,8 +60,10 @@ export interface DashboardPostsFormState {
 }
 
 export interface DashboardPostsLoaderData {
+  access: "denied" | "granted";
   form: DashboardPostsFormState;
   metrics: DashboardPostsMetrics;
+  permissions: DashboardPostsPermissions;
   posts: PostOverview[];
 }
 

@@ -14,13 +14,15 @@ import {
   buildDashboardPostsHref,
   formatDashboardPostTitle,
   getPostStatusTone,
+  type DashboardPostsPermissions,
 } from "../state";
 
 interface DashboardPostsTableProps {
+  permissions: DashboardPostsPermissions;
   posts: PostOverview[];
 }
 
-export function DashboardPostsTable({ posts }: DashboardPostsTableProps) {
+export function DashboardPostsTable({ permissions, posts }: DashboardPostsTableProps) {
   const { copy } = useDashboardPostsCopy();
   const to = useLocalizedPath();
   const t = useT();
@@ -75,44 +77,51 @@ export function DashboardPostsTable({ posts }: DashboardPostsTableProps) {
         />
       ),
     },
-    {
+  ];
+
+  if (permissions.canUpdate || permissions.canDelete) {
+    columns.push({
       cellClassName: "align-top",
       header: copy.tableActionsLabel,
       headerClassName: "text-right",
       id: "actions",
       render: (post) => (
         <div className="flex justify-end gap-2">
-          <Button
-            asChild
-            size="iconSm"
-            className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            aria-label={`${t("aria.projects.edit")} ${formatDashboardPostTitle(post.title)}`}
-          >
-            <Link to={to(buildDashboardPostsHref({ editId: post.id }))}>
-              <Pencil className="size-4" aria-hidden="true" />
-            </Link>
-          </Button>
-          <Form method="post">
-            <input
-              type="hidden"
-              name={POST_FORM_FIELD.intent}
-              value={POST_MUTATION_INTENT.delete}
-            />
-            <input type="hidden" name={POST_FORM_FIELD.postId} value={post.id} />
+          {permissions.canUpdate ? (
             <Button
-              type="submit"
-              variant="destructive"
+              asChild
               size="iconSm"
-              className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              aria-label={`${t("aria.projects.delete")} ${formatDashboardPostTitle(post.title)}`}
+              className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              aria-label={`${t("aria.projects.edit")} ${formatDashboardPostTitle(post.title)}`}
             >
-              <Trash2 className="size-4" aria-hidden="true" />
+              <Link to={to(buildDashboardPostsHref({ editId: post.id }))}>
+                <Pencil className="size-4" aria-hidden="true" />
+              </Link>
             </Button>
-          </Form>
+          ) : null}
+          {permissions.canDelete ? (
+            <Form method="post">
+              <input
+                type="hidden"
+                name={POST_FORM_FIELD.intent}
+                value={POST_MUTATION_INTENT.delete}
+              />
+              <input type="hidden" name={POST_FORM_FIELD.postId} value={post.id} />
+              <Button
+                type="submit"
+                variant="destructive"
+                size="iconSm"
+                className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                aria-label={`${t("aria.projects.delete")} ${formatDashboardPostTitle(post.title)}`}
+              >
+                <Trash2 className="size-4" aria-hidden="true" />
+              </Button>
+            </Form>
+          ) : null}
         </div>
       ),
-    },
-  ];
+    });
+  }
 
   return (
     <DashboardPanel className="overflow-x-auto p-0">

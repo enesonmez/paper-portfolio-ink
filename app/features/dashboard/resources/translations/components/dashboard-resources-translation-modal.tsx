@@ -21,12 +21,14 @@ import { buildDashboardResourcesTranslationsHref } from "../../href";
 import type { DashboardResourcesTranslationFormState } from "../../state";
 
 export function DashboardResourcesTranslationModal({
+  canSubmit,
   form,
   locales,
   selectedTranslationLocale,
   translationPage,
   translationSearchQuery,
 }: {
+  canSubmit: boolean;
   form: DashboardResourcesTranslationFormState;
   locales: LocaleResourceRecord[];
   selectedTranslationLocale: string;
@@ -41,7 +43,7 @@ export function DashboardResourcesTranslationModal({
     translationSearch: translationSearchQuery,
   } as const;
 
-  if (!form.isOpen || !form.mode) {
+  if (!canSubmit || !form.isOpen || !form.mode) {
     return null;
   }
 

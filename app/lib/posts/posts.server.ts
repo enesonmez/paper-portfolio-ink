@@ -9,6 +9,7 @@ import { findNextAvailableSlug, suggestSlugFromTitle } from "~/lib/slug";
 import type { PostSubmission } from "./post-form.server";
 
 export interface PostOverview {
+  authorId: string;
   content: string;
   coverImageUrl: string | null;
   createdAtLabel: string;
@@ -170,6 +171,7 @@ function toPublicPostListItem(post: PublicPostRecord): PublicPostListItem {
 }
 
 function toPostOverview(post: {
+  authorId: string;
   content: string;
   coverImageUrl: string | null;
   createdAt: Date;
@@ -182,6 +184,7 @@ function toPostOverview(post: {
   updatedAt: Date;
 }): PostOverview {
   return {
+    authorId: post.authorId,
     content: post.content,
     coverImageUrl: post.coverImageUrl,
     createdAtLabel: formatDateLabel(post.createdAt) ?? "-",
@@ -198,6 +201,7 @@ function toPostOverview(post: {
 export async function listPosts(db: AppDb): Promise<PostOverview[]> {
   const result = await db
     .select({
+      authorId: posts.authorId,
       content: posts.content,
       coverImageUrl: posts.coverImageUrl,
       createdAt: posts.createdAt,
@@ -210,6 +214,36 @@ export async function listPosts(db: AppDb): Promise<PostOverview[]> {
       updatedAt: posts.updatedAt,
     })
     .from(posts)
+    .orderBy(desc(posts.publishedAt), desc(posts.updatedAt), desc(posts.createdAt));
+
+  return result.map((post) =>
+    toPostOverview({
+      ...post,
+      status: post.status,
+    }),
+  );
+}
+
+export async function listPostsByAuthor(
+  db: AppDb,
+  authorId: string,
+): Promise<PostOverview[]> {
+  const result = await db
+    .select({
+      authorId: posts.authorId,
+      content: posts.content,
+      coverImageUrl: posts.coverImageUrl,
+      createdAt: posts.createdAt,
+      excerpt: posts.excerpt,
+      id: posts.id,
+      publishedAt: posts.publishedAt,
+      slug: posts.slug,
+      status: posts.status,
+      title: posts.title,
+      updatedAt: posts.updatedAt,
+    })
+    .from(posts)
+    .where(eq(posts.authorId, authorId))
     .orderBy(desc(posts.publishedAt), desc(posts.updatedAt), desc(posts.createdAt));
 
   return result.map((post) =>
@@ -415,6 +449,18 @@ export async function createPost(
     status: submission.status,
     title: submission.title,
   });
+}
+
+export async function getPostAuthorId(db: AppDb, postId: string) {
+  const [post] = await db
+    .select({
+      authorId: posts.authorId,
+    })
+    .from(posts)
+    .where(eq(posts.id, postId))
+    .limit(1);
+
+  return post?.authorId ?? null;
 }
 
 export async function updatePost(

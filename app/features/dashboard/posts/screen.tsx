@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { PenSquare } from "lucide-react";
 
+import { DashboardAuthorizationAccessDeniedScreen } from "~/shared/authz/components/dashboard-authorization-access-denied-screen";
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
 import { Button } from "~/components/ui/button";
@@ -12,6 +13,7 @@ import {
   buildDashboardPostsHref,
   type DashboardPostsFormState,
   type DashboardPostsMetrics,
+  type DashboardPostsPermissions,
 } from "./state";
 import { DashboardPostsComposeView } from "./components/dashboard-posts-compose-view";
 import { DashboardPostsTable } from "./components/dashboard-posts-table";
@@ -19,12 +21,14 @@ import { DashboardPostsTable } from "./components/dashboard-posts-table";
 export interface DashboardPostsScreenProps {
   form: DashboardPostsFormState;
   metrics: DashboardPostsMetrics;
+  permissions: DashboardPostsPermissions;
   posts: PostOverview[];
 }
 
 export function DashboardPostsScreen({
   form,
   metrics,
+  permissions,
   posts,
 }: DashboardPostsScreenProps) {
   const t = useT();
@@ -58,20 +62,39 @@ export function DashboardPostsScreen({
           eyebrow={copy.inventoryEyebrow}
           title={copy.registryTitle}
           action={
-            <Button
-              asChild
-              className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            >
-              <Link to={to(buildDashboardPostsHref({ modal: "create" }))}>
-                <PenSquare className="size-4" aria-hidden="true" />
-                {copy.createActionLabel}
-              </Link>
-            </Button>
+            permissions.canCreate ? (
+              <Button
+                asChild
+                className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              >
+                <Link to={to(buildDashboardPostsHref({ modal: "create" }))}>
+                  <PenSquare className="size-4" aria-hidden="true" />
+                  {copy.createActionLabel}
+                </Link>
+              </Button>
+            ) : null
           }
         />
 
-        <DashboardPostsTable posts={posts} />
+        <DashboardPostsTable permissions={permissions} posts={posts} />
       </section>
     </div>
+  );
+}
+
+export function DashboardPostsAccessDeniedScreen({
+  viewerRole,
+}: {
+  viewerRole: string;
+}) {
+  const { copy } = useDashboardPostsCopy();
+
+  return (
+    <DashboardAuthorizationAccessDeniedScreen
+      currentRoleLabel={copy.currentRoleLabel}
+      description={copy.restrictedDescription}
+      title={copy.restrictedTitle}
+      viewerRole={viewerRole}
+    />
   );
 }

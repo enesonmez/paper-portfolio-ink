@@ -182,6 +182,7 @@ export async function updateUser(
     .update(users)
     .set({
       avatarUrl: normalizeNullableString(submission.avatarUrl),
+      authzVersion: sql`${users.authzVersion} + 1`,
       bio: normalizeNullableString(submission.bio),
       displayName: submission.displayName,
       email: submission.email,
@@ -210,6 +211,7 @@ export async function deactivateUser(db: AppDb, userId: string) {
   await db
     .update(users)
     .set({
+      authzVersion: sql`${users.authzVersion} + 1`,
       isActive: false,
       updatedAt: new Date(),
     })

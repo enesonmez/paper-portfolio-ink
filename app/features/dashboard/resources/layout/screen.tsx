@@ -2,11 +2,11 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { Globe, TableProperties } from "lucide-react";
 
+import { DashboardAuthorizationAccessDeniedScreen } from "~/shared/authz/components/dashboard-authorization-access-denied-screen";
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardPanel } from "~/components/dashboard/panel";
-import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
 import { Button } from "~/components/ui/button";
-import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
+import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 
 import { useDashboardResourcesCopy } from "../copy";
 import {
@@ -17,6 +17,7 @@ import {
 } from "../href";
 import type {
   DashboardResourcesMetrics,
+  DashboardResourcesPermissions,
   DashboardResourcesTranslationPagination,
 } from "../state";
 
@@ -25,6 +26,7 @@ interface DashboardResourcesLayoutProps {
   children: ReactNode;
   currentSection: DashboardResourcesSection;
   metrics: DashboardResourcesMetrics;
+  permissions: DashboardResourcesPermissions;
   selectedTranslationLocale: string;
   translationPagination: DashboardResourcesTranslationPagination;
   translationSearchQuery: string;
@@ -35,6 +37,7 @@ export function DashboardResourcesLayout({
   children,
   currentSection,
   metrics,
+  permissions,
   selectedTranslationLocale,
   translationPagination,
   translationSearchQuery,
@@ -75,48 +78,52 @@ export function DashboardResourcesLayout({
         </div>
 
         <div className="grid gap-3 md:grid-cols-2">
-          <Button
-            asChild
-            variant={
-              currentSection === DASHBOARD_RESOURCES_SECTION.locales
-                ? "default"
-                : "secondary"
-            }
-            className="justify-between"
-          >
-            <Link to={to(buildDashboardResourcesLocalesHref())}>
-              <span className="flex items-center gap-2">
-                <Globe className="size-4" aria-hidden="true" />
-                {copy.localeTabLabel}
-              </span>
-              <span>{metrics.totalLocales}</span>
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant={
-              currentSection === DASHBOARD_RESOURCES_SECTION.translations
-                ? "default"
-                : "secondary"
-            }
-            className="justify-between"
-          >
-            <Link
-              to={to(
-                buildDashboardResourcesTranslationsHref({
-                  translationLocale: selectedTranslationLocale,
-                  translationPage: translationPagination.currentPage,
-                  translationSearch: translationSearchQuery,
-                }),
-              )}
+          {permissions.locales.canRead ? (
+            <Button
+              asChild
+              variant={
+                currentSection === DASHBOARD_RESOURCES_SECTION.locales
+                  ? "default"
+                  : "secondary"
+              }
+              className="justify-between"
             >
-              <span className="flex items-center gap-2">
-                <TableProperties className="size-4" aria-hidden="true" />
-                {copy.translationTabLabel}
-              </span>
-              <span>{metrics.selectedLocaleTranslations}</span>
-            </Link>
-          </Button>
+              <Link to={to(buildDashboardResourcesLocalesHref())}>
+                <span className="flex items-center gap-2">
+                  <Globe className="size-4" aria-hidden="true" />
+                  {copy.localeTabLabel}
+                </span>
+                <span>{metrics.totalLocales}</span>
+              </Link>
+            </Button>
+          ) : null}
+          {permissions.translations.canRead ? (
+            <Button
+              asChild
+              variant={
+                currentSection === DASHBOARD_RESOURCES_SECTION.translations
+                  ? "default"
+                  : "secondary"
+              }
+              className="justify-between"
+            >
+              <Link
+                to={to(
+                  buildDashboardResourcesTranslationsHref({
+                    translationLocale: selectedTranslationLocale,
+                    translationPage: translationPagination.currentPage,
+                    translationSearch: translationSearchQuery,
+                  }),
+                )}
+              >
+                <span className="flex items-center gap-2">
+                  <TableProperties className="size-4" aria-hidden="true" />
+                  {copy.translationTabLabel}
+                </span>
+                <span>{metrics.selectedLocaleTranslations}</span>
+              </Link>
+            </Button>
+          ) : null}
         </div>
       </DashboardPanel>
 
@@ -138,21 +145,14 @@ export function DashboardResourcesAccessDeniedScreen({
 }: {
   viewerRole: string;
 }) {
-  const t = useT();
   const { copy } = useDashboardResourcesCopy();
 
   return (
-    <div className="space-y-4">
-      <DashboardSectionHeading
-        eyebrow={t("common.roleGuard")}
-        title={copy.restrictedTitle}
-      />
-      <DashboardPanel className="space-y-3">
-        <p className="font-sans text-sm font-bold">{copy.restrictedDescription}</p>
-        <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.14em] uppercase">
-          {copy.currentRoleLabel}: {viewerRole}
-        </p>
-      </DashboardPanel>
-    </div>
+    <DashboardAuthorizationAccessDeniedScreen
+      currentRoleLabel={copy.currentRoleLabel}
+      description={copy.restrictedDescription}
+      title={copy.restrictedTitle}
+      viewerRole={viewerRole}
+    />
   );
 }

@@ -4,9 +4,19 @@ import { getDbFromContext } from "../../../../db/context";
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
 import { buildLocalizedPath, createTranslator } from "~/shared/i18n/i18n.shared";
 import { purgePublicBlogDataCache } from "~/features/public/blog/server";
-import { buildLoginRedirect } from "~/shared/auth/login.server";
-import { requireSession } from "~/shared/auth/session.server";
-import { isSessionUserAdmin } from "~/shared/auth/session-user";
+import {
+  USER_MUTATION_CLAIMS,
+  resolveMutationClaim,
+} from "~/shared/authz/action-claims";
+import {
+  actorHasClaim,
+  buildForbiddenFormState,
+  denyActionIfMissingClaim,
+  denyLoaderIfMissingClaim,
+  requireDashboardActor,
+} from "~/shared/authz/authz.server";
+import { AUTHORIZATION_CLAIM } from "~/shared/authz/model";
+import { readStringField } from "~/shared/forms/form-data.server";
 import { buildUserFormValues, type UserFormState } from "~/domain/users/form";
 import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/domain/users/model";
 import { hasParsedUserData, parseUserFormData } from "~/lib/users/user-form.server";
@@ -29,12 +39,6 @@ import {
   type DashboardUsersLoaderData,
 } from "./state";
 
-function readStringField(formData: FormData, field: string) {
-  const value = formData.get(field);
-
-  return typeof value === "string" ? value : "";
-}
-
 function buildDuplicateEmailState(values: UserFormState["values"], message: string) {
   return data<UserFormState>(
     {
@@ -44,18 +48,6 @@ function buildDuplicateEmailState(values: UserFormState["values"], message: stri
       values,
     },
     { status: 409 },
-  );
-}
-
-function buildForbiddenState(forbiddenMessage: string) {
-  return data<UserFormState>(
-    {
-      errors: {
-        form: forbiddenMessage,
-      },
-      values: buildUserFormValues(),
-    },
-    { status: 403 },
   );
 }
 
@@ -108,18 +100,18 @@ export async function loadDashboardUsersData(
   context: AppLoadContext,
   request: Request,
 ): Promise<DashboardUsersLoaderData | Response> {
-  const session = await requireSession(request, context, {
-    redirectTo: await buildLoginRedirect(context, request),
-  });
+  const auth = await requireDashboardActor(context, request);
 
-  if (session instanceof Response) {
-    return session;
+  if (auth instanceof Response) {
+    return auth;
   }
 
-  if (!isSessionUserAdmin(session)) {
-    return {
-      access: "denied",
-    };
+  const denied = denyLoaderIfMissingClaim(auth.actor, AUTHORIZATION_CLAIM.usersRead, {
+    access: "denied",
+  } satisfies DashboardUsersLoaderData);
+
+  if (denied) {
+    return denied;
   }
 
   const db = getDbFromContext(context);
@@ -134,6 +126,11 @@ export async function loadDashboardUsersData(
       users,
     }),
     metrics: buildDashboardUsersMetrics(users),
+    permissions: {
+      canCreate: actorHasClaim(auth.actor, AUTHORIZATION_CLAIM.usersCreate),
+      canDelete: actorHasClaim(auth.actor, AUTHORIZATION_CLAIM.usersDelete),
+      canUpdate: actorHasClaim(auth.actor, AUTHORIZATION_CLAIM.usersUpdate),
+    },
     users,
   };
 }
@@ -148,23 +145,32 @@ export async function handleDashboardUsersAction(
   );
   const t = createTranslator(messages);
   const formCopy = buildDashboardUsersFormCopy(t);
-  const session = await requireSession(request, context, {
-    redirectTo: await buildLoginRedirect(context, request),
-  });
+  const auth = await requireDashboardActor(context, request);
   const supportedLocaleCodes = supportedLocales.map((item) => item.code);
 
-  if (session instanceof Response) {
-    return session;
-  }
-
-  if (!isSessionUserAdmin(session)) {
-    return buildForbiddenState(formCopy.errors.forbidden);
+  if (auth instanceof Response) {
+    return auth;
   }
 
   const db = getDbFromContext(context);
   const formData = await request.formData();
   const intent = readStringField(formData, USER_FORM_FIELD.intent);
   const userId = readStringField(formData, USER_FORM_FIELD.userId);
+  const requiredClaim = resolveMutationClaim(
+    intent,
+    USER_MUTATION_CLAIMS,
+    AUTHORIZATION_CLAIM.usersCreate,
+  );
+
+  const forbidden = denyActionIfMissingClaim(
+    auth.actor,
+    requiredClaim,
+    buildForbiddenFormState(formCopy.errors.forbidden, buildUserFormValues()),
+  );
+
+  if (forbidden) {
+    return forbidden;
+  }
 
   if (intent === USER_MUTATION_INTENT.delete) {
     if (!userId) {

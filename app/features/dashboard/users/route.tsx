@@ -22,6 +22,7 @@ export default function DashboardUsersRoute() {
       actionError={!loaderData.form.isOpen ? actionData?.errors?.form : undefined}
       form={mergeDashboardUsersFormState(loaderData.form, actionData)}
       metrics={loaderData.metrics}
+      permissions={loaderData.permissions}
       users={loaderData.users}
     />
   );

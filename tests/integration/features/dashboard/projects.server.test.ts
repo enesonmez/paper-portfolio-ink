@@ -12,6 +12,7 @@ const {
   isProjectSlugTakenMock,
   listProjectsMock,
   parseProjectFormDataMock,
+  requireSessionMock,
   updateProjectMock,
 } = vi.hoisted(() => ({
   cacheDeleteMock: vi.fn(),
@@ -23,6 +24,7 @@ const {
   isProjectSlugTakenMock: vi.fn(),
   listProjectsMock: vi.fn(),
   parseProjectFormDataMock: vi.fn(),
+  requireSessionMock: vi.fn(),
   updateProjectMock: vi.fn(),
 }));
 
@@ -46,6 +48,10 @@ vi.mock("~/lib/projects/project-form.server", async () => {
   };
 });
 
+vi.mock("~/shared/auth/session.server", () => ({
+  requireSession: requireSessionMock,
+}));
+
 describe("dashboard projects server", () => {
   const context = {
     cache: {
@@ -67,6 +73,7 @@ describe("dashboard projects server", () => {
     isProjectSlugTakenMock.mockReset();
     listProjectsMock.mockReset();
     parseProjectFormDataMock.mockReset();
+    requireSessionMock.mockReset();
     updateProjectMock.mockReset();
   });
 
@@ -103,6 +110,12 @@ describe("dashboard projects server", () => {
         title: "Paper Portfolio Ink",
       },
     });
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-admin",
+        role: "admin",
+      },
+    });
     isProjectSlugTakenMock.mockResolvedValue(true);
     findAvailableProjectSlugMock.mockResolvedValue("paper-portfolio-ink-2");
 
@@ -135,6 +148,13 @@ describe("dashboard projects server", () => {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       method: "POST",
+    });
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-admin",
+        role: "admin",
+      },
     });
 
     const response = await handleDashboardProjectsAction(context, request);

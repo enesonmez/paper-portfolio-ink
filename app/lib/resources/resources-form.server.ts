@@ -7,22 +7,11 @@ import {
   type TranslationFormState,
 } from "~/domain/resources/form";
 import { RESOURCE_FORM_FIELD } from "~/domain/resources/contract";
+import { compactFieldErrors, readStringField } from "~/shared/forms/form-data.server";
 import {
   NORMALIZED_LOCALE_CODE_PATTERN,
   type I18nTranslator,
 } from "~/shared/i18n/i18n.shared";
-
-function compactFieldErrors<T extends Record<string, string | undefined>>(errors: T) {
-  return Object.fromEntries(
-    Object.entries(errors).filter(([, value]) => typeof value === "string"),
-  ) as Partial<T>;
-}
-
-function readStringField(formData: FormData, field: string) {
-  const value = formData.get(field);
-
-  return typeof value === "string" ? value : "";
-}
 
 function createLocaleFormSchema(t: I18nTranslator) {
   return z

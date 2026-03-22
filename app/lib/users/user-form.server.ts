@@ -9,6 +9,7 @@ import {
   type UserMutationIntent,
   type UserRole,
 } from "~/domain/users/model";
+import { compactFieldErrors, readStringField } from "~/shared/forms/form-data.server";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createUserFormSchema(t: I18nTranslator) {
@@ -32,18 +33,6 @@ function createUserFormSchema(t: I18nTranslator) {
 }
 
 export type UserSubmission = z.infer<ReturnType<typeof createUserFormSchema>>;
-
-function compactFieldErrors<T extends Record<string, string | undefined>>(errors: T) {
-  return Object.fromEntries(
-    Object.entries(errors).filter(([, value]) => typeof value === "string"),
-  ) as Partial<T>;
-}
-
-function readStringField(formData: FormData, field: string) {
-  const value = formData.get(field);
-
-  return typeof value === "string" ? value : "";
-}
 
 function buildPasswordError(
   intent: UserMutationIntent,

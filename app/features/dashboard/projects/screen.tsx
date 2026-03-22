@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { Plus } from "lucide-react";
 
+import { DashboardAuthorizationAccessDeniedScreen } from "~/shared/authz/components/dashboard-authorization-access-denied-screen";
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
 import { Button } from "~/components/ui/button";
@@ -12,6 +13,7 @@ import {
   buildDashboardProjectsHref,
   type DashboardProjectsFormState,
   type DashboardProjectsMetrics,
+  type DashboardProjectsPermissions,
 } from "./state";
 import { DashboardProjectsModalView } from "./components/dashboard-projects-modal";
 import { DashboardProjectsTable } from "./components/dashboard-projects-table";
@@ -19,12 +21,14 @@ import { DashboardProjectsTable } from "./components/dashboard-projects-table";
 export interface DashboardProjectsScreenProps {
   form: DashboardProjectsFormState;
   metrics: DashboardProjectsMetrics;
+  permissions: DashboardProjectsPermissions;
   projects: ProjectOverview[];
 }
 
 export function DashboardProjectsScreen({
   form,
   metrics,
+  permissions,
   projects,
 }: DashboardProjectsScreenProps) {
   const t = useT();
@@ -54,22 +58,41 @@ export function DashboardProjectsScreen({
           eyebrow={copy.inventoryEyebrow}
           title={copy.registryTitle}
           action={
-            <Button
-              asChild
-              className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            >
-              <Link to={to(buildDashboardProjectsHref({ modal: "create" }))}>
-                <Plus className="size-4" aria-hidden="true" />
-                {copy.createActionLabel}
-              </Link>
-            </Button>
+            permissions.canCreate ? (
+              <Button
+                asChild
+                className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              >
+                <Link to={to(buildDashboardProjectsHref({ modal: "create" }))}>
+                  <Plus className="size-4" aria-hidden="true" />
+                  {copy.createActionLabel}
+                </Link>
+              </Button>
+            ) : null
           }
         />
 
-        <DashboardProjectsTable projects={projects} />
+        <DashboardProjectsTable permissions={permissions} projects={projects} />
       </section>
 
       <DashboardProjectsModalView form={form} />
     </div>
+  );
+}
+
+export function DashboardProjectsAccessDeniedScreen({
+  viewerRole,
+}: {
+  viewerRole: string;
+}) {
+  const { copy } = useDashboardProjectsCopy();
+
+  return (
+    <DashboardAuthorizationAccessDeniedScreen
+      currentRoleLabel={copy.currentRoleLabel}
+      description={copy.restrictedDescription}
+      title={copy.restrictedTitle}
+      viewerRole={viewerRole}
+    />
   );
 }

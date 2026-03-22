@@ -18,12 +18,17 @@ import {
 } from "../../href";
 
 export function DashboardResourcesLocalesTable({
+  canDelete,
+  canUpdate,
   locales,
 }: {
+  canDelete: boolean;
+  canUpdate: boolean;
   locales: LocaleResourceRecord[];
 }) {
   const to = useLocalizedPath();
   const t = useT();
+  const canManageLocaleRows = canUpdate || canDelete;
   const columns: DataTableColumn<LocaleResourceRecord>[] = [
     {
       cellClassName: "align-top",
@@ -71,55 +76,62 @@ export function DashboardResourcesLocalesTable({
         </div>
       ),
     },
-    {
+  ];
+
+  if (canManageLocaleRows) {
+    columns.push({
       cellClassName: "align-top",
       header: t("dashboard.resources.tableActionsLabel"),
       headerClassName: "text-right",
       id: "actions",
       render: (localeRow) => (
         <div className="flex justify-end gap-2">
-          <Button
-            asChild
-            size="iconSm"
-            className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            aria-label={`${t("common.edit")} ${localeRow.code}`}
-          >
-            <Link
-              to={to(
-                buildDashboardResourcesLocalesHref({
-                  editLocaleCode: localeRow.code,
-                  modal: DASHBOARD_RESOURCES_MODAL.editLocale,
-                }),
-              )}
-            >
-              <Pencil className="size-4" aria-hidden="true" />
-            </Link>
-          </Button>
-          <Form method="post">
-            <input
-              type="hidden"
-              name={RESOURCE_FORM_FIELD.intent}
-              value={RESOURCE_MUTATION_INTENT.deleteLocale}
-            />
-            <input
-              type="hidden"
-              name={RESOURCE_FORM_FIELD.originalCode}
-              value={localeRow.code}
-            />
+          {canUpdate ? (
             <Button
-              type="submit"
-              variant="destructive"
+              asChild
               size="iconSm"
-              className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              aria-label={`${t("common.delete")} ${localeRow.code}`}
+              className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              aria-label={`${t("common.edit")} ${localeRow.code}`}
             >
-              <Trash2 className="size-4" aria-hidden="true" />
+              <Link
+                to={to(
+                  buildDashboardResourcesLocalesHref({
+                    editLocaleCode: localeRow.code,
+                    modal: DASHBOARD_RESOURCES_MODAL.editLocale,
+                  }),
+                )}
+              >
+                <Pencil className="size-4" aria-hidden="true" />
+              </Link>
             </Button>
-          </Form>
+          ) : null}
+          {canDelete ? (
+            <Form method="post">
+              <input
+                type="hidden"
+                name={RESOURCE_FORM_FIELD.intent}
+                value={RESOURCE_MUTATION_INTENT.deleteLocale}
+              />
+              <input
+                type="hidden"
+                name={RESOURCE_FORM_FIELD.originalCode}
+                value={localeRow.code}
+              />
+              <Button
+                type="submit"
+                variant="destructive"
+                size="iconSm"
+                className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                aria-label={`${t("common.delete")} ${localeRow.code}`}
+              >
+                <Trash2 className="size-4" aria-hidden="true" />
+              </Button>
+            </Form>
+          ) : null}
         </div>
       ),
-    },
-  ];
+    });
+  }
 
   return (
     <DashboardPanel className="overflow-x-auto p-0">

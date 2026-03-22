@@ -9,6 +9,7 @@ import {
 } from "~/domain/skills/icons";
 import { SKILL_FORM_FIELD } from "~/domain/skills/model";
 import { suggestSlugFromTitle } from "~/lib/slug";
+import { compactFieldErrors, readStringField } from "~/shared/forms/form-data.server";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createSkillFormSchema(t: I18nTranslator) {
@@ -46,18 +47,6 @@ function createSkillFormSchema(t: I18nTranslator) {
 }
 
 export type SkillSubmission = z.infer<ReturnType<typeof createSkillFormSchema>>;
-
-function compactFieldErrors<T extends Record<string, string | undefined>>(errors: T) {
-  return Object.fromEntries(
-    Object.entries(errors).filter(([, value]) => typeof value === "string"),
-  ) as Partial<T>;
-}
-
-function readStringField(formData: FormData, field: string) {
-  const value = formData.get(field);
-
-  return typeof value === "string" ? value : "";
-}
 
 export function parseSkillFormData(
   formData: FormData,

@@ -10,13 +10,18 @@ import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/domain/users/model";
 import type { UserOverview } from "~/lib/users/users.server";
 
 import { useDashboardUsersCopy } from "../copy";
-import { buildDashboardUsersHref, formatDashboardUserRole } from "../state";
+import {
+  buildDashboardUsersHref,
+  formatDashboardUserRole,
+  type DashboardUsersPermissions,
+} from "../state";
 
 interface DashboardUsersTableProps {
+  permissions: DashboardUsersPermissions;
   users: UserOverview[];
 }
 
-export function DashboardUsersTable({ users }: DashboardUsersTableProps) {
+export function DashboardUsersTable({ permissions, users }: DashboardUsersTableProps) {
   const to = useLocalizedPath();
   const t = useT();
   const { copy } = useDashboardUsersCopy();
@@ -71,44 +76,51 @@ export function DashboardUsersTable({ users }: DashboardUsersTableProps) {
         </div>
       ),
     },
-    {
+  ];
+
+  if (permissions.canUpdate || permissions.canDelete) {
+    columns.push({
       cellClassName: "align-top",
       header: copy.tableActionsLabel,
       headerClassName: "text-right",
       id: "actions",
       render: (user) => (
         <div className="flex justify-end gap-2">
-          <Button
-            asChild
-            size="iconSm"
-            className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            aria-label={`${t("common.edit")} ${user.email}`}
-          >
-            <Link to={to(buildDashboardUsersHref({ editId: user.id }))}>
-              <Pencil className="size-4" aria-hidden="true" />
-            </Link>
-          </Button>
-          <Form method="post">
-            <input
-              type="hidden"
-              name={USER_FORM_FIELD.intent}
-              value={USER_MUTATION_INTENT.delete}
-            />
-            <input type="hidden" name={USER_FORM_FIELD.userId} value={user.id} />
+          {permissions.canUpdate ? (
             <Button
-              type="submit"
-              variant="destructive"
+              asChild
               size="iconSm"
-              className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-              aria-label={`${t("common.deactivate")} ${user.email}`}
+              className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              aria-label={`${t("common.edit")} ${user.email}`}
             >
-              <Trash2 className="size-4" aria-hidden="true" />
+              <Link to={to(buildDashboardUsersHref({ editId: user.id }))}>
+                <Pencil className="size-4" aria-hidden="true" />
+              </Link>
             </Button>
-          </Form>
+          ) : null}
+          {permissions.canDelete ? (
+            <Form method="post">
+              <input
+                type="hidden"
+                name={USER_FORM_FIELD.intent}
+                value={USER_MUTATION_INTENT.delete}
+              />
+              <input type="hidden" name={USER_FORM_FIELD.userId} value={user.id} />
+              <Button
+                type="submit"
+                variant="destructive"
+                size="iconSm"
+                className="cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+                aria-label={`${t("common.deactivate")} ${user.email}`}
+              >
+                <Trash2 className="size-4" aria-hidden="true" />
+              </Button>
+            </Form>
+          ) : null}
         </div>
       ),
-    },
-  ];
+    });
+  }
 
   return (
     <DashboardPanel className="overflow-x-auto p-0">

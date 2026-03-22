@@ -40,6 +40,7 @@ export default function DashboardResourcesRoute() {
     ),
     locales: loaderData.locales,
     metrics: loaderData.metrics,
+    permissions: loaderData.permissions,
     selectedTranslationLocale: loaderData.selectedTranslationLocale,
     translationPagination: loaderData.translationPagination,
     translationSearchQuery: loaderData.translationSearchQuery,
@@ -55,6 +56,7 @@ export default function DashboardResourcesRoute() {
       actionError={actionData?.actionError}
       currentSection={resolveDashboardResourcesSection(location.pathname)}
       metrics={loaderData.metrics}
+      permissions={loaderData.permissions}
       selectedTranslationLocale={loaderData.selectedTranslationLocale}
       translationPagination={loaderData.translationPagination}
       translationSearchQuery={loaderData.translationSearchQuery}

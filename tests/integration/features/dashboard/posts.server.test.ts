@@ -90,10 +90,12 @@ describe("dashboard posts server", () => {
     requireSessionMock.mockResolvedValue({
       user: {
         id: "user-1",
+        role: "admin",
       },
     });
     listPostsMock.mockResolvedValue([
       {
+        authorId: "user-1",
         content: "# Edge telemetry",
         coverImageUrl: null,
         createdAtLabel: "2026-03-14",
@@ -106,6 +108,7 @@ describe("dashboard posts server", () => {
         updatedAtLabel: "2026-03-14",
       },
       {
+        authorId: "user-2",
         content: "# Durable objects",
         coverImageUrl: null,
         createdAtLabel: "2026-03-15",
@@ -125,6 +128,7 @@ describe("dashboard posts server", () => {
     );
 
     expect(response).toMatchObject({
+      access: "granted",
       form: {
         isOpen: false,
         mode: null,
@@ -166,6 +170,7 @@ describe("dashboard posts server", () => {
     requireSessionMock.mockResolvedValue({
       user: {
         id: "user-1",
+        role: "admin",
       },
     });
     parsePostFormDataMock.mockReturnValue({
@@ -223,6 +228,7 @@ describe("dashboard posts server", () => {
     requireSessionMock.mockResolvedValue({
       user: {
         id: "user-1",
+        role: "admin",
       },
     });
     parsePostFormDataMock.mockReturnValue({
@@ -276,6 +282,7 @@ describe("dashboard posts server", () => {
     requireSessionMock.mockResolvedValue({
       user: {
         id: "user-1",
+        role: "admin",
       },
     });
     parsePostFormDataMock.mockReturnValue({

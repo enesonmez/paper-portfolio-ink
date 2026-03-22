@@ -1,7 +1,6 @@
 import type { AppLoadContext } from "react-router";
 
-import { buildLoginRedirect } from "~/shared/auth/login.server";
-import { requireSession } from "~/shared/auth/session.server";
+import { requireDashboardActor } from "~/shared/authz/authz.server";
 
 import { buildDashboardIdentity, type DashboardIdentity } from "./identity";
 
@@ -13,15 +12,16 @@ export async function loadDashboardLayoutData(
   request: Request,
   context: AppLoadContext,
 ): Promise<DashboardLayoutLoaderData | Response> {
-  const session = await requireSession(request, context, {
-    redirectTo: await buildLoginRedirect(context, request),
-  });
+  const auth = await requireDashboardActor(context, request);
 
-  if (session instanceof Response) {
-    return session;
+  if (auth instanceof Response) {
+    return auth;
   }
 
   return {
-    user: buildDashboardIdentity(session.user as Record<string, unknown>),
+    user: buildDashboardIdentity({
+      ...auth.sessionUser,
+      claims: auth.actor.claims,
+    }),
   };
 }

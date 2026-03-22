@@ -15,14 +15,16 @@ import { buildDashboardResourcesLocalesHref } from "../../href";
 import type { DashboardResourcesLocaleFormState } from "../../state";
 
 export function DashboardResourcesLocaleModal({
+  canSubmit,
   form,
 }: {
+  canSubmit: boolean;
   form: DashboardResourcesLocaleFormState;
 }) {
   const to = useLocalizedPath();
   const { copy, formCopy } = useDashboardResourcesCopy();
 
-  if (!form.isOpen || !form.mode) {
+  if (!canSubmit || !form.isOpen || !form.mode) {
     return null;
   }
 

@@ -18,6 +18,11 @@ const baseScreenProps = {
   metrics: {
     totalCount: 2,
   },
+  permissions: {
+    canCreate: true,
+    canDelete: true,
+    canUpdate: true,
+  },
   skills: [
     {
       createdAtLabel: "2026-03-21",
@@ -62,6 +67,43 @@ describe("dashboard skills route", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Database")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
+  }, 20000);
+
+  it("hides skill mutation controls when write permissions are missing", async () => {
+    const { DashboardSkillsScreen } = await import("~/routes/dashboard/skills");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/skills",
+          element: (
+            <DashboardSkillsScreen
+              {...baseScreenProps}
+              permissions={{
+                canCreate: false,
+                canDelete: false,
+                canUpdate: false,
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/skills"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen.queryByRole("link", { name: "Create skill" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /edit cloudflare_d1/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /delete cloudflare_d1/i }),
+    ).not.toBeInTheDocument();
   }, 20000);
 
   it("renders the create modal when requested", async () => {
@@ -156,8 +198,8 @@ describe("dashboard skills route", () => {
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Restricted flow" }),
+      screen.getByRole("heading", { level: 1, name: "Access denied" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Current role: author")).toBeInTheDocument();
+    expect(screen.getByText("Session role: author")).toBeInTheDocument();
   }, 20000);
 });

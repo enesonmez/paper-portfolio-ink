@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { DashboardHeader } from "~/features/dashboard/layout/components/dashboard-header";
 import { DashboardSidebar } from "~/features/dashboard/layout/components/dashboard-sidebar";
+import { DEFAULT_ROLE_CLAIMS, type AuthorizationClaim } from "~/shared/authz/model";
 
 function DashboardLayoutHarness({
   child,
@@ -12,6 +13,7 @@ function DashboardLayoutHarness({
 }: {
   child: string;
   user: {
+    claims: readonly AuthorizationClaim[];
     displayName: string;
     email: string;
     id: string;
@@ -54,6 +56,7 @@ describe("dashboard layout", () => {
                 email: "admin@paper-portfolio-ink.local",
                 id: "user-admin",
                 initials: "EA",
+                claims: DEFAULT_ROLE_CLAIMS.admin,
                 role: "admin",
               }}
             />
@@ -105,6 +108,7 @@ describe("dashboard layout", () => {
                 email: "author@paper-portfolio-ink.local",
                 id: "user-author",
                 initials: "AA",
+                claims: DEFAULT_ROLE_CLAIMS.author,
                 role: "author",
               }}
             />

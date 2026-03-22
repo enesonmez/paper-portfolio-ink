@@ -10,6 +10,8 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 export type UserRole = "admin" | "author";
+export type AuthorizationClaimScope = "any" | "global" | "own";
+export type AuthorizationEffect = "grant" | "revoke";
 type PublishingStatus = "draft" | "published" | "archived";
 
 function createIdColumn() {
@@ -40,6 +42,7 @@ export const users = sqliteTable(
     displayName: text("display_name").notNull(),
     isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
     role: text("role").$type<UserRole>().notNull().default("admin"),
+    authzVersion: integer("authz_version").notNull().default(1),
     avatarUrl: text("avatar_url"),
     bio: text("bio"),
     ...createTimestampColumns(),
@@ -180,6 +183,70 @@ export const verifications = sqliteTable(
   ],
 );
 
+export const authorizationClaims = sqliteTable(
+  "authorization_claims",
+  {
+    key: text("key").primaryKey(),
+    resource: text("resource").notNull(),
+    action: text("action").notNull(),
+    scope: text("scope").$type<AuthorizationClaimScope>(),
+    description: text("description"),
+    ...createTimestampColumns(),
+  },
+  (table) => [
+    index("authorization_claims_resource_action_idx").on(table.resource, table.action),
+  ],
+);
+
+export const authorizationRoleClaims = sqliteTable(
+  "authorization_role_claims",
+  {
+    role: text("role").$type<UserRole>().notNull(),
+    claimKey: text("claim_key")
+      .notNull()
+      .references(() => authorizationClaims.key, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    ...createTimestampColumns(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.role, table.claimKey],
+      name: "authorization_role_claims_role_claim_key_pk",
+    }),
+    index("authorization_role_claims_claim_key_idx").on(table.claimKey),
+  ],
+);
+
+export const authorizationUserClaimOverrides = sqliteTable(
+  "authorization_user_claim_overrides",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    claimKey: text("claim_key")
+      .notNull()
+      .references(() => authorizationClaims.key, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      }),
+    effect: text("effect").$type<AuthorizationEffect>().notNull(),
+    ...createTimestampColumns(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.userId, table.claimKey],
+      name: "authorization_user_claim_overrides_user_claim_key_pk",
+    }),
+    index("authorization_user_claim_overrides_claim_key_idx").on(table.claimKey),
+    check(
+      "authorization_user_claim_overrides_effect_check",
+      sql`${table.effect} in ('grant', 'revoke')`,
+    ),
+  ],
+);
+
 export const locales = sqliteTable(
   "locales",
   {
@@ -233,6 +300,9 @@ export const schema = {
   sessions,
   accounts,
   verifications,
+  authorizationClaims,
+  authorizationRoleClaims,
+  authorizationUserClaimOverrides,
   locales,
   translations,
 };

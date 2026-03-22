@@ -32,7 +32,7 @@ test("renders the dashboard shell and seeded content registries for an authentic
 
   await page.getByRole("link", { name: /Kullanicilar/i }).click();
   await expect(page).toHaveURL(new RegExp(`${E2E_LOCALE_PREFIX}/dashboard/users$`));
-  await expect(page.getByText(E2E_ADMIN_EMAIL)).toBeVisible();
+  await expect(page.getByText(E2E_ADMIN_EMAIL, { exact: true })).toBeVisible();
 });
 
 test("filters seeded translation resources inside the admin settings area", async ({

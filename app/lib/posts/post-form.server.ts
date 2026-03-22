@@ -11,6 +11,7 @@ import {
   POST_STATUS_VALUES,
   type PostStatus,
 } from "~/domain/posts/model";
+import { compactFieldErrors, readStringField } from "~/shared/forms/form-data.server";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createPostFormSchema(t: I18nTranslator) {
@@ -51,18 +52,6 @@ function createPostFormSchema(t: I18nTranslator) {
 }
 
 export type PostSubmission = z.infer<ReturnType<typeof createPostFormSchema>>;
-
-function compactFieldErrors<T extends Record<string, string | undefined>>(errors: T) {
-  return Object.fromEntries(
-    Object.entries(errors).filter(([, value]) => typeof value === "string"),
-  ) as Partial<T>;
-}
-
-function readStringField(formData: FormData, field: string) {
-  const value = formData.get(field);
-
-  return typeof value === "string" ? value : "";
-}
 
 export function parsePostFormData(
   formData: FormData,

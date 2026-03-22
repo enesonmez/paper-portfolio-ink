@@ -41,6 +41,20 @@ const baseRouteContext = {
     totalLocales: 1,
     totalTranslations: 4,
   },
+  permissions: {
+    locales: {
+      canCreate: true,
+      canDelete: true,
+      canRead: true,
+      canUpdate: true,
+    },
+    translations: {
+      canCreate: true,
+      canDelete: true,
+      canRead: true,
+      canUpdate: true,
+    },
+  },
   selectedTranslationLocale: "tr",
   translationPagination: {
     currentPage: 1,
@@ -82,6 +96,7 @@ describe("dashboard resources route", () => {
             <DashboardResourcesLayout
               currentSection="locales"
               metrics={baseRouteContext.metrics}
+              permissions={baseRouteContext.permissions}
               selectedTranslationLocale={baseRouteContext.selectedTranslationLocale}
               translationPagination={baseRouteContext.translationPagination}
               translationSearchQuery={baseRouteContext.translationSearchQuery}
@@ -122,6 +137,7 @@ describe("dashboard resources route", () => {
             <DashboardResourcesLayout
               currentSection="translations"
               metrics={baseRouteContext.metrics}
+              permissions={baseRouteContext.permissions}
               selectedTranslationLocale={baseRouteContext.selectedTranslationLocale}
               translationPagination={{
                 currentPage: 2,
@@ -191,8 +207,8 @@ describe("dashboard resources route", () => {
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Restricted flow" }),
+      screen.getByRole("heading", { level: 1, name: "Access denied" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Current role: author")).toBeInTheDocument();
+    expect(screen.getByText("Session role: author")).toBeInTheDocument();
   });
 });

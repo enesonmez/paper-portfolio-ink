@@ -7,11 +7,13 @@ describe("dashboard layout shared helpers", () => {
 
     expect(
       buildDashboardIdentity({
+        claims: ["dashboard.access", "posts.create"],
         displayName: "  Enes Oz  ",
         email: "  admin@paper-portfolio-ink.dev ",
         role: "  admin ",
       }),
     ).toEqual({
+      claims: ["dashboard.access", "posts.create"],
       displayName: "Enes Oz",
       email: "admin@paper-portfolio-ink.dev",
       id: null,
@@ -25,6 +27,7 @@ describe("dashboard layout shared helpers", () => {
       await import("~/features/dashboard/layout/identity");
 
     expect(buildDashboardIdentity({})).toEqual({
+      claims: [],
       displayName: "Paper Ink",
       email: "-",
       id: null,

@@ -27,6 +27,7 @@ describe("dashboard posts state helpers", () => {
   it("derives metrics and edit form state from post rows", () => {
     const posts = [
       {
+        authorId: "user-1",
         content: "# Edge note",
         coverImageUrl: null,
         createdAtLabel: "2026-03-20",
@@ -39,6 +40,7 @@ describe("dashboard posts state helpers", () => {
         updatedAtLabel: "2026-03-20",
       },
       {
+        authorId: "user-1",
         content: "# Cache window",
         coverImageUrl: null,
         createdAtLabel: "2026-03-21",

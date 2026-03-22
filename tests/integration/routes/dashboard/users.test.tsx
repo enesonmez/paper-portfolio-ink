@@ -23,6 +23,11 @@ const baseScreenProps = {
     authorCount: 2,
     totalCount: 3,
   },
+  permissions: {
+    canCreate: true,
+    canDelete: true,
+    canUpdate: true,
+  },
   users: [
     {
       avatarUrl: null,
@@ -67,6 +72,43 @@ describe("dashboard users route", () => {
     ).not.toBeInTheDocument();
   }, 20000);
 
+  it("hides user mutation controls when write permissions are missing", async () => {
+    const { DashboardUsersScreen } = await import("~/routes/dashboard/users");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/users",
+          element: (
+            <DashboardUsersScreen
+              {...baseScreenProps}
+              permissions={{
+                canCreate: false,
+                canDelete: false,
+                canUpdate: false,
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/users"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen.queryByRole("link", { name: "Create new user" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /edit admin@example.com/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /deactivate admin@example.com/i }),
+    ).not.toBeInTheDocument();
+  }, 20000);
+
   it("renders a modal form when user creation is requested", async () => {
     const { DashboardUsersScreen } = await import("~/routes/dashboard/users");
 
@@ -105,12 +147,12 @@ describe("dashboard users route", () => {
     render(<DashboardUsersAccessDeniedScreen viewerRole="author" />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Restricted flow" }),
+      screen.getByRole("heading", { level: 1, name: "Access denied" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("You do not have permission to access this flow."),
+      screen.getByText("You do not have permission to view this area."),
     ).toBeInTheDocument();
-    expect(screen.getByText("Current role: author")).toBeInTheDocument();
+    expect(screen.getByText("Session role: author")).toBeInTheDocument();
   }, 20000);
 
   it("renders a popup when a destructive user action returns a form-level error", async () => {
@@ -135,7 +177,7 @@ describe("dashboard users route", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByRole("dialog", { name: "Action blocked" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Action denied" })).toBeInTheDocument();
     expect(
       screen.getByRole("alert", {
         name: "",

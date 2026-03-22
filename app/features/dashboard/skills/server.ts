@@ -4,9 +4,19 @@ import { getDbFromContext } from "../../../../db/context";
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
 import { buildLocalizedPath, createTranslator } from "~/shared/i18n/i18n.shared";
 import { purgePublicHomeDataCache } from "~/features/public/home/server";
-import { buildLoginRedirect } from "~/shared/auth/login.server";
-import { requireSession } from "~/shared/auth/session.server";
-import { isSessionUserAdmin } from "~/shared/auth/session-user";
+import {
+  SKILL_MUTATION_CLAIMS,
+  resolveMutationClaim,
+} from "~/shared/authz/action-claims";
+import {
+  actorHasClaim,
+  buildForbiddenFormState,
+  denyActionIfMissingClaim,
+  denyLoaderIfMissingClaim,
+  requireDashboardActor,
+} from "~/shared/authz/authz.server";
+import { AUTHORIZATION_CLAIM } from "~/shared/authz/model";
+import { readStringField } from "~/shared/forms/form-data.server";
 import { buildSkillFormValues, type SkillFormState } from "~/domain/skills/form";
 import { SKILL_FORM_FIELD, SKILL_MUTATION_INTENT } from "~/domain/skills/model";
 import { hasParsedSkillData, parseSkillFormData } from "~/lib/skills/skill-form.server";
@@ -42,12 +52,6 @@ interface RunSkillMutationArgs {
   excludedSkillId?: string;
   mutate: () => Promise<void>;
   values: SkillActionValues;
-}
-
-function readStringField(formData: FormData, field: string) {
-  const value = formData.get(field);
-
-  return typeof value === "string" ? value : "";
 }
 
 function buildSkillFormStateResponse({
@@ -107,31 +111,22 @@ async function runSkillMutation({
   return null;
 }
 
-function buildForbiddenState(message: string) {
-  return buildSkillFormStateResponse({
-    errors: {
-      form: message,
-    },
-    status: 403,
-  });
-}
-
 export async function loadDashboardSkillsData(
   context: AppLoadContext,
   request: Request,
 ): Promise<DashboardSkillsLoaderData | Response> {
-  const session = await requireSession(request, context, {
-    redirectTo: await buildLoginRedirect(context, request),
-  });
+  const auth = await requireDashboardActor(context, request);
 
-  if (session instanceof Response) {
-    return session;
+  if (auth instanceof Response) {
+    return auth;
   }
 
-  if (!isSessionUserAdmin(session)) {
-    return {
-      access: "denied",
-    };
+  const denied = denyLoaderIfMissingClaim(auth.actor, AUTHORIZATION_CLAIM.skillsRead, {
+    access: "denied",
+  } satisfies DashboardSkillsLoaderData);
+
+  if (denied) {
+    return denied;
   }
 
   const db = getDbFromContext(context);
@@ -146,6 +141,11 @@ export async function loadDashboardSkillsData(
       skills: skillRows,
     }),
     metrics: buildDashboardSkillsMetrics(skillRows),
+    permissions: {
+      canCreate: actorHasClaim(auth.actor, AUTHORIZATION_CLAIM.skillsCreate),
+      canDelete: actorHasClaim(auth.actor, AUTHORIZATION_CLAIM.skillsDelete),
+      canUpdate: actorHasClaim(auth.actor, AUTHORIZATION_CLAIM.skillsUpdate),
+    },
     skills: skillRows,
   };
 }
@@ -160,23 +160,32 @@ export async function handleDashboardSkillsAction(
   );
   const t = createTranslator(messages);
   const formCopy = buildDashboardSkillsFormCopy(t);
-  const session = await requireSession(request, context, {
-    redirectTo: await buildLoginRedirect(context, request),
-  });
+  const auth = await requireDashboardActor(context, request);
   const supportedLocaleCodes = supportedLocales.map((item) => item.code);
 
-  if (session instanceof Response) {
-    return session;
-  }
-
-  if (!isSessionUserAdmin(session)) {
-    return buildForbiddenState(formCopy.errors.forbidden);
+  if (auth instanceof Response) {
+    return auth;
   }
 
   const db = getDbFromContext(context);
   const formData = await request.formData();
   const intent = readStringField(formData, SKILL_FORM_FIELD.intent);
   const skillId = readStringField(formData, SKILL_FORM_FIELD.skillId);
+  const requiredClaim = resolveMutationClaim(
+    intent,
+    SKILL_MUTATION_CLAIMS,
+    AUTHORIZATION_CLAIM.skillsCreate,
+  );
+
+  const forbidden = denyActionIfMissingClaim(
+    auth.actor,
+    requiredClaim,
+    buildForbiddenFormState(formCopy.errors.forbidden, buildSkillFormValues()),
+  );
+
+  if (forbidden) {
+    return forbidden;
+  }
 
   if (intent === SKILL_MUTATION_INTENT.delete) {
     if (!skillId) {

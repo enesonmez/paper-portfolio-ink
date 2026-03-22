@@ -1,21 +1,24 @@
+import { buildDashboardAuthorizationCopy } from "~/shared/authz/copy";
 import { useT } from "~/shared/i18n/i18n-react";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 export function buildDashboardSkillsCopy(t: I18nTranslator) {
+  const authzCopy = buildDashboardAuthorizationCopy(t);
+
   return {
-    actionBlockedTitle: t("dashboard.skills.actionBlockedTitle"),
+    actionBlockedTitle: authzCopy.actionBlockedTitle,
     createActionLabel: t("dashboard.skills.createActionLabel"),
     createDescription: t("dashboard.skills.createDescription"),
     createTitle: t("dashboard.skills.createTitle"),
-    currentRoleLabel: t("dashboard.skills.currentRoleLabel"),
+    currentRoleLabel: authzCopy.currentRoleLabel,
     editActionLabel: t("dashboard.skills.editActionLabel"),
     editDescription: t("dashboard.skills.editDescription"),
     editTitle: t("dashboard.skills.editTitle"),
     emptyState: t("dashboard.skills.emptyState"),
     inventoryEyebrow: t("dashboard.skills.inventoryEyebrow"),
     registryTitle: t("dashboard.skills.registryTitle"),
-    restrictedDescription: t("dashboard.skills.restrictedDescription"),
-    restrictedTitle: t("dashboard.skills.restrictedTitle"),
+    restrictedDescription: authzCopy.restrictedDescription,
+    restrictedTitle: authzCopy.restrictedTitle,
     tableActionsLabel: t("dashboard.skills.tableActionsLabel"),
     tableCreatedLabel: t("dashboard.skills.tableCreatedLabel"),
     tableIconLabel: t("dashboard.skills.tableIconLabel"),
@@ -27,12 +30,14 @@ export function buildDashboardSkillsCopy(t: I18nTranslator) {
 }
 
 export function buildDashboardSkillsFormCopy(t: I18nTranslator) {
+  const authzCopy = buildDashboardAuthorizationCopy(t);
+
   return {
     cancelLabel: t("dashboard.skills.form.cancelLabel"),
     errors: {
       createDuplicateSkill: t("dashboard.skills.form.error.createDuplicateSkill"),
       deleteMissingSkill: t("dashboard.skills.form.error.deleteMissingSkill"),
-      forbidden: t("dashboard.skills.form.error.forbidden"),
+      forbidden: authzCopy.forbiddenError,
       updateDuplicateSkill: t("dashboard.skills.form.error.updateDuplicateSkill"),
       updateMissingSkill: t("dashboard.skills.form.error.updateMissingSkill"),
     },

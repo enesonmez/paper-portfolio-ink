@@ -1,6 +1,7 @@
 import type { Route } from "./+types/projects";
 
 import DashboardProjectsRoute, {
+  DashboardProjectsAccessDeniedScreen,
   DashboardProjectsScreen,
 } from "~/features/dashboard/projects/route";
 import {
@@ -16,6 +17,6 @@ export async function action({ context, request }: Route.ActionArgs) {
   return handleDashboardProjectsAction(context, request);
 }
 
-export { DashboardProjectsScreen };
+export { DashboardProjectsAccessDeniedScreen, DashboardProjectsScreen };
 
 export default DashboardProjectsRoute;

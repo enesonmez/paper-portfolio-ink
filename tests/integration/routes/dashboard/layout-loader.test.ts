@@ -1,31 +1,31 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { requireSessionMock } = vi.hoisted(() => {
+const { requireDashboardActorMock } = vi.hoisted(() => {
   return {
-    requireSessionMock: vi.fn(),
+    requireDashboardActorMock: vi.fn(),
   };
 });
 
-vi.mock("~/shared/auth/session.server", () => {
+vi.mock("~/shared/authz/authz.server", () => {
   return {
-    requireSession: requireSessionMock,
+    requireDashboardActor: requireDashboardActorMock,
   };
 });
 
 describe("dashboard route guard", () => {
   beforeEach(() => {
-    requireSessionMock.mockReset();
+    requireDashboardActorMock.mockReset();
   });
 
   it("enforces a server-side session check in the dashboard parent loader", async () => {
     const request = new Request("http://localhost:3000/dashboard");
     const { loader } = await import("~/routes/dashboard/layout");
 
-    requireSessionMock.mockResolvedValue({
-      session: {
-        id: "session-1",
+    requireDashboardActorMock.mockResolvedValue({
+      actor: {
+        claims: ["dashboard.access", "users.read"],
       },
-      user: {
+      sessionUser: {
         id: "user-1",
         name: "Enes Admin",
         email: "admin@paper-portfolio-ink.local",
@@ -46,20 +46,18 @@ describe("dashboard route guard", () => {
       user: {
         displayName: "Enes Admin",
         email: "admin@paper-portfolio-ink.local",
+        claims: ["dashboard.access", "users.read"],
         id: "user-1",
         initials: "EA",
         role: "admin",
       },
     });
 
-    expect(requireSessionMock).toHaveBeenCalledWith(
-      request,
+    expect(requireDashboardActorMock).toHaveBeenCalledWith(
       expect.objectContaining({
         db: { query: {} },
       }),
-      {
-        redirectTo: "/tr/login?redirectTo=%2Fdashboard",
-      },
+      request,
     );
   }, 20000);
 });

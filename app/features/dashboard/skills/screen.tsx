@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { Plus } from "lucide-react";
 
+import { DashboardAuthorizationAccessDeniedScreen } from "~/shared/authz/components/dashboard-authorization-access-denied-screen";
 import { DashboardModal } from "~/components/dashboard/modal";
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardPanel } from "~/components/dashboard/panel";
@@ -14,6 +15,7 @@ import {
   buildDashboardSkillsHref,
   type DashboardSkillsFormState,
   type DashboardSkillsMetrics,
+  type DashboardSkillsPermissions,
 } from "./state";
 import { DashboardSkillsModalView } from "./components/dashboard-skills-modal";
 import { DashboardSkillsTable } from "./components/dashboard-skills-table";
@@ -22,6 +24,7 @@ export interface DashboardSkillsScreenProps {
   actionError?: string;
   form: DashboardSkillsFormState;
   metrics: DashboardSkillsMetrics;
+  permissions: DashboardSkillsPermissions;
   skills: SkillOverview[];
 }
 
@@ -29,6 +32,7 @@ export function DashboardSkillsScreen({
   actionError,
   form,
   metrics,
+  permissions,
   skills,
 }: DashboardSkillsScreenProps) {
   const t = useT();
@@ -47,21 +51,23 @@ export function DashboardSkillsScreen({
       <section className="space-y-4">
         <DashboardSectionHeading
           action={
-            <Button
-              asChild
-              className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            >
-              <Link to={to(buildDashboardSkillsHref({ modal: "create" }))}>
-                <Plus className="size-4" aria-hidden="true" />
-                {copy.createActionLabel}
-              </Link>
-            </Button>
+            permissions.canCreate ? (
+              <Button
+                asChild
+                className="tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              >
+                <Link to={to(buildDashboardSkillsHref({ modal: "create" }))}>
+                  <Plus className="size-4" aria-hidden="true" />
+                  {copy.createActionLabel}
+                </Link>
+              </Button>
+            ) : null
           }
           eyebrow={copy.inventoryEyebrow}
           title={copy.registryTitle}
         />
 
-        <DashboardSkillsTable skills={skills} />
+        <DashboardSkillsTable permissions={permissions} skills={skills} />
       </section>
 
       <DashboardSkillsModalView form={form} />
@@ -94,21 +100,14 @@ export function DashboardSkillsAccessDeniedScreen({
 }: {
   viewerRole: string;
 }) {
-  const t = useT();
   const { copy } = useDashboardSkillsCopy();
 
   return (
-    <div className="space-y-4">
-      <DashboardSectionHeading
-        eyebrow={t("common.roleGuard")}
-        title={copy.restrictedTitle}
-      />
-      <DashboardPanel className="space-y-3">
-        <p className="font-sans text-sm font-bold">{copy.restrictedDescription}</p>
-        <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.14em] uppercase">
-          {copy.currentRoleLabel}: {viewerRole}
-        </p>
-      </DashboardPanel>
-    </div>
+    <DashboardAuthorizationAccessDeniedScreen
+      currentRoleLabel={copy.currentRoleLabel}
+      description={copy.restrictedDescription}
+      title={copy.restrictedTitle}
+      viewerRole={viewerRole}
+    />
   );
 }

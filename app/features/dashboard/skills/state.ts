@@ -24,6 +24,12 @@ export interface DashboardSkillsMetrics {
   totalCount: number;
 }
 
+export interface DashboardSkillsPermissions {
+  canCreate: boolean;
+  canDelete: boolean;
+  canUpdate: boolean;
+}
+
 export interface DashboardSkillsFormState {
   editingSkillId: string | null;
   errors?: SkillFormState["errors"];
@@ -36,6 +42,7 @@ export interface DashboardSkillsGrantedLoaderData {
   access: "granted";
   form: DashboardSkillsFormState;
   metrics: DashboardSkillsMetrics;
+  permissions: DashboardSkillsPermissions;
   skills: SkillOverview[];
 }
 

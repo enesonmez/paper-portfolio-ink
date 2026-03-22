@@ -33,6 +33,12 @@ export interface DashboardProjectsMetrics {
   totalCount: number;
 }
 
+export interface DashboardProjectsPermissions {
+  canCreate: boolean;
+  canDelete: boolean;
+  canUpdate: boolean;
+}
+
 export interface DashboardProjectsFormState {
   editingProjectId: string | null;
   errors?: ProjectFormState["errors"];
@@ -43,8 +49,10 @@ export interface DashboardProjectsFormState {
 }
 
 export interface DashboardProjectsLoaderData {
+  access: "denied" | "granted";
   form: DashboardProjectsFormState;
   metrics: DashboardProjectsMetrics;
+  permissions: DashboardProjectsPermissions;
   projects: ProjectOverview[];
 }
 

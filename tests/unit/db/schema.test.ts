@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 
 import {
   accounts,
+  authorizationClaims,
+  authorizationRoleClaims,
+  authorizationUserClaimOverrides,
   locales,
   posts,
   projects,
@@ -22,6 +25,9 @@ describe("database schema", () => {
   it("exports the domain tables through a shared schema object", () => {
     expect(schema).toMatchObject({
       accounts,
+      authorizationClaims,
+      authorizationRoleClaims,
+      authorizationUserClaimOverrides,
       posts,
       projects,
       sessions,
@@ -43,6 +49,7 @@ describe("database schema", () => {
         "email_verified",
         "display_name",
         "is_active",
+        "authz_version",
         "avatar_url",
         "role",
         "created_at",
@@ -199,5 +206,38 @@ describe("database schema", () => {
       ]),
     );
     expect(config.indexes).toHaveLength(1);
+  });
+
+  it("defines the authorization claims registry tables", () => {
+    const claimsConfig = getTableConfig(authorizationClaims);
+    const roleClaimsConfig = getTableConfig(authorizationRoleClaims);
+    const overridesConfig = getTableConfig(authorizationUserClaimOverrides);
+
+    expect(getColumnNames(authorizationClaims)).toEqual(
+      expect.arrayContaining([
+        "key",
+        "resource",
+        "action",
+        "scope",
+        "description",
+        "created_at",
+        "updated_at",
+      ]),
+    );
+    expect(getColumnNames(authorizationRoleClaims)).toEqual(
+      expect.arrayContaining(["role", "claim_key", "created_at", "updated_at"]),
+    );
+    expect(getColumnNames(authorizationUserClaimOverrides)).toEqual(
+      expect.arrayContaining([
+        "user_id",
+        "claim_key",
+        "effect",
+        "created_at",
+        "updated_at",
+      ]),
+    );
+    expect(claimsConfig.indexes).toHaveLength(1);
+    expect(roleClaimsConfig.foreignKeys).toHaveLength(1);
+    expect(overridesConfig.foreignKeys).toHaveLength(2);
   });
 });

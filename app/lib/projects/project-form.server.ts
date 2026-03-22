@@ -7,6 +7,7 @@ import {
   PROJECT_STATUS_VALUES,
   type ProjectStatus,
 } from "~/domain/projects/model";
+import { compactFieldErrors, readStringField } from "~/shared/forms/form-data.server";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createProjectFormSchema(t: I18nTranslator) {
@@ -50,18 +51,6 @@ function createProjectFormSchema(t: I18nTranslator) {
 }
 
 export type ProjectSubmission = z.infer<ReturnType<typeof createProjectFormSchema>>;
-
-function compactFieldErrors<T extends Record<string, string | undefined>>(errors: T) {
-  return Object.fromEntries(
-    Object.entries(errors).filter(([, value]) => typeof value === "string"),
-  ) as Partial<T>;
-}
-
-function readStringField(formData: FormData, field: string) {
-  const value = formData.get(field);
-
-  return typeof value === "string" ? value : "";
-}
 
 export function parseProjectFormData(
   formData: FormData,

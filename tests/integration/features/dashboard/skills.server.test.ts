@@ -228,7 +228,7 @@ describe("dashboard skills server", () => {
     expect(response).toMatchObject({
       data: {
         errors: {
-          form: "Bu flow icin erisim yetkiniz yoktur.",
+          form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
         },
       },
       init: {

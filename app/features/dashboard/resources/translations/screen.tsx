@@ -21,6 +21,7 @@ export default function DashboardResourcesTranslationsScreen() {
   const { copy, formCopy } = useDashboardResourcesCopy();
   const {
     locales,
+    permissions,
     selectedTranslationLocale,
     translationForm,
     translationPagination,
@@ -38,21 +39,23 @@ export default function DashboardResourcesTranslationsScreen() {
       <section className="space-y-4">
         <DashboardSectionHeading
           action={
-            <Button
-              asChild
-              className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
-            >
-              <Link
-                to={to(
-                  buildDashboardResourcesTranslationsHref(translationsViewState, {
-                    modal: DASHBOARD_RESOURCES_MODAL.createTranslation,
-                  }),
-                )}
+            permissions.translations.canCreate ? (
+              <Button
+                asChild
+                className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               >
-                <Plus className="size-4" aria-hidden="true" />
-                {copy.createTranslationActionLabel}
-              </Link>
-            </Button>
+                <Link
+                  to={to(
+                    buildDashboardResourcesTranslationsHref(translationsViewState, {
+                      modal: DASHBOARD_RESOURCES_MODAL.createTranslation,
+                    }),
+                  )}
+                >
+                  <Plus className="size-4" aria-hidden="true" />
+                  {copy.createTranslationActionLabel}
+                </Link>
+              </Button>
+            ) : null
           }
           eyebrow={copy.translationInventoryEyebrow}
           title={copy.registryTitle}
@@ -137,6 +140,8 @@ export default function DashboardResourcesTranslationsScreen() {
           </DashboardPanel>
 
           <DashboardResourcesTranslationsTable
+            canDelete={permissions.translations.canDelete}
+            canUpdate={permissions.translations.canUpdate}
             emptyState={translationSearchQuery ? copy.searchEmptyState : undefined}
             pagination={translationPagination}
             paginationNextLabel={copy.paginationNextLabel}
@@ -150,6 +155,10 @@ export default function DashboardResourcesTranslationsScreen() {
       </section>
 
       <DashboardResourcesTranslationModal
+        canSubmit={
+          permissions.translations.canCreate ||
+          (translationForm.mode === "edit" && permissions.translations.canUpdate)
+        }
         form={translationForm}
         locales={locales}
         selectedTranslationLocale={selectedTranslationLocale}

@@ -1,9 +1,12 @@
+import { buildDashboardAuthorizationCopy } from "~/shared/authz/copy";
 import { useT } from "~/shared/i18n/i18n-react";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 export function buildDashboardResourcesCopy(t: I18nTranslator) {
+  const authzCopy = buildDashboardAuthorizationCopy(t);
+
   return {
-    actionBlockedTitle: t("dashboard.resources.actionBlockedTitle"),
+    actionBlockedTitle: authzCopy.actionBlockedTitle,
     cacheDescription: t("dashboard.resources.cacheDescription"),
     cacheEyebrow: t("dashboard.resources.cacheEyebrow"),
     clearSearchLabel: t("dashboard.resources.clearSearchLabel"),
@@ -13,7 +16,7 @@ export function buildDashboardResourcesCopy(t: I18nTranslator) {
     createTranslationActionLabel: t("dashboard.resources.createTranslationActionLabel"),
     createTranslationDescription: t("dashboard.resources.createTranslationDescription"),
     createTranslationTitle: t("dashboard.resources.createTranslationTitle"),
-    currentRoleLabel: t("dashboard.resources.currentRoleLabel"),
+    currentRoleLabel: authzCopy.currentRoleLabel,
     editLocaleActionLabel: t("dashboard.resources.editLocaleActionLabel"),
     editLocaleDescription: t("dashboard.resources.editLocaleDescription"),
     editLocaleTitle: t("dashboard.resources.editLocaleTitle"),
@@ -32,8 +35,8 @@ export function buildDashboardResourcesCopy(t: I18nTranslator) {
     paginationNextLabel: t("dashboard.resources.paginationNextLabel"),
     paginationPreviousLabel: t("dashboard.resources.paginationPreviousLabel"),
     registryTitle: t("dashboard.resources.registryTitle"),
-    restrictedDescription: t("dashboard.resources.restrictedDescription"),
-    restrictedTitle: t("dashboard.resources.restrictedTitle"),
+    restrictedDescription: authzCopy.restrictedDescription,
+    restrictedTitle: authzCopy.restrictedTitle,
     searchEmptyState: t("dashboard.resources.searchEmptyState"),
     searchTitle: t("dashboard.resources.searchTitle"),
     tabDescription: t("dashboard.resources.tabDescription"),
@@ -43,6 +46,8 @@ export function buildDashboardResourcesCopy(t: I18nTranslator) {
 }
 
 export function buildDashboardResourcesFormCopy(t: I18nTranslator) {
+  const authzCopy = buildDashboardAuthorizationCopy(t);
+
   return {
     cancelLabel: t("dashboard.resources.form.cancelLabel"),
     errors: {
@@ -59,7 +64,7 @@ export function buildDashboardResourcesFormCopy(t: I18nTranslator) {
       deleteTranslationMissing: t(
         "dashboard.resources.form.error.deleteTranslationMissing",
       ),
-      forbidden: t("dashboard.resources.form.error.forbidden"),
+      forbidden: authzCopy.forbiddenError,
       localeMissing: t("dashboard.resources.form.error.localeMissing"),
       translationLocaleMissing: t(
         "dashboard.resources.form.error.translationLocaleMissing",
@@ -119,6 +124,10 @@ export function buildDashboardResourcesFormCopy(t: I18nTranslator) {
     },
   } as const;
 }
+
+export type DashboardResourcesFormCopy = ReturnType<
+  typeof buildDashboardResourcesFormCopy
+>;
 
 export function useDashboardResourcesCopy() {
   const t = useT();

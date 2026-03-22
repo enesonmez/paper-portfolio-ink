@@ -64,6 +64,11 @@ describe("auth server factory", () => {
             image: "avatarUrl",
           },
           additionalFields: {
+            authzVersion: {
+              type: "number",
+              input: false,
+              required: false,
+            },
             isActive: {
               type: "boolean",
               input: false,

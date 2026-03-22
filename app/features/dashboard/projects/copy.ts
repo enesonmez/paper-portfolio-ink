@@ -1,11 +1,15 @@
+import { buildDashboardAuthorizationCopy } from "~/shared/authz/copy";
 import { useT } from "~/shared/i18n/i18n-react";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 export function buildDashboardProjectsCopy(t: I18nTranslator) {
+  const authzCopy = buildDashboardAuthorizationCopy(t);
+
   return {
     createActionLabel: t("dashboard.projects.createActionLabel"),
     createDescription: t("dashboard.projects.createDescription"),
     createTitle: t("dashboard.projects.createTitle"),
+    currentRoleLabel: authzCopy.currentRoleLabel,
     editActionLabel: t("dashboard.projects.editActionLabel"),
     editDescription: t("dashboard.projects.editDescription"),
     editTitle: t("dashboard.projects.editTitle"),
@@ -14,6 +18,8 @@ export function buildDashboardProjectsCopy(t: I18nTranslator) {
     featuredToggleLabel: t("dashboard.projects.featuredToggleLabel"),
     inventoryEyebrow: t("dashboard.projects.inventoryEyebrow"),
     registryTitle: t("dashboard.projects.registryTitle"),
+    restrictedDescription: authzCopy.restrictedDescription,
+    restrictedTitle: authzCopy.restrictedTitle,
     tableActionsLabel: t("dashboard.projects.tableActionsLabel"),
     tableLiveFlag: t("dashboard.projects.tableLiveFlag"),
     tableNameLabel: t("dashboard.projects.tableNameLabel"),
@@ -25,6 +31,8 @@ export function buildDashboardProjectsCopy(t: I18nTranslator) {
 }
 
 export function buildDashboardProjectsFormCopy(t: I18nTranslator) {
+  const authzCopy = buildDashboardAuthorizationCopy(t);
+
   return {
     cancelLabel: t("dashboard.projects.form.cancelLabel"),
     coverImageUrl: {
@@ -36,6 +44,7 @@ export function buildDashboardProjectsFormCopy(t: I18nTranslator) {
     },
     errors: {
       deleteMissingProject: t("dashboard.projects.form.error.deleteMissingProject"),
+      forbidden: authzCopy.forbiddenError,
       updateMissingProject: t("dashboard.projects.form.error.updateMissingProject"),
     },
     liveUrl: {

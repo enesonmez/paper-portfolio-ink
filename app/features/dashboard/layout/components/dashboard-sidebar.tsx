@@ -23,7 +23,7 @@ export function DashboardSidebar({
   const to = useLocalizedPath();
   const t = useT();
   const LogoutIcon = DASHBOARD_LAYOUT_ICON.logout;
-  const navigation = getDashboardNavigation(locale, user.role, t);
+  const navigation = getDashboardNavigation(locale, user.claims, t);
 
   return (
     <aside

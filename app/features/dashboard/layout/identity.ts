@@ -1,4 +1,7 @@
+import type { AuthorizationClaim } from "~/shared/authz/model";
+
 export interface DashboardIdentity {
+  claims: readonly AuthorizationClaim[];
   id: string | null;
   displayName: string;
   email: string;
@@ -7,7 +10,7 @@ export interface DashboardIdentity {
 }
 
 export type DashboardIdentitySource = Partial<
-  Record<"displayName" | "email" | "id" | "name" | "role", unknown>
+  Record<"claims" | "displayName" | "email" | "id" | "name" | "role", unknown>
 >;
 
 export interface DashboardLayoutOutletContext {
@@ -15,6 +18,7 @@ export interface DashboardLayoutOutletContext {
 }
 
 const DASHBOARD_IDENTITY_FALLBACK = {
+  claims: [],
   displayName: "Paper Ink",
   email: "-",
   role: "-",
@@ -38,9 +42,21 @@ function buildInitials(source: string) {
   return letters || "PE";
 }
 
+function readClaims(value: unknown): AuthorizationClaim[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter(
+    (claim): claim is AuthorizationClaim =>
+      typeof claim === "string" && claim.trim().length > 0,
+  );
+}
+
 export function buildDashboardIdentity(
   source: DashboardIdentitySource,
 ): DashboardIdentity {
+  const claims = readClaims(source.claims);
   const id = readString(source.id) ?? null;
   const displayName =
     readString(source.displayName) ??
@@ -51,6 +67,7 @@ export function buildDashboardIdentity(
   const role = readString(source.role) ?? DASHBOARD_IDENTITY_FALLBACK.role;
 
   return {
+    claims,
     id,
     displayName,
     email,

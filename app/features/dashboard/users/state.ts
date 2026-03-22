@@ -27,6 +27,12 @@ export interface DashboardUsersMetrics {
   totalCount: number;
 }
 
+export interface DashboardUsersPermissions {
+  canCreate: boolean;
+  canDelete: boolean;
+  canUpdate: boolean;
+}
+
 export interface DashboardUsersFormState {
   editingUserId: string | null;
   errors?: UserFormState["errors"];
@@ -39,6 +45,7 @@ export interface DashboardUsersGrantedLoaderData {
   access: "granted";
   form: DashboardUsersFormState;
   metrics: DashboardUsersMetrics;
+  permissions: DashboardUsersPermissions;
   users: UserOverview[];
 }
 

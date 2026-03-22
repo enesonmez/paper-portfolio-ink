@@ -34,8 +34,14 @@ const baseScreenProps = {
     publishedCount: 2,
     totalCount: 3,
   },
+  permissions: {
+    canCreate: true,
+    canDelete: true,
+    canUpdate: true,
+  },
   posts: [
     {
+      authorId: "user-1",
       content: "# Edge telemetry\n\n- daily view aggregation",
       coverImageUrl: null,
       createdAtLabel: "2026-03-15",
@@ -76,6 +82,43 @@ describe("dashboard posts route", () => {
     expect(screen.getByText("EDGE_TELEMETRY")).toBeInTheDocument();
     expect(
       screen.queryByRole("dialog", { name: "Create Post" }),
+    ).not.toBeInTheDocument();
+  }, 20000);
+
+  it("hides post mutation controls when write permissions are missing", async () => {
+    const { DashboardPostsScreen } = await import("~/routes/dashboard/posts");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/posts",
+          element: (
+            <DashboardPostsScreen
+              {...baseScreenProps}
+              permissions={{
+                canCreate: false,
+                canDelete: false,
+                canUpdate: false,
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/posts"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen.queryByRole("link", { name: "Create new post" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /edit edge_telemetry/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /delete edge_telemetry/i }),
     ).not.toBeInTheDocument();
   }, 20000);
 

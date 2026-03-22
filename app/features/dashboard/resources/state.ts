@@ -27,6 +27,18 @@ export interface DashboardResourcesTranslationPagination {
   totalItems: number;
 }
 
+export interface DashboardResourcesSectionPermissions {
+  canCreate: boolean;
+  canDelete: boolean;
+  canRead: boolean;
+  canUpdate: boolean;
+}
+
+export interface DashboardResourcesPermissions {
+  locales: DashboardResourcesSectionPermissions;
+  translations: DashboardResourcesSectionPermissions;
+}
+
 type DashboardResourcesFormMode = "create" | "edit" | null;
 
 export interface DashboardResourcesLocaleFormState {
@@ -51,6 +63,7 @@ export interface DashboardResourcesGrantedLoaderData {
   localeForm: DashboardResourcesLocaleFormState;
   locales: LocaleResourceRecord[];
   metrics: DashboardResourcesMetrics;
+  permissions: DashboardResourcesPermissions;
   selectedTranslationLocale: string;
   translationPagination: DashboardResourcesTranslationPagination;
   translationSearchQuery: string;
@@ -76,6 +89,7 @@ export interface DashboardResourcesRouteContext {
   localeForm: DashboardResourcesLocaleFormState;
   locales: LocaleResourceRecord[];
   metrics: DashboardResourcesMetrics;
+  permissions: DashboardResourcesPermissions;
   selectedTranslationLocale: string;
   translationPagination: DashboardResourcesTranslationPagination;
   translationSearchQuery: string;

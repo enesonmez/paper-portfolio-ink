@@ -184,6 +184,20 @@ describe("dashboard resources server", () => {
       throw new Error("Expected granted resources loader data");
     }
 
+    expect(response.permissions).toEqual({
+      locales: {
+        canCreate: true,
+        canDelete: true,
+        canRead: true,
+        canUpdate: true,
+      },
+      translations: {
+        canCreate: true,
+        canDelete: true,
+        canRead: true,
+        canUpdate: true,
+      },
+    });
     expect(response.translations).toEqual([
       expect.objectContaining({
         key: "dashboard.layout.navProjects",
@@ -343,6 +357,127 @@ describe("dashboard resources server", () => {
     });
   }, 20000);
 
+  it("redirects locale-only routes into translations when only translation read access exists", async () => {
+    const { loadDashboardResourcesData } =
+      await import("~/features/dashboard/resources/server");
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        claims: ["dashboard.access", "resources.translations.read"],
+        id: "user-translator",
+        role: "author",
+      },
+    });
+    listLocalesMock.mockResolvedValue([
+      {
+        code: "tr",
+        createdAtLabel: "2026-03-21",
+        isActive: true,
+        isDefault: true,
+        label: "TR",
+        sortOrder: 0,
+        translationCount: 4,
+        updatedAtLabel: "2026-03-21",
+      },
+      {
+        code: "en",
+        createdAtLabel: "2026-03-21",
+        isActive: true,
+        isDefault: false,
+        label: "EN",
+        sortOrder: 1,
+        translationCount: 3,
+        updatedAtLabel: "2026-03-21",
+      },
+    ]);
+
+    const response = await loadDashboardResourcesData(
+      context,
+      new Request("http://localhost:3000/tr/dashboard/resources/locales"),
+    );
+
+    expect(response).toBeInstanceOf(Response);
+
+    if (!(response instanceof Response)) {
+      throw new Error("Expected redirect response for section fallback");
+    }
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("Location")).toBe(
+      "/tr/dashboard/resources/translations?translationLocale=tr",
+    );
+    expect(listTranslationsByLocaleMock).not.toHaveBeenCalled();
+  }, 20000);
+
+  it("does not serialize translation data for locale-only sessions", async () => {
+    const { loadDashboardResourcesData } =
+      await import("~/features/dashboard/resources/server");
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        claims: ["dashboard.access", "resources.locales.read"],
+        id: "user-locale-operator",
+        role: "author",
+      },
+    });
+    listLocalesMock.mockResolvedValue([
+      {
+        code: "tr",
+        createdAtLabel: "2026-03-21",
+        isActive: true,
+        isDefault: true,
+        label: "TR",
+        sortOrder: 0,
+        translationCount: 4,
+        updatedAtLabel: "2026-03-21",
+      },
+      {
+        code: "en",
+        createdAtLabel: "2026-03-21",
+        isActive: true,
+        isDefault: false,
+        label: "EN",
+        sortOrder: 1,
+        translationCount: 3,
+        updatedAtLabel: "2026-03-21",
+      },
+    ]);
+
+    const response = await loadDashboardResourcesData(
+      context,
+      new Request(
+        "http://localhost:3000/tr/dashboard/resources/locales?translationLocale=en&translationSearch=nav&modal=create-translation",
+      ),
+    );
+
+    if (response instanceof Response || response.access !== "granted") {
+      throw new Error("Expected granted locale-only resources loader data");
+    }
+
+    expect(findTranslationMock).not.toHaveBeenCalled();
+    expect(listTranslationsByLocaleMock).not.toHaveBeenCalled();
+    expect(response.selectedTranslationLocale).toBe("");
+    expect(response.translationForm).toEqual({
+      editingKey: null,
+      editingLocale: null,
+      isOpen: false,
+      mode: null,
+      values: {
+        key: "",
+        locale: "",
+        value: "",
+      },
+    });
+    expect(response.translationPagination).toEqual({
+      currentPage: 1,
+      pageCount: 1,
+      pageSize: 20,
+      totalItems: 0,
+    });
+    expect(response.translationSearchQuery).toBe("");
+    expect(response.translations).toEqual([]);
+  }, 20000);
+
   it("returns a code error when the submitted locale already exists", async () => {
     const { handleDashboardResourcesAction } =
       await import("~/features/dashboard/resources/server");
@@ -406,6 +541,43 @@ describe("dashboard resources server", () => {
       },
       init: {
         status: 409,
+      },
+    });
+  }, 20000);
+
+  it("returns a 403 when the session lacks the matching locale mutation claim", async () => {
+    const { handleDashboardResourcesAction } =
+      await import("~/features/dashboard/resources/server");
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        claims: ["dashboard.access", "resources.locales.create"],
+        id: "user-locale-operator",
+        role: "author",
+      },
+    });
+
+    const response = await handleDashboardResourcesAction(
+      context,
+      new Request("http://localhost:3000/dashboard/resources/locales", {
+        body: new URLSearchParams({
+          intent: "delete-locale",
+          originalCode: "tr",
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+      }),
+    );
+
+    expect(deleteLocaleMock).not.toHaveBeenCalled();
+    expect(response).toMatchObject({
+      data: {
+        actionError: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+      },
+      init: {
+        status: 403,
       },
     });
   }, 20000);

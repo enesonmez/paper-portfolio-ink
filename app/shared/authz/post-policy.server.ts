@@ -1,0 +1,79 @@
+import type { AppLoadContext } from "react-router";
+
+import { getDbFromContext } from "../../../db/context";
+import {
+  getPostAuthorId,
+  listPosts,
+  listPostsByAuthor,
+} from "~/lib/posts/posts.server";
+
+import { actorHasAnyClaim, type AuthorizationActor } from "./authz.server";
+import { AUTHORIZATION_CLAIM } from "./model";
+
+export function canAccessDashboardPosts(actor: AuthorizationActor) {
+  return actorHasAnyClaim(actor, [
+    AUTHORIZATION_CLAIM.postsReadAny,
+    AUTHORIZATION_CLAIM.postsReadOwn,
+    AUTHORIZATION_CLAIM.postsCreate,
+    AUTHORIZATION_CLAIM.postsUpdateAny,
+    AUTHORIZATION_CLAIM.postsUpdateOwn,
+    AUTHORIZATION_CLAIM.postsDeleteAny,
+    AUTHORIZATION_CLAIM.postsDeleteOwn,
+  ]);
+}
+
+export function canCreatePosts(actor: AuthorizationActor) {
+  return actorHasAnyClaim(actor, [AUTHORIZATION_CLAIM.postsCreate]);
+}
+
+export async function listAuthorizedPosts(
+  context: AppLoadContext,
+  actor: AuthorizationActor,
+) {
+  const db = getDbFromContext(context);
+
+  if (actorHasAnyClaim(actor, [AUTHORIZATION_CLAIM.postsReadAny])) {
+    return listPosts(db);
+  }
+
+  if (
+    actor.userId &&
+    actorHasAnyClaim(actor, [
+      AUTHORIZATION_CLAIM.postsReadOwn,
+      AUTHORIZATION_CLAIM.postsUpdateOwn,
+      AUTHORIZATION_CLAIM.postsDeleteOwn,
+    ])
+  ) {
+    return listPostsByAuthor(db, actor.userId);
+  }
+
+  return [];
+}
+
+export async function canMutatePost(
+  context: AppLoadContext,
+  actor: AuthorizationActor,
+  action: "delete" | "update",
+  postId: string,
+) {
+  const anyClaim =
+    action === "update"
+      ? AUTHORIZATION_CLAIM.postsUpdateAny
+      : AUTHORIZATION_CLAIM.postsDeleteAny;
+  const ownClaim =
+    action === "update"
+      ? AUTHORIZATION_CLAIM.postsUpdateOwn
+      : AUTHORIZATION_CLAIM.postsDeleteOwn;
+
+  if (actorHasAnyClaim(actor, [anyClaim])) {
+    return true;
+  }
+
+  if (!actor.userId || !actorHasAnyClaim(actor, [ownClaim])) {
+    return false;
+  }
+
+  const authorId = await getPostAuthorId(getDbFromContext(context), postId);
+
+  return authorId !== null && authorId === actor.userId;
+}
