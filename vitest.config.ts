@@ -4,6 +4,9 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   resolve: {
     alias: {
+      "#db": fileURLToPath(new URL("./db", import.meta.url)),
+      "#root": fileURLToPath(new URL("./", import.meta.url)),
+      "#workers": fileURLToPath(new URL("./workers", import.meta.url)),
       "~": fileURLToPath(new URL("./app", import.meta.url)),
     },
   },
