@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   createEmptyPostContentDocument,
   serializePostContent,
-} from "../../app/features/posts/post-content.shared";
+} from "../../app/domain/posts/content";
 import { createTranslator, getSeedMessages } from "../../app/shared/i18n/i18n.shared";
 import { parsePostFormData } from "../../app/lib/posts/post-form.server";
 

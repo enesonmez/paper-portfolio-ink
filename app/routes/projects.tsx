@@ -3,8 +3,8 @@ import type { Route } from "./+types/projects";
 
 import type { loader as rootLoader } from "~/root";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
-import { PublicProjectsScreen } from "~/features/public/projects/public-projects-screen";
-import { loadPublicProjectsData } from "~/features/public/projects/public-projects.server";
+import { PublicProjectsScreen } from "~/features/public/projects/screen";
+import { loadPublicProjectsData } from "~/features/public/projects/server";
 import { siteConfig } from "~/lib/site";
 
 export function meta({ location, matches }: Route.MetaArgs) {

@@ -5,13 +5,10 @@ import { SlugSuggestionField } from "~/components/dashboard/slug-suggestion-fiel
 import { Button } from "~/components/ui/button";
 import { FormError, SelectField, TextField } from "~/components/ui/form-field";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
-import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/features/posts/post.shared";
+import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/domain/posts/model";
 
-import { useDashboardPostsCopy } from "../dashboard-posts.constants";
-import {
-  useDashboardPostStatusOptions,
-  type DashboardPostsFormState,
-} from "../dashboard-posts.shared";
+import { useDashboardPostsCopy } from "../copy";
+import { useDashboardPostStatusOptions, type DashboardPostsFormState } from "../state";
 import { DashboardPostsEditor } from "./dashboard-posts-editor";
 
 interface DashboardPostsComposeViewProps {

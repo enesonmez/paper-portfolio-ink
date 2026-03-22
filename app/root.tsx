@@ -13,12 +13,10 @@ import {
 import { AppI18nProvider } from "~/shared/i18n/i18n-react";
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
 import { createTranslator, getSeedMessages } from "~/shared/i18n/i18n.shared";
-import {
-  isPublicPathname,
-  PUBLIC_THEME,
-} from "~/features/public/layout/public-layout.shared";
-import { PublicSiteLayout } from "~/features/public/layout/public-site-layout";
-import { getThemeFromRequest } from "~/features/public/layout/public-theme.server";
+import { isPublicPathname } from "~/features/public/layout/routing";
+import { PUBLIC_THEME } from "~/features/public/layout/theme";
+import { PublicSiteLayout } from "~/features/public/layout/layout";
+import { getThemeFromRequest } from "~/features/public/layout/theme.server";
 
 import appStylesHref from "./styles/app.css?url";
 

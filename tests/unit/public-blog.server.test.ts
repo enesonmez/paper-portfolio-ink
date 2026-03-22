@@ -70,7 +70,7 @@ describe("public blog server", () => {
     listPublicPostsPageMock.mockResolvedValue(pageData);
 
     const { loadPublicBlogData } =
-      await import("../../app/features/public/blog/public-blog.server");
+      await import("../../app/features/public/blog/server");
 
     await expect(
       loadPublicBlogData(
@@ -108,7 +108,7 @@ describe("public blog server", () => {
     });
 
     const { loadPublicBlogData } =
-      await import("../../app/features/public/blog/public-blog.server");
+      await import("../../app/features/public/blog/server");
 
     await expect(
       loadPublicBlogData(context, new Request("https://paper-portfolio-ink.dev/blog")),
@@ -162,7 +162,7 @@ describe("public blog server", () => {
     listPublicPostsPageMock.mockResolvedValue(pageData);
 
     const { loadPublicBlogFeedData } =
-      await import("../../app/features/public/blog/public-blog.server");
+      await import("../../app/features/public/blog/server");
 
     await expect(
       loadPublicBlogFeedData(
@@ -217,7 +217,7 @@ describe("public blog server", () => {
     listPublicCompanionPostsMock.mockResolvedValue(posts);
 
     const { loadPublicBlogPostData } =
-      await import("../../app/features/public/blog/public-blog.server");
+      await import("../../app/features/public/blog/server");
 
     await expect(
       loadPublicBlogPostData(context, "edge-observability-playbook"),
@@ -237,7 +237,7 @@ describe("public blog server", () => {
     getPublicPostBySlugMock.mockResolvedValue(null);
 
     const { loadPublicBlogPostData } =
-      await import("../../app/features/public/blog/public-blog.server");
+      await import("../../app/features/public/blog/server");
 
     await expect(
       loadPublicBlogPostData(context, "missing-story"),
@@ -252,7 +252,7 @@ describe("public blog server", () => {
     cacheDeleteMock.mockResolvedValue(true);
 
     const { purgePublicBlogDataCache } =
-      await import("../../app/features/public/blog/public-blog.server");
+      await import("../../app/features/public/blog/server");
 
     await purgePublicBlogDataCache(
       context,

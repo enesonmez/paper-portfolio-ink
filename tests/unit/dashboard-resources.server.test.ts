@@ -107,7 +107,7 @@ describe("dashboard resources server", () => {
 
   it("loads locale and translation records for admin sessions", async () => {
     const { loadDashboardResourcesData } =
-      await import("../../app/features/dashboard/resources/dashboard-resources.server");
+      await import("../../app/features/dashboard/resources/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -200,7 +200,7 @@ describe("dashboard resources server", () => {
 
   it("keeps the selected locale count unfiltered when translation search is active", async () => {
     const { loadDashboardResourcesData } =
-      await import("../../app/features/dashboard/resources/dashboard-resources.server");
+      await import("../../app/features/dashboard/resources/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -261,7 +261,7 @@ describe("dashboard resources server", () => {
 
   it("loads a paginated translation page and clamps the current page to the last result page", async () => {
     const { loadDashboardResourcesData } =
-      await import("../../app/features/dashboard/resources/dashboard-resources.server");
+      await import("../../app/features/dashboard/resources/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -321,7 +321,7 @@ describe("dashboard resources server", () => {
 
   it("does not expose resources to non-admin sessions", async () => {
     const { loadDashboardResourcesData } =
-      await import("../../app/features/dashboard/resources/dashboard-resources.server");
+      await import("../../app/features/dashboard/resources/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -346,7 +346,7 @@ describe("dashboard resources server", () => {
 
   it("returns a code error when the submitted locale already exists", async () => {
     const { handleDashboardResourcesAction } =
-      await import("../../app/features/dashboard/resources/dashboard-resources.server");
+      await import("../../app/features/dashboard/resources/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -413,7 +413,7 @@ describe("dashboard resources server", () => {
 
   it("blocks deleting the last active locale", async () => {
     const { handleDashboardResourcesAction } =
-      await import("../../app/features/dashboard/resources/dashboard-resources.server");
+      await import("../../app/features/dashboard/resources/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -461,7 +461,7 @@ describe("dashboard resources server", () => {
 
   it("updates a translation row and clears related i18n cache keys", async () => {
     const { handleDashboardResourcesAction } =
-      await import("../../app/features/dashboard/resources/dashboard-resources.server");
+      await import("../../app/features/dashboard/resources/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -551,7 +551,7 @@ describe("dashboard resources server", () => {
 
   it("rejects deleting a translation that no longer exists", async () => {
     const { handleDashboardResourcesAction } =
-      await import("../../app/features/dashboard/resources/dashboard-resources.server");
+      await import("../../app/features/dashboard/resources/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -609,7 +609,7 @@ describe("dashboard resources server", () => {
 
   it("keeps the edit modal open when the source translation was removed before update", async () => {
     const { handleDashboardResourcesAction } =
-      await import("../../app/features/dashboard/resources/dashboard-resources.server");
+      await import("../../app/features/dashboard/resources/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -705,7 +705,7 @@ describe("dashboard resources server", () => {
 
   it("redirects back into the renamed locale when the current locale code changes", async () => {
     const { handleDashboardResourcesAction } =
-      await import("../../app/features/dashboard/resources/dashboard-resources.server");
+      await import("../../app/features/dashboard/resources/server");
 
     requireSessionMock.mockResolvedValue({
       user: {

@@ -3,7 +3,7 @@ import { ArrowUpRight, Clock3 } from "lucide-react";
 
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import type { PublicPostListItem } from "~/lib/posts/posts.server";
-import { usePublicBlogCopy } from "../public-blog.shared";
+import { usePublicBlogCopy } from "../copy";
 
 interface PublicBlogFeedItemProps {
   post: PublicPostListItem;

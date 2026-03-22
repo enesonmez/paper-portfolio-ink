@@ -5,7 +5,7 @@ import {
   sanitizePostLinkHref,
   type PostContentMark,
   type PostContentNode,
-} from "~/features/posts/post-content.shared";
+} from "~/domain/posts/content";
 import { useT } from "~/shared/i18n/i18n-react";
 
 function getNodeText(node: PostContentNode): string {

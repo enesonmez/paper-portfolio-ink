@@ -6,7 +6,7 @@ import {
   getSeedMessages,
   getSeedLocaleOptions,
 } from "../../app/shared/i18n/i18n.shared";
-import { PublicBlogScreen } from "../../app/features/public/blog/public-blog-screen";
+import { PublicBlogScreen } from "../../app/features/public/blog/screen";
 import { meta } from "../../app/routes/blog";
 
 const posts = [

@@ -2,8 +2,8 @@ import {
   buildThemeCookie,
   getThemeFromRequest,
   parseThemeFormData,
-} from "../../app/features/public/layout/public-theme.server";
-import { PUBLIC_THEME } from "../../app/features/public/layout/public-layout.shared";
+} from "../../app/features/public/layout/theme.server";
+import { PUBLIC_THEME } from "../../app/features/public/layout/theme";
 
 describe("public theme server helpers", () => {
   it("defaults to light theme when the cookie is missing", () => {

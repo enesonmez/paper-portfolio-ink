@@ -2,11 +2,11 @@ import type { Route } from "./+types/dashboard.posts";
 
 import DashboardPostsRoute, {
   DashboardPostsScreen,
-} from "~/features/dashboard/posts/dashboard-posts-route";
+} from "~/features/dashboard/posts/route";
 import {
   handleDashboardPostsAction,
   loadDashboardPostsData,
-} from "~/features/dashboard/posts/dashboard-posts.server";
+} from "~/features/dashboard/posts/server";
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   return loadDashboardPostsData(context, request);

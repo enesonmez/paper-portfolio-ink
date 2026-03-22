@@ -2,8 +2,8 @@ import { and, asc, desc, eq, gt, lt, ne, or } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { posts, users } from "../../../db/schema";
-import { getPostContentPlainText } from "~/features/posts/post-content.shared";
-import { POST_STATUS, type PostStatus } from "~/features/posts/post.shared";
+import { getPostContentPlainText } from "~/domain/posts/content";
+import { POST_STATUS, type PostStatus } from "~/domain/posts/model";
 import { findNextAvailableSlug, suggestSlugFromTitle } from "~/lib/slug";
 
 import type { PostSubmission } from "./post-form.server";

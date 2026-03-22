@@ -1,8 +1,8 @@
 import { Menu } from "lucide-react";
 
 import { LocaleSwitcher } from "~/shared/i18n/components/locale-switcher";
-import type { DashboardIdentity } from "../dashboard-layout.shared";
-import { useDashboardLayoutCopy } from "../dashboard-layout.constants";
+import { useDashboardLayoutCopy } from "../copy";
+import type { DashboardIdentity } from "../identity";
 
 interface DashboardHeaderProps {
   isSidebarOpen: boolean;

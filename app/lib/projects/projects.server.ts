@@ -2,7 +2,7 @@ import { and, asc, desc, eq, gt, lt, ne, or, sql } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { projects } from "../../../db/schema";
-import { PROJECT_STATUS, type ProjectStatus } from "~/features/projects/project.shared";
+import { PROJECT_STATUS, type ProjectStatus } from "~/domain/projects/model";
 import { findNextAvailableSlug, suggestSlugFromTitle } from "~/lib/slug";
 
 import type { ProjectSubmission } from "./project-form.server";

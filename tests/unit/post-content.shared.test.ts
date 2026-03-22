@@ -8,7 +8,7 @@ import {
   parsePostContentDocument,
   sanitizePostLinkHref,
   serializePostContent,
-} from "../../app/features/posts/post-content.shared";
+} from "../../app/domain/posts/content";
 
 describe("post content helpers", () => {
   it("preserves valid structured tiptap content", () => {

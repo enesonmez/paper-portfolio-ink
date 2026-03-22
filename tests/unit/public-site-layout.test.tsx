@@ -6,8 +6,8 @@ import {
   getSeedMessages,
   getSeedLocaleOptions,
 } from "../../app/shared/i18n/i18n.shared";
-import { PUBLIC_THEME } from "../../app/features/public/layout/public-layout.shared";
-import { PublicSiteLayout } from "../../app/features/public/layout/public-site-layout";
+import { PUBLIC_THEME } from "../../app/features/public/layout/theme";
+import { PublicSiteLayout } from "../../app/features/public/layout/layout";
 
 describe("PublicSiteLayout", () => {
   it("renders the header navigation, theme toggle, and footer content", () => {

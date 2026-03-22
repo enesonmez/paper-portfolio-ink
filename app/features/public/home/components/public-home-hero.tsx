@@ -4,10 +4,7 @@ import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 
-import {
-  PUBLIC_HOME_SURFACE_CLASSNAME,
-  usePublicHomeCopy,
-} from "../public-home.shared";
+import { PUBLIC_HOME_SURFACE_CLASSNAME, usePublicHomeCopy } from "../copy";
 
 export function PublicHomeHero() {
   const t = useT();

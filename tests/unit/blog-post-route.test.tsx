@@ -5,11 +5,11 @@ import {
   getSeedMessages,
   getSeedLocaleOptions,
 } from "../../app/shared/i18n/i18n.shared";
-import { PublicBlogPostScreen } from "../../app/features/public/blog/public-blog-post-screen";
+import { PublicBlogPostScreen } from "../../app/features/public/blog/post-screen";
 import {
   createEmptyPostContentDocument,
   serializePostContent,
-} from "../../app/features/posts/post-content.shared";
+} from "../../app/domain/posts/content";
 import { meta } from "../../app/routes/blog_.$slug";
 
 const storyContent = serializePostContent({

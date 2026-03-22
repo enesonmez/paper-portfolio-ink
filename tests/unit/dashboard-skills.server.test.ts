@@ -75,7 +75,7 @@ describe("dashboard skills server", () => {
 
   it("loads the skills registry for authenticated sessions", async () => {
     const { loadDashboardSkillsData } =
-      await import("../../app/features/dashboard/skills/dashboard-skills.server");
+      await import("../../app/features/dashboard/skills/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -124,7 +124,7 @@ describe("dashboard skills server", () => {
 
   it("does not expose the skills registry to non-admin sessions", async () => {
     const { loadDashboardSkillsData } =
-      await import("../../app/features/dashboard/skills/dashboard-skills.server");
+      await import("../../app/features/dashboard/skills/server");
 
     requireSessionMock.mockResolvedValue({
       user: {
@@ -150,7 +150,7 @@ describe("dashboard skills server", () => {
 
   it("returns a name error when the submitted skill already exists", async () => {
     const { handleDashboardSkillsAction } =
-      await import("../../app/features/dashboard/skills/dashboard-skills.server");
+      await import("../../app/features/dashboard/skills/server");
 
     const request = new Request("http://localhost:3000/dashboard/skills", {
       body: new URLSearchParams({
@@ -199,7 +199,7 @@ describe("dashboard skills server", () => {
 
   it("returns a 403 form error for non-admin action attempts", async () => {
     const { handleDashboardSkillsAction } =
-      await import("../../app/features/dashboard/skills/dashboard-skills.server");
+      await import("../../app/features/dashboard/skills/server");
 
     const request = new Request("http://localhost:3000/dashboard/skills", {
       body: new URLSearchParams({
@@ -239,7 +239,7 @@ describe("dashboard skills server", () => {
 
   it("updates a skill row when a valid edit action is posted", async () => {
     const { handleDashboardSkillsAction } =
-      await import("../../app/features/dashboard/skills/dashboard-skills.server");
+      await import("../../app/features/dashboard/skills/server");
 
     const request = new Request("http://localhost:3000/dashboard/skills", {
       body: new URLSearchParams({
@@ -296,7 +296,7 @@ describe("dashboard skills server", () => {
 
   it("deletes a skill row when a valid delete action is posted", async () => {
     const { handleDashboardSkillsAction } =
-      await import("../../app/features/dashboard/skills/dashboard-skills.server");
+      await import("../../app/features/dashboard/skills/server");
 
     const request = new Request("http://localhost:3000/dashboard/skills", {
       body: new URLSearchParams({

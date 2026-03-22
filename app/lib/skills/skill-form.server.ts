@@ -1,16 +1,13 @@
 import { z } from "zod";
 
-import {
-  buildSkillFormValues,
-  type SkillFormState,
-} from "~/features/skills/skill-form.shared";
+import { buildSkillFormValues, type SkillFormState } from "~/domain/skills/form";
 import {
   SKILL_DEFAULT_ICON,
   buildSkillIconOptions,
   isSkillIconKey,
   type SkillIconKey,
-} from "~/features/skills/skill-icon.shared";
-import { SKILL_FORM_FIELD } from "~/features/skills/skill.shared";
+} from "~/domain/skills/icons";
+import { SKILL_FORM_FIELD } from "~/domain/skills/model";
 import { suggestSlugFromTitle } from "~/lib/slug";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 

@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 
-import { usePublicHomeCopy } from "../public-home.shared";
+import { usePublicHomeCopy } from "../copy";
 
 export function PublicHomeCta() {
   const to = useLocalizedPath();

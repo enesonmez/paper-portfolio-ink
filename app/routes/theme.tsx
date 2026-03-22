@@ -6,7 +6,7 @@ import { loadI18nRuntimeState } from "~/shared/i18n/i18n.server";
 import {
   buildThemeCookie,
   parseThemeFormData,
-} from "~/features/public/layout/public-theme.server";
+} from "~/features/public/layout/theme.server";
 
 export async function action({ context, request }: Route.ActionArgs) {
   const formData = await request.formData();

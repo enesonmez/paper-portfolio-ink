@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
-import { PublicHomeScreen } from "../../app/features/public/home/public-home-screen";
+import { PublicHomeScreen } from "../../app/features/public/home/screen";
 
 const featuredProjects = [
   {

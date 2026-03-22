@@ -9,8 +9,8 @@ import {
   buildPublicProjectsFeedHref,
   mergePublicProjects,
   type PublicProjectsFeedLoaderData,
-  usePublicProjectsCopy,
-} from "../public-projects.shared";
+} from "../feed";
+import { usePublicProjectsCopy } from "../copy";
 import { PublicProjectCard } from "./public-project-card";
 
 interface PublicProjectsFeedProps {

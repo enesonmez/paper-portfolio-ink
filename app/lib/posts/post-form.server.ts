@@ -1,19 +1,16 @@
 import { z } from "zod";
 
-import {
-  buildPostFormValues,
-  type PostFormState,
-} from "~/features/posts/post-form.shared";
+import { buildPostFormValues, type PostFormState } from "~/domain/posts/form";
 import {
   getPostContentCharacterCount,
   normalizePostContentValue,
-} from "~/features/posts/post-content.shared";
+} from "~/domain/posts/content";
 import {
   POST_DEFAULT_STATUS,
   POST_FORM_FIELD,
   POST_STATUS_VALUES,
   type PostStatus,
-} from "~/features/posts/post.shared";
+} from "~/domain/posts/model";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createPostFormSchema(t: I18nTranslator) {

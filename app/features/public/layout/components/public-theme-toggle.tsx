@@ -7,9 +7,9 @@ import {
   PUBLIC_THEME,
   PUBLIC_THEME_FORM_FIELD,
   PUBLIC_THEME_INTENT,
-  usePublicLayoutCopy,
   type PublicTheme,
-} from "../public-layout.shared";
+} from "../theme";
+import { usePublicLayoutCopy } from "../copy";
 
 interface PublicThemeToggleProps {
   theme: PublicTheme;

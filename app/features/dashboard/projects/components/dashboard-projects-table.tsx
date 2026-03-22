@@ -6,18 +6,15 @@ import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { Button } from "~/components/ui/button";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
-import {
-  PROJECT_FORM_FIELD,
-  PROJECT_MUTATION_INTENT,
-} from "~/features/projects/project.shared";
+import { PROJECT_FORM_FIELD, PROJECT_MUTATION_INTENT } from "~/domain/projects/model";
 import type { ProjectOverview } from "~/lib/projects/projects.server";
 
-import { useDashboardProjectsCopy } from "../dashboard-projects.constants";
+import { useDashboardProjectsCopy } from "../copy";
 import {
   buildDashboardProjectsHref,
   formatDashboardProjectTitle,
   getProjectStatusTone,
-} from "../dashboard-projects.shared";
+} from "../state";
 
 interface DashboardProjectsTableProps {
   projects: ProjectOverview[];

@@ -2,7 +2,7 @@ import { ArrowUpRight, ArrowUpToLine, TerminalSquare } from "lucide-react";
 
 import { useT } from "~/shared/i18n/i18n-react";
 
-import { PUBLIC_SOCIAL_LINKS, usePublicLayoutCopy } from "../public-layout.shared";
+import { PUBLIC_SOCIAL_LINKS, usePublicLayoutCopy } from "../copy";
 
 export function PublicSiteFooter() {
   const t = useT();
