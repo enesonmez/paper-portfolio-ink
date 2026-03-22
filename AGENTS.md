@@ -19,7 +19,7 @@ Sen Senior Full-Stack Architect seviyesinde bir AI agent'sın. Gereksiz açıkla
 - TDD yaklaşımı uygula.
 - Context7, kütüphane/API dokümantasyonu ve yapılandırma adımları için varsayılan kaynaktır.
 - Mimari düzen vertical slice architecture yaklaşımını izlemelidir.
-- Her bir değişiklik sonrası test, typecheck, lint ve prettier sorgularını tüm proje için çalıştır.
+- Her bir değişiklik sonrası test, e2e, typecheck, lint ve prettier sorgularını tüm proje için çalıştır.
 - Proje Cloudflare Pages + D1 üstünde çalışacak ancak başka platformlara adapte olabilsin. Soyutlandırma işini unutma.
 - En sonda yazdığın kodların bulunduğu branch üzerinde code review modunu çalıştır.
 - Localization yapısına uyumlu geliştirme yap. Yeni localization değerlerini db migration ve messages.shared.ts seed'e yaz.

@@ -48,9 +48,10 @@
 
 ## Testing Strategy
 
-Red-Green-Refactor döngüsüne sadık kal:
+TDD prensibi ile Red-Green-Refactor döngüsüne sadık kal:
 
 - Unit Tests: Utility fonksiyonları, query helper'lar ve schema dönüşümleri için zorunludur.
 - Component Tests: Atomik UI bileşenlerinin render ve temel etkileşim davranışlarını kapsar.
 - Integration Tests: Loader/action ile D1 etkileşimini simüle eder.
+- E2E Tests: Feature kapsamında tüm case'ler için e2e testler koşulmalı.
 - Mocking: Cloudflare Workers env ve D1 binding'leri Vitest içinde mock'lanmalıdır.

@@ -6,7 +6,7 @@
 - [x] Tailwind CSS ve shadcn/ui entegrasyonunun yapılması.
 - [x] Cloudflare `wrangler.toml` dosyasının oluşturulması ve D1 veritabanı binding ayarlarının yapılması.
 - [x] Proje genelinde tip güvenliği ve kod standartları için Prettier/ESLint ayarlarının tamamlanması.
-- [ ] E2E testler için playwrigt entegrasyonunun yapılması.
+- [x] E2E testler için playwrigt entegrasyonunun yapılması.
 - [x] i18n altyapısını kur. DB merkezli olsun. Proje ayağa kalkarken cache'e alsın.
 
 ## Phase 2: Data Layer & Auth

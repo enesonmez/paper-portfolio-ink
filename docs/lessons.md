@@ -32,6 +32,7 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Slice klasoru zaten baglam verdigi icin `dashboard-posts.server.ts` benzeri tekrarlayan dosya adlari gereksiz; `server.ts`, `screen.tsx`, `copy.ts`, `state.ts`, `href.ts`, `feed.ts`, `theme.ts` gibi rollerine gore isimlendirilmis kucuk moduller, buyuyen `shared/constants` dosyalarindan daha dayanikli bir desen veriyor.
 - Bu repo file-system route kesfi yerine `app/routes.ts` ile manuel route config kullandigi icin yeni route dosyasi eklemek tek basina yeterli degil; nested path refactor'larinda cocuk route kayitlari ayni agaca explicit eklenmezse layout acilir ama outlet bos kalir.
 - Manual route config kullanan projede `app/routes` klasorunu URL stringlerini dosya adina gomerek duz tutmak hizla okunmaz hale geliyor; route entrypoint'lerini `public`, `dashboard`, `auth`, `locale`, `system` gibi sorumluluk klasorlerine ayirmak ve URL sozlesmesini yalnizca `app/routes.ts` icinde tutmak daha surdurulebilir bir desen veriyor.
+- `/:locale/*` deseniyle legacy unprefixed URL'leri ayni route agacinda birlikte tasirken, `/blog` gibi path'ler route ranking nedeniyle `:locale` parametresine dusup splat fallback'i hic gormeyebilir; bu tip backward-compatibility path'lerinde redirect mantigi yalnizca catch-all route'a birakilmamali, locale loader seviyesinde de korunmalidir.
 
 ## 4. Public Experience Lessons
 
@@ -93,6 +94,7 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Feature dokumantasyonu her adimda yazildigi icin proje evrimi okunabilir kaldi; bu pratik korunmali.
 - Test sayisi buyudukce duz `tests/unit` klasoru okunmaz hale geliyor; testler `unit` ve `integration` altinda da uygulama mimarisine paralel `components/shared/domain/features/routes/workers` slice'larina ayrildiginda kapsama bosluklarini gormek ve dogru test sinifini secmek belirgin sekilde kolaylasiyor.
 - Mock tabanli test disiplininde en dayanikli desen, route wrapper testlerinde yalnizca delegasyonu dogrulamak ve domain davranisini ilgili feature/shared server testinde tekrar kullanilan `vi.mock` sinirlari icinde izole etmektir; boylece integration testleri bile gercek DB/auth/network bagimliligi olmadan hizli ve deterministik kalir.
+- Playwright gibi gercek browser suite'lerinde local D1 persistence ve auth cookie akisi paylasilan tek bir dev server uzerinden calistigi icin deterministik fixture seed'i zorunludur; suite kucukse browser testlerini serial kosmak, paralel worker'larin ayni local runtime uzerinde yarattigi flake'leri belirgin sekilde azaltir.
 
 ## 8. What To Preserve Going Forward
 

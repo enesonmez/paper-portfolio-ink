@@ -36,6 +36,7 @@
     "workers",
     "vite.config.ts",
     "vitest.config.ts",
+    "playwright.config.ts",
     "react-router.config.ts"
   ]
 }

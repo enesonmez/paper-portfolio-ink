@@ -7,3 +7,6 @@ dist
 .vscode
 .env
 .dev.vars
+playwright-report
+test-results
+tests/e2e/.auth

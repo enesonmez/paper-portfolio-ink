@@ -18,7 +18,7 @@ export default defineConfig({
       include: ["app/**/*.{ts,tsx}"],
     },
     environment: "jsdom",
-    exclude: ["build/**", "coverage/**", "node_modules/**"],
+    exclude: ["build/**", "coverage/**", "node_modules/**", "tests/e2e/**"],
     globals: true,
     include: ["tests/**/*.{test,spec}.{ts,tsx}"],
     restoreMocks: true,
