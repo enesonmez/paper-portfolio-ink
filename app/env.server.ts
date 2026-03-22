@@ -1,5 +1,5 @@
 import type { AppDb } from "../db";
-import type { AppDataCache } from "./lib/cache/data-cache.server";
+import type { AppDataCache } from "./shared/cache/data-cache.server";
 import type { AuthRuntimeConfig } from "./shared/auth/auth-config";
 import type { AppRuntimeContext } from "./runtime.server";
 

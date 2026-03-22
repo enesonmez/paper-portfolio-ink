@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getAppDataCache } from "../../app/lib/cache/data-cache.server";
+import { getAppDataCache } from "../../app/shared/cache/data-cache.server";
 import { createRuntimeContext } from "../../app/runtime.server";
 import type { AppDb } from "../../db";
 import { getDbFromContext } from "../../db/context";

@@ -3,7 +3,7 @@ import type { AppLoadContext } from "react-router";
 import {
   createCloudflareDataCache,
   type CloudflareCacheStore,
-} from "../app/lib/cache/data-cache.server";
+} from "../app/shared/cache/data-cache.server";
 import { createRuntimeContext } from "../app/runtime.server";
 import { createAppDb } from "../db";
 import { resolveCloudflareAuthConfig } from "./auth-env";
