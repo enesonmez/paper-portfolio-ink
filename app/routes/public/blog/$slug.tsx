@@ -1,5 +1,5 @@
 import { Link, useLoaderData, useRouteError } from "react-router";
-import type { Route } from "./+types/blog_.$slug";
+import type { Route } from "./+types/$slug";
 
 import type { loader as rootLoader } from "~/root";
 import { createTranslator } from "~/shared/i18n/i18n.shared";

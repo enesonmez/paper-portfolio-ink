@@ -1,4 +1,4 @@
-import type { Route } from "./+types/dashboard.skills";
+import type { Route } from "./+types/skills";
 
 import DashboardSkillsRoute, {
   DashboardSkillsAccessDeniedScreen,

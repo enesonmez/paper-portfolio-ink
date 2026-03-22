@@ -32,7 +32,7 @@ describe("auth route", () => {
   it("delegates GET requests to Better Auth handler", async () => {
     const request = new Request("http://localhost:3000/api/auth/session");
     const response = new Response("ok");
-    const { loader } = await import("../../app/routes/api.auth.$");
+    const { loader } = await import("../../app/routes/system/api-auth");
 
     handlerMock.mockResolvedValue(response);
     createAuthMock.mockReturnValue({ handler: handlerMock });
@@ -58,7 +58,7 @@ describe("auth route", () => {
       },
     });
     const response = new Response("created", { status: 200 });
-    const { action } = await import("../../app/routes/api.auth.$");
+    const { action } = await import("../../app/routes/system/api-auth");
 
     handlerMock.mockResolvedValue(response);
     createAuthMock.mockReturnValue({ handler: handlerMock });

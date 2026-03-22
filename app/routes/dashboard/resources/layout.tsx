@@ -1,4 +1,4 @@
-import type { Route } from "./+types/dashboard.resources";
+import type { Route } from "./+types/layout";
 
 import DashboardResourcesRoute, {
   DashboardResourcesAccessDeniedScreen,

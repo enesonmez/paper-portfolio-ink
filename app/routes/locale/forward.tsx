@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import type { Route } from "./+types/locale-forward";
+import type { Route } from "./+types/forward";
 
 import {
   buildLocaleCookie,

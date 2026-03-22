@@ -19,7 +19,7 @@ describe("dashboard route guard", () => {
 
   it("enforces a server-side session check in the dashboard parent loader", async () => {
     const request = new Request("http://localhost:3000/dashboard");
-    const { loader } = await import("../../app/routes/dashboard");
+    const { loader } = await import("../../app/routes/dashboard/layout");
 
     requireSessionMock.mockResolvedValue({
       session: {

@@ -98,7 +98,7 @@ describe("login route", () => {
   }, 20000);
 
   it("renders a neo-brutalist login form shell", async () => {
-    const { LoginScreen } = await import("../../app/routes/login");
+    const { LoginScreen } = await import("../../app/routes/auth/login");
     const router = createMemoryRouter(
       [
         {

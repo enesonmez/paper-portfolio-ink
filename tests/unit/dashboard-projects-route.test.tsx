@@ -48,7 +48,7 @@ const baseScreenProps = {
 describe("dashboard projects route", () => {
   it("renders a full-width projects registry with create trigger", async () => {
     const { DashboardProjectsScreen } =
-      await import("../../app/routes/dashboard.projects");
+      await import("../../app/routes/dashboard/projects");
 
     const router = createMemoryRouter(
       [
@@ -77,7 +77,7 @@ describe("dashboard projects route", () => {
 
   it("renders the project form inside a modal when requested", async () => {
     const { DashboardProjectsScreen } =
-      await import("../../app/routes/dashboard.projects");
+      await import("../../app/routes/dashboard/projects");
 
     const router = createMemoryRouter(
       [
@@ -111,7 +111,7 @@ describe("dashboard projects route", () => {
 
   it("shows a title-based slug suggestion in the project modal", async () => {
     const { DashboardProjectsScreen } =
-      await import("../../app/routes/dashboard.projects");
+      await import("../../app/routes/dashboard/projects");
 
     const router = createMemoryRouter(
       [
@@ -150,7 +150,7 @@ describe("dashboard projects route", () => {
 
   it("recomputes the project slug suggestion after a duplicate-slug response when title changes", async () => {
     const { DashboardProjectsScreen } =
-      await import("../../app/routes/dashboard.projects");
+      await import("../../app/routes/dashboard/projects");
 
     const router = createMemoryRouter(
       [

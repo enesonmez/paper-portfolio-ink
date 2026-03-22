@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import type { Route } from "./+types/locale-prefix";
+import type { Route } from "./+types/layout";
 
 import { loadI18nRuntimeState } from "~/shared/i18n/i18n.server";
 import { isSupportedLocale } from "~/shared/i18n/i18n.shared";

@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 describe("dashboard index route", () => {
   it("renders the initial dashboard overview widgets", async () => {
     const { default: DashboardIndexRoute } =
-      await import("../../app/routes/dashboard._index");
+      await import("../../app/routes/dashboard/index");
 
     const router = createMemoryRouter(
       [

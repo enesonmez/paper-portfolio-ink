@@ -1,5 +1,5 @@
 import { useLoaderData } from "react-router";
-import type { Route } from "./+types/_index";
+import type { Route } from "./+types/home";
 
 import type { loader as rootLoader } from "~/root";
 import { createTranslator } from "~/shared/i18n/i18n.shared";

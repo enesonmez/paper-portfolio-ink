@@ -1,4 +1,4 @@
-import type { Route } from "./+types/dashboard.posts";
+import type { Route } from "./+types/posts";
 
 import DashboardPostsRoute, {
   DashboardPostsScreen,

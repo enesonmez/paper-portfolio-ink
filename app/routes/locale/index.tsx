@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import type { Route } from "./+types/locale-index";
+import type { Route } from "./+types/index";
 
 import { buildLocaleCookie } from "~/shared/i18n/i18n.shared";
 import { buildLocaleHomePath, loadI18nRuntimeState } from "~/shared/i18n/i18n.server";

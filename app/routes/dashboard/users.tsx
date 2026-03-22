@@ -1,4 +1,4 @@
-import type { Route } from "./+types/dashboard.users";
+import type { Route } from "./+types/users";
 
 import DashboardUsersRoute, {
   DashboardUsersAccessDeniedScreen,

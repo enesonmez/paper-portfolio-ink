@@ -1,4 +1,4 @@
-import type { Route } from "./+types/dashboard.resources.locales";
+import type { Route } from "./+types/locales";
 
 import { handleDashboardResourcesAction } from "~/features/dashboard/resources/server";
 
