@@ -1,4 +1,4 @@
-import type { Route } from "./+types/projects.feed";
+import type { Route } from "./+types/feed";
 
 import { loadPublicProjectsFeedData } from "~/features/public/projects/server";
 

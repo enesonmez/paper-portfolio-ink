@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 describe("locale forward route", () => {
   it("redirects legacy unprefixed deep links to the active localized path", async () => {
     const request = new Request("http://localhost:3000/blog?tag=edge");
-    const { loader } = await import("../../app/routes/locale-forward");
+    const { loader } = await import("../../app/routes/locale/forward");
 
     const response = await loader({
       request,
@@ -23,7 +23,7 @@ describe("locale forward route", () => {
 
   it("returns 404 for unknown non-legacy paths instead of redirecting everything", async () => {
     const request = new Request("http://localhost:3000/unknown-page");
-    const { loader } = await import("../../app/routes/locale-forward");
+    const { loader } = await import("../../app/routes/locale/forward");
 
     const response = await loader({
       request,

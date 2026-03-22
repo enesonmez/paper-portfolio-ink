@@ -1,4 +1,4 @@
-import type { Route } from "./+types/blog.feed";
+import type { Route } from "./+types/feed";
 
 import { loadPublicBlogFeedData } from "~/features/public/blog/server";
 

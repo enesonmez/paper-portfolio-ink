@@ -1,10 +1,10 @@
 import { useLoaderData } from "react-router";
-import type { Route } from "./+types/projects";
+import type { Route } from "./+types/index";
 
 import type { loader as rootLoader } from "~/root";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
-import { PublicProjectsScreen } from "~/features/public/projects/screen";
-import { loadPublicProjectsData } from "~/features/public/projects/server";
+import { PublicBlogScreen } from "~/features/public/blog/screen";
+import { loadPublicBlogData } from "~/features/public/blog/server";
 import { siteConfig } from "~/lib/site";
 
 export function meta({ location, matches }: Route.MetaArgs) {
@@ -12,8 +12,8 @@ export function meta({ location, matches }: Route.MetaArgs) {
     if (match && match.id === "root") {
       const rootData = match.data as Awaited<ReturnType<typeof rootLoader>>;
       const t = createTranslator(rootData.messages);
-      const title = t("site.title.projects");
-      const description = t("site.description.projects");
+      const title = t("site.title.blog");
+      const description = t("site.description.blog");
 
       return [
         { title },
@@ -37,6 +37,10 @@ export function meta({ location, matches }: Route.MetaArgs) {
           property: "og:url",
           content: new URL(location.pathname, siteConfig.url).toString(),
         },
+        {
+          property: "twitter:card",
+          content: "summary",
+        },
       ];
     }
   }
@@ -44,18 +48,20 @@ export function meta({ location, matches }: Route.MetaArgs) {
   return [];
 }
 
-export async function loader({ context, request }: Route.LoaderArgs) {
-  return loadPublicProjectsData(context, request);
+export async function loader({
+  context,
+  request,
+}: {
+  context: Parameters<typeof loadPublicBlogData>[0];
+  request: Request;
+}) {
+  return loadPublicBlogData(context, request);
 }
 
-export default function ProjectsPage() {
+export default function BlogPage() {
   const loaderData = useLoaderData<typeof loader>();
 
   return (
-    <PublicProjectsScreen
-      nextCursor={loaderData.nextCursor}
-      projects={loaderData.projects}
-      stats={loaderData.stats}
-    />
+    <PublicBlogScreen nextCursor={loaderData.nextCursor} posts={loaderData.posts} />
   );
 }

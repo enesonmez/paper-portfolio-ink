@@ -1,4 +1,4 @@
-import { loader } from "../../app/routes/favicon[.]ico";
+import { loader } from "../../app/routes/system/favicon";
 
 describe("favicon.ico route", () => {
   it("redirects legacy favicon requests to the svg asset", () => {

@@ -52,7 +52,7 @@ const baseScreenProps = {
 
 describe("dashboard posts route", () => {
   it("renders a posts registry with metrics and a create trigger", async () => {
-    const { DashboardPostsScreen } = await import("../../app/routes/dashboard.posts");
+    const { DashboardPostsScreen } = await import("../../app/routes/dashboard/posts");
 
     const router = createMemoryRouter(
       [
@@ -80,7 +80,7 @@ describe("dashboard posts route", () => {
   }, 20000);
 
   it("renders a fullscreen compose surface without repeating the registry screen", async () => {
-    const { DashboardPostsScreen } = await import("../../app/routes/dashboard.posts");
+    const { DashboardPostsScreen } = await import("../../app/routes/dashboard/posts");
 
     const router = createMemoryRouter(
       [
@@ -130,7 +130,7 @@ describe("dashboard posts route", () => {
   }, 20000);
 
   it("shows a title-based slug suggestion in the post compose view", async () => {
-    const { DashboardPostsScreen } = await import("../../app/routes/dashboard.posts");
+    const { DashboardPostsScreen } = await import("../../app/routes/dashboard/posts");
 
     const router = createMemoryRouter(
       [
@@ -169,7 +169,7 @@ describe("dashboard posts route", () => {
   }, 20000);
 
   it("recomputes the post slug suggestion after a duplicate-slug response when title changes", async () => {
-    const { DashboardPostsScreen } = await import("../../app/routes/dashboard.posts");
+    const { DashboardPostsScreen } = await import("../../app/routes/dashboard/posts");
 
     const router = createMemoryRouter(
       [

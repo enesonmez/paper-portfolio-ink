@@ -8,9 +8,9 @@ vi.mock("../../app/features/dashboard/resources/server", () => ({
   handleDashboardResourcesAction: handleDashboardResourcesActionMock,
 }));
 
-import { action as indexAction } from "../../app/routes/dashboard.resources._index";
-import { action as localesAction } from "../../app/routes/dashboard.resources.locales";
-import { action as translationsAction } from "../../app/routes/dashboard.resources.translations";
+import { action as indexAction } from "../../app/routes/dashboard/resources/index";
+import { action as localesAction } from "../../app/routes/dashboard/resources/locales";
+import { action as translationsAction } from "../../app/routes/dashboard/resources/translations";
 
 function buildActionArgs<TAction extends (args: never) => unknown>(request: Request) {
   const context = {} as never;

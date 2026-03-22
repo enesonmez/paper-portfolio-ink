@@ -40,7 +40,7 @@ const baseScreenProps = {
 
 describe("dashboard users route", () => {
   it("renders a users registry with create trigger", async () => {
-    const { DashboardUsersScreen } = await import("../../app/routes/dashboard.users");
+    const { DashboardUsersScreen } = await import("../../app/routes/dashboard/users");
 
     const router = createMemoryRouter(
       [
@@ -68,7 +68,7 @@ describe("dashboard users route", () => {
   }, 20000);
 
   it("renders a modal form when user creation is requested", async () => {
-    const { DashboardUsersScreen } = await import("../../app/routes/dashboard.users");
+    const { DashboardUsersScreen } = await import("../../app/routes/dashboard/users");
 
     const router = createMemoryRouter(
       [
@@ -100,7 +100,7 @@ describe("dashboard users route", () => {
 
   it("renders the restricted access warning for non-admin viewers", async () => {
     const { DashboardUsersAccessDeniedScreen } =
-      await import("../../app/routes/dashboard.users");
+      await import("../../app/routes/dashboard/users");
 
     render(<DashboardUsersAccessDeniedScreen viewerRole="author" />);
 
@@ -114,7 +114,7 @@ describe("dashboard users route", () => {
   }, 20000);
 
   it("renders a popup when a destructive user action returns a form-level error", async () => {
-    const { DashboardUsersScreen } = await import("../../app/routes/dashboard.users");
+    const { DashboardUsersScreen } = await import("../../app/routes/dashboard/users");
 
     const router = createMemoryRouter(
       [

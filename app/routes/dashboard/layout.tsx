@@ -1,4 +1,4 @@
-import type { Route } from "./+types/dashboard";
+import type { Route } from "./+types/layout";
 
 import DashboardLayoutRoute from "~/features/dashboard/layout/route";
 import { loadDashboardLayoutData } from "~/features/dashboard/layout/server";

@@ -1,4 +1,4 @@
-import { loader } from "../../app/routes/[.]well-known.appspecific.com[.]chrome[.]devtools[.]json";
+import { loader } from "../../app/routes/system/chrome-devtools";
 
 describe("chrome devtools well-known route", () => {
   it("returns a JSON response for local DevTools probes", async () => {

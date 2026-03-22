@@ -10,7 +10,7 @@ import {
   createEmptyPostContentDocument,
   serializePostContent,
 } from "../../app/domain/posts/content";
-import { meta } from "../../app/routes/blog_.$slug";
+import { meta } from "../../app/routes/public/blog/$slug";
 
 const storyContent = serializePostContent({
   content: [

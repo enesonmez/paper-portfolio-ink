@@ -1,4 +1,4 @@
-import type { Route } from "./+types/dashboard.projects";
+import type { Route } from "./+types/projects";
 
 import DashboardProjectsRoute, {
   DashboardProjectsScreen,

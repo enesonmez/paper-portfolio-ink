@@ -33,7 +33,7 @@ const baseScreenProps = {
 
 describe("dashboard skills route", () => {
   it("renders the skills registry with create trigger", async () => {
-    const { DashboardSkillsScreen } = await import("../../app/routes/dashboard.skills");
+    const { DashboardSkillsScreen } = await import("../../app/routes/dashboard/skills");
 
     const router = createMemoryRouter(
       [
@@ -65,7 +65,7 @@ describe("dashboard skills route", () => {
   }, 20000);
 
   it("renders the create modal when requested", async () => {
-    const { DashboardSkillsScreen } = await import("../../app/routes/dashboard.skills");
+    const { DashboardSkillsScreen } = await import("../../app/routes/dashboard/skills");
 
     const router = createMemoryRouter(
       [
@@ -98,7 +98,7 @@ describe("dashboard skills route", () => {
   }, 20000);
 
   it("renders the edit modal with existing values when requested", async () => {
-    const { DashboardSkillsScreen } = await import("../../app/routes/dashboard.skills");
+    const { DashboardSkillsScreen } = await import("../../app/routes/dashboard/skills");
 
     const router = createMemoryRouter(
       [
@@ -139,7 +139,7 @@ describe("dashboard skills route", () => {
 
   it("renders a restricted screen for non-admin viewers", async () => {
     const { DashboardSkillsAccessDeniedScreen } =
-      await import("../../app/routes/dashboard.skills");
+      await import("../../app/routes/dashboard/skills");
 
     const router = createMemoryRouter(
       [

@@ -31,6 +31,7 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - `app/features/*` icinde hem route slice'i hem de domain kontrati tutmak semantik gurultu uretiyor; `posts/projects/users/skills/resources` gibi saf kontrat klasorleri `app/domain/*` altina tasinip `features` yalnizca gercek screen/loader/action slice'larini barindirdiginda import zinciri ve klasor agaci daha hizli okunuyor.
 - Slice klasoru zaten baglam verdigi icin `dashboard-posts.server.ts` benzeri tekrarlayan dosya adlari gereksiz; `server.ts`, `screen.tsx`, `copy.ts`, `state.ts`, `href.ts`, `feed.ts`, `theme.ts` gibi rollerine gore isimlendirilmis kucuk moduller, buyuyen `shared/constants` dosyalarindan daha dayanikli bir desen veriyor.
 - Bu repo file-system route kesfi yerine `app/routes.ts` ile manuel route config kullandigi icin yeni route dosyasi eklemek tek basina yeterli degil; nested path refactor'larinda cocuk route kayitlari ayni agaca explicit eklenmezse layout acilir ama outlet bos kalir.
+- Manual route config kullanan projede `app/routes` klasorunu URL stringlerini dosya adina gomerek duz tutmak hizla okunmaz hale geliyor; route entrypoint'lerini `public`, `dashboard`, `auth`, `locale`, `system` gibi sorumluluk klasorlerine ayirmak ve URL sozlesmesini yalnizca `app/routes.ts` icinde tutmak daha surdurulebilir bir desen veriyor.
 
 ## 4. Public Experience Lessons
 
