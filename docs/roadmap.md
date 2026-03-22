@@ -15,7 +15,8 @@
 - [x] Temel veritabanı şemalarının (`users`, `posts`, `projects`, `sessions`) `schema.ts` içinde oluşturulması.
 - [x] Local geliştirme için ilk D1 migration (göç) işleminin başarıyla çalıştırılması.
 - [x] Portable Session-based Auth (Better Auth) kurulumu ve login/session mekanizmasının D1'e bağlanması.
-
+- [ ] Db üzerinden role - claim based hybrid bir authorization yapısının kurulması.
+ 
 ## Phase 3: Public UI
 
 - [x] Global Layout, Navbar ve Footer bileşenlerinin (Dark/Light mode switch dahil) tasarlanması.
@@ -23,6 +24,7 @@
 - [x] Projeler sayfası (`/projects`) ve proje kartları bileşenlerinin oluşturulması.
 - [x] Blog listeleme sayfası (`/blog`) ve SEO/Metadata uyumlu Blog Detay (`/blog/:slug`) sayfasının kodlanması.
 - [x] Ana sayfadaki skill kısmı db'ye bağlansın. Eğer skill yoksa bu bölüm gösterilmesin.
+- [ ] Projede kullanılan sosyal medya linkleri cache'deki configuration-parameter değerlerinden alınsın.
 
 ## Phase 4: Admin Dashboard
 
@@ -35,8 +37,9 @@
 - [x] Kullanıcılar için CRUD işlemlerinin yapılması.
 - [x] Logout yapısının oluşturulması.
 - [x] Beceriler için `/skills` menüsü altında listeleme, create ve delete işlemleri.
-- [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı içine `/account` tabı ekle. İçerisinde email, linkedin, github, x, instagram linklerini alacak yapı olsun. Form şeklinde olmasın. Listelensin üzerine tıklayınca po-up çıksın ve orada kayıt edilsin. DB de configuration-parameter tablosu oluştur ve oraya key-value şeklinde kaydet.
+- [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı içine `/account` tabı ekle. İçerisinde email, linkedin, github, x, instagram linkleri, proje ismi, proje domain url'ini alacak yapı olsun. Form şeklinde olmasın. Listelensin üzerine tıklayınca po-up çıksın ve orada kayıt edilsin. DB de configuration-parameter tablosu oluştur ve oraya key-value şeklinde kaydet. Bu tablodaki değerler proje ayağa kalktığında ilk istek sonrası cache alınmalı. `/settings` sayfasının bir bölümünde cache temizle butonu olsun. Eğer kullanıcı sayfanın herhangi bir yerindeki configuration-parameter'ı değiştirirse bu buton ile cache'i temizleyip tekrar güncel değerleri cache'e alabilsin.
 - [x] Locale ve Transalations tablolarını yönetebileceğim CRUD işlemlerinin yapılması. Cache odaklı geliştirilecek. Menü `/resources` olsun. İçerisinde 'Tabbed Settings Page' tasarımı olsun. Tablarda locale ve translations olsun.
+[ ] Dashboard Overview: Genel istatistiklerin (toplam yazı, proje, aktif kullanıcı, toplam skill) gösterildiği bir özet ekranı. Post'ların tümünün görüntülenme sayısının günlük - aylık kırılım ile gösterecek grafik. log_history üzerinden son 5 kaydın listelenmesi. Admin tüm kayıtlar üzerinden diğer kullanıcılar sadece kendi log'ları.
 
 ## Phase 5: Optimization & Launch
 
@@ -55,3 +58,17 @@
 - [ ] Production deploy öncesi D1 migration apply adımının kontrollü ve güvenli şekilde pipeline'a bağlanması.
 - [ ] Cloudflare secrets, Better Auth secret'ları ve diğer environment variable'lar için güvenli CI secret yönetiminin dokümante edilmesi ve standardize edilmesi.
 - [ ] Deploy sonrası smoke test, health check ve başarısız deploy durumları için rollback veya alert stratejisinin eklenmesi.
+
+## Phase 7: Observation & Logging
+
+- [ ] Create, update, delete işlemlerinde ilgili akışın bilgisi ile `log_history` adında bir log tablosu oluştur. Kullanıcı ile eşleştir.
+- [ ] Sistemde oluşan hataları loglayacak `log_error_history` adında bir log tablosu oluştur.
+- [ ] Dashboard sidebar'a Logging sekmesi ekle. 'Tabbed Settings Page' tasarımı olsun. Tablarda log history ve log error history olsun. Log error history kısmı için belirli bir aralıktaki veriyi txt formatında alma özelliği olsun. Belirli bir aralıktaki log kayıtlarını silme özelliğide olsun. Sadece Admin rolü erişebilsin.
+
+## Phase 8: Analytics & Insights
+
+[ ] view_history tablosunun (post_id, user_hash, scroll_rate, seconds_spent) oluşturulması.
+[ ] Backend Tracking: SHA-256(ip + user-agent + secret) tabanlı user_hash üretimi ve 12 saatlik kısıtlama (Throttling) logic'i.
+[ ] Frontend Tracker: navigator.sendBeacon ile sayfa terk edildiğinde (unload/visibilitychange) db'ye veri gönderimi.
+[ ] Scroll & Time Depth: Kullanıcının makalenin yüzde kaçına ulaştığının ve ne kadar süre kaldığının hesaplanması.
+[ ] Double-Lock Mechanism: Hem Cookie (Client) hem de DB (Server) seviyesinde 12 saatlik mükerrer kayıt engelleme.
