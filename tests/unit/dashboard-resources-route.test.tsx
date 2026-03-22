@@ -1,9 +1,15 @@
 import { render, screen } from "@testing-library/react";
-import { createMemoryRouter, RouterProvider } from "react-router";
+import { Outlet, createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, it } from "vitest";
 
-const baseScreenProps = {
-  activeTab: "locales" as const,
+import {
+  DashboardResourcesAccessDeniedScreen,
+  DashboardResourcesLayout,
+} from "../../app/features/dashboard/resources/layout/screen";
+import DashboardResourcesLocalesScreen from "../../app/features/dashboard/resources/locales/screen";
+import DashboardResourcesTranslationsScreen from "../../app/features/dashboard/resources/translations/screen";
+
+const baseRouteContext = {
   localeForm: {
     editingCode: null,
     errors: {},
@@ -67,19 +73,32 @@ const baseScreenProps = {
 };
 
 describe("dashboard resources route", () => {
-  it("renders the locale registry tab with create trigger", async () => {
-    const { DashboardResourcesScreen } =
-      await import("../../app/routes/dashboard.resources");
-
+  it("renders the locale registry path with create trigger", () => {
     const router = createMemoryRouter(
       [
         {
           path: "/dashboard/resources",
-          element: <DashboardResourcesScreen {...baseScreenProps} />,
+          element: (
+            <DashboardResourcesLayout
+              currentSection="locales"
+              metrics={baseRouteContext.metrics}
+              selectedTranslationLocale={baseRouteContext.selectedTranslationLocale}
+              translationPagination={baseRouteContext.translationPagination}
+              translationSearchQuery={baseRouteContext.translationSearchQuery}
+            >
+              <Outlet context={baseRouteContext} />
+            </DashboardResourcesLayout>
+          ),
+          children: [
+            {
+              path: "locales",
+              element: <DashboardResourcesLocalesScreen />,
+            },
+          ],
         },
       ],
       {
-        initialEntries: ["/dashboard/resources"],
+        initialEntries: ["/dashboard/resources/locales"],
       },
     );
 
@@ -92,39 +111,54 @@ describe("dashboard resources route", () => {
     expect(screen.getByRole("link", { name: "Create locale" })).toBeInTheDocument();
     expect(screen.getByText("Cache-first settings")).toBeInTheDocument();
     expect(screen.getByText("tr")).toBeInTheDocument();
-  }, 20000);
+  });
 
-  it("renders the translation tab and translation modal when requested", async () => {
-    const { DashboardResourcesScreen } =
-      await import("../../app/routes/dashboard.resources");
-
+  it("renders the translations path and translation modal when requested", () => {
     const router = createMemoryRouter(
       [
         {
           path: "/dashboard/resources",
           element: (
-            <DashboardResourcesScreen
-              {...baseScreenProps}
-              activeTab="translations"
+            <DashboardResourcesLayout
+              currentSection="translations"
+              metrics={baseRouteContext.metrics}
+              selectedTranslationLocale={baseRouteContext.selectedTranslationLocale}
               translationPagination={{
                 currentPage: 2,
                 pageCount: 3,
                 pageSize: 20,
                 totalItems: 41,
               }}
-              translationForm={{
-                ...baseScreenProps.translationForm,
-                isOpen: true,
-                mode: "create",
-              }}
-            />
+              translationSearchQuery={baseRouteContext.translationSearchQuery}
+            >
+              <Outlet
+                context={{
+                  ...baseRouteContext,
+                  translationForm: {
+                    ...baseRouteContext.translationForm,
+                    isOpen: true,
+                    mode: "create",
+                  },
+                  translationPagination: {
+                    currentPage: 2,
+                    pageCount: 3,
+                    pageSize: 20,
+                    totalItems: 41,
+                  },
+                }}
+              />
+            </DashboardResourcesLayout>
           ),
+          children: [
+            {
+              path: "translations",
+              element: <DashboardResourcesTranslationsScreen />,
+            },
+          ],
         },
       ],
       {
-        initialEntries: [
-          "/dashboard/resources?tab=translations&modal=create-translation",
-        ],
+        initialEntries: ["/dashboard/resources/translations?modal=create-translation"],
       },
     );
 
@@ -139,12 +173,9 @@ describe("dashboard resources route", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Message key")).toBeInTheDocument();
     expect(screen.getByLabelText("Value")).toBeInTheDocument();
-  }, 20000);
+  });
 
-  it("renders a restricted screen for non-admin viewers", async () => {
-    const { DashboardResourcesAccessDeniedScreen } =
-      await import("../../app/routes/dashboard.resources");
-
+  it("renders a restricted screen for non-admin viewers", () => {
     const router = createMemoryRouter(
       [
         {

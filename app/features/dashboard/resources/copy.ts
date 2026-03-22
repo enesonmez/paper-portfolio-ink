@@ -23,6 +23,12 @@ export function buildDashboardResourcesCopy(t: I18nTranslator) {
     localeFilterTitle: t("dashboard.resources.localeFilterTitle"),
     localeInventoryEyebrow: t("dashboard.resources.localeInventoryEyebrow"),
     localeTabLabel: t("dashboard.resources.localeTabLabel"),
+    metricActiveLocales: t("dashboard.resources.metricActiveLocales"),
+    metricSelectedLocaleTranslations: t(
+      "dashboard.resources.metricSelectedLocaleTranslations",
+    ),
+    metricTotalLocales: t("dashboard.resources.metricTotalLocales"),
+    metricTotalTranslations: t("dashboard.resources.metricTotalTranslations"),
     paginationNextLabel: t("dashboard.resources.paginationNextLabel"),
     paginationPreviousLabel: t("dashboard.resources.paginationPreviousLabel"),
     registryTitle: t("dashboard.resources.registryTitle"),

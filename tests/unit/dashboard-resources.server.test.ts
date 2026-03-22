@@ -154,7 +154,7 @@ describe("dashboard resources server", () => {
     const response = await loadDashboardResourcesData(
       context,
       new Request(
-        "http://localhost:3000/dashboard/resources?tab=translations&translationLocale=tr&translationSearch=jeler",
+        "http://localhost:3000/dashboard/resources/translations?translationLocale=tr&translationSearch=jeler",
       ),
     );
 
@@ -164,7 +164,6 @@ describe("dashboard resources server", () => {
 
     expect(response).toMatchObject({
       access: "granted",
-      activeTab: "translations",
       metrics: {
         activeLocales: 2,
         selectedLocaleTranslations: 4,
@@ -237,7 +236,7 @@ describe("dashboard resources server", () => {
     const response = await loadDashboardResourcesData(
       context,
       new Request(
-        "http://localhost:3000/dashboard/resources?tab=translations&translationLocale=en&translationSearch=proj",
+        "http://localhost:3000/dashboard/resources/translations?translationLocale=en&translationSearch=proj",
       ),
     );
 
@@ -298,7 +297,7 @@ describe("dashboard resources server", () => {
     const response = await loadDashboardResourcesData(
       context,
       new Request(
-        "http://localhost:3000/dashboard/resources?tab=translations&translationLocale=en&translationSearch=res&translationPage=99",
+        "http://localhost:3000/dashboard/resources/translations?translationLocale=en&translationSearch=res&translationPage=99",
       ),
     );
 
@@ -381,7 +380,7 @@ describe("dashboard resources server", () => {
 
     const response = await handleDashboardResourcesAction(
       context,
-      new Request("http://localhost:3000/dashboard/resources?tab=locales", {
+      new Request("http://localhost:3000/dashboard/resources/locales", {
         body: new URLSearchParams({
           code: "tr",
           intent: "create-locale",
@@ -436,7 +435,7 @@ describe("dashboard resources server", () => {
 
     const response = await handleDashboardResourcesAction(
       context,
-      new Request("http://localhost:3000/dashboard/resources?tab=locales", {
+      new Request("http://localhost:3000/dashboard/resources/locales", {
         body: new URLSearchParams({
           intent: "delete-locale",
           originalCode: "tr",
@@ -502,7 +501,7 @@ describe("dashboard resources server", () => {
     const response = await handleDashboardResourcesAction(
       context,
       new Request(
-        "http://localhost:3000/dashboard/resources?tab=translations&translationLocale=tr",
+        "http://localhost:3000/dashboard/resources/translations?translationLocale=tr",
         {
           body: new URLSearchParams({
             intent: "update-translation",
@@ -536,7 +535,7 @@ describe("dashboard resources server", () => {
     );
     expect(response.status).toBe(302);
     expect(response.headers.get("Location")).toBe(
-      "/tr/dashboard/resources?tab=translations&translationLocale=en",
+      "/tr/dashboard/resources/translations?translationLocale=en",
     );
     expect(cacheDeleteMock).toHaveBeenCalledWith(
       "http://localhost:3000/__cache/i18n/locales",
@@ -576,7 +575,7 @@ describe("dashboard resources server", () => {
     const response = await handleDashboardResourcesAction(
       context,
       new Request(
-        "http://localhost:3000/dashboard/resources?tab=translations&translationLocale=tr",
+        "http://localhost:3000/dashboard/resources/translations?translationLocale=tr",
         {
           body: new URLSearchParams({
             intent: "delete-translation",
@@ -651,7 +650,7 @@ describe("dashboard resources server", () => {
     const response = await handleDashboardResourcesAction(
       context,
       new Request(
-        "http://localhost:3000/dashboard/resources?tab=translations&translationLocale=tr",
+        "http://localhost:3000/dashboard/resources/translations?translationLocale=tr",
         {
           body: new URLSearchParams({
             intent: "update-translation",
@@ -772,7 +771,7 @@ describe("dashboard resources server", () => {
 
     const response = await handleDashboardResourcesAction(
       context,
-      new Request("http://localhost:3000/en/dashboard/resources?tab=locales", {
+      new Request("http://localhost:3000/en/dashboard/resources/locales", {
         body: new URLSearchParams({
           code: "en-gb",
           intent: "update-locale",
@@ -808,8 +807,6 @@ describe("dashboard resources server", () => {
       },
     );
     expect(response.status).toBe(302);
-    expect(response.headers.get("Location")).toBe(
-      "/en-gb/dashboard/resources?tab=locales",
-    );
+    expect(response.headers.get("Location")).toBe("/en-gb/dashboard/resources/locales");
   }, 20000);
 });

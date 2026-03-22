@@ -70,7 +70,7 @@ export function DashboardSidebar({
               <NavLink
                 key={item.label}
                 to={item.to}
-                end
+                end={item.to.endsWith("/dashboard")}
                 onClick={onClose}
                 className={({ isActive }) =>
                   [

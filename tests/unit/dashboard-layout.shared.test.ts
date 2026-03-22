@@ -25,10 +25,10 @@ describe("dashboard layout shared helpers", () => {
       await import("../../app/features/dashboard/layout/identity");
 
     expect(buildDashboardIdentity({})).toEqual({
-      displayName: "Paper Enes Ink",
+      displayName: "Paper Ink",
       email: "-",
       id: null,
-      initials: "PE",
+      initials: "PI",
       role: "-",
     });
   });

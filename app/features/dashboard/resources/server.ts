@@ -45,11 +45,12 @@ import {
 
 import { buildDashboardResourcesFormCopy } from "./copy";
 import {
+  DASHBOARD_RESOURCES_SECTION,
   DASHBOARD_RESOURCES_TRANSLATIONS_PAGE_SIZE,
-  buildDashboardResourcesHref,
+  buildDashboardResourcesLocalesHref,
+  buildDashboardResourcesTranslationsHref,
   normalizeDashboardResourcesPage,
   normalizeDashboardResourcesSearchQuery,
-  resolveDashboardResourcesTab,
   resolveDashboardResourcesTranslationLocale,
 } from "./href";
 import {
@@ -180,7 +181,7 @@ function redirectToResources(args: {
   currentLocale: string;
   localeRows: readonly LocaleResourceRecord[];
   preferredLocale?: string;
-  tab: "locales" | "translations";
+  section: "locales" | "translations";
   translationLocale?: string;
   translationSearch?: string;
 }) {
@@ -193,11 +194,12 @@ function redirectToResources(args: {
   return redirect(
     buildLocalizedPath(
       redirectLocale,
-      buildDashboardResourcesHref({
-        tab: args.tab,
-        translationLocale: args.translationLocale,
-        translationSearch: args.translationSearch,
-      }),
+      args.section === DASHBOARD_RESOURCES_SECTION.translations
+        ? buildDashboardResourcesTranslationsHref({
+            translationLocale: args.translationLocale ?? redirectLocale,
+            translationSearch: args.translationSearch ?? "",
+          })
+        : buildDashboardResourcesLocalesHref(),
       supportedLocaleCodes,
     ),
   );
@@ -224,7 +226,6 @@ export async function loadDashboardResourcesData(
   const db = getDbFromContext(context);
   const localeRows = await listLocales(db);
   const url = new URL(request.url);
-  const activeTab = resolveDashboardResourcesTab(url.searchParams.get("tab"));
   const selectedTranslationLocale = resolveDashboardResourcesTranslationLocale(
     url.searchParams.get("translationLocale"),
     localeRows,
@@ -272,7 +273,6 @@ export async function loadDashboardResourcesData(
 
   return {
     access: "granted",
-    activeTab,
     localeForm,
     locales: localeRows,
     metrics: buildDashboardResourcesMetrics(localeRows, selectedLocaleTranslationCount),
@@ -358,7 +358,7 @@ export async function handleDashboardResourcesAction(
     return redirectToResources({
       currentLocale: locale,
       localeRows: afterLocales,
-      tab: "locales",
+      section: "locales",
       translationSearch: "",
     });
   }
@@ -407,7 +407,7 @@ export async function handleDashboardResourcesAction(
     return redirectToResources({
       currentLocale: locale,
       localeRows: afterLocales,
-      tab: "locales",
+      section: "locales",
       translationSearch: "",
     });
   }
@@ -535,7 +535,7 @@ export async function handleDashboardResourcesAction(
         requestedLocale === originalCode
           ? submission.data.code
           : (requestedLocale ?? locale),
-      tab: "locales",
+      section: "locales",
       translationSearch: "",
     });
   }
@@ -568,7 +568,7 @@ export async function handleDashboardResourcesAction(
     return redirectToResources({
       currentLocale: locale,
       localeRows: beforeLocales,
-      tab: "translations",
+      section: "translations",
       translationLocale: originalLocale,
       translationSearch: "",
     });
@@ -619,7 +619,7 @@ export async function handleDashboardResourcesAction(
     return redirectToResources({
       currentLocale: locale,
       localeRows: beforeLocales,
-      tab: "translations",
+      section: "translations",
       translationLocale: submission.data.locale,
       translationSearch: "",
     });
@@ -713,7 +713,7 @@ export async function handleDashboardResourcesAction(
     return redirectToResources({
       currentLocale: locale,
       localeRows: beforeLocales,
-      tab: "translations",
+      section: "translations",
       translationLocale: submission.data.locale,
       translationSearch: "",
     });

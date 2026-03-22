@@ -2,8 +2,7 @@ import type { Route } from "./+types/dashboard.resources";
 
 import DashboardResourcesRoute, {
   DashboardResourcesAccessDeniedScreen,
-  DashboardResourcesScreen,
-} from "~/features/dashboard/resources/route";
+} from "~/features/dashboard/resources/layout/route";
 import {
   handleDashboardResourcesAction,
   loadDashboardResourcesData,
@@ -17,6 +16,6 @@ export async function action({ context, request }: Route.ActionArgs) {
   return handleDashboardResourcesAction(context, request);
 }
 
-export { DashboardResourcesAccessDeniedScreen, DashboardResourcesScreen };
+export { DashboardResourcesAccessDeniedScreen };
 
 export default DashboardResourcesRoute;

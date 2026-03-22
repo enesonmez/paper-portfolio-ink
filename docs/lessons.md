@@ -30,6 +30,7 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Runtime'a gore adapter secen ve birden fazla feature ile worker entrypoint tarafindan paylasilan cache facade'lari da `lib` yerine `shared/cache` altinda konumlandirilmali; boylece cache key/payload politikasi ile platforma ozel adapterler ayni app-wide altyapi katmaninda toplanir.
 - `app/features/*` icinde hem route slice'i hem de domain kontrati tutmak semantik gurultu uretiyor; `posts/projects/users/skills/resources` gibi saf kontrat klasorleri `app/domain/*` altina tasinip `features` yalnizca gercek screen/loader/action slice'larini barindirdiginda import zinciri ve klasor agaci daha hizli okunuyor.
 - Slice klasoru zaten baglam verdigi icin `dashboard-posts.server.ts` benzeri tekrarlayan dosya adlari gereksiz; `server.ts`, `screen.tsx`, `copy.ts`, `state.ts`, `href.ts`, `feed.ts`, `theme.ts` gibi rollerine gore isimlendirilmis kucuk moduller, buyuyen `shared/constants` dosyalarindan daha dayanikli bir desen veriyor.
+- Bu repo file-system route kesfi yerine `app/routes.ts` ile manuel route config kullandigi icin yeni route dosyasi eklemek tek basina yeterli degil; nested path refactor'larinda cocuk route kayitlari ayni agaca explicit eklenmezse layout acilir ama outlet bos kalir.
 
 ## 4. Public Experience Lessons
 
@@ -63,6 +64,8 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Translation registry buyudugunde search'in bellek-icinde filtreleme olarak kalmasi hem loader maliyetini hem de ilk render payload'unu gereksiz buyutur; secili locale listesinde `locale + search + page` query-string sozlesmesiyle DB-seviyesi arama ve sabit page size pagination daha dayanikli bir desen veriyor.
 - Dashboard gibi query-string agir ekranlarda ayni `tab + locale + search + page` state'ini farkli buton, modal ve tablo aksiyonlarinda tekrar tekrar elle kurmak kirilganlik yaratir; ortak href builder ve submission-to-form-values helper'lari hem okunurlugu korur hem de yeni alan eklerken branch bazli unutmalari azaltir.
 - Admin mutation'larinda SQLite/D1 no-op `update/delete` islemleri basari gibi kabul edilmemeli; stale form submit'lerinde satir-etkisi `returning()` ile dogrulanip cache purge/redirect yalnizca gercek mutation sonrasi calistirilmalidir.
+- Query-string tab modeli yalnizca ayni path altindaki hafif view switch'ler icin uygundur; `locales` ve `translations` gibi kullanicinin ayri sayfa olarak algiladigi admin yuzeylerinde nested path (`/resources/locales`, `/resources/translations`) daha dogru URL semantigi ve daha temiz route sorumlulugu verir.
+- Nested admin route'larda mutation formlari child path'e submit oluyorsa action'in yalnizca parent layout route'ta kalmasi yeterli degildir; validation hata durumlarinda ayni ekranda kalabilmek ve 404 almamak icin ilgili leaf route modullerinin shared action'i explicit delegate etmesi gerekir.
 
 ## 6. UI System Lessons
 

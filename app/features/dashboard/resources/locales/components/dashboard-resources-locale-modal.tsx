@@ -10,9 +10,9 @@ import {
   RESOURCE_MUTATION_INTENT,
 } from "~/domain/resources/contract";
 
-import { useDashboardResourcesCopy } from "../copy";
-import { buildDashboardResourcesHref, DASHBOARD_RESOURCES_TAB } from "../href";
-import type { DashboardResourcesLocaleFormState } from "../state";
+import { useDashboardResourcesCopy } from "../../copy";
+import { buildDashboardResourcesLocalesHref } from "../../href";
+import type { DashboardResourcesLocaleFormState } from "../../state";
 
 export function DashboardResourcesLocaleModal({
   form,
@@ -45,7 +45,7 @@ export function DashboardResourcesLocaleModal({
     <DashboardModal
       description={modalCopy.description}
       title={modalCopy.title}
-      to={to(buildDashboardResourcesHref({ tab: DASHBOARD_RESOURCES_TAB.locales }))}
+      to={to(buildDashboardResourcesLocalesHref())}
     >
       <Form method="post" className="space-y-4">
         <input
@@ -125,11 +125,7 @@ export function DashboardResourcesLocaleModal({
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button asChild variant="secondary" className="tracking-[0.14em]">
-            <Link
-              to={to(
-                buildDashboardResourcesHref({ tab: DASHBOARD_RESOURCES_TAB.locales }),
-              )}
-            >
+            <Link to={to(buildDashboardResourcesLocalesHref())}>
               {formCopy.cancelLabel}
             </Link>
           </Button>

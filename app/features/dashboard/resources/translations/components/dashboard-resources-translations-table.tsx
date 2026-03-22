@@ -14,7 +14,7 @@ import type { TranslationResourceRecord } from "~/lib/resources/resources.server
 import {
   DASHBOARD_RESOURCES_MODAL,
   buildDashboardResourcesTranslationsHref,
-} from "../href";
+} from "../../href";
 
 function buildValuePreview(value: string) {
   return value.length > 100 ? `${value.slice(0, 100)}...` : value;

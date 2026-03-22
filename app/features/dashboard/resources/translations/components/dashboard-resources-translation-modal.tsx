@@ -16,9 +16,9 @@ import {
 } from "~/domain/resources/contract";
 import type { LocaleResourceRecord } from "~/lib/resources/resources.server";
 
-import { useDashboardResourcesCopy } from "../copy";
-import { buildDashboardResourcesTranslationsHref } from "../href";
-import type { DashboardResourcesTranslationFormState } from "../state";
+import { useDashboardResourcesCopy } from "../../copy";
+import { buildDashboardResourcesTranslationsHref } from "../../href";
+import type { DashboardResourcesTranslationFormState } from "../../state";
 
 export function DashboardResourcesTranslationModal({
   form,

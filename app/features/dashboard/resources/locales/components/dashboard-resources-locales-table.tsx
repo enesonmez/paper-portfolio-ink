@@ -14,9 +14,8 @@ import type { LocaleResourceRecord } from "~/lib/resources/resources.server";
 
 import {
   DASHBOARD_RESOURCES_MODAL,
-  DASHBOARD_RESOURCES_TAB,
-  buildDashboardResourcesHref,
-} from "../href";
+  buildDashboardResourcesLocalesHref,
+} from "../../href";
 
 export function DashboardResourcesLocalesTable({
   locales,
@@ -87,10 +86,9 @@ export function DashboardResourcesLocalesTable({
           >
             <Link
               to={to(
-                buildDashboardResourcesHref({
+                buildDashboardResourcesLocalesHref({
                   editLocaleCode: localeRow.code,
                   modal: DASHBOARD_RESOURCES_MODAL.editLocale,
-                  tab: DASHBOARD_RESOURCES_TAB.locales,
                 }),
               )}
             >

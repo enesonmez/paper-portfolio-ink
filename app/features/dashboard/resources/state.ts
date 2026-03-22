@@ -11,7 +11,7 @@ import type {
   LocaleResourceRecord,
   TranslationResourceRecord,
 } from "~/lib/resources/resources.server";
-import { DASHBOARD_RESOURCES_MODAL, type DashboardResourcesTab } from "./href";
+import { DASHBOARD_RESOURCES_MODAL } from "./href";
 
 export interface DashboardResourcesMetrics {
   activeLocales: number;
@@ -48,7 +48,6 @@ export interface DashboardResourcesTranslationFormState {
 
 export interface DashboardResourcesGrantedLoaderData {
   access: "granted";
-  activeTab: DashboardResourcesTab;
   localeForm: DashboardResourcesLocaleFormState;
   locales: LocaleResourceRecord[];
   metrics: DashboardResourcesMetrics;
@@ -71,6 +70,17 @@ export interface DashboardResourcesActionState {
   actionError?: string;
   localeForm?: DashboardResourcesLocaleFormState;
   translationForm?: DashboardResourcesTranslationFormState;
+}
+
+export interface DashboardResourcesRouteContext {
+  localeForm: DashboardResourcesLocaleFormState;
+  locales: LocaleResourceRecord[];
+  metrics: DashboardResourcesMetrics;
+  selectedTranslationLocale: string;
+  translationPagination: DashboardResourcesTranslationPagination;
+  translationSearchQuery: string;
+  translationForm: DashboardResourcesTranslationFormState;
+  translations: TranslationResourceRecord[];
 }
 
 interface ResolveDashboardResourcesStateArgs {

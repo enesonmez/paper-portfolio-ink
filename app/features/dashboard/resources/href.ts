@@ -1,20 +1,26 @@
+import { stripLocalePrefix } from "~/shared/i18n/i18n.shared";
 import type { LocaleResourceRecord } from "~/lib/resources/resources.server";
 
 type ValueOf<T> = T[keyof T];
 
-export const DASHBOARD_RESOURCES_TAB = {
+export const DASHBOARD_RESOURCES_SECTION = {
   locales: "locales",
   translations: "translations",
 } as const;
 
-export type DashboardResourcesTab = ValueOf<typeof DASHBOARD_RESOURCES_TAB>;
+export type DashboardResourcesSection = ValueOf<typeof DASHBOARD_RESOURCES_SECTION>;
+
+export const DASHBOARD_RESOURCES_PATH = {
+  base: "/dashboard/resources",
+  locales: "/dashboard/resources/locales",
+  translations: "/dashboard/resources/translations",
+} as const;
 
 export const DASHBOARD_RESOURCES_QUERY_PARAM = {
   editLocaleCode: "editLocaleCode",
   editTranslationKey: "editTranslationKey",
   editTranslationLocale: "editTranslationLocale",
   modal: "modal",
-  tab: "tab",
   translationLocale: "translationLocale",
   translationPage: "translationPage",
   translationSearch: "translationSearch",
@@ -34,7 +40,6 @@ export interface DashboardResourcesHrefParams {
   editTranslationKey?: string | null;
   editTranslationLocale?: string | null;
   modal?: string | null;
-  tab?: DashboardResourcesTab | null;
   translationLocale?: string | null;
   translationPage?: number | null;
   translationSearch?: string | null;
@@ -62,12 +67,14 @@ export function normalizeDashboardResourcesPage(value: string | null) {
   return parsedValue;
 }
 
-export function resolveDashboardResourcesTab(
-  tab: string | null,
-): DashboardResourcesTab {
-  return tab === DASHBOARD_RESOURCES_TAB.translations
-    ? DASHBOARD_RESOURCES_TAB.translations
-    : DASHBOARD_RESOURCES_TAB.locales;
+export function resolveDashboardResourcesSection(
+  pathname: string,
+): DashboardResourcesSection {
+  const normalizedPathname = stripLocalePrefix(pathname);
+
+  return normalizedPathname.startsWith(DASHBOARD_RESOURCES_PATH.translations)
+    ? DASHBOARD_RESOURCES_SECTION.translations
+    : DASHBOARD_RESOURCES_SECTION.locales;
 }
 
 export function resolveDashboardResourcesTranslationLocale(
@@ -88,12 +95,11 @@ export function resolveDashboardResourcesTranslationLocale(
   );
 }
 
-export function buildDashboardResourcesHref(params: DashboardResourcesHrefParams = {}) {
+function buildDashboardResourcesHref(
+  pathname: string,
+  params: DashboardResourcesHrefParams = {},
+) {
   const searchParams = new URLSearchParams();
-
-  if (params.tab) {
-    searchParams.set(DASHBOARD_RESOURCES_QUERY_PARAM.tab, params.tab);
-  }
 
   if (params.translationLocale) {
     searchParams.set(
@@ -147,19 +153,24 @@ export function buildDashboardResourcesHref(params: DashboardResourcesHrefParams
 
   const search = searchParams.toString();
 
-  return search ? `/dashboard/resources?${search}` : "/dashboard/resources";
+  return search ? `${pathname}?${search}` : pathname;
+}
+
+export function buildDashboardResourcesLocalesHref(
+  params: Pick<DashboardResourcesHrefParams, "editLocaleCode" | "modal"> = {},
+) {
+  return buildDashboardResourcesHref(DASHBOARD_RESOURCES_PATH.locales, params);
 }
 
 export function buildDashboardResourcesTranslationsHref(
   state: DashboardResourcesTranslationsViewState,
   overrides: Omit<
     DashboardResourcesHrefParams,
-    "tab" | "translationLocale" | "translationPage" | "translationSearch"
+    "translationLocale" | "translationPage" | "translationSearch"
   > = {},
 ) {
-  return buildDashboardResourcesHref({
+  return buildDashboardResourcesHref(DASHBOARD_RESOURCES_PATH.translations, {
     ...overrides,
-    tab: DASHBOARD_RESOURCES_TAB.translations,
     translationLocale: state.translationLocale,
     translationPage: state.translationPage,
     translationSearch: state.translationSearch,
