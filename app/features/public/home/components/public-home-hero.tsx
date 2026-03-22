@@ -2,7 +2,7 @@ import { ArrowRight, Boxes, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 
 import { Button } from "~/components/ui/button";
-import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
+import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 
 import {
   PUBLIC_HOME_SURFACE_CLASSNAME,

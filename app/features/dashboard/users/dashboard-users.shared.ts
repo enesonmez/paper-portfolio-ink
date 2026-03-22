@@ -11,7 +11,7 @@ import {
   type DashboardUsersModalMode,
   type UserRole,
 } from "~/features/users/user.shared";
-import { useT } from "~/features/i18n/i18n-react";
+import { useT } from "~/shared/i18n/i18n-react";
 import type { UserOverview } from "~/lib/users/users.server";
 
 export interface DashboardUsersMetrics {

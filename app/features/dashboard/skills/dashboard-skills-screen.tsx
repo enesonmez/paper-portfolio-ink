@@ -6,7 +6,7 @@ import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
 import { Button } from "~/components/ui/button";
-import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
+import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import type { SkillOverview } from "~/lib/skills/skills.server";
 
 import { useDashboardSkillsCopy } from "./dashboard-skills.constants";

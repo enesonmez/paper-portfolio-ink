@@ -5,8 +5,8 @@ import {
   buildLocaleCookie,
   buildLocalizedPath,
   getLocaleFromPathname,
-} from "~/features/i18n/i18n.shared";
-import { loadI18nRuntimeState } from "~/features/i18n/i18n.server";
+} from "~/shared/i18n/i18n.shared";
+import { loadI18nRuntimeState } from "~/shared/i18n/i18n.server";
 
 const LEGACY_ROUTE_PREFIXES = [
   "/blog",

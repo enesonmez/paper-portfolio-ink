@@ -4,8 +4,8 @@ import type { Route } from "./+types/locale";
 import {
   buildLocaleCookie,
   sanitizeLocalizedRedirectTarget,
-} from "~/features/i18n/i18n.shared";
-import { loadI18nRuntimeState, parseLocaleFormData } from "~/features/i18n/i18n.server";
+} from "~/shared/i18n/i18n.shared";
+import { loadI18nRuntimeState, parseLocaleFormData } from "~/shared/i18n/i18n.server";
 
 export async function action({ context, request }: Route.ActionArgs) {
   const formData = await request.formData();

@@ -5,7 +5,7 @@ import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
-import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
+import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/features/posts/post.shared";
 import type { PostOverview } from "~/lib/posts/posts.server";
 

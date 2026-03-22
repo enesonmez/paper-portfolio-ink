@@ -1,7 +1,7 @@
 import { ArrowUpRight, FileUser, Github, Linkedin, Mail } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
-import { useT } from "~/features/i18n/i18n-react";
+import { useT } from "~/shared/i18n/i18n-react";
 
 import {
   PUBLIC_HOME_SURFACE_CLASSNAME,

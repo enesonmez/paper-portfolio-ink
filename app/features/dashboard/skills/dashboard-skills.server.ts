@@ -1,8 +1,8 @@
 import { data, redirect, type AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
-import { loadI18nPayload } from "~/features/i18n/i18n.server";
-import { buildLocalizedPath, createTranslator } from "~/features/i18n/i18n.shared";
+import { loadI18nPayload } from "~/shared/i18n/i18n.server";
+import { buildLocalizedPath, createTranslator } from "~/shared/i18n/i18n.shared";
 import { purgePublicHomeDataCache } from "~/features/public/home/public-home.server";
 import { buildLoginRedirect } from "~/lib/auth/login.server";
 import { requireSession } from "~/lib/auth/session.server";

@@ -1,7 +1,7 @@
 import { Boxes, FileUser, Menu, X } from "lucide-react";
 import { NavLink } from "react-router";
 
-import { LocaleSwitcher } from "~/features/i18n/components/locale-switcher";
+import { LocaleSwitcher } from "~/shared/i18n/components/locale-switcher";
 import { cn } from "~/lib/utils";
 
 import { usePublicLayoutCopy, type PublicTheme } from "../public-layout.shared";

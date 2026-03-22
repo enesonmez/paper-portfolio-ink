@@ -5,7 +5,7 @@ import { Form, Link } from "react-router";
 import { DashboardModal } from "~/components/dashboard/modal";
 import { Button } from "~/components/ui/button";
 import { FormError, TextField, TextareaField } from "~/components/ui/form-field";
-import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
+import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import {
   getSkillIcon,
   useSkillIconOptions,

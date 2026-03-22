@@ -4,7 +4,7 @@ import {
   createEmptyPostContentDocument,
   serializePostContent,
 } from "../../app/features/posts/post-content.shared";
-import { createTranslator, getSeedMessages } from "../../app/features/i18n/i18n.shared";
+import { createTranslator, getSeedMessages } from "../../app/shared/i18n/i18n.shared";
 import { parsePostFormData } from "../../app/lib/posts/post-form.server";
 
 const t = createTranslator(getSeedMessages("tr"));

@@ -1,7 +1,7 @@
 import { redirect, redirectDocument, type AppLoadContext } from "react-router";
 
-import { buildLocalizedPath } from "~/features/i18n/i18n.shared";
-import { loadI18nRuntimeState } from "~/features/i18n/i18n.server";
+import { buildLocalizedPath } from "~/shared/i18n/i18n.shared";
+import { loadI18nRuntimeState } from "~/shared/i18n/i18n.server";
 import { resolveAuthConfig } from "~/lib/auth/auth-config.server";
 import { createAuth } from "~/lib/auth/auth.server";
 

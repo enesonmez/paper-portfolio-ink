@@ -2,7 +2,7 @@ import { useLoaderData } from "react-router";
 import type { Route } from "./+types/projects";
 
 import type { loader as rootLoader } from "~/root";
-import { createTranslator } from "~/features/i18n/i18n.shared";
+import { createTranslator } from "~/shared/i18n/i18n.shared";
 import { PublicProjectsScreen } from "~/features/public/projects/public-projects-screen";
 import { loadPublicProjectsData } from "~/features/public/projects/public-projects.server";
 import { siteConfig } from "~/lib/site";

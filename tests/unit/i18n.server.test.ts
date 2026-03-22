@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   loadI18nPayload,
   loadSupportedLocales,
-} from "../../app/features/i18n/i18n.server";
+} from "../../app/shared/i18n/i18n.server";
 import { locales, translations } from "../../db/schema";
 
 function createTableAwareDb(options: {

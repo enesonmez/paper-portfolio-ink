@@ -1,5 +1,5 @@
 import { getSkillIcon } from "~/features/skills/skill-icon.shared";
-import { useT } from "~/features/i18n/i18n-react";
+import { useT } from "~/shared/i18n/i18n-react";
 import type { PublicSkill } from "~/lib/skills/skills.server";
 
 import {

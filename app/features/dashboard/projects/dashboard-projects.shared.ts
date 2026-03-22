@@ -11,7 +11,7 @@ import {
   type DashboardProjectsModalMode,
   type ProjectStatus,
 } from "~/features/projects/project.shared";
-import { useT } from "~/features/i18n/i18n-react";
+import { useT } from "~/shared/i18n/i18n-react";
 import type { ProjectOverview } from "~/lib/projects/projects.server";
 
 export type DashboardStatusTone = "danger" | "neutral" | "success" | "warning";

@@ -2,7 +2,7 @@ import { useLoaderData } from "react-router";
 import type { Route } from "./+types/_index";
 
 import type { loader as rootLoader } from "~/root";
-import { createTranslator } from "~/features/i18n/i18n.shared";
+import { createTranslator } from "~/shared/i18n/i18n.shared";
 import { PublicHomeScreen } from "~/features/public/home/public-home-screen";
 import { loadPublicHomeData } from "~/features/public/home/public-home.server";
 

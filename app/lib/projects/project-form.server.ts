@@ -10,7 +10,7 @@ import {
   PROJECT_STATUS_VALUES,
   type ProjectStatus,
 } from "~/features/projects/project.shared";
-import type { I18nTranslator } from "~/features/i18n/i18n.shared";
+import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 function createProjectFormSchema(t: I18nTranslator) {
   return z.object({

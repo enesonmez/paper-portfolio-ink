@@ -1,11 +1,11 @@
 import { render, screen, within } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 
-import { AppI18nProvider } from "../../app/features/i18n/i18n-react";
+import { AppI18nProvider } from "../../app/shared/i18n/i18n-react";
 import {
   getSeedMessages,
   getSeedLocaleOptions,
-} from "../../app/features/i18n/i18n.shared";
+} from "../../app/shared/i18n/i18n.shared";
 import { PUBLIC_THEME } from "../../app/features/public/layout/public-layout.shared";
 import { PublicSiteLayout } from "../../app/features/public/layout/public-site-layout";
 

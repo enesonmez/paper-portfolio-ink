@@ -10,7 +10,7 @@ import {
   TextField,
   TextareaField,
 } from "~/components/ui/form-field";
-import { useLocalizedPath } from "~/features/i18n/i18n-react";
+import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import {
   PROJECT_FORM_FIELD,
   PROJECT_MUTATION_INTENT,

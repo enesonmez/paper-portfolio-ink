@@ -6,7 +6,7 @@ import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
 import { Button } from "~/components/ui/button";
 import { TextField } from "~/components/ui/form-field";
-import { useLocalizedPath, useT } from "~/features/i18n/i18n-react";
+import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import {
   DASHBOARD_RESOURCES_MODAL,
   DASHBOARD_RESOURCES_QUERY_PARAM,

@@ -1,6 +1,6 @@
 import { ArrowUpRight, ArrowUpToLine, TerminalSquare } from "lucide-react";
 
-import { useT } from "~/features/i18n/i18n-react";
+import { useT } from "~/shared/i18n/i18n-react";
 
 import { PUBLIC_SOCIAL_LINKS, usePublicLayoutCopy } from "../public-layout.shared";
 
