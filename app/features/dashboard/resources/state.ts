@@ -190,6 +190,12 @@ export function buildDashboardResourcesMetrics(
   };
 }
 
+export function buildDeniedDashboardResourcesLoaderData(): DashboardResourcesDeniedLoaderData {
+  return {
+    access: "denied",
+  };
+}
+
 export function resolveDashboardResourcesState({
   editLocaleCode,
   editTranslationKey,

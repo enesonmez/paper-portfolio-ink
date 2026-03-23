@@ -1,5 +1,3 @@
-import { data } from "react-router";
-
 import {
   buildLocaleFormValues,
   buildTranslationFormValues,
@@ -33,12 +31,11 @@ export function buildTranslationFormValuesFromSubmission(
 }
 
 export function buildActionErrorState(message: string, status = 400) {
-  return data<DashboardResourcesActionState>(
-    {
-      actionError: message,
-    },
-    { status },
-  );
+  void status;
+
+  return {
+    actionError: message,
+  } satisfies DashboardResourcesActionState;
 }
 
 export function buildLocaleFormStateResponse(args: {
@@ -48,18 +45,15 @@ export function buildLocaleFormStateResponse(args: {
   status: number;
   values: NonNullable<DashboardResourcesActionState["localeForm"]>["values"];
 }) {
-  return data<DashboardResourcesActionState>(
-    {
-      localeForm: {
-        editingCode: args.editingCode ?? null,
-        errors: args.errors,
-        isOpen: true,
-        mode: args.mode,
-        values: args.values,
-      },
+  return {
+    localeForm: {
+      editingCode: args.editingCode ?? null,
+      errors: args.errors,
+      isOpen: true,
+      mode: args.mode,
+      values: args.values,
     },
-    { status: args.status },
-  );
+  } satisfies DashboardResourcesActionState;
 }
 
 export function buildTranslationFormStateResponse(args: {
@@ -70,17 +64,14 @@ export function buildTranslationFormStateResponse(args: {
   status: number;
   values: NonNullable<DashboardResourcesActionState["translationForm"]>["values"];
 }) {
-  return data<DashboardResourcesActionState>(
-    {
-      translationForm: {
-        editingKey: args.editingKey ?? null,
-        editingLocale: args.editingLocale ?? null,
-        errors: args.errors,
-        isOpen: true,
-        mode: args.mode,
-        values: args.values,
-      },
+  return {
+    translationForm: {
+      editingKey: args.editingKey ?? null,
+      editingLocale: args.editingLocale ?? null,
+      errors: args.errors,
+      isOpen: true,
+      mode: args.mode,
+      values: args.values,
     },
-    { status: args.status },
-  );
+  } satisfies DashboardResourcesActionState;
 }

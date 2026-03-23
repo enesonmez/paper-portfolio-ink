@@ -19,6 +19,9 @@ export type AuthorizationEffect = ValueOf<typeof AUTHORIZATION_EFFECT>;
 
 export const AUTHORIZATION_CLAIM = {
   dashboardAccess: "dashboard.access",
+  logsDelete: "logs.delete",
+  logsExport: "logs.export",
+  logsRead: "logs.read",
   postsCreate: "posts.create",
   postsDeleteAny: "posts.delete.any",
   postsDeleteOwn: "posts.delete.own",
@@ -53,6 +56,9 @@ export type AuthorizationClaim = ValueOf<typeof AUTHORIZATION_CLAIM>;
 
 export const AUTHORIZATION_CLAIM_VALUES = [
   AUTHORIZATION_CLAIM.dashboardAccess,
+  AUTHORIZATION_CLAIM.logsRead,
+  AUTHORIZATION_CLAIM.logsExport,
+  AUTHORIZATION_CLAIM.logsDelete,
   AUTHORIZATION_CLAIM.postsReadOwn,
   AUTHORIZATION_CLAIM.postsReadAny,
   AUTHORIZATION_CLAIM.postsCreate,
@@ -98,6 +104,27 @@ export const AUTHORIZATION_CLAIM_DEFINITIONS: readonly AuthorizationClaimDefinit
       description: "Allow entering the dashboard surface.",
       key: AUTHORIZATION_CLAIM.dashboardAccess,
       resource: "dashboard",
+      scope: AUTHORIZATION_SCOPE.global,
+    },
+    {
+      action: "read",
+      description: "Read dashboard audit and error logs.",
+      key: AUTHORIZATION_CLAIM.logsRead,
+      resource: "logs",
+      scope: AUTHORIZATION_SCOPE.global,
+    },
+    {
+      action: "export",
+      description: "Export dashboard error logs.",
+      key: AUTHORIZATION_CLAIM.logsExport,
+      resource: "logs",
+      scope: AUTHORIZATION_SCOPE.global,
+    },
+    {
+      action: "delete",
+      description: "Delete dashboard error logs by range.",
+      key: AUTHORIZATION_CLAIM.logsDelete,
+      resource: "logs",
       scope: AUTHORIZATION_SCOPE.global,
     },
     {
@@ -314,6 +341,12 @@ export const PROJECTS_AUTHORIZATION_CLAIMS = [
   AUTHORIZATION_CLAIM.projectsCreate,
   AUTHORIZATION_CLAIM.projectsUpdate,
   AUTHORIZATION_CLAIM.projectsDelete,
+] as const satisfies readonly AuthorizationClaim[];
+
+export const LOGGING_AUTHORIZATION_CLAIMS = [
+  AUTHORIZATION_CLAIM.logsRead,
+  AUTHORIZATION_CLAIM.logsExport,
+  AUTHORIZATION_CLAIM.logsDelete,
 ] as const satisfies readonly AuthorizationClaim[];
 
 export const SKILLS_AUTHORIZATION_CLAIMS = [

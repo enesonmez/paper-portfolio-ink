@@ -1,20 +1,24 @@
 import { Link, useLoaderData, useRouteError } from "react-router";
 import type { Route } from "./+types/$slug";
+import { APP_ROUTE_ID } from "~/shared/errors/contracts";
 
 import type { loader as rootLoader } from "~/root";
+import { runLoaderWithErrorHandling } from "~/shared/errors/route-error-handling.server";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
-import { PublicBlogPostNotFoundError } from "~/features/public/blog/errors";
+import { isPublicBlogPostNotFoundError } from "~/features/public/blog/errors";
 import { PublicBlogPostScreen } from "~/features/public/blog/post-screen";
 import { loadPublicBlogPostData } from "~/features/public/blog/server";
 import { siteConfig } from "~/lib/site";
 
+type RootLoaderData = Exclude<Awaited<ReturnType<typeof rootLoader>>, Response>;
+
 export const meta: Route.MetaFunction = ({ data, location, matches }) => {
-  let messages: Awaited<ReturnType<typeof rootLoader>>["messages"] | undefined;
+  let messages: RootLoaderData["messages"] | undefined;
 
   for (const match of matches) {
-    if (match && match.id === "root") {
-      const rootData = match.data as Awaited<ReturnType<typeof rootLoader>>;
+    if (match && match.id === "root" && !(match.data instanceof Response)) {
+      const rootData = match.data as RootLoaderData;
       messages = rootData.messages;
       break;
     }
@@ -70,14 +74,28 @@ export const meta: Route.MetaFunction = ({ data, location, matches }) => {
   return descriptors;
 };
 
-export async function loader({ context, params }: Route.LoaderArgs) {
-  const slug = params.slug;
+export async function loader({ context, params, request }: Route.LoaderArgs) {
+  const currentRequest =
+    request ?? new Request("http://localhost/blog/unknown-slug", { method: "GET" });
 
-  if (!slug) {
-    throw new PublicBlogPostNotFoundError();
-  }
+  return runLoaderWithErrorHandling({
+    context,
+    handler: async () => {
+      const slug = params.slug;
 
-  return loadPublicBlogPostData(context, slug);
+      if (!slug) {
+        const errorModule = await import("~/features/public/blog/errors.server");
+        const PublicBlogPostNotFoundError =
+          errorModule.PublicBlogPostNotFoundError as new () => Error;
+
+        throw new PublicBlogPostNotFoundError();
+      }
+
+      return loadPublicBlogPostData(context, slug);
+    },
+    request: currentRequest,
+    routeId: APP_ROUTE_ID.publicBlogSlug,
+  });
 }
 
 export default function BlogPostPage() {
@@ -93,7 +111,7 @@ export function ErrorBoundary() {
   const to = useLocalizedPath();
   const error = useRouteError();
 
-  if (error instanceof PublicBlogPostNotFoundError) {
+  if (isPublicBlogPostNotFoundError(error)) {
     return (
       <main className="mx-auto grid min-h-[70vh] max-w-4xl px-4 py-12 md:px-8 md:py-16">
         <section className="bg-card grid content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">

@@ -1,8 +1,22 @@
 import { isAPIError } from "better-auth/api";
-import { data, redirect, type AppLoadContext } from "react-router";
+import { redirect, type AppLoadContext } from "react-router";
 import { z } from "zod";
 
 import type { LoginFormState } from "~/shared/auth/login.shared";
+import {
+  buildAuthorizationError,
+  buildValidationError,
+} from "~/shared/errors/builders.server";
+import {
+  APP_ERROR_SEVERITY,
+  APP_ERROR_SINK,
+  ExternalServiceError,
+} from "~/shared/errors/app-error.server";
+import {
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
 import {
   buildLocaleDashboardPath,
   loadI18nRuntimeState,
@@ -120,11 +134,7 @@ export function parseLoginFormData(
   locale: AppLocale,
   t: I18nTranslator,
   supportedLocales?: readonly string[],
-):
-  | {
-      data: LoginSubmission;
-    }
-  | LoginFormState {
+): LoginSubmission {
   const rawValues = {
     email: readJsonField(formData, "email"),
     password: readJsonField(formData, "password"),
@@ -135,38 +145,43 @@ export function parseLoginFormData(
   if (!parsed.success) {
     const fieldErrors = parsed.error.flatten().fieldErrors;
 
-    return {
-      errors: {
-        email: fieldErrors.email?.[0],
-        password: fieldErrors.password?.[0],
-      },
-      values: {
-        email: rawValues.email,
-        redirectTo: normalizeRedirectTarget(
-          rawValues.redirectTo,
-          locale,
-          supportedLocales,
+    throw buildValidationError<LoginFormState>({
+      action: APP_ERROR_ACTION.validate,
+      code: APP_ERROR_CODE.auth.login.validation,
+      details: {
+        invalidFields: ["email", "password"].filter(
+          (field) =>
+            (field === "email" && fieldErrors.email?.[0]) ||
+            (field === "password" && fieldErrors.password?.[0]),
         ),
       },
-    };
+      message: "Login form validation failed",
+      resource: APP_ERROR_RESOURCE.authLogin,
+      responseData: {
+        errors: {
+          email: fieldErrors.email?.[0],
+          password: fieldErrors.password?.[0],
+        },
+        values: {
+          email: rawValues.email,
+          redirectTo: normalizeRedirectTarget(
+            rawValues.redirectTo,
+            locale,
+            supportedLocales,
+          ),
+        },
+      },
+    });
   }
 
   return {
-    data: {
-      ...parsed.data,
-      redirectTo: normalizeRedirectTarget(
-        parsed.data.redirectTo,
-        locale,
-        supportedLocales,
-      ),
-    },
+    ...parsed.data,
+    redirectTo: normalizeRedirectTarget(
+      parsed.data.redirectTo,
+      locale,
+      supportedLocales,
+    ),
   };
-}
-
-function hasParsedLoginData(
-  submission: LoginFormState | { data: LoginSubmission },
-): submission is { data: LoginSubmission } {
-  return "data" in submission;
 }
 
 function resolveApiErrorStatus(error: {
@@ -222,8 +237,12 @@ export async function signInWithEmail({
     const existingUser = await findUserByEmail(context.db, submission.email);
 
     if (existingUser && !existingUser.isActive) {
-      return data<LoginFormState>(
-        {
+      throw buildAuthorizationError<LoginFormState>({
+        action: APP_ERROR_ACTION.login,
+        code: APP_ERROR_CODE.auth.login.inactiveUser,
+        message: "Login denied for inactive user",
+        resource: APP_ERROR_RESOURCE.authLogin,
+        responseData: {
           errors: {
             form: resolveLoginErrorMessage(403, t),
           },
@@ -232,10 +251,8 @@ export async function signInWithEmail({
             redirectTo: submission.redirectTo,
           },
         },
-        {
-          status: 403,
-        },
-      );
+        status: 403,
+      });
     }
 
     const auth = createAuth({
@@ -255,26 +272,48 @@ export async function signInWithEmail({
 
     if (!response.ok) {
       const errorPayload = await readAuthErrorPayload(response);
+      const formState: LoginFormState = {
+        errors: {
+          form: resolveLoginErrorMessage(
+            response.status,
+            t,
+            errorPayload?.code,
+            errorPayload?.message,
+          ),
+        },
+        values: {
+          email: submission.email,
+          redirectTo: submission.redirectTo,
+        },
+      };
 
-      return data<LoginFormState>(
-        {
-          errors: {
-            form: resolveLoginErrorMessage(
-              response.status,
-              t,
-              errorPayload?.code,
-              errorPayload?.message,
-            ),
+      if (response.status >= 500) {
+        throw new ExternalServiceError("Email sign-in provider returned an error", {
+          code: APP_ERROR_CODE.auth.login.providerFailure,
+          details: {
+            providerCode: errorPayload?.code ?? null,
+            providerStatus: response.status,
           },
-          values: {
-            email: submission.email,
-            redirectTo: submission.redirectTo,
-          },
-        },
-        {
+          expose: true,
+          logSink: APP_ERROR_SINK.logErrorHistory,
+          responseData: formState,
+          severity: APP_ERROR_SEVERITY.error,
           status: response.status,
+        });
+      }
+
+      throw buildAuthorizationError<LoginFormState>({
+        action: APP_ERROR_ACTION.login,
+        code: APP_ERROR_CODE.auth.login.invalidCredentials,
+        details: {
+          providerCode: errorPayload?.code ?? null,
+          providerStatus: response.status,
         },
-      );
+        message: "Login rejected by credentials policy",
+        resource: APP_ERROR_RESOURCE.authLogin,
+        responseData: formState,
+        status: response.status,
+      });
     }
 
     const localeState =
@@ -297,25 +336,43 @@ export async function signInWithEmail({
   } catch (error) {
     if (isAPIError(error)) {
       const status = resolveApiErrorStatus(error);
+      const formState: LoginFormState = {
+        errors: {
+          form: resolveLoginErrorMessage(status, t),
+        },
+        values: {
+          email: submission.email,
+          redirectTo: submission.redirectTo,
+        },
+      };
 
-      return data<LoginFormState>(
-        {
-          errors: {
-            form: resolveLoginErrorMessage(status, t),
+      if (status >= 500) {
+        throw new ExternalServiceError("Email sign-in provider threw an API error", {
+          code: APP_ERROR_CODE.auth.login.providerException,
+          details: {
+            providerStatus: status,
           },
-          values: {
-            email: submission.email,
-            redirectTo: submission.redirectTo,
-          },
-        },
-        {
+          expose: true,
+          logSink: APP_ERROR_SINK.logErrorHistory,
+          responseData: formState,
+          severity: APP_ERROR_SEVERITY.error,
           status,
+        });
+      }
+
+      throw buildAuthorizationError<LoginFormState>({
+        action: APP_ERROR_ACTION.login,
+        code: APP_ERROR_CODE.auth.login.apiError,
+        details: {
+          providerStatus: status,
         },
-      );
+        message: "Login rejected by auth API",
+        resource: APP_ERROR_RESOURCE.authLogin,
+        responseData: formState,
+        status,
+      });
     }
 
     throw error;
   }
 }
-
-export { hasParsedLoginData };

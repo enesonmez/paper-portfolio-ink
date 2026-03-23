@@ -62,9 +62,10 @@
 
 ## Phase 7: Observation & Logging
 
-- [ ] Create, update, delete işlemlerinde ilgili akışın bilgisi ile `log_history` adında bir log tablosu oluştur. Kullanıcı ile eşleştir.
-- [ ] Sistemde oluşan hataları loglayacak `log_error_history` adında bir log tablosu oluştur.
-- [ ] Dashboard sidebar'a Logging sekmesi ekle. 'Tabbed Settings Page' tasarımı olsun. Tablarda log history ve log error history olsun. Log error history kısmı için belirli bir aralıktaki veriyi txt formatında alma özelliği olsun. Belirli bir aralıktaki log kayıtlarını silme özelliğide olsun. Sadece Admin rolü erişebilsin.
+- [x] Merkezi hata yönetim sisteminin oluşturulması.
+- [x] Create, update, delete işlemlerinde ilgili akışın bilgisi ile `log_history` adında bir log tablosu oluştur. Kullanıcı ile eşleştir.
+- [x] Sistemde oluşan hataları loglayacak `log_error_history` adında bir log tablosu oluştur.
+- [x] Dashboard sidebar'a Logging sekmesi ekle. 'Tabbed Settings Page' tasarımı olsun. Tablarda log history ve log error history olsun. Log error history kısmı için belirli bir aralıktaki veriyi txt formatında alma özelliği olsun. Belirli bir aralıktaki log kayıtlarını silme özelliğide olsun. Sadece Admin rolü erişebilsin.
 
 ## Phase 8: Analytics & Insights
 

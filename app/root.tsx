@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import {
+  isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
@@ -7,10 +8,13 @@ import {
   ScrollRestoration,
   useLoaderData,
   useLocation,
+  useRouteError,
   useRouteLoaderData,
 } from "react-router";
 
+import { APP_ROUTE_ID } from "~/shared/errors/contracts";
 import { AppI18nProvider } from "~/shared/i18n/i18n-react";
+import { runLoaderWithErrorHandling } from "~/shared/errors/route-error-handling.server";
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
 import { createTranslator, getSeedMessages } from "~/shared/i18n/i18n.shared";
 import { isPublicPathname } from "~/features/public/layout/routing";
@@ -27,12 +31,19 @@ export async function loader({
   context: Parameters<typeof loadI18nPayload>[0];
   request: Request;
 }) {
-  const i18n = await loadI18nPayload(context, request);
+  return runLoaderWithErrorHandling({
+    context,
+    handler: async () => {
+      const i18n = await loadI18nPayload(context, request);
 
-  return {
-    ...i18n,
-    theme: getThemeFromRequest(request),
-  };
+      return {
+        ...i18n,
+        theme: getThemeFromRequest(request),
+      };
+    },
+    request,
+    routeId: APP_ROUTE_ID.root,
+  });
 }
 
 export function links() {
@@ -88,6 +99,8 @@ export default function App() {
 export function ErrorBoundary() {
   const data = useRouteLoaderData<typeof loader>("root");
   const t = createTranslator(data?.messages ?? getSeedMessages(data?.locale ?? "tr"));
+  const error = useRouteError();
+  const requestId = getRequestIdFromRouteError(error);
 
   return (
     <main className="mx-auto grid min-h-screen max-w-4xl px-4 py-8 md:px-6 lg:py-16">
@@ -101,7 +114,44 @@ export function ErrorBoundary() {
         <p className="text-muted-foreground max-w-2xl text-base leading-7 md:text-lg">
           {t("root.error.body")}
         </p>
+        {requestId ? (
+          <p className="font-sans text-xs font-bold tracking-[0.12em] uppercase">
+            Request ID: {requestId}
+          </p>
+        ) : null}
       </section>
     </main>
   );
+}
+
+function isRootErrorPayload(
+  value: unknown,
+): value is { error?: { requestId?: string | null } } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "error" in value &&
+    (typeof value.error === "object" || typeof value.error === "undefined") &&
+    value.error !== null
+  );
+}
+
+function getRequestIdFromRouteError(error: unknown) {
+  if (!isRouteErrorResponse(error)) {
+    return null;
+  }
+
+  const errorData: unknown = error.data;
+
+  if (!isRootErrorPayload(errorData)) {
+    return null;
+  }
+
+  const payload = errorData.error;
+
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  return typeof payload.requestId === "string" ? payload.requestId : null;
 }

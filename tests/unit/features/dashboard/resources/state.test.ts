@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { DASHBOARD_RESOURCES_MODAL } from "~/features/dashboard/resources/href";
 import {
+  buildDeniedDashboardResourcesLoaderData,
   buildDashboardResourcesMetrics,
   buildDashboardResourcesTranslationPagination,
   mergeDashboardResourcesLocaleFormState,
@@ -162,6 +163,12 @@ describe("dashboard resources state helpers", () => {
       editingLocale: null,
       isOpen: false,
       mode: null,
+    });
+  });
+
+  it("builds the denied resources payload from a single helper", () => {
+    expect(buildDeniedDashboardResourcesLoaderData()).toEqual({
+      access: "denied",
     });
   });
 });

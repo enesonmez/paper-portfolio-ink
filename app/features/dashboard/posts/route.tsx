@@ -19,6 +19,7 @@ export default function DashboardPostsRoute() {
 
   return (
     <DashboardPostsScreen
+      actionError={!loaderData.form.isOpen ? actionData?.errors?.form : undefined}
       form={mergeDashboardPostsFormState(loaderData.form, actionData)}
       metrics={loaderData.metrics}
       permissions={loaderData.permissions}

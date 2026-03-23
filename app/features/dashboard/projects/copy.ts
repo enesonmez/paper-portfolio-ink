@@ -6,6 +6,7 @@ export function buildDashboardProjectsCopy(t: I18nTranslator) {
   const authzCopy = buildDashboardAuthorizationCopy(t);
 
   return {
+    actionBlockedTitle: authzCopy.actionBlockedTitle,
     createActionLabel: t("dashboard.projects.createActionLabel"),
     createDescription: t("dashboard.projects.createDescription"),
     createTitle: t("dashboard.projects.createTitle"),

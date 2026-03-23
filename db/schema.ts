@@ -13,6 +13,8 @@ export type UserRole = "admin" | "author";
 export type AuthorizationClaimScope = "any" | "global" | "own";
 export type AuthorizationEffect = "grant" | "revoke";
 type PublishingStatus = "draft" | "published" | "archived";
+export type LogHistoryResult = "failure" | "success";
+export type LogSeverity = "critical" | "error" | "info" | "warn";
 
 function createIdColumn() {
   return text("id")
@@ -29,6 +31,12 @@ function createTimestampColumns() {
       .notNull()
       .default(sql`(unixepoch() * 1000)`),
   };
+}
+
+function createCreatedAtColumn() {
+  return integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`);
 }
 
 export const users = sqliteTable(
@@ -292,6 +300,74 @@ export const translations = sqliteTable(
   ],
 );
 
+export const logHistory = sqliteTable(
+  "log_history",
+  {
+    id: createIdColumn(),
+    requestId: text("request_id").notNull(),
+    resource: text("resource").notNull(),
+    action: text("action").notNull(),
+    result: text("result").$type<LogHistoryResult>().notNull(),
+    statusCode: integer("status_code").notNull(),
+    message: text("message").notNull(),
+    path: text("path").notNull(),
+    method: text("method").notNull(),
+    userId: text("user_id").references(() => users.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    userRole: text("user_role").$type<UserRole>(),
+    targetId: text("target_id"),
+    targetLabel: text("target_label"),
+    metadataJson: text("metadata_json").notNull().default("{}"),
+    createdAt: createCreatedAtColumn(),
+  },
+  (table) => [
+    index("log_history_created_at_idx").on(table.createdAt),
+    index("log_history_request_id_idx").on(table.requestId),
+    index("log_history_resource_action_idx").on(table.resource, table.action),
+    index("log_history_user_id_idx").on(table.userId),
+    check("log_history_result_check", sql`${table.result} in ('failure', 'success')`),
+  ],
+);
+
+export const logErrorHistory = sqliteTable(
+  "log_error_history",
+  {
+    id: createIdColumn(),
+    requestId: text("request_id").notNull(),
+    fingerprint: text("fingerprint").notNull(),
+    code: text("code").notNull(),
+    category: text("category").notNull(),
+    severity: text("severity").$type<LogSeverity>().notNull(),
+    statusCode: integer("status_code").notNull(),
+    message: text("message").notNull(),
+    path: text("path").notNull(),
+    method: text("method").notNull(),
+    routeId: text("route_id"),
+    locale: text("locale"),
+    userId: text("user_id").references(() => users.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+    userRole: text("user_role").$type<UserRole>(),
+    stack: text("stack"),
+    metadataJson: text("metadata_json").notNull().default("{}"),
+    createdAt: createCreatedAtColumn(),
+  },
+  (table) => [
+    index("log_error_history_created_at_idx").on(table.createdAt),
+    index("log_error_history_request_id_idx").on(table.requestId),
+    index("log_error_history_fingerprint_idx").on(table.fingerprint),
+    index("log_error_history_code_idx").on(table.code),
+    index("log_error_history_user_id_idx").on(table.userId),
+    check(
+      "log_error_history_severity_check",
+      sql`${table.severity} in ('critical', 'error', 'info', 'warn')`,
+    ),
+  ],
+);
+
 export const schema = {
   users,
   posts,
@@ -305,4 +381,6 @@ export const schema = {
   authorizationUserClaimOverrides,
   locales,
   translations,
+  logHistory,
+  logErrorHistory,
 };

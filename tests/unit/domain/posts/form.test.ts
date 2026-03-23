@@ -4,6 +4,8 @@ import {
   createEmptyPostContentDocument,
   serializePostContent,
 } from "~/domain/posts/content";
+import type { PostFormState } from "~/domain/posts/form";
+import { ValidationError } from "~/shared/errors/app-error.server";
 import { createTranslator, getSeedMessages } from "~/shared/i18n/i18n.shared";
 import { parsePostFormData } from "~/lib/posts/post-form.server";
 
@@ -50,42 +52,48 @@ describe("post form parser", () => {
     );
 
     expect(submission).toEqual({
-      data: {
-        content,
-        coverImageUrl: "https://paper-portfolio-ink.dev/cover.webp",
-        excerpt: "Cloudflare cache invalidation and rollout notes.",
-        slug: "edge-cache-diary",
-        status: "published",
-        title: "Edge Cache Diary",
-      },
+      content,
+      coverImageUrl: "https://paper-portfolio-ink.dev/cover.webp",
+      excerpt: "Cloudflare cache invalidation and rollout notes.",
+      slug: "edge-cache-diary",
+      status: "published",
+      title: "Edge Cache Diary",
     });
   });
 
-  it("returns field errors while preserving the submitted values", () => {
-    const submission = parsePostFormData(
-      buildFormData([
-        ["title", "No"],
-        ["slug", "Bad Slug"],
-        ["excerpt", "short"],
-        ["content", serializePostContent(createEmptyPostContentDocument())],
-        ["coverImageUrl", "notaurl"],
-        ["status", "draft"],
-      ]),
-      t,
-    );
+  it("throws a validation error while preserving the submitted values", () => {
+    try {
+      parsePostFormData(
+        buildFormData([
+          ["title", "No"],
+          ["slug", "Bad Slug"],
+          ["excerpt", "short"],
+          ["content", serializePostContent(createEmptyPostContentDocument())],
+          ["coverImageUrl", "notaurl"],
+          ["status", "draft"],
+        ]),
+        t,
+      );
+      throw new Error("Expected parsePostFormData to throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ValidationError);
 
-    expect("data" in submission).toBe(false);
+      if (!(error instanceof ValidationError) || !error.responseData) {
+        throw error;
+      }
 
-    if ("data" in submission) {
-      return;
+      const responseData = error.responseData as PostFormState;
+
+      expect(error.code).toBe("posts.validation");
+      expect(typeof responseData.errors?.content).toBe("string");
+      expect(typeof responseData.errors?.coverImageUrl).toBe("string");
+      expect(typeof responseData.errors?.excerpt).toBe("string");
+      expect(typeof responseData.errors?.slug).toBe("string");
+      expect(typeof responseData.errors?.title).toBe("string");
+      expect(responseData.values).toMatchObject({
+        slug: "Bad Slug",
+        status: "draft",
+      });
     }
-
-    expect(submission.errors?.content).toBeTypeOf("string");
-    expect(submission.errors?.coverImageUrl).toBeTypeOf("string");
-    expect(submission.errors?.excerpt).toBeTypeOf("string");
-    expect(submission.errors?.slug).toBeTypeOf("string");
-    expect(submission.errors?.title).toBeTypeOf("string");
-    expect(submission.values.slug).toBe("Bad Slug");
-    expect(submission.values.status).toBe("draft");
   });
 });

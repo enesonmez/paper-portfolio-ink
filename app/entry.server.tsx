@@ -1,6 +1,9 @@
 import { renderToReadableStream } from "react-dom/server";
-import type { EntryContext } from "react-router";
+import type { AppLoadContext, EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
+
+import { normalizeAppError } from "~/shared/errors/app-error.server";
+import { reportAppError } from "~/shared/errors/report.server";
 
 export default async function handleRequest(
   request: Request,
@@ -13,7 +16,21 @@ export default async function handleRequest(
     {
       signal: request.signal,
       onError(error: unknown) {
-        console.error(error);
+        console.error(
+          JSON.stringify({
+            error:
+              error instanceof Error
+                ? {
+                    message: error.message,
+                    name: error.name,
+                  }
+                : {
+                    thrown: typeof error,
+                  },
+            path: new URL(request.url).pathname,
+            type: "render_error",
+          }),
+        );
         responseStatusCode = 500;
       },
     },
@@ -25,4 +42,37 @@ export default async function handleRequest(
     headers: responseHeaders,
     status: responseStatusCode,
   });
+}
+
+export async function handleError(
+  error: unknown,
+  { context, request }: { context: AppLoadContext; request: Request },
+) {
+  if (request.signal.aborted) {
+    return;
+  }
+
+  try {
+    await reportAppError({
+      context,
+      error: normalizeAppError(error),
+      request,
+    });
+  } catch (reportingError) {
+    console.error(
+      JSON.stringify({
+        error:
+          reportingError instanceof Error
+            ? {
+                message: reportingError.message,
+                name: reportingError.name,
+              }
+            : {
+                thrown: typeof reportingError,
+              },
+        path: new URL(request.url).pathname,
+        type: "error_reporting_failure",
+      }),
+    );
+  }
 }

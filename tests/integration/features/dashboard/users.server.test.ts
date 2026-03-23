@@ -162,17 +162,17 @@ describe("dashboard users server", () => {
       },
     });
 
-    const response = await loadDashboardUsersData(
-      context,
-      new Request("http://localhost:3000/dashboard/users"),
-    );
-
-    if (response instanceof Response) {
-      throw new Error("Expected denied users loader data");
-    }
-
-    expect(response).toEqual({
-      access: "denied",
+    await expect(
+      loadDashboardUsersData(
+        context,
+        new Request("http://localhost:3000/dashboard/users"),
+      ),
+    ).rejects.toMatchObject({
+      code: "users.read.forbidden",
+      responseData: {
+        access: "denied",
+      },
+      status: 403,
     });
     expect(listUsersMock).not.toHaveBeenCalled();
   }, 20000);
@@ -257,19 +257,16 @@ describe("dashboard users server", () => {
       },
     });
 
-    const response = await handleDashboardUsersAction(context, request);
-
-    expect(createUserMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
+    await expect(handleDashboardUsersAction(context, request)).rejects.toMatchObject({
+      code: "users.mutation.forbidden",
+      responseData: {
         errors: {
           form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
         },
       },
-      init: {
-        status: 403,
-      },
+      status: 403,
     });
+    expect(createUserMock).not.toHaveBeenCalled();
   }, 20000);
 
   it("deactivates users instead of deleting them", async () => {
@@ -340,19 +337,16 @@ describe("dashboard users server", () => {
     });
     countActiveAdminsMock.mockResolvedValue(1);
 
-    const response = await handleDashboardUsersAction(context, request);
-
-    expect(deactivateUserMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
+    await expect(handleDashboardUsersAction(context, request)).rejects.toMatchObject({
+      code: "users.delete.last_admin_guard",
+      responseData: {
         errors: {
           form: "Son aktif admin hesabi pasiflestirilemez.",
         },
       },
-      init: {
-        status: 409,
-      },
+      status: 409,
     });
+    expect(deactivateUserMock).not.toHaveBeenCalled();
   }, 20000);
 
   it("blocks demoting the last active admin to author", async () => {
@@ -399,19 +393,16 @@ describe("dashboard users server", () => {
     });
     countActiveAdminsMock.mockResolvedValue(1);
 
-    const response = await handleDashboardUsersAction(context, request);
-
-    expect(updateUserMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
+    await expect(handleDashboardUsersAction(context, request)).rejects.toMatchObject({
+      code: "users.update.last_admin_guard",
+      responseData: {
         errors: {
           form: "Son aktif admin hesabi author rolune dusurulemez.",
         },
       },
-      init: {
-        status: 409,
-      },
+      status: 409,
     });
+    expect(updateUserMock).not.toHaveBeenCalled();
   });
 
   it("purges the cached blog archive after a user update", async () => {
