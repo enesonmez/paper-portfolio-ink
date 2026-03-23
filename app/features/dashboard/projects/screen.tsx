@@ -2,7 +2,9 @@ import { Link } from "react-router";
 import { Plus } from "lucide-react";
 
 import { DashboardAuthorizationAccessDeniedScreen } from "~/shared/authz/components/dashboard-authorization-access-denied-screen";
+import { DashboardModal } from "~/components/dashboard/modal";
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
+import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
 import { Button } from "~/components/ui/button";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
@@ -19,6 +21,7 @@ import { DashboardProjectsModalView } from "./components/dashboard-projects-moda
 import { DashboardProjectsTable } from "./components/dashboard-projects-table";
 
 export interface DashboardProjectsScreenProps {
+  actionError?: string;
   form: DashboardProjectsFormState;
   metrics: DashboardProjectsMetrics;
   permissions: DashboardProjectsPermissions;
@@ -26,6 +29,7 @@ export interface DashboardProjectsScreenProps {
 }
 
 export function DashboardProjectsScreen({
+  actionError,
   form,
   metrics,
   permissions,
@@ -76,6 +80,26 @@ export function DashboardProjectsScreen({
       </section>
 
       <DashboardProjectsModalView form={form} />
+      {!form.isOpen && actionError ? (
+        <DashboardModal
+          title={copy.actionBlockedTitle}
+          description={actionError}
+          to={to(buildDashboardProjectsHref())}
+        >
+          <div className="space-y-4">
+            <DashboardPanel className="bg-destructive text-destructive-foreground">
+              <p className="font-sans text-sm font-bold" role="alert">
+                {actionError}
+              </p>
+            </DashboardPanel>
+            <div className="flex justify-end">
+              <Button asChild className="tracking-[0.14em]">
+                <Link to={to(buildDashboardProjectsHref())}>{t("common.dismiss")}</Link>
+              </Button>
+            </div>
+          </div>
+        </DashboardModal>
+      ) : null}
     </div>
   );
 }

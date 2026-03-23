@@ -1,9 +1,8 @@
-import { data, redirect, type AppLoadContext } from "react-router";
+import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
-import { loadI18nPayload } from "~/shared/i18n/i18n.server";
-import { buildLocalizedPath, createTranslator } from "~/shared/i18n/i18n.shared";
-import { purgePublicBlogDataCache } from "~/features/public/blog/server";
+import { buildUserFormValues, type UserFormState } from "~/domain/users/form";
+import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/domain/users/model";
 import {
   USER_MUTATION_CLAIMS,
   resolveMutationClaim,
@@ -16,85 +15,30 @@ import {
   requireDashboardActor,
 } from "~/shared/authz/authz.server";
 import { AUTHORIZATION_CLAIM } from "~/shared/authz/model";
-import { readStringField } from "~/shared/forms/form-data.server";
-import { buildUserFormValues, type UserFormState } from "~/domain/users/form";
-import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/domain/users/model";
-import { hasParsedUserData, parseUserFormData } from "~/lib/users/user-form.server";
+import { listUsers } from "~/lib/users/users.server";
+import { buildAuthorizationError } from "~/shared/errors/builders.server";
 import {
-  countActiveAdmins,
-  createUser,
-  deactivateUser,
-  getUserById,
-  isLastActiveAdminConstraintError,
-  isUniqueUserEmailConstraintError,
-  isUserEmailTaken,
-  listUsers,
-  updateUser,
-} from "~/lib/users/users.server";
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
+import { resolveParsedSubmission } from "~/shared/errors/submission.server";
+import { readStringField } from "~/shared/forms/form-data.server";
+import { loadI18nPayload } from "~/shared/i18n/i18n.server";
+import { createTranslator } from "~/shared/i18n/i18n.shared";
+import { parseUserFormData } from "~/lib/users/user-form.server";
 
 import { buildDashboardUsersFormCopy } from "./copy";
+import {
+  handleCreateUserMutation,
+  handleDeleteUserMutation,
+  handleUpdateUserMutation,
+} from "./mutations.server";
 import {
   buildDashboardUsersMetrics,
   resolveDashboardUsersForm,
   type DashboardUsersLoaderData,
 } from "./state";
-
-function buildDuplicateEmailState(values: UserFormState["values"], message: string) {
-  return data<UserFormState>(
-    {
-      errors: {
-        email: message,
-      },
-      values,
-    },
-    { status: 409 },
-  );
-}
-
-function buildAdminProtectionState(message: string) {
-  return data<UserFormState>(
-    {
-      errors: {
-        form: message,
-      },
-      values: buildUserFormValues(),
-    },
-    { status: 409 },
-  );
-}
-
-async function ensureAdminInvariant(
-  context: AppLoadContext,
-  userId: string,
-  formCopy: ReturnType<typeof buildDashboardUsersFormCopy>,
-  nextState: {
-    isActive: boolean;
-    role: string;
-  },
-) {
-  const db = getDbFromContext(context);
-  const currentUser = await getUserById(db, userId);
-
-  if (!currentUser || !currentUser.isActive || currentUser.role !== "admin") {
-    return null;
-  }
-
-  if (nextState.isActive && nextState.role === "admin") {
-    return null;
-  }
-
-  const activeAdminCount = await countActiveAdmins(db);
-
-  if (activeAdminCount > 1) {
-    return null;
-  }
-
-  if (!nextState.isActive) {
-    return buildAdminProtectionState(formCopy.errors.lastActiveAdminDeactivate);
-  }
-
-  return buildAdminProtectionState(formCopy.errors.lastActiveAdminDemotion);
-}
 
 export async function loadDashboardUsersData(
   context: AppLoadContext,
@@ -111,7 +55,14 @@ export async function loadDashboardUsersData(
   } satisfies DashboardUsersLoaderData);
 
   if (denied) {
-    return denied;
+    throw buildAuthorizationError<DashboardUsersLoaderData>({
+      action: APP_ERROR_ACTION.read,
+      code: APP_ERROR_CODE.users.read.forbidden,
+      message: "User dashboard access denied",
+      resource: APP_ERROR_RESOURCE.users,
+      responseData: denied,
+      status: 403,
+    });
   }
 
   const db = getDbFromContext(context);
@@ -152,7 +103,6 @@ export async function handleDashboardUsersAction(
     return auth;
   }
 
-  const db = getDbFromContext(context);
   const formData = await request.formData();
   const intent = readStringField(formData, USER_FORM_FIELD.intent);
   const userId = readStringField(formData, USER_FORM_FIELD.userId);
@@ -169,136 +119,69 @@ export async function handleDashboardUsersAction(
   );
 
   if (forbidden) {
-    return forbidden;
+    throw buildAuthorizationError<UserFormState>({
+      action: APP_ERROR_ACTION.mutate,
+      code: APP_ERROR_CODE.users.mutation.forbidden,
+      details: {
+        intent,
+        requiredClaim,
+      },
+      message: "User mutation denied by authorization policy",
+      resource: APP_ERROR_RESOURCE.users,
+      responseData: forbidden,
+      status: 403,
+    });
   }
 
   if (intent === USER_MUTATION_INTENT.delete) {
-    if (!userId) {
-      return data<UserFormState>(
-        {
-          errors: {
-            form: formCopy.errors.deactivateMissingUser,
-          },
-          values: buildUserFormValues(),
-        },
-        { status: 400 },
-      );
-    }
-
-    const adminInvariantState = await ensureAdminInvariant(context, userId, formCopy, {
-      isActive: false,
-      role: "admin",
+    return handleDeleteUserMutation({
+      context,
+      formCopy,
+      intent,
+      locale,
+      request,
+      supportedLocaleCodes,
+      userId,
     });
-
-    if (adminInvariantState) {
-      return adminInvariantState;
-    }
-
-    try {
-      await deactivateUser(db, userId);
-    } catch (error) {
-      if (isLastActiveAdminConstraintError(error)) {
-        return buildAdminProtectionState(formCopy.errors.lastActiveAdminDelete);
-      }
-
-      throw error;
-    }
-
-    await purgePublicBlogDataCache(context, request);
-
-    return redirect(
-      buildLocalizedPath(locale, "/dashboard/users", supportedLocaleCodes),
-    );
   }
 
-  const submission = parseUserFormData(
-    formData,
-    intent === USER_MUTATION_INTENT.update
-      ? USER_MUTATION_INTENT.update
-      : USER_MUTATION_INTENT.create,
-    t,
-  );
-
-  if (!hasParsedUserData(submission)) {
-    return data<UserFormState>(submission, { status: 400 });
-  }
+  const submission = resolveParsedSubmission({
+    action:
+      intent === USER_MUTATION_INTENT.update
+        ? APP_ERROR_ACTION.update
+        : APP_ERROR_ACTION.create,
+    code: APP_ERROR_CODE.users.validation,
+    message: "User form validation failed",
+    resource: APP_ERROR_RESOURCE.users,
+    submission: parseUserFormData(
+      formData,
+      intent === USER_MUTATION_INTENT.update
+        ? USER_MUTATION_INTENT.update
+        : USER_MUTATION_INTENT.create,
+      t,
+    ),
+  });
 
   if (intent === USER_MUTATION_INTENT.update) {
-    if (!userId) {
-      return data<UserFormState>(
-        {
-          errors: {
-            form: formCopy.errors.updateMissingUser,
-          },
-          values: buildUserFormValues(submission.data),
-        },
-        { status: 400 },
-      );
-    }
-
-    const adminInvariantState = await ensureAdminInvariant(context, userId, formCopy, {
-      isActive: submission.data.isActive,
-      role: submission.data.role,
+    return handleUpdateUserMutation({
+      context,
+      formCopy,
+      intent,
+      locale,
+      request,
+      submission,
+      supportedLocaleCodes,
+      userId,
     });
-
-    if (adminInvariantState) {
-      return adminInvariantState;
-    }
-
-    if (await isUserEmailTaken(db, submission.data.email, userId)) {
-      return buildDuplicateEmailState(
-        submission.data,
-        formCopy.errors.updateDuplicateEmail,
-      );
-    }
-
-    try {
-      await updateUser(db, userId, submission.data);
-    } catch (error) {
-      if (isLastActiveAdminConstraintError(error)) {
-        return buildAdminProtectionState(
-          submission.data.isActive
-            ? formCopy.errors.lastActiveAdminDemotion
-            : formCopy.errors.lastActiveAdminDeactivate,
-        );
-      }
-
-      if (isUniqueUserEmailConstraintError(error)) {
-        return buildDuplicateEmailState(
-          submission.data,
-          formCopy.errors.updateDuplicateEmail,
-        );
-      }
-
-      throw error;
-    }
-
-    await purgePublicBlogDataCache(context, request);
-
-    return redirect(
-      buildLocalizedPath(locale, "/dashboard/users", supportedLocaleCodes),
-    );
   }
 
-  if (await isUserEmailTaken(db, submission.data.email)) {
-    return buildDuplicateEmailState(
-      submission.data,
-      formCopy.errors.createDuplicateEmail,
-    );
-  }
-
-  try {
-    await createUser(db, submission.data);
-  } catch (error) {
-    if (isUniqueUserEmailConstraintError(error)) {
-      return buildDuplicateEmailState(
-        submission.data,
-        formCopy.errors.createDuplicateEmail,
-      );
-    }
-
-    throw error;
-  }
-
-  return redirect(buildLocalizedPath(locale, "/dashboard/users", supportedLocaleCodes));
+  return handleCreateUserMutation({
+    context,
+    intent,
+    locale,
+    request,
+    submission,
+    supportedLocaleCodes,
+    formCopy,
+  });
 }

@@ -9,6 +9,12 @@ import {
   type UserMutationIntent,
   type UserRole,
 } from "~/domain/users/model";
+import { buildValidationError } from "~/shared/errors/builders.server";
+import {
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
 import { compactFieldErrors, readStringField } from "~/shared/forms/form-data.server";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
@@ -58,7 +64,7 @@ export function parseUserFormData(
   formData: FormData,
   intent: UserMutationIntent,
   t: I18nTranslator,
-): { data: UserSubmission } | UserFormState {
+): UserSubmission {
   const rawValues = {
     avatarUrl: readStringField(formData, USER_FORM_FIELD.avatarUrl),
     bio: readStringField(formData, USER_FORM_FIELD.bio),
@@ -74,33 +80,35 @@ export function parseUserFormData(
 
   if (!parsed.success || passwordError) {
     const fieldErrors = parsed.success ? {} : parsed.error.flatten().fieldErrors;
+    const errors = compactFieldErrors({
+      avatarUrl: fieldErrors.avatarUrl?.[0],
+      bio: fieldErrors.bio?.[0],
+      displayName: fieldErrors.displayName?.[0],
+      email: fieldErrors.email?.[0],
+      isActive: fieldErrors.isActive?.[0],
+      password: passwordError,
+      role: fieldErrors.role?.[0],
+    });
 
-    return {
-      errors: compactFieldErrors({
-        avatarUrl: fieldErrors.avatarUrl?.[0],
-        bio: fieldErrors.bio?.[0],
-        displayName: fieldErrors.displayName?.[0],
-        email: fieldErrors.email?.[0],
-        isActive: fieldErrors.isActive?.[0],
-        password: passwordError,
-        role: fieldErrors.role?.[0],
-      }),
-      values: buildUserFormValues({
-        ...rawValues,
-        role: USER_ROLE_VALUES.includes(rawValues.role as UserRole)
-          ? (rawValues.role as UserRole)
-          : USER_ROLE.author,
-      }),
-    };
+    throw buildValidationError<UserFormState>({
+      action: APP_ERROR_ACTION.validate,
+      code: APP_ERROR_CODE.users.validation,
+      details: {
+        invalidFields: Object.keys(errors),
+      },
+      message: "User form validation failed",
+      resource: APP_ERROR_RESOURCE.users,
+      responseData: {
+        errors,
+        values: buildUserFormValues({
+          ...rawValues,
+          role: USER_ROLE_VALUES.includes(rawValues.role as UserRole)
+            ? (rawValues.role as UserRole)
+            : USER_ROLE.author,
+        }),
+      },
+    });
   }
 
-  return {
-    data: parsed.data,
-  };
-}
-
-export function hasParsedUserData(
-  submission: UserFormState | { data: UserSubmission },
-): submission is { data: UserSubmission } {
-  return "data" in submission;
+  return parsed.data;
 }

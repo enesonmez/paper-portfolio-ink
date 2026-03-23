@@ -9,6 +9,12 @@ import {
 } from "~/domain/skills/icons";
 import { SKILL_FORM_FIELD } from "~/domain/skills/model";
 import { suggestSlugFromTitle } from "~/lib/slug";
+import { buildValidationError } from "~/shared/errors/builders.server";
+import {
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
 import { compactFieldErrors, readStringField } from "~/shared/forms/form-data.server";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
@@ -51,7 +57,7 @@ export type SkillSubmission = z.infer<ReturnType<typeof createSkillFormSchema>>;
 export function parseSkillFormData(
   formData: FormData,
   t: I18nTranslator,
-): { data: SkillSubmission } | SkillFormState {
+): SkillSubmission {
   const rawValues = {
     iconKey: readStringField(formData, SKILL_FORM_FIELD.iconKey) || SKILL_DEFAULT_ICON,
     name: readStringField(formData, SKILL_FORM_FIELD.name),
@@ -63,30 +69,32 @@ export function parseSkillFormData(
 
   if (!parsed.success) {
     const fieldErrors = parsed.error.flatten().fieldErrors;
+    const errors = compactFieldErrors({
+      iconKey: fieldErrors.iconKey?.[0],
+      name: fieldErrors.name?.[0],
+      sortOrder: fieldErrors.sortOrder?.[0],
+      summary: fieldErrors.summary?.[0],
+    });
 
-    return {
-      errors: compactFieldErrors({
-        iconKey: fieldErrors.iconKey?.[0],
-        name: fieldErrors.name?.[0],
-        sortOrder: fieldErrors.sortOrder?.[0],
-        summary: fieldErrors.summary?.[0],
-      }),
-      values: buildSkillFormValues({
-        ...rawValues,
-        iconKey: isSkillIconKey(rawValues.iconKey)
-          ? rawValues.iconKey
-          : SKILL_DEFAULT_ICON,
-      }),
-    };
+    throw buildValidationError<SkillFormState>({
+      action: APP_ERROR_ACTION.validate,
+      code: APP_ERROR_CODE.skills.validation,
+      details: {
+        invalidFields: Object.keys(errors),
+      },
+      message: "Skill form validation failed",
+      resource: APP_ERROR_RESOURCE.skills,
+      responseData: {
+        errors,
+        values: buildSkillFormValues({
+          ...rawValues,
+          iconKey: isSkillIconKey(rawValues.iconKey)
+            ? rawValues.iconKey
+            : SKILL_DEFAULT_ICON,
+        }),
+      },
+    });
   }
 
-  return {
-    data: parsed.data,
-  };
-}
-
-export function hasParsedSkillData(
-  submission: SkillFormState | { data: SkillSubmission },
-): submission is { data: SkillSubmission } {
-  return "data" in submission;
+  return parsed.data;
 }

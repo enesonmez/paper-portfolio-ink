@@ -1,10 +1,8 @@
-import { data, redirect, type AppLoadContext } from "react-router";
+import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
-import { loadI18nPayload } from "~/shared/i18n/i18n.server";
-import { buildLocalizedPath, createTranslator } from "~/shared/i18n/i18n.shared";
-import { purgePublicHomeDataCache } from "~/features/public/home/server";
-import { purgePublicProjectsDataCache } from "~/features/public/projects/server";
+import { buildProjectFormValues, type ProjectFormState } from "~/domain/projects/form";
+import { PROJECT_FORM_FIELD, PROJECT_MUTATION_INTENT } from "~/domain/projects/model";
 import {
   PROJECT_MUTATION_CLAIMS,
   resolveMutationClaim,
@@ -17,79 +15,31 @@ import {
   requireDashboardActor,
 } from "~/shared/authz/authz.server";
 import { AUTHORIZATION_CLAIM } from "~/shared/authz/model";
+import { buildAuthorizationError } from "~/shared/errors/builders.server";
+import {
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
+import { resolveParsedSubmission } from "~/shared/errors/submission.server";
 import { readStringField } from "~/shared/forms/form-data.server";
-import { buildProjectFormValues, type ProjectFormState } from "~/domain/projects/form";
-import { PROJECT_FORM_FIELD, PROJECT_MUTATION_INTENT } from "~/domain/projects/model";
-import {
-  hasParsedProjectData,
-  parseProjectFormData,
-} from "~/lib/projects/project-form.server";
-import {
-  createProject,
-  deleteProject,
-  findAvailableProjectSlug,
-  isProjectSlugTaken,
-  listProjects,
-  updateProject,
-} from "~/lib/projects/projects.server";
-import { isUniqueSlugConstraintError } from "~/lib/slug";
+import { loadI18nPayload } from "~/shared/i18n/i18n.server";
+import { createTranslator } from "~/shared/i18n/i18n.shared";
+import { parseProjectFormData } from "~/lib/projects/project-form.server";
+import { listProjects } from "~/lib/projects/projects.server";
 
 import { buildDashboardProjectsFormCopy } from "./copy";
+import {
+  handleCreateProjectMutation,
+  handleDeleteProjectMutation,
+  handleUpdateProjectMutation,
+} from "./mutations.server";
 import {
   DASHBOARD_PROJECTS_QUERY_PARAM,
   buildDashboardProjectsMetrics,
   resolveDashboardProjectsForm,
   type DashboardProjectsLoaderData,
 } from "./state";
-
-type ProjectActionValues = Omit<ProjectFormState["values"], "sortOrder"> & {
-  sortOrder?: number | string;
-};
-
-function buildProjectActionValues(values: ProjectActionValues) {
-  return buildProjectFormValues({
-    ...values,
-    sortOrder: values.sortOrder?.toString() ?? "0",
-  });
-}
-
-async function buildDuplicateProjectSlugState(
-  context: AppLoadContext,
-  values: ProjectActionValues,
-  duplicateMessage: string,
-  projectId?: string,
-) {
-  const db = getDbFromContext(context);
-
-  return data<ProjectFormState>(
-    {
-      errors: {
-        slug: duplicateMessage,
-      },
-      slugSuggestion: await findAvailableProjectSlug(db, values.title, projectId),
-      values: buildProjectActionValues(values),
-    },
-    { status: 409 },
-  );
-}
-
-function buildDeniedProjectsLoaderData(): DashboardProjectsLoaderData {
-  return {
-    access: "denied",
-    form: resolveDashboardProjectsForm({
-      editId: null,
-      modal: null,
-      projects: [],
-    }),
-    metrics: buildDashboardProjectsMetrics([]),
-    permissions: {
-      canCreate: false,
-      canDelete: false,
-      canUpdate: false,
-    },
-    projects: [],
-  };
-}
 
 export async function loadDashboardProjectsData(
   context: AppLoadContext,
@@ -104,11 +54,20 @@ export async function loadDashboardProjectsData(
   const denied = denyLoaderIfMissingClaim(
     auth.actor,
     AUTHORIZATION_CLAIM.projectsRead,
-    buildDeniedProjectsLoaderData(),
+    {
+      access: "denied",
+    } satisfies DashboardProjectsLoaderData,
   );
 
   if (denied) {
-    return denied;
+    throw buildAuthorizationError<DashboardProjectsLoaderData>({
+      action: APP_ERROR_ACTION.read,
+      code: APP_ERROR_CODE.projects.read.forbidden,
+      message: "Project dashboard access denied",
+      resource: APP_ERROR_RESOURCE.projects,
+      responseData: denied,
+      status: 403,
+    });
   }
 
   const db = getDbFromContext(context);
@@ -136,7 +95,6 @@ export async function handleDashboardProjectsAction(
   context: AppLoadContext,
   request: Request,
 ) {
-  const db = getDbFromContext(context);
   const { locale, messages, supportedLocales } = await loadI18nPayload(
     context,
     request,
@@ -166,114 +124,64 @@ export async function handleDashboardProjectsAction(
   );
 
   if (forbidden) {
-    return forbidden;
+    throw buildAuthorizationError<ProjectFormState>({
+      action: APP_ERROR_ACTION.mutate,
+      code: APP_ERROR_CODE.projects.mutation.forbidden,
+      details: {
+        intent,
+        requiredClaim,
+      },
+      message: "Project mutation denied by authorization policy",
+      resource: APP_ERROR_RESOURCE.projects,
+      responseData: forbidden,
+      status: 403,
+    });
   }
 
   if (intent === PROJECT_MUTATION_INTENT.delete) {
-    if (!projectId) {
-      return data<ProjectFormState>(
-        {
-          errors: {
-            form: formCopy.errors.deleteMissingProject,
-          },
-          values: buildProjectFormValues(),
-        },
-        { status: 400 },
-      );
-    }
-
-    await deleteProject(db, projectId);
-    await Promise.all([
-      purgePublicHomeDataCache(context, request),
-      purgePublicProjectsDataCache(context, request),
-    ]);
-
-    return redirect(
-      buildLocalizedPath(locale, "/dashboard/projects", supportedLocaleCodes),
-    );
+    return handleDeleteProjectMutation({
+      context,
+      formCopy,
+      intent,
+      locale,
+      projectId,
+      request,
+      supportedLocaleCodes,
+    });
   }
 
-  const submission = parseProjectFormData(formData, t);
-
-  if (!hasParsedProjectData(submission)) {
-    return data<ProjectFormState>(submission, { status: 400 });
-  }
+  const submission = resolveParsedSubmission({
+    action:
+      intent === PROJECT_MUTATION_INTENT.update
+        ? APP_ERROR_ACTION.update
+        : APP_ERROR_ACTION.create,
+    code: APP_ERROR_CODE.projects.validation,
+    message: "Project form validation failed",
+    resource: APP_ERROR_RESOURCE.projects,
+    submission: parseProjectFormData(formData, t),
+  });
 
   if (intent === PROJECT_MUTATION_INTENT.update) {
-    if (!projectId) {
-      return data<ProjectFormState>(
-        {
-          errors: {
-            form: formCopy.errors.updateMissingProject,
-          },
-          values: buildProjectActionValues(submission.data),
-        },
-        { status: 400 },
-      );
-    }
-
-    if (await isProjectSlugTaken(db, submission.data.slug, projectId)) {
-      return buildDuplicateProjectSlugState(
-        context,
-        submission.data,
-        t("validation.slug.taken"),
-        projectId,
-      );
-    }
-
-    try {
-      await updateProject(db, projectId, submission.data);
-    } catch (error) {
-      if (isUniqueSlugConstraintError(error, "projects")) {
-        return buildDuplicateProjectSlugState(
-          context,
-          submission.data,
-          t("validation.slug.taken"),
-          projectId,
-        );
-      }
-
-      throw error;
-    }
-
-    await Promise.all([
-      purgePublicHomeDataCache(context, request),
-      purgePublicProjectsDataCache(context, request),
-    ]);
-
-    return redirect(
-      buildLocalizedPath(locale, "/dashboard/projects", supportedLocaleCodes),
-    );
-  }
-
-  if (await isProjectSlugTaken(db, submission.data.slug)) {
-    return buildDuplicateProjectSlugState(
+    return handleUpdateProjectMutation({
       context,
-      submission.data,
-      t("validation.slug.taken"),
-    );
+      formCopy,
+      intent,
+      locale,
+      projectId,
+      request,
+      submission,
+      supportedLocaleCodes,
+      t,
+    });
   }
 
-  try {
-    await createProject(db, submission.data);
-  } catch (error) {
-    if (isUniqueSlugConstraintError(error, "projects")) {
-      return buildDuplicateProjectSlugState(
-        context,
-        submission.data,
-        t("validation.slug.taken"),
-      );
-    }
-
-    throw error;
-  }
-
-  await Promise.all([
-    purgePublicHomeDataCache(context, request),
-    purgePublicProjectsDataCache(context, request),
-  ]);
-
-  return redirect(
-    buildLocalizedPath(locale, "/dashboard/projects", supportedLocaleCodes),
-  );
+  return handleCreateProjectMutation({
+    context,
+    intent,
+    locale,
+    request,
+    submission,
+    supportedLocaleCodes,
+    t,
+  });
 }

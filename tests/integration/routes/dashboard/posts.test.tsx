@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
@@ -264,5 +264,37 @@ describe("dashboard posts route", () => {
         name: "Use suggested slug: edge-session-graph",
       }),
     ).toBeInTheDocument();
+  }, 20000);
+
+  it("surfaces action errors in a dismissible modal when the compose view is closed", async () => {
+    const { DashboardPostsScreen } = await import("~/routes/dashboard/posts");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/posts",
+          element: (
+            <DashboardPostsScreen
+              {...baseScreenProps}
+              actionError="Delete action blocked"
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/posts"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    const dialog = screen.getByRole("dialog", { name: "Action denied" });
+
+    expect(dialog).toBeInTheDocument();
+    expect(within(dialog).getAllByText("Delete action blocked")).toHaveLength(2);
+    expect(screen.getByRole("link", { name: "Dismiss" })).toHaveAttribute(
+      "href",
+      "/dashboard/posts",
+    );
   }, 20000);
 });

@@ -133,17 +133,17 @@ describe("dashboard skills server", () => {
       },
     });
 
-    const response = await loadDashboardSkillsData(
-      context,
-      new Request("http://localhost:3000/dashboard/skills"),
-    );
-
-    if (response instanceof Response) {
-      throw new Error("Expected denied skills loader data");
-    }
-
-    expect(response).toEqual({
-      access: "denied",
+    await expect(
+      loadDashboardSkillsData(
+        context,
+        new Request("http://localhost:3000/dashboard/skills"),
+      ),
+    ).rejects.toMatchObject({
+      code: "skills.read.forbidden",
+      responseData: {
+        access: "denied",
+      },
+      status: 403,
     });
     expect(listSkillsMock).not.toHaveBeenCalled();
   });
@@ -182,19 +182,16 @@ describe("dashboard skills server", () => {
     });
     isSkillSlugTakenMock.mockResolvedValue(true);
 
-    const response = await handleDashboardSkillsAction(context, request);
-
-    expect(createSkillMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
+    await expect(handleDashboardSkillsAction(context, request)).rejects.toMatchObject({
+      code: "skills.create.duplicate_slug",
+      responseData: {
         errors: {
           name: "Bu beceri zaten kayitli.",
         },
       },
-      init: {
-        status: 409,
-      },
+      status: 409,
     });
+    expect(createSkillMock).not.toHaveBeenCalled();
   });
 
   it("returns a 403 form error for non-admin action attempts", async () => {
@@ -222,19 +219,16 @@ describe("dashboard skills server", () => {
       },
     });
 
-    const response = await handleDashboardSkillsAction(context, request);
-
-    expect(createSkillMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
+    await expect(handleDashboardSkillsAction(context, request)).rejects.toMatchObject({
+      code: "skills.mutation.forbidden",
+      responseData: {
         errors: {
           form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
         },
       },
-      init: {
-        status: 403,
-      },
+      status: 403,
     });
+    expect(createSkillMock).not.toHaveBeenCalled();
   });
 
   it("updates a skill row when a valid edit action is posted", async () => {

@@ -119,20 +119,19 @@ describe("dashboard projects server", () => {
     isProjectSlugTakenMock.mockResolvedValue(true);
     findAvailableProjectSlugMock.mockResolvedValue("paper-portfolio-ink-2");
 
-    const response = await handleDashboardProjectsAction(context, request);
-
-    expect(createProjectMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
-        errors: {
-          slug: "Bu slug zaten kullanimda. Baska bir slug sec.",
+    await expect(handleDashboardProjectsAction(context, request)).rejects.toMatchObject(
+      {
+        code: "projects.create.duplicate_slug",
+        responseData: {
+          errors: {
+            slug: "Bu slug zaten kullanimda. Baska bir slug sec.",
+          },
+          slugSuggestion: "paper-portfolio-ink-2",
         },
-        slugSuggestion: "paper-portfolio-ink-2",
-      },
-      init: {
         status: 409,
       },
-    });
+    );
+    expect(createProjectMock).not.toHaveBeenCalled();
   });
 
   it("purges the public project caches after a delete mutation", async () => {

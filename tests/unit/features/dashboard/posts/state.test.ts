@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildDeniedDashboardPostsLoaderData,
   buildDashboardPostsHref,
   buildDashboardPostsMetrics,
   mergeDashboardPostsFormState,
@@ -122,6 +123,29 @@ describe("dashboard posts state helpers", () => {
       mode: "edit",
       presentation: "fullscreen",
       slugSuggestion: "edge-note-2",
+    });
+  });
+
+  it("builds a denied loader payload with closed form defaults", () => {
+    expect(buildDeniedDashboardPostsLoaderData()).toMatchObject({
+      access: "denied",
+      form: {
+        editingPostId: null,
+        isOpen: false,
+        mode: null,
+        presentation: "modal",
+      },
+      metrics: {
+        draftCount: 0,
+        publishedCount: 0,
+        totalCount: 0,
+      },
+      permissions: {
+        canCreate: false,
+        canDelete: false,
+        canUpdate: false,
+      },
+      posts: [],
     });
   });
 });

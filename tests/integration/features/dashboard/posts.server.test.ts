@@ -246,18 +246,16 @@ describe("dashboard posts server", () => {
       },
     });
 
-    const response = await handleDashboardPostsAction(context, request);
-    expect(createPostMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
+    await expect(handleDashboardPostsAction(context, request)).rejects.toMatchObject({
+      code: "posts.validation",
+      responseData: {
         errors: {
           title: "Post title must be longer.",
         },
       },
-      init: {
-        status: 400,
-      },
+      status: 400,
     });
+    expect(createPostMock).not.toHaveBeenCalled();
   });
 
   it("returns a slug field error and suggestion when the submitted post slug is taken", async () => {
@@ -298,19 +296,16 @@ describe("dashboard posts server", () => {
     isPostSlugTakenMock.mockResolvedValue(true);
     findAvailablePostSlugMock.mockResolvedValue("edge-runtime-2");
 
-    const response = await handleDashboardPostsAction(context, request);
-
-    expect(createPostMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
+    await expect(handleDashboardPostsAction(context, request)).rejects.toMatchObject({
+      code: "posts.create.duplicate_slug",
+      responseData: {
         errors: {
           slug: "Bu slug zaten kullanimda. Baska bir slug sec.",
         },
         slugSuggestion: "edge-runtime-2",
       },
-      init: {
-        status: 409,
-      },
+      status: 409,
     });
+    expect(createPostMock).not.toHaveBeenCalled();
   }, 20000);
 });

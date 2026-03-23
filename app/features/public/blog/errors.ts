@@ -1,8 +1,5 @@
-export class PublicBlogPostNotFoundError extends Error {
-  readonly status = 404;
+export const PUBLIC_BLOG_POST_NOT_FOUND_ERROR_NAME = "PublicBlogPostNotFoundError";
 
-  constructor() {
-    super("Published blog post not found.");
-    this.name = "PublicBlogPostNotFoundError";
-  }
+export function isPublicBlogPostNotFoundError(error: unknown) {
+  return error instanceof Error && error.name === PUBLIC_BLOG_POST_NOT_FOUND_ERROR_NAME;
 }

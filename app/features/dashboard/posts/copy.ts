@@ -6,6 +6,7 @@ export function buildDashboardPostsCopy(t: I18nTranslator) {
   const authzCopy = buildDashboardAuthorizationCopy(t);
 
   return {
+    actionBlockedTitle: authzCopy.actionBlockedTitle,
     createActionLabel: t("dashboard.posts.createActionLabel"),
     createDescription: t("dashboard.posts.createDescription"),
     composeEyebrow: t("dashboard.posts.composeEyebrow"),

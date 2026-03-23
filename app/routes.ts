@@ -24,6 +24,7 @@ export default [
       ]),
       route("skills", "./routes/dashboard/skills.tsx"),
       route("users", "./routes/dashboard/users.tsx"),
+      route("logging", "./routes/dashboard/logging.tsx"),
     ]),
     route("locale", "./routes/locale/action.tsx"),
     route("login", "./routes/auth/login.tsx"),

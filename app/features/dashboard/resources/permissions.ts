@@ -7,6 +7,11 @@ import {
 } from "./state";
 import { DASHBOARD_RESOURCES_SECTION } from "./href";
 
+export type {
+  DashboardResourcesPermissions,
+  DashboardResourcesSectionPermissions,
+} from "./state";
+
 function buildResourceSectionPermissions(args: {
   actor: AuthorizationActor;
   createClaim: AuthorizationClaim;

@@ -18,16 +18,14 @@ describe("skill form parser", () => {
     );
 
     expect(parseSkillFormData(formData, t)).toEqual({
-      data: {
-        iconKey: "database",
-        name: "Cloudflare D1",
-        sortOrder: 3,
-        summary: "Distributed relational data workflows for edge-hosted applications.",
-      },
+      iconKey: "database",
+      name: "Cloudflare D1",
+      sortOrder: 3,
+      summary: "Distributed relational data workflows for edge-hosted applications.",
     });
   });
 
-  it("returns field-level errors for invalid skill submissions", async () => {
+  it("throws field-level errors for invalid skill submissions", async () => {
     const { parseSkillFormData } = await import("~/lib/skills/skill-form.server");
     const formData = new FormData();
 
@@ -36,19 +34,27 @@ describe("skill form parser", () => {
     formData.set("sortOrder", "-1");
     formData.set("summary", "short");
 
-    expect(parseSkillFormData(formData, t)).toEqual({
-      errors: {
-        iconKey: "Gecerli bir ikon sec.",
-        name: "Beceri adi gecerli bir anahtar uretemedi.",
-        sortOrder: "Siralama degeri 0 veya daha buyuk olmali.",
-        summary: "Beceri ozeti en az 12 karakter olmali.",
-      },
-      values: {
-        iconKey: "workflow",
-        name: "!!",
-        sortOrder: "-1",
-        summary: "short",
-      },
-    });
+    try {
+      parseSkillFormData(formData, t);
+      throw new Error("Expected parseSkillFormData to throw");
+    } catch (error) {
+      expect(error).toMatchObject({
+        code: "skills.validation",
+        responseData: {
+          errors: {
+            iconKey: "Gecerli bir ikon sec.",
+            name: "Beceri adi gecerli bir anahtar uretemedi.",
+            sortOrder: "Siralama degeri 0 veya daha buyuk olmali.",
+            summary: "Beceri ozeti en az 12 karakter olmali.",
+          },
+          values: {
+            iconKey: "workflow",
+            name: "!!",
+            sortOrder: "-1",
+            summary: "short",
+          },
+        },
+      });
+    }
   });
 });

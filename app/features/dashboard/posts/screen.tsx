@@ -2,7 +2,9 @@ import { Link } from "react-router";
 import { PenSquare } from "lucide-react";
 
 import { DashboardAuthorizationAccessDeniedScreen } from "~/shared/authz/components/dashboard-authorization-access-denied-screen";
+import { DashboardModal } from "~/components/dashboard/modal";
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
+import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardSectionHeading } from "~/components/dashboard/section-heading";
 import { Button } from "~/components/ui/button";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
@@ -19,6 +21,7 @@ import { DashboardPostsComposeView } from "./components/dashboard-posts-compose-
 import { DashboardPostsTable } from "./components/dashboard-posts-table";
 
 export interface DashboardPostsScreenProps {
+  actionError?: string;
   form: DashboardPostsFormState;
   metrics: DashboardPostsMetrics;
   permissions: DashboardPostsPermissions;
@@ -26,6 +29,7 @@ export interface DashboardPostsScreenProps {
 }
 
 export function DashboardPostsScreen({
+  actionError,
   form,
   metrics,
   permissions,
@@ -78,6 +82,27 @@ export function DashboardPostsScreen({
 
         <DashboardPostsTable permissions={permissions} posts={posts} />
       </section>
+
+      {actionError ? (
+        <DashboardModal
+          title={copy.actionBlockedTitle}
+          description={actionError}
+          to={to(buildDashboardPostsHref())}
+        >
+          <div className="space-y-4">
+            <DashboardPanel className="bg-destructive text-destructive-foreground">
+              <p className="font-sans text-sm font-bold" role="alert">
+                {actionError}
+              </p>
+            </DashboardPanel>
+            <div className="flex justify-end">
+              <Button asChild className="tracking-[0.14em]">
+                <Link to={to(buildDashboardPostsHref())}>{t("common.dismiss")}</Link>
+              </Button>
+            </div>
+          </div>
+        </DashboardModal>
+      ) : null}
     </div>
   );
 }

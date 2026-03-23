@@ -343,17 +343,17 @@ describe("dashboard resources server", () => {
       },
     });
 
-    const response = await loadDashboardResourcesData(
-      context,
-      new Request("http://localhost:3000/dashboard/resources"),
-    );
-
-    if (response instanceof Response) {
-      throw new Error("Expected denied resources loader data");
-    }
-
-    expect(response).toEqual({
-      access: "denied",
+    await expect(
+      loadDashboardResourcesData(
+        context,
+        new Request("http://localhost:3000/dashboard/resources"),
+      ),
+    ).rejects.toMatchObject({
+      code: "resources.read.forbidden",
+      responseData: {
+        access: "denied",
+      },
+      status: 403,
     });
   }, 20000);
 
@@ -513,35 +513,34 @@ describe("dashboard resources server", () => {
       new Error("UNIQUE constraint failed: locales.code"),
     );
 
-    const response = await handleDashboardResourcesAction(
-      context,
-      new Request("http://localhost:3000/dashboard/resources/locales", {
-        body: new URLSearchParams({
-          code: "tr",
-          intent: "create-locale",
-          isActive: "true",
-          isDefault: "false",
-          label: "TR",
-          sortOrder: "0",
+    await expect(
+      handleDashboardResourcesAction(
+        context,
+        new Request("http://localhost:3000/dashboard/resources/locales", {
+          body: new URLSearchParams({
+            code: "tr",
+            intent: "create-locale",
+            isActive: "true",
+            isDefault: "false",
+            label: "TR",
+            sortOrder: "0",
+          }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          method: "POST",
         }),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        method: "POST",
-      }),
-    );
-
-    expect(response).toMatchObject({
-      data: {
+      ),
+    ).rejects.toMatchObject({
+      code: "resources.locales.create.duplicate_code",
+      responseData: {
         localeForm: {
           errors: {
             code: "Bu locale kodu zaten kayitli.",
           },
         },
       },
-      init: {
-        status: 409,
-      },
+      status: 409,
     });
   }, 20000);
 
@@ -557,29 +556,28 @@ describe("dashboard resources server", () => {
       },
     });
 
-    const response = await handleDashboardResourcesAction(
-      context,
-      new Request("http://localhost:3000/dashboard/resources/locales", {
-        body: new URLSearchParams({
-          intent: "delete-locale",
-          originalCode: "tr",
+    await expect(
+      handleDashboardResourcesAction(
+        context,
+        new Request("http://localhost:3000/dashboard/resources/locales", {
+          body: new URLSearchParams({
+            intent: "delete-locale",
+            originalCode: "tr",
+          }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          method: "POST",
         }),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        method: "POST",
-      }),
-    );
-
-    expect(deleteLocaleMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
+      ),
+    ).rejects.toMatchObject({
+      code: "resources.mutation.forbidden",
+      responseData: {
         actionError: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
       },
-      init: {
-        status: 403,
-      },
+      status: 403,
     });
+    expect(deleteLocaleMock).not.toHaveBeenCalled();
   }, 20000);
 
   it("blocks deleting the last active locale", async () => {
@@ -605,29 +603,28 @@ describe("dashboard resources server", () => {
       },
     ]);
 
-    const response = await handleDashboardResourcesAction(
-      context,
-      new Request("http://localhost:3000/dashboard/resources/locales", {
-        body: new URLSearchParams({
-          intent: "delete-locale",
-          originalCode: "tr",
+    await expect(
+      handleDashboardResourcesAction(
+        context,
+        new Request("http://localhost:3000/dashboard/resources/locales", {
+          body: new URLSearchParams({
+            intent: "delete-locale",
+            originalCode: "tr",
+          }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          method: "POST",
         }),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        method: "POST",
-      }),
-    );
-
-    expect(deleteLocaleMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
+      ),
+    ).rejects.toMatchObject({
+      code: "resources.locales.delete.last_active_guard",
+      responseData: {
         actionError: "Son aktif/default locale kaldirilamaz.",
       },
-      init: {
-        status: 409,
-      },
+      status: 409,
     });
+    expect(deleteLocaleMock).not.toHaveBeenCalled();
   }, 20000);
 
   it("updates a translation row and clears related i18n cache keys", async () => {
@@ -744,38 +741,37 @@ describe("dashboard resources server", () => {
     ]);
     deleteTranslationMock.mockResolvedValue(false);
 
-    const response = await handleDashboardResourcesAction(
-      context,
-      new Request(
-        "http://localhost:3000/dashboard/resources/translations?translationLocale=tr",
-        {
-          body: new URLSearchParams({
-            intent: "delete-translation",
-            originalKey: "dashboard.layout.navProjects",
-            originalLocale: "tr",
-          }),
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+    await expect(
+      handleDashboardResourcesAction(
+        context,
+        new Request(
+          "http://localhost:3000/dashboard/resources/translations?translationLocale=tr",
+          {
+            body: new URLSearchParams({
+              intent: "delete-translation",
+              originalKey: "dashboard.layout.navProjects",
+              originalLocale: "tr",
+            }),
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            method: "POST",
           },
-          method: "POST",
-        },
+        ),
       ),
-    );
-
+    ).rejects.toMatchObject({
+      code: "resources.translations.delete.not_found",
+      responseData: {
+        actionError: "Silinecek translation bulunamadi.",
+      },
+      status: 404,
+    });
     expect(deleteTranslationMock).toHaveBeenCalledWith(
       { query: {} },
       "tr",
       "dashboard.layout.navProjects",
     );
     expect(cacheDeleteMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
-        actionError: "Silinecek translation bulunamadi.",
-      },
-      init: {
-        status: 404,
-      },
-    });
   }, 20000);
 
   it("keeps the edit modal open when the source translation was removed before update", async () => {
@@ -819,40 +815,30 @@ describe("dashboard resources server", () => {
     });
     updateTranslationMock.mockResolvedValue(false);
 
-    const response = await handleDashboardResourcesAction(
-      context,
-      new Request(
-        "http://localhost:3000/dashboard/resources/translations?translationLocale=tr",
-        {
-          body: new URLSearchParams({
-            intent: "update-translation",
-            key: "dashboard.layout.navResources",
-            locale: "en",
-            originalKey: "dashboard.layout.navProjects",
-            originalLocale: "tr",
-            value: "Resources",
-          }),
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+    await expect(
+      handleDashboardResourcesAction(
+        context,
+        new Request(
+          "http://localhost:3000/dashboard/resources/translations?translationLocale=tr",
+          {
+            body: new URLSearchParams({
+              intent: "update-translation",
+              key: "dashboard.layout.navResources",
+              locale: "en",
+              originalKey: "dashboard.layout.navProjects",
+              originalLocale: "tr",
+              value: "Resources",
+            }),
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            method: "POST",
           },
-          method: "POST",
-        },
+        ),
       ),
-    );
-
-    expect(updateTranslationMock).toHaveBeenCalledWith(
-      { query: {} },
-      "tr",
-      "dashboard.layout.navProjects",
-      {
-        key: "dashboard.layout.navResources",
-        locale: "en",
-        value: "Resources",
-      },
-    );
-    expect(cacheDeleteMock).not.toHaveBeenCalled();
-    expect(response).toMatchObject({
-      data: {
+    ).rejects.toMatchObject({
+      code: "resources.translations.update.not_found",
+      responseData: {
         translationForm: {
           editingKey: "dashboard.layout.navProjects",
           editingLocale: "tr",
@@ -868,10 +854,19 @@ describe("dashboard resources server", () => {
           },
         },
       },
-      init: {
-        status: 404,
-      },
+      status: 404,
     });
+    expect(updateTranslationMock).toHaveBeenCalledWith(
+      { query: {} },
+      "tr",
+      "dashboard.layout.navProjects",
+      {
+        key: "dashboard.layout.navResources",
+        locale: "en",
+        value: "Resources",
+      },
+    );
+    expect(cacheDeleteMock).not.toHaveBeenCalled();
   }, 20000);
 
   it("redirects back into the renamed locale when the current locale code changes", async () => {

@@ -7,6 +7,12 @@ import {
   type TranslationFormState,
 } from "~/domain/resources/form";
 import { RESOURCE_FORM_FIELD } from "~/domain/resources/contract";
+import { buildValidationError } from "~/shared/errors/builders.server";
+import {
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
 import { compactFieldErrors, readStringField } from "~/shared/forms/form-data.server";
 import {
   NORMALIZED_LOCALE_CODE_PATTERN,
@@ -79,7 +85,7 @@ export type TranslationSubmission = z.infer<
 export function parseLocaleFormData(
   formData: FormData,
   t: I18nTranslator,
-): { data: LocaleSubmission } | LocaleFormState {
+): LocaleSubmission {
   const rawValues = {
     code: readStringField(formData, RESOURCE_FORM_FIELD.code),
     isActive: (readStringField(formData, RESOURCE_FORM_FIELD.isActive) || "true") as
@@ -102,29 +108,37 @@ export function parseLocaleFormData(
 
   if (!parsed.success) {
     const fieldErrors = parsed.error.flatten().fieldErrors;
+    const errors = compactFieldErrors({
+      code: fieldErrors.code?.[0],
+      isActive: fieldErrors.isActive?.[0],
+      isDefault: fieldErrors.isDefault?.[0],
+      label: fieldErrors.label?.[0],
+      sortOrder: fieldErrors.sortOrder?.[0],
+    });
 
-    return {
-      errors: compactFieldErrors({
-        code: fieldErrors.code?.[0],
-        isActive: fieldErrors.isActive?.[0],
-        isDefault: fieldErrors.isDefault?.[0],
-        label: fieldErrors.label?.[0],
-        sortOrder: fieldErrors.sortOrder?.[0],
-      }),
-      values: buildLocaleFormValues(rawValues),
-    };
+    throw buildValidationError<LocaleFormState>({
+      action: APP_ERROR_ACTION.validate,
+      code: APP_ERROR_CODE.resources.locales.validation,
+      details: {
+        invalidFields: Object.keys(errors),
+      },
+      message: "Locale form validation failed",
+      resource: APP_ERROR_RESOURCE.resourcesLocales,
+      responseData: {
+        errors,
+        values: buildLocaleFormValues(rawValues),
+      },
+    });
   }
 
-  return {
-    data: parsed.data,
-  };
+  return parsed.data;
 }
 
 export function parseTranslationFormData(
   formData: FormData,
   availableLocaleCodes: readonly string[],
   t: I18nTranslator,
-): { data: TranslationSubmission } | TranslationFormState {
+): TranslationSubmission {
   const fallbackLocale = availableLocaleCodes[0] ?? "";
   const rawValues = {
     key: readStringField(formData, RESOURCE_FORM_FIELD.key),
@@ -138,30 +152,26 @@ export function parseTranslationFormData(
 
   if (!parsed.success) {
     const fieldErrors = parsed.error.flatten().fieldErrors;
+    const errors = compactFieldErrors({
+      key: fieldErrors.key?.[0],
+      locale: fieldErrors.locale?.[0],
+      value: fieldErrors.value?.[0],
+    });
 
-    return {
-      errors: compactFieldErrors({
-        key: fieldErrors.key?.[0],
-        locale: fieldErrors.locale?.[0],
-        value: fieldErrors.value?.[0],
-      }),
-      values: buildTranslationFormValues(rawValues),
-    };
+    throw buildValidationError<TranslationFormState>({
+      action: APP_ERROR_ACTION.validate,
+      code: APP_ERROR_CODE.resources.translations.validation,
+      details: {
+        invalidFields: Object.keys(errors),
+      },
+      message: "Translation form validation failed",
+      resource: APP_ERROR_RESOURCE.resourcesTranslations,
+      responseData: {
+        errors,
+        values: buildTranslationFormValues(rawValues),
+      },
+    });
   }
 
-  return {
-    data: parsed.data,
-  };
-}
-
-export function hasParsedLocaleData(
-  submission: LocaleFormState | { data: LocaleSubmission },
-): submission is { data: LocaleSubmission } {
-  return "data" in submission;
-}
-
-export function hasParsedTranslationData(
-  submission: TranslationFormState | { data: TranslationSubmission },
-): submission is { data: TranslationSubmission } {
-  return "data" in submission;
+  return parsed.data;
 }

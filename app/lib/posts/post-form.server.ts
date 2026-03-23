@@ -11,6 +11,12 @@ import {
   POST_STATUS_VALUES,
   type PostStatus,
 } from "~/domain/posts/model";
+import { buildValidationError } from "~/shared/errors/builders.server";
+import {
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
 import { compactFieldErrors, readStringField } from "~/shared/forms/form-data.server";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
@@ -56,7 +62,7 @@ export type PostSubmission = z.infer<ReturnType<typeof createPostFormSchema>>;
 export function parsePostFormData(
   formData: FormData,
   t: I18nTranslator,
-): { data: PostSubmission } | PostFormState {
+): PostSubmission {
   const rawValues = {
     content: readStringField(formData, POST_FORM_FIELD.content),
     coverImageUrl: readStringField(formData, POST_FORM_FIELD.coverImageUrl),
@@ -71,32 +77,34 @@ export function parsePostFormData(
 
   if (!parsed.success) {
     const fieldErrors = parsed.error.flatten().fieldErrors;
+    const errors = compactFieldErrors({
+      content: fieldErrors.content?.[0],
+      coverImageUrl: fieldErrors.coverImageUrl?.[0],
+      excerpt: fieldErrors.excerpt?.[0],
+      slug: fieldErrors.slug?.[0],
+      status: fieldErrors.status?.[0],
+      title: fieldErrors.title?.[0],
+    });
 
-    return {
-      errors: compactFieldErrors({
-        content: fieldErrors.content?.[0],
-        coverImageUrl: fieldErrors.coverImageUrl?.[0],
-        excerpt: fieldErrors.excerpt?.[0],
-        slug: fieldErrors.slug?.[0],
-        status: fieldErrors.status?.[0],
-        title: fieldErrors.title?.[0],
-      }),
-      values: buildPostFormValues({
-        ...rawValues,
-        status: POST_STATUS_VALUES.includes(rawValues.status as PostStatus)
-          ? (rawValues.status as PostStatus)
-          : POST_DEFAULT_STATUS,
-      }),
-    };
+    throw buildValidationError<PostFormState>({
+      action: APP_ERROR_ACTION.validate,
+      code: APP_ERROR_CODE.posts.validation,
+      details: {
+        invalidFields: Object.keys(errors),
+      },
+      message: "Post form validation failed",
+      resource: APP_ERROR_RESOURCE.posts,
+      responseData: {
+        errors,
+        values: buildPostFormValues({
+          ...rawValues,
+          status: POST_STATUS_VALUES.includes(rawValues.status as PostStatus)
+            ? (rawValues.status as PostStatus)
+            : POST_DEFAULT_STATUS,
+        }),
+      },
+    });
   }
 
-  return {
-    data: parsed.data,
-  };
-}
-
-export function hasParsedPostData(
-  submission: PostFormState | { data: PostSubmission },
-): submission is { data: PostSubmission } {
-  return "data" in submission;
+  return parsed.data;
 }

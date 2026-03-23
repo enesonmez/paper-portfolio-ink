@@ -1,9 +1,8 @@
-import { data, redirect, type AppLoadContext } from "react-router";
+import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
-import { loadI18nPayload } from "~/shared/i18n/i18n.server";
-import { buildLocalizedPath, createTranslator } from "~/shared/i18n/i18n.shared";
-import { purgePublicHomeDataCache } from "~/features/public/home/server";
+import { buildSkillFormValues, type SkillFormState } from "~/domain/skills/form";
+import { SKILL_FORM_FIELD, SKILL_MUTATION_INTENT } from "~/domain/skills/model";
 import {
   SKILL_MUTATION_CLAIMS,
   resolveMutationClaim,
@@ -16,100 +15,30 @@ import {
   requireDashboardActor,
 } from "~/shared/authz/authz.server";
 import { AUTHORIZATION_CLAIM } from "~/shared/authz/model";
-import { readStringField } from "~/shared/forms/form-data.server";
-import { buildSkillFormValues, type SkillFormState } from "~/domain/skills/form";
-import { SKILL_FORM_FIELD, SKILL_MUTATION_INTENT } from "~/domain/skills/model";
-import { hasParsedSkillData, parseSkillFormData } from "~/lib/skills/skill-form.server";
+import { buildAuthorizationError } from "~/shared/errors/builders.server";
 import {
-  createSkill,
-  deleteSkill,
-  isSkillSlugTaken,
-  listSkills,
-  updateSkill,
-} from "~/lib/skills/skills.server";
-import { isUniqueSlugConstraintError, suggestSlugFromTitle } from "~/lib/slug";
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
+import { resolveParsedSubmission } from "~/shared/errors/submission.server";
+import { readStringField } from "~/shared/forms/form-data.server";
+import { loadI18nPayload } from "~/shared/i18n/i18n.server";
+import { createTranslator } from "~/shared/i18n/i18n.shared";
+import { parseSkillFormData } from "~/lib/skills/skill-form.server";
+import { listSkills } from "~/lib/skills/skills.server";
 
 import { buildDashboardSkillsFormCopy } from "./copy";
+import {
+  handleCreateSkillMutation,
+  handleDeleteSkillMutation,
+  handleUpdateSkillMutation,
+} from "./mutations.server";
 import {
   buildDashboardSkillsMetrics,
   resolveDashboardSkillsForm,
   type DashboardSkillsLoaderData,
 } from "./state";
-
-type SkillActionValues = Omit<SkillFormState["values"], "sortOrder"> & {
-  sortOrder?: number | string;
-};
-
-interface BuildSkillFormStateResponseArgs {
-  errors: SkillFormState["errors"];
-  status: number;
-  values?: SkillActionValues | SkillFormState["values"];
-}
-
-interface RunSkillMutationArgs {
-  db: ReturnType<typeof getDbFromContext>;
-  duplicateMessage: string;
-  excludedSkillId?: string;
-  mutate: () => Promise<void>;
-  values: SkillActionValues;
-}
-
-function buildSkillFormStateResponse({
-  errors,
-  status,
-  values,
-}: BuildSkillFormStateResponseArgs) {
-  return data<SkillFormState>(
-    {
-      errors,
-      values: values ? buildSkillActionValues(values) : buildSkillFormValues(),
-    },
-    { status },
-  );
-}
-
-function buildSkillActionValues(values: SkillActionValues) {
-  return buildSkillFormValues({
-    ...values,
-    sortOrder: values.sortOrder?.toString() ?? "0",
-  });
-}
-
-function buildDuplicateSkillState(message: string, values: SkillActionValues) {
-  return buildSkillFormStateResponse({
-    errors: {
-      name: message,
-    },
-    status: 409,
-    values,
-  });
-}
-
-async function runSkillMutation({
-  db,
-  duplicateMessage,
-  excludedSkillId,
-  mutate,
-  values,
-}: RunSkillMutationArgs) {
-  const slug = suggestSlugFromTitle(values.name);
-
-  if (await isSkillSlugTaken(db, slug, excludedSkillId)) {
-    return buildDuplicateSkillState(duplicateMessage, values);
-  }
-
-  try {
-    await mutate();
-  } catch (error) {
-    if (isUniqueSlugConstraintError(error, "skills")) {
-      return buildDuplicateSkillState(duplicateMessage, values);
-    }
-
-    throw error;
-  }
-
-  return null;
-}
 
 export async function loadDashboardSkillsData(
   context: AppLoadContext,
@@ -126,7 +55,14 @@ export async function loadDashboardSkillsData(
   } satisfies DashboardSkillsLoaderData);
 
   if (denied) {
-    return denied;
+    throw buildAuthorizationError<DashboardSkillsLoaderData>({
+      action: APP_ERROR_ACTION.read,
+      code: APP_ERROR_CODE.skills.read.forbidden,
+      message: "Skill dashboard access denied",
+      resource: APP_ERROR_RESOURCE.skills,
+      responseData: denied,
+      status: 403,
+    });
   }
 
   const db = getDbFromContext(context);
@@ -184,77 +120,66 @@ export async function handleDashboardSkillsAction(
   );
 
   if (forbidden) {
-    return forbidden;
+    throw buildAuthorizationError<SkillFormState>({
+      action: APP_ERROR_ACTION.mutate,
+      code: APP_ERROR_CODE.skills.mutation.forbidden,
+      details: {
+        intent,
+        requiredClaim,
+      },
+      message: "Skill mutation denied by authorization policy",
+      resource: APP_ERROR_RESOURCE.skills,
+      responseData: forbidden,
+      status: 403,
+    });
   }
 
   if (intent === SKILL_MUTATION_INTENT.delete) {
-    if (!skillId) {
-      return buildSkillFormStateResponse({
-        errors: {
-          form: formCopy.errors.deleteMissingSkill,
-        },
-        status: 400,
-      });
-    }
-
-    await deleteSkill(db, skillId);
-    await purgePublicHomeDataCache(context, request);
-
-    return redirect(
-      buildLocalizedPath(locale, "/dashboard/skills", supportedLocaleCodes),
-    );
-  }
-
-  const submission = parseSkillFormData(formData, t);
-
-  if (!hasParsedSkillData(submission)) {
-    return data<SkillFormState>(submission, { status: 400 });
-  }
-
-  if (intent === SKILL_MUTATION_INTENT.update) {
-    if (!skillId) {
-      return buildSkillFormStateResponse({
-        errors: {
-          form: formCopy.errors.updateMissingSkill,
-        },
-        status: 400,
-        values: submission.data,
-      });
-    }
-
-    const mutationError = await runSkillMutation({
+    return handleDeleteSkillMutation({
+      context,
       db,
-      duplicateMessage: formCopy.errors.updateDuplicateSkill,
-      excludedSkillId: skillId,
-      mutate: () => updateSkill(db, skillId, submission.data),
-      values: submission.data,
+      formCopy,
+      intent,
+      locale,
+      request,
+      skillId,
+      supportedLocaleCodes,
     });
-
-    if (mutationError) {
-      return mutationError;
-    }
-
-    await purgePublicHomeDataCache(context, request);
-
-    return redirect(
-      buildLocalizedPath(locale, "/dashboard/skills", supportedLocaleCodes),
-    );
   }
 
-  const mutationError = await runSkillMutation({
-    db,
-    duplicateMessage: formCopy.errors.createDuplicateSkill,
-    mutate: () => createSkill(db, submission.data),
-    values: submission.data,
+  const submission = resolveParsedSubmission({
+    action:
+      intent === SKILL_MUTATION_INTENT.update
+        ? APP_ERROR_ACTION.update
+        : APP_ERROR_ACTION.create,
+    code: APP_ERROR_CODE.skills.validation,
+    message: "Skill form validation failed",
+    resource: APP_ERROR_RESOURCE.skills,
+    submission: parseSkillFormData(formData, t),
   });
 
-  if (mutationError) {
-    return mutationError;
+  if (intent === SKILL_MUTATION_INTENT.update) {
+    return handleUpdateSkillMutation({
+      context,
+      db,
+      formCopy,
+      intent,
+      locale,
+      request,
+      skillId,
+      submission,
+      supportedLocaleCodes,
+    });
   }
 
-  await purgePublicHomeDataCache(context, request);
-
-  return redirect(
-    buildLocalizedPath(locale, "/dashboard/skills", supportedLocaleCodes),
-  );
+  return handleCreateSkillMutation({
+    context,
+    db,
+    formCopy,
+    intent,
+    locale,
+    request,
+    submission,
+    supportedLocaleCodes,
+  });
 }

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, it } from "vitest";
 
@@ -239,5 +239,37 @@ describe("dashboard projects route", () => {
         name: "Use suggested slug: portfolio-radar",
       }),
     ).toBeInTheDocument();
+  }, 20000);
+
+  it("surfaces action errors in a dismissible modal when the form is closed", async () => {
+    const { DashboardProjectsScreen } = await import("~/routes/dashboard/projects");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/projects",
+          element: (
+            <DashboardProjectsScreen
+              {...baseScreenProps}
+              actionError="Delete action blocked"
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/projects"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    const dialog = screen.getByRole("dialog", { name: "Action denied" });
+
+    expect(dialog).toBeInTheDocument();
+    expect(within(dialog).getAllByText("Delete action blocked")).toHaveLength(2);
+    expect(screen.getByRole("link", { name: "Dismiss" })).toHaveAttribute(
+      "href",
+      "/dashboard/projects",
+    );
   }, 20000);
 });

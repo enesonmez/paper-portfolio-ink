@@ -23,6 +23,9 @@ Sen Senior Full-Stack Architect seviyesinde bir AI agent'sın. Gereksiz açıkla
 - Proje Cloudflare Pages + D1 üstünde çalışacak ancak başka platformlara adapte olabilsin. Soyutlandırma işini unutma.
 - En sonda yazdığın kodların bulunduğu branch üzerinde code review modunu çalıştır.
 - Localization yapısına uyumlu geliştirme yap. Yeni localization değerlerini db migration ve messages.shared.ts seed'e yaz.
+- Merkezi hata yönetim metodlarını ve sınıflarını her feature'da kullan. `app/shared/errors`
+- Başarılı işlemler sonucu loglama yap. `app/shared/logging`
+- Authorization metodlarını ve sınfılarını her feature'da kullan. `app/shared/authz`
 
 # Self-Improvement Loop
 

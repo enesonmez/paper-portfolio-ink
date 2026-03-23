@@ -68,6 +68,13 @@ interface ResolveDashboardUsersFormArgs {
   users: UserOverview[];
 }
 
+interface BuildDashboardUsersFormStateArgs {
+  editingUserId?: string | null;
+  errors?: UserFormState["errors"];
+  mode: DashboardUsersModalMode | null;
+  values: UserFormValues;
+}
+
 function toUserFormValues(user: UserOverview): UserFormValues {
   return buildUserFormValues({
     avatarUrl: user.avatarUrl ?? "",
@@ -78,6 +85,21 @@ function toUserFormValues(user: UserOverview): UserFormValues {
     password: "",
     role: user.role,
   });
+}
+
+function buildDashboardUsersFormState({
+  editingUserId,
+  errors,
+  mode,
+  values,
+}: BuildDashboardUsersFormStateArgs): DashboardUsersFormState {
+  return {
+    editingUserId: editingUserId ?? null,
+    errors,
+    isOpen: mode !== null,
+    mode,
+    values,
+  };
 }
 
 export function buildDashboardUsersHref(params: DashboardUsersHrefParams = {}) {
@@ -125,12 +147,11 @@ export function resolveDashboardUsersForm({
         ? DASHBOARD_USERS_MODAL.edit
         : null;
 
-  return {
-    editingUserId: editingUser?.id ?? null,
-    isOpen: mode !== null,
+  return buildDashboardUsersFormState({
+    editingUserId: editingUser?.id,
     mode,
     values: editingUser ? toUserFormValues(editingUser) : buildUserFormValues(),
-  };
+  });
 }
 
 export function mergeDashboardUsersFormState(
@@ -138,19 +159,19 @@ export function mergeDashboardUsersFormState(
   actionData?: UserFormState,
 ): DashboardUsersFormState {
   if (!actionData) {
-    return {
-      ...loaderForm,
-      errors: undefined,
-    };
+    return buildDashboardUsersFormState({
+      editingUserId: loaderForm.editingUserId,
+      mode: loaderForm.mode,
+      values: loaderForm.values,
+    });
   }
 
-  return {
+  return buildDashboardUsersFormState({
     editingUserId: loaderForm.editingUserId,
     errors: actionData.errors,
-    isOpen: loaderForm.isOpen,
     mode: loaderForm.mode,
     values: actionData.values,
-  };
+  });
 }
 
 export function useDashboardUserRoleOptions() {

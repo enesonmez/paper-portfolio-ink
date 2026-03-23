@@ -7,6 +7,12 @@ import {
   PROJECT_STATUS_VALUES,
   type ProjectStatus,
 } from "~/domain/projects/model";
+import { buildValidationError } from "~/shared/errors/builders.server";
+import {
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
 import { compactFieldErrors, readStringField } from "~/shared/forms/form-data.server";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
@@ -55,7 +61,7 @@ export type ProjectSubmission = z.infer<ReturnType<typeof createProjectFormSchem
 export function parseProjectFormData(
   formData: FormData,
   t: I18nTranslator,
-): { data: ProjectSubmission } | ProjectFormState {
+): ProjectSubmission {
   const rawValues = {
     coverImageUrl: readStringField(formData, PROJECT_FORM_FIELD.coverImageUrl),
     description: readStringField(formData, PROJECT_FORM_FIELD.description),
@@ -74,35 +80,37 @@ export function parseProjectFormData(
 
   if (!parsed.success) {
     const fieldErrors = parsed.error.flatten().fieldErrors;
+    const errors = compactFieldErrors({
+      coverImageUrl: fieldErrors.coverImageUrl?.[0],
+      description: fieldErrors.description?.[0],
+      liveUrl: fieldErrors.liveUrl?.[0],
+      repositoryUrl: fieldErrors.repositoryUrl?.[0],
+      slug: fieldErrors.slug?.[0],
+      sortOrder: fieldErrors.sortOrder?.[0],
+      status: fieldErrors.status?.[0],
+      summary: fieldErrors.summary?.[0],
+      title: fieldErrors.title?.[0],
+    });
 
-    return {
-      errors: compactFieldErrors({
-        coverImageUrl: fieldErrors.coverImageUrl?.[0],
-        description: fieldErrors.description?.[0],
-        liveUrl: fieldErrors.liveUrl?.[0],
-        repositoryUrl: fieldErrors.repositoryUrl?.[0],
-        slug: fieldErrors.slug?.[0],
-        sortOrder: fieldErrors.sortOrder?.[0],
-        status: fieldErrors.status?.[0],
-        summary: fieldErrors.summary?.[0],
-        title: fieldErrors.title?.[0],
-      }),
-      values: buildProjectFormValues({
-        ...rawValues,
-        status: PROJECT_STATUS_VALUES.includes(rawValues.status as ProjectStatus)
-          ? (rawValues.status as ProjectStatus)
-          : PROJECT_DEFAULT_STATUS,
-      }),
-    };
+    throw buildValidationError<ProjectFormState>({
+      action: APP_ERROR_ACTION.validate,
+      code: APP_ERROR_CODE.projects.validation,
+      details: {
+        invalidFields: Object.keys(errors),
+      },
+      message: "Project form validation failed",
+      resource: APP_ERROR_RESOURCE.projects,
+      responseData: {
+        errors,
+        values: buildProjectFormValues({
+          ...rawValues,
+          status: PROJECT_STATUS_VALUES.includes(rawValues.status as ProjectStatus)
+            ? (rawValues.status as ProjectStatus)
+            : PROJECT_DEFAULT_STATUS,
+        }),
+      },
+    });
   }
 
-  return {
-    data: parsed.data,
-  };
-}
-
-export function hasParsedProjectData(
-  submission: ProjectFormState | { data: ProjectSubmission },
-): submission is { data: ProjectSubmission } {
-  return "data" in submission;
+  return parsed.data;
 }

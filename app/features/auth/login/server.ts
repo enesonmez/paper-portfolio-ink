@@ -1,13 +1,18 @@
-import { data, redirect, type AppLoadContext } from "react-router";
+import { redirect, type AppLoadContext } from "react-router";
 
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
 import {
-  hasParsedLoginData,
   normalizeRedirectTarget,
   parseLoginFormData,
   signInWithEmail,
 } from "~/shared/auth/login.server";
+import {
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
+import { resolveParsedSubmission } from "~/shared/errors/submission.server";
 import { getSessionForRequest } from "~/shared/auth/session.server";
 
 import type { LoginLoaderData } from "./state";
@@ -41,19 +46,19 @@ export async function handleLoginAction(request: Request, context: AppLoadContex
   const t = createTranslator(messages);
   const formData = await request.formData();
   const supportedLocaleCodes = supportedLocales.map((item) => item.code);
-  const submission = parseLoginFormData(formData, locale, t, supportedLocaleCodes);
-
-  if (!hasParsedLoginData(submission)) {
-    return data(submission, {
-      status: 400,
-    });
-  }
+  const submission = resolveParsedSubmission({
+    action: APP_ERROR_ACTION.login,
+    code: APP_ERROR_CODE.auth.login.validation,
+    message: "Login form validation failed",
+    resource: APP_ERROR_RESOURCE.authLogin,
+    submission: parseLoginFormData(formData, locale, t, supportedLocaleCodes),
+  });
 
   return signInWithEmail({
     context,
     locale,
     request,
-    submission: submission.data,
+    submission,
     supportedLocaleCodes,
     t,
   });

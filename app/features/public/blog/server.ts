@@ -12,8 +12,8 @@ import {
   PUBLIC_BLOG_CACHE_OPTIONS,
   publicBlogDataSchema,
 } from "./cache";
+import { PublicBlogPostNotFoundError } from "./errors.server";
 import { parsePublicBlogCursor, PUBLIC_BLOG_PAGE_SIZE } from "./feed";
-import { PublicBlogPostNotFoundError } from "./errors";
 
 export async function loadPublicBlogData(context: AppLoadContext, request: Request) {
   return loadCachedData({

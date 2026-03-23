@@ -2,6 +2,7 @@ import {
   FolderKanban,
   Languages,
   LayoutDashboard,
+  Logs,
   LogOut,
   Newspaper,
   Settings,
@@ -119,6 +120,16 @@ export function getDashboardNavigation(
       label: t("dashboard.layout.navUsers"),
       statusLabel: t("dashboard.layout.navStatusLive"),
       to: buildLocalizedPath(locale, "/dashboard/users"),
+    });
+  }
+
+  if (hasAuthorizationClaim(claims, AUTHORIZATION_CLAIM.logsRead)) {
+    adminNavigation.push({
+      icon: Logs,
+      kind: "link",
+      label: t("dashboard.layout.navLogging"),
+      statusLabel: t("dashboard.layout.navStatusLive"),
+      to: buildLocalizedPath(locale, "/dashboard/logging"),
     });
   }
 

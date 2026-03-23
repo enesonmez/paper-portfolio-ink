@@ -1,4 +1,3 @@
-import { isRouteErrorResponse } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createTranslator, getSeedMessages } from "~/shared/i18n/i18n.shared";
@@ -67,23 +66,31 @@ describe("login server helpers", () => {
     );
   }, 20000);
 
-  it("returns field errors for invalid login submissions", async () => {
+  it("throws field errors for invalid login submissions", async () => {
     const formData = new FormData();
     formData.set("email", "not-an-email");
     formData.set("password", "short");
     formData.set("redirectTo", "https://evil.example");
     const { parseLoginFormData } = await import("~/shared/auth/login.server");
 
-    expect(parseLoginFormData(formData, "tr", t)).toEqual({
-      errors: {
-        email: "Gecerli bir e-posta gir.",
-        password: "Parola en az 8 karakter olmali.",
-      },
-      values: {
-        email: "not-an-email",
-        redirectTo: "/tr/dashboard",
-      },
-    });
+    try {
+      parseLoginFormData(formData, "tr", t);
+      throw new Error("Expected parseLoginFormData to throw");
+    } catch (error) {
+      expect(error).toMatchObject({
+        code: "auth.login.validation",
+        responseData: {
+          errors: {
+            email: "Gecerli bir e-posta gir.",
+            password: "Parola en az 8 karakter olmali.",
+          },
+          values: {
+            email: "not-an-email",
+            redirectTo: "/tr/dashboard",
+          },
+        },
+      });
+    }
   }, 20000);
 
   it("signs in with Better Auth and forwards cookie headers into a redirect response", async () => {
@@ -148,9 +155,9 @@ describe("login server helpers", () => {
       headers: request.headers,
     });
     expect(response).toBeInstanceOf(Response);
-    expect((response as Response).status).toBe(302);
-    expect((response as Response).headers.get("location")).toBe("/tr/dashboard");
-    expect((response as Response).headers.get("set-cookie")).toContain(
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe("/tr/dashboard");
+    expect(response.headers.get("set-cookie")).toContain(
       "better-auth.session_token=abc",
     );
   }, 20000);
@@ -181,28 +188,25 @@ describe("login server helpers", () => {
     findUserByEmailMock.mockResolvedValue(null);
     signInEmailMock.mockResolvedValue(authResponse);
 
-    const result = await signInWithEmail({
-      request,
-      context: {
-        db: { query: {} },
-        runtime: { platform: "node" },
-      } as never,
-      locale: "tr",
-      submission: {
-        email: "enesonmezx@gmail.com",
-        password: "password1234",
-        redirectTo: "/dashboard",
-      },
-      supportedLocaleCodes: ["tr", "en"],
-      t,
-    });
-
-    expect(isRouteErrorResponse(result)).toBe(false);
-    expect(result).toMatchObject({
-      init: {
-        status: 401,
-      },
-      data: {
+    await expect(
+      signInWithEmail({
+        request,
+        context: {
+          db: { query: {} },
+          runtime: { platform: "node" },
+        } as never,
+        locale: "tr",
+        submission: {
+          email: "enesonmezx@gmail.com",
+          password: "password1234",
+          redirectTo: "/dashboard",
+        },
+        supportedLocaleCodes: ["tr", "en"],
+        t,
+      }),
+    ).rejects.toMatchObject({
+      code: "auth.login.invalid_credentials",
+      responseData: {
         errors: {
           form: "E-posta veya parola hatali.",
         },
@@ -211,6 +215,7 @@ describe("login server helpers", () => {
           redirectTo: "/dashboard",
         },
       },
+      status: 401,
     });
   });
 
@@ -227,33 +232,33 @@ describe("login server helpers", () => {
       role: "author",
     });
 
-    const result = await signInWithEmail({
-      request,
-      context: {
-        db: { query: {} },
-        runtime: { platform: "node" },
-      } as never,
-      locale: "tr",
-      submission: {
-        email: "disabled@example.com",
-        password: "password1234",
-        redirectTo: "/dashboard",
-      },
-      supportedLocaleCodes: ["tr", "en"],
-      t,
-    });
-
-    expect(createAuthMock).not.toHaveBeenCalled();
-    expect(signInEmailMock).not.toHaveBeenCalled();
-    expect(result).toMatchObject({
-      init: {
-        status: 403,
-      },
-      data: {
+    await expect(
+      signInWithEmail({
+        request,
+        context: {
+          db: { query: {} },
+          runtime: { platform: "node" },
+        } as never,
+        locale: "tr",
+        submission: {
+          email: "disabled@example.com",
+          password: "password1234",
+          redirectTo: "/dashboard",
+        },
+        supportedLocaleCodes: ["tr", "en"],
+        t,
+      }),
+    ).rejects.toMatchObject({
+      code: "auth.login.inactive_user",
+      responseData: {
         errors: {
           form: "E-posta veya parola hatali.",
         },
       },
+      status: 403,
     });
+
+    expect(createAuthMock).not.toHaveBeenCalled();
+    expect(signInEmailMock).not.toHaveBeenCalled();
   }, 20000);
 });

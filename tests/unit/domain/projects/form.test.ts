@@ -24,22 +24,20 @@ describe("project form parser", () => {
     formData.set("sortOrder", "4");
 
     expect(parseProjectFormData(formData, t)).toEqual({
-      data: {
-        coverImageUrl: "https://images.paper-portfolio-ink.dev/cyber-store-front.webp",
-        description: "A detailed dashboard-managed commerce project.",
-        isFeatured: true,
-        liveUrl: "https://cyber.paper-portfolio-ink.dev",
-        repositoryUrl: "https://github.com/enes/cyber-store-front",
-        slug: "cyber-store-front",
-        sortOrder: 4,
-        status: "published",
-        summary: "Edge-first commerce frontend.",
-        title: "Cyber Store Front",
-      },
+      coverImageUrl: "https://images.paper-portfolio-ink.dev/cyber-store-front.webp",
+      description: "A detailed dashboard-managed commerce project.",
+      isFeatured: true,
+      liveUrl: "https://cyber.paper-portfolio-ink.dev",
+      repositoryUrl: "https://github.com/enes/cyber-store-front",
+      slug: "cyber-store-front",
+      sortOrder: 4,
+      status: "published",
+      summary: "Edge-first commerce frontend.",
+      title: "Cyber Store Front",
     });
   });
 
-  it("returns field-level errors for invalid project submissions", async () => {
+  it("throws field-level errors for invalid project submissions", async () => {
     const { parseProjectFormData } = await import("~/lib/projects/project-form.server");
     const formData = new FormData();
 
@@ -49,26 +47,34 @@ describe("project form parser", () => {
     formData.set("status", "invalid");
     formData.set("sortOrder", "-2");
 
-    expect(parseProjectFormData(formData, t)).toEqual({
-      errors: {
-        slug: "Slug sadece kucuk harf, rakam ve tire icerebilir.",
-        sortOrder: "Siralama degeri 0 veya daha buyuk olmali.",
-        status: "Gecerli bir yayin durumu sec.",
-        summary: "Proje ozeti en az 12 karakter olmali.",
-        title: "Proje basligi en az 3 karakter olmali.",
-      },
-      values: {
-        coverImageUrl: "",
-        description: "",
-        isFeatured: false,
-        liveUrl: "",
-        repositoryUrl: "",
-        slug: "Invalid Slug",
-        sortOrder: "-2",
-        status: "draft",
-        summary: "",
-        title: "A",
-      },
-    });
+    try {
+      parseProjectFormData(formData, t);
+      throw new Error("Expected parseProjectFormData to throw");
+    } catch (error) {
+      expect(error).toMatchObject({
+        code: "projects.validation",
+        responseData: {
+          errors: {
+            slug: "Slug sadece kucuk harf, rakam ve tire icerebilir.",
+            sortOrder: "Siralama degeri 0 veya daha buyuk olmali.",
+            status: "Gecerli bir yayin durumu sec.",
+            summary: "Proje ozeti en az 12 karakter olmali.",
+            title: "Proje basligi en az 3 karakter olmali.",
+          },
+          values: {
+            coverImageUrl: "",
+            description: "",
+            isFeatured: false,
+            liveUrl: "",
+            repositoryUrl: "",
+            slug: "Invalid Slug",
+            sortOrder: "-2",
+            status: "draft",
+            summary: "",
+            title: "A",
+          },
+        },
+      });
+    }
   });
 });

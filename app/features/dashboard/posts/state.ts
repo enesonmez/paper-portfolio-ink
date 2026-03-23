@@ -59,13 +59,25 @@ export interface DashboardPostsFormState {
   values: PostFormValues;
 }
 
-export interface DashboardPostsLoaderData {
-  access: "denied" | "granted";
+export interface DashboardPostsGrantedLoaderData {
+  access: "granted";
   form: DashboardPostsFormState;
   metrics: DashboardPostsMetrics;
   permissions: DashboardPostsPermissions;
   posts: PostOverview[];
 }
+
+export interface DashboardPostsDeniedLoaderData {
+  access: "denied";
+  form: DashboardPostsFormState;
+  metrics: DashboardPostsMetrics;
+  permissions: DashboardPostsPermissions;
+  posts: PostOverview[];
+}
+
+export type DashboardPostsLoaderData =
+  | DashboardPostsDeniedLoaderData
+  | DashboardPostsGrantedLoaderData;
 
 export interface DashboardPostsHrefParams {
   editId?: string | null;
@@ -79,6 +91,15 @@ interface ResolveDashboardPostsFormArgs {
   posts: PostOverview[];
 }
 
+interface BuildDashboardPostsFormStateArgs {
+  editingPostId?: string | null;
+  errors?: PostFormState["errors"];
+  mode: DashboardPostsModalMode | null;
+  presentation?: DashboardPostsPresentationMode;
+  slugSuggestion?: string | null;
+  values: PostFormValues;
+}
+
 function toPostFormValues(post: PostOverview): PostFormValues {
   return buildPostFormValues({
     content: post.content,
@@ -88,6 +109,29 @@ function toPostFormValues(post: PostOverview): PostFormValues {
     status: post.status,
     title: post.title,
   });
+}
+
+function buildDashboardPostsFormState({
+  editingPostId,
+  errors,
+  mode,
+  presentation,
+  slugSuggestion,
+  values,
+}: BuildDashboardPostsFormStateArgs): DashboardPostsFormState {
+  return {
+    editingPostId: editingPostId ?? null,
+    errors,
+    isOpen: mode !== null,
+    mode,
+    presentation:
+      presentation ??
+      (mode !== null
+        ? DASHBOARD_POSTS_PRESENTATION.fullscreen
+        : DASHBOARD_POSTS_PRESENTATION.modal),
+    slugSuggestion: slugSuggestion ?? null,
+    values,
+  };
 }
 
 export function buildDashboardPostsHref(params: DashboardPostsHrefParams = {}) {
@@ -140,6 +184,23 @@ export function buildDashboardPostsMetrics(
   };
 }
 
+export function buildDeniedDashboardPostsLoaderData(): DashboardPostsDeniedLoaderData {
+  return {
+    access: "denied",
+    form: buildDashboardPostsFormState({
+      mode: null,
+      values: buildPostFormValues(),
+    }),
+    metrics: buildDashboardPostsMetrics([]),
+    permissions: {
+      canCreate: false,
+      canDelete: false,
+      canUpdate: false,
+    },
+    posts: [],
+  };
+}
+
 export function resolveDashboardPostsForm({
   editId,
   modal,
@@ -153,17 +214,11 @@ export function resolveDashboardPostsForm({
         ? DASHBOARD_POSTS_MODAL.edit
         : null;
 
-  return {
-    editingPostId: editingPost?.id ?? null,
-    isOpen: mode !== null,
+  return buildDashboardPostsFormState({
+    editingPostId: editingPost?.id,
     mode,
-    presentation:
-      mode !== null
-        ? DASHBOARD_POSTS_PRESENTATION.fullscreen
-        : DASHBOARD_POSTS_PRESENTATION.modal,
-    slugSuggestion: null,
     values: editingPost ? toPostFormValues(editingPost) : buildPostFormValues(),
-  };
+  });
 }
 
 export function mergeDashboardPostsFormState(
@@ -171,21 +226,23 @@ export function mergeDashboardPostsFormState(
   actionData?: PostFormState,
 ): DashboardPostsFormState {
   if (!actionData) {
-    return {
-      ...loaderForm,
-      errors: undefined,
-    };
+    return buildDashboardPostsFormState({
+      editingPostId: loaderForm.editingPostId,
+      mode: loaderForm.mode,
+      presentation: loaderForm.presentation,
+      slugSuggestion: loaderForm.slugSuggestion,
+      values: loaderForm.values,
+    });
   }
 
-  return {
+  return buildDashboardPostsFormState({
     editingPostId: loaderForm.editingPostId,
     errors: actionData.errors,
-    isOpen: loaderForm.isOpen,
     mode: loaderForm.mode,
     presentation: loaderForm.presentation,
-    slugSuggestion: actionData.slugSuggestion ?? null,
+    slugSuggestion: actionData.slugSuggestion,
     values: actionData.values,
-  };
+  });
 }
 
 export function useDashboardPostStatusOptions() {

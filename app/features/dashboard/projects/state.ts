@@ -48,13 +48,21 @@ export interface DashboardProjectsFormState {
   values: ProjectFormValues;
 }
 
-export interface DashboardProjectsLoaderData {
-  access: "denied" | "granted";
+export interface DashboardProjectsGrantedLoaderData {
+  access: "granted";
   form: DashboardProjectsFormState;
   metrics: DashboardProjectsMetrics;
   permissions: DashboardProjectsPermissions;
   projects: ProjectOverview[];
 }
+
+export interface DashboardProjectsDeniedLoaderData {
+  access: "denied";
+}
+
+export type DashboardProjectsLoaderData =
+  | DashboardProjectsDeniedLoaderData
+  | DashboardProjectsGrantedLoaderData;
 
 export interface DashboardProjectsHrefParams {
   editId?: string | null;
@@ -65,6 +73,14 @@ interface ResolveDashboardProjectsFormArgs {
   editId: string | null;
   modal: string | null;
   projects: ProjectOverview[];
+}
+
+interface BuildDashboardProjectsFormStateArgs {
+  editingProjectId?: string | null;
+  errors?: ProjectFormState["errors"];
+  mode: DashboardProjectsModalMode | null;
+  slugSuggestion?: string | null;
+  values: ProjectFormValues;
 }
 
 function toProjectFormValues(project: ProjectOverview): ProjectFormValues {
@@ -80,6 +96,23 @@ function toProjectFormValues(project: ProjectOverview): ProjectFormValues {
     summary: project.summary,
     title: project.title,
   });
+}
+
+function buildDashboardProjectsFormState({
+  editingProjectId,
+  errors,
+  mode,
+  slugSuggestion,
+  values,
+}: BuildDashboardProjectsFormStateArgs): DashboardProjectsFormState {
+  return {
+    editingProjectId: editingProjectId ?? null,
+    errors,
+    isOpen: mode !== null,
+    mode,
+    slugSuggestion: slugSuggestion ?? null,
+    values,
+  };
 }
 
 export function buildDashboardProjectsHref(params: DashboardProjectsHrefParams = {}) {
@@ -136,15 +169,13 @@ export function resolveDashboardProjectsForm({
         ? DASHBOARD_PROJECTS_MODAL.edit
         : null;
 
-  return {
-    editingProjectId: editingProject?.id ?? null,
-    isOpen: mode !== null,
+  return buildDashboardProjectsFormState({
+    editingProjectId: editingProject?.id,
     mode,
-    slugSuggestion: null,
     values: editingProject
       ? toProjectFormValues(editingProject)
       : buildProjectFormValues(),
-  };
+  });
 }
 
 export function mergeDashboardProjectsFormState(
@@ -152,20 +183,21 @@ export function mergeDashboardProjectsFormState(
   actionData?: ProjectFormState,
 ): DashboardProjectsFormState {
   if (!actionData) {
-    return {
-      ...loaderForm,
-      errors: undefined,
-    };
+    return buildDashboardProjectsFormState({
+      editingProjectId: loaderForm.editingProjectId,
+      mode: loaderForm.mode,
+      slugSuggestion: loaderForm.slugSuggestion,
+      values: loaderForm.values,
+    });
   }
 
-  return {
+  return buildDashboardProjectsFormState({
     editingProjectId: loaderForm.editingProjectId,
     errors: actionData.errors,
-    isOpen: loaderForm.isOpen,
     mode: loaderForm.mode,
-    slugSuggestion: actionData.slugSuggestion ?? null,
+    slugSuggestion: actionData.slugSuggestion,
     values: actionData.values,
-  };
+  });
 }
 
 export function useDashboardProjectStatusOptions() {
