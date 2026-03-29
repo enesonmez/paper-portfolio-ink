@@ -11,7 +11,7 @@ import { useDashboardResourcesCopy } from "../copy";
 import {
   DASHBOARD_RESOURCES_MODAL,
   buildDashboardResourcesTranslationsHref,
-} from "../href";
+} from "../routing/href";
 import { useDashboardResourcesRouteContext } from "../layout/context";
 import { DashboardResourcesTranslationModal } from "./components/dashboard-resources-translation-modal";
 import { DashboardResourcesTranslationsTable } from "./components/dashboard-resources-translations-table";

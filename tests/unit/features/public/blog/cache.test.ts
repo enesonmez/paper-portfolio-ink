@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildPublicBlogCacheKey,
   publicBlogDataSchema,
-} from "~/features/public/blog/cache";
+} from "~/features/public/blog/data/cache";
 
 describe("public blog cache helpers", () => {
   it("builds a stable first-page cache key", () => {

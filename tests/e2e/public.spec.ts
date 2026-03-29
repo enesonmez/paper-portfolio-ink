@@ -51,3 +51,15 @@ test("forwards legacy blog URLs to the active locale and renders the seeded arti
   ).toBeVisible();
   await expect(page.getByText(E2E_POST_DETAIL_SNIPPET)).toBeVisible();
 });
+
+test("forwards legacy project URLs to the active locale and renders seeded project cards", async ({
+  page,
+}) => {
+  await page.goto("/projects");
+
+  await expect(page).toHaveURL(new RegExp(`${E2E_LOCALE_PREFIX}/projects$`));
+  await expect(
+    page.getByRole("heading", { level: 2, name: E2E_PROJECT_TITLE }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Canli build" }).first()).toBeVisible();
+});

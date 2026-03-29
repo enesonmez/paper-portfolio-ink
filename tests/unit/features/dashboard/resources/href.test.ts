@@ -7,7 +7,7 @@ import {
   normalizeDashboardResourcesSearchQuery,
   resolveDashboardResourcesSection,
   resolveDashboardResourcesTranslationLocale,
-} from "~/features/dashboard/resources/href";
+} from "~/features/dashboard/resources/routing/href";
 
 describe("dashboard resources href helpers", () => {
   const localeRows = [

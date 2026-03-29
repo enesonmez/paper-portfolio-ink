@@ -57,6 +57,10 @@ export const PROJECT_MUTATION_INTENT = {
 
 export type ProjectMutationIntent = ValueOf<typeof PROJECT_MUTATION_INTENT>;
 
+export function isProjectMutationIntent(value: string): value is ProjectMutationIntent {
+  return value in PROJECT_MUTATION_INTENT;
+}
+
 export const PROJECT_FORM_FIELD = {
   coverImageUrl: "coverImageUrl",
   description: "description",

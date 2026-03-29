@@ -30,6 +30,20 @@ export const E2E_USERS = {
     role: "author",
     storageStatePath: buildStorageStatePath("locale-operator.json"),
   },
+  logCleaner: {
+    email: "log-cleaner@paper-portfolio-ink.local",
+    id: "e2e-user-log-cleaner",
+    password: "PaperInk1234!",
+    role: "author",
+    storageStatePath: buildStorageStatePath("log-cleaner.json"),
+  },
+  logExporter: {
+    email: "log-exporter@paper-portfolio-ink.local",
+    id: "e2e-user-log-exporter",
+    password: "PaperInk1234!",
+    role: "author",
+    storageStatePath: buildStorageStatePath("log-exporter.json"),
+  },
   registryAuditor: {
     email: "registry-auditor@paper-portfolio-ink.local",
     id: "e2e-user-registry-auditor",

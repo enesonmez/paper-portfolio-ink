@@ -1,4 +1,8 @@
 import {
+  LOGGING_MUTATION_INTENT,
+  type LoggingMutationIntent,
+} from "~/domain/logging/model";
+import {
   PROJECT_MUTATION_INTENT,
   type ProjectMutationIntent,
 } from "~/domain/projects/model";
@@ -12,6 +16,11 @@ import { USER_MUTATION_INTENT, type UserMutationIntent } from "~/domain/users/mo
 import { AUTHORIZATION_CLAIM, type AuthorizationClaim } from "./model";
 
 type MutationClaimMap = Readonly<Record<string, AuthorizationClaim>>;
+
+export const LOGGING_MUTATION_CLAIMS = {
+  [LOGGING_MUTATION_INTENT.deleteErrors]: AUTHORIZATION_CLAIM.logsDelete,
+  [LOGGING_MUTATION_INTENT.exportErrors]: AUTHORIZATION_CLAIM.logsExport,
+} as const satisfies Record<LoggingMutationIntent, AuthorizationClaim>;
 
 export const PROJECT_MUTATION_CLAIMS = {
   [PROJECT_MUTATION_INTENT.create]: AUTHORIZATION_CLAIM.projectsCreate,

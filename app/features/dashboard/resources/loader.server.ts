@@ -1,164 +1,53 @@
 import type { AppLoadContext } from "react-router";
 
+import { assertAuthorized, withDashboardAccess } from "~/shared/authz/authz.server";
 import {
-  findTranslation,
-  listLocales,
-  listTranslationsByLocale,
-} from "~/lib/resources/resources.server";
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+} from "~/shared/errors/contracts";
 
 import {
-  DASHBOARD_RESOURCES_MODAL,
-  DASHBOARD_RESOURCES_SECTION,
-  DASHBOARD_RESOURCES_TRANSLATIONS_PAGE_SIZE,
-  normalizeDashboardResourcesPage,
-  normalizeDashboardResourcesSearchQuery,
+  buildResourcesPermissions,
+  canReadResourceSection,
+  hasResourceReadAccess,
+  type DashboardResourcesPermissions,
+} from "./access/permissions";
+import { listResourceLocalesForDashboard } from "./locales/loader/queries.server";
+import {
   resolveDashboardResourcesSection,
   resolveDashboardResourcesTranslationLocale,
-} from "./href";
-import { getRequestedOrFallbackLocale, redirectToResources } from "./navigation.server";
+} from "./routing/href";
 import {
-  canReadResourceSection,
-  type DashboardResourcesPermissions,
-} from "./permissions";
+  getRequestedOrFallbackLocale,
+  redirectToResources,
+} from "./routing/navigation.server";
 import {
   buildDashboardResourcesMetrics,
-  buildDashboardResourcesTranslationPagination,
+  buildDeniedDashboardResourcesLoaderData,
   resolveDashboardResourcesState,
   type DashboardResourcesLoaderData,
 } from "./state";
-
-interface TranslationRequestState {
-  editTranslationKey: string | null;
-  editTranslationLocale: string | null;
-  requestedPage: number;
-  searchQuery: string;
-  selectedLocale: string;
-}
-
-interface LoadedTranslationState {
-  pagination: ReturnType<typeof buildDashboardResourcesTranslationPagination>;
-  record: Awaited<ReturnType<typeof findTranslation>>;
-  rows: Awaited<ReturnType<typeof listTranslationsByLocale>>["rows"];
-  searchQuery: string;
-  selectedLocale: string;
-  selectedLocaleTranslationCount: number;
-}
-
-function sanitizeResourcesModal(modal: string | null, canReadTranslations: boolean) {
-  if (
-    !canReadTranslations &&
-    (modal === DASHBOARD_RESOURCES_MODAL.createTranslation ||
-      modal === DASHBOARD_RESOURCES_MODAL.editTranslation)
-  ) {
-    return null;
-  }
-
-  return modal;
-}
-
-function buildEmptyLoadedTranslationState(): LoadedTranslationState {
-  return {
-    pagination: buildDashboardResourcesTranslationPagination({
-      currentPage: 1,
-      pageSize: DASHBOARD_RESOURCES_TRANSLATIONS_PAGE_SIZE,
-      totalItems: 0,
-    }),
-    record: null,
-    rows: [],
-    searchQuery: "",
-    selectedLocale: "",
-    selectedLocaleTranslationCount: 0,
-  };
-}
+import {
+  resolveTranslationViewStateFromUrl,
+  sanitizeTranslationModalAccess,
+} from "./translations/loader/request.server";
+import { loadDashboardTranslationListing } from "./translations/loader/queries.server";
 
 function resolveAccessibleResourcesSection(permissions: DashboardResourcesPermissions) {
-  return permissions.translations.canRead
-    ? DASHBOARD_RESOURCES_SECTION.translations
-    : DASHBOARD_RESOURCES_SECTION.locales;
+  return permissions.translations.canRead ? "translations" : "locales";
 }
 
-function resolveTranslationRequestState(args: {
-  canReadTranslations: boolean;
-  localeRows: Awaited<ReturnType<typeof listLocales>>;
-  url: URL;
-}): TranslationRequestState {
-  if (!args.canReadTranslations) {
-    return {
-      editTranslationKey: null,
-      editTranslationLocale: null,
-      requestedPage: 1,
-      searchQuery: "",
-      selectedLocale: "",
-    };
-  }
-
-  return {
-    editTranslationKey: args.url.searchParams.get("editTranslationKey"),
-    editTranslationLocale: args.url.searchParams.get("editTranslationLocale"),
-    requestedPage: normalizeDashboardResourcesPage(
-      args.url.searchParams.get("translationPage"),
-    ),
-    searchQuery: normalizeDashboardResourcesSearchQuery(
-      args.url.searchParams.get("translationSearch"),
-    ),
-    selectedLocale: resolveDashboardResourcesTranslationLocale(
-      args.url.searchParams.get("translationLocale"),
-      args.localeRows,
-    ),
-  };
-}
-
-async function loadTranslationState(args: {
-  context: AppLoadContext;
-  localeRows: Awaited<ReturnType<typeof listLocales>>;
-  requestState: TranslationRequestState;
-}): Promise<LoadedTranslationState> {
-  if (!args.requestState.selectedLocale) {
-    return buildEmptyLoadedTranslationState();
-  }
-
-  const [record, page] = await Promise.all([
-    args.requestState.editTranslationLocale && args.requestState.editTranslationKey
-      ? findTranslation(
-          args.context.db,
-          args.requestState.editTranslationLocale,
-          args.requestState.editTranslationKey,
-        )
-      : Promise.resolve(null),
-    listTranslationsByLocale(args.context.db, args.requestState.selectedLocale, {
-      page: args.requestState.requestedPage,
-      pageSize: DASHBOARD_RESOURCES_TRANSLATIONS_PAGE_SIZE,
-      searchQuery: args.requestState.searchQuery,
-    }),
-  ]);
-
-  return {
-    pagination: buildDashboardResourcesTranslationPagination({
-      currentPage: page.currentPage,
-      pageSize: DASHBOARD_RESOURCES_TRANSLATIONS_PAGE_SIZE,
-      totalItems: page.totalCount,
-    }),
-    record,
-    rows: page.rows,
-    searchQuery: args.requestState.searchQuery,
-    selectedLocale: args.requestState.selectedLocale,
-    selectedLocaleTranslationCount:
-      args.localeRows.find(
-        (localeRow) => localeRow.code === args.requestState.selectedLocale,
-      )?.translationCount ?? 0,
-  };
-}
-
-export async function loadGrantedDashboardResourcesData(args: {
+async function loadAuthorizedResourcesData(args: {
   context: AppLoadContext;
   permissions: DashboardResourcesPermissions;
   request: Request;
 }): Promise<DashboardResourcesLoaderData | Response> {
-  const localeRows = await listLocales(args.context.db);
+  const localeRows = await listResourceLocalesForDashboard(args.context);
   const url = new URL(args.request.url);
   const currentSection = resolveDashboardResourcesSection(url.pathname);
   const canReadTranslations = args.permissions.translations.canRead;
-  const sanitizedModal = sanitizeResourcesModal(
+  const sanitizedModal = sanitizeTranslationModalAccess(
     url.searchParams.get("modal"),
     canReadTranslations,
   );
@@ -173,12 +62,12 @@ export async function loadGrantedDashboardResourcesData(args: {
     });
   }
 
-  const translationRequestState = resolveTranslationRequestState({
+  const translationRequestState = resolveTranslationViewStateFromUrl({
     canReadTranslations,
     localeRows,
     url,
   });
-  const translationState = await loadTranslationState({
+  const translationState = await loadDashboardTranslationListing({
     context: args.context,
     localeRows,
     requestState: translationRequestState,
@@ -208,4 +97,35 @@ export async function loadGrantedDashboardResourcesData(args: {
     translationForm,
     translations: translationState.rows,
   };
+}
+
+export async function loadDashboardResourcesData(
+  context: AppLoadContext,
+  request: Request,
+): Promise<DashboardResourcesLoaderData | Response> {
+  return withDashboardAccess({
+    request,
+    context,
+    authorize: ({ actor }) => {
+      const permissions = buildResourcesPermissions(actor);
+
+      assertAuthorized<DashboardResourcesLoaderData>({
+        error: {
+          action: APP_ERROR_ACTION.read,
+          code: APP_ERROR_CODE.resources.read.forbidden,
+          message: "Resource dashboard access denied",
+          resource: APP_ERROR_RESOURCE.resources,
+          responseData: buildDeniedDashboardResourcesLoaderData(),
+          status: 403,
+        },
+        isAllowed: hasResourceReadAccess(permissions),
+      });
+    },
+    handle: ({ actor }) =>
+      loadAuthorizedResourcesData({
+        context,
+        permissions: buildResourcesPermissions(actor),
+        request,
+      }),
+  });
 }

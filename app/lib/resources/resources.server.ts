@@ -80,6 +80,12 @@ function buildTranslationSearchCondition(localeCode: string, searchQuery?: strin
 
 const LOCALE_ORDER_BY = [asc(locales.sortOrder), asc(locales.code)] as const;
 
+const TRANSLATION_COUNT_SUBQUERY = sql<number>`(
+  select count(*)
+  from ${translations}
+  where ${translations.locale} = ${locales.code}
+)`;
+
 export async function listLocales(db: AppDb): Promise<LocaleResourceRecord[]> {
   const rows = await db
     .select({
@@ -89,20 +95,10 @@ export async function listLocales(db: AppDb): Promise<LocaleResourceRecord[]> {
       isDefault: locales.isDefault,
       label: locales.label,
       sortOrder: locales.sortOrder,
-      translationCount: sql<number>`count(${translations.key})`,
+      translationCount: TRANSLATION_COUNT_SUBQUERY,
       updatedAt: locales.updatedAt,
     })
     .from(locales)
-    .leftJoin(translations, eq(translations.locale, locales.code))
-    .groupBy(
-      locales.code,
-      locales.createdAt,
-      locales.isActive,
-      locales.isDefault,
-      locales.label,
-      locales.sortOrder,
-      locales.updatedAt,
-    )
     .orderBy(...LOCALE_ORDER_BY);
 
   return rows.map((row) => ({
@@ -126,6 +122,7 @@ export async function findLocaleByCode(db: AppDb, code: string) {
       isDefault: locales.isDefault,
       label: locales.label,
       sortOrder: locales.sortOrder,
+      translationCount: TRANSLATION_COUNT_SUBQUERY,
       updatedAt: locales.updatedAt,
     })
     .from(locales)
@@ -136,13 +133,6 @@ export async function findLocaleByCode(db: AppDb, code: string) {
     return null;
   }
 
-  const [translationCountRow] = await db
-    .select({
-      count: sql<number>`count(*)`,
-    })
-    .from(translations)
-    .where(eq(translations.locale, code));
-
   return {
     code: row.code,
     createdAtLabel: formatDateLabel(row.createdAt),
@@ -150,7 +140,7 @@ export async function findLocaleByCode(db: AppDb, code: string) {
     isDefault: row.isDefault,
     label: row.label,
     sortOrder: row.sortOrder,
-    translationCount: Number(translationCountRow?.count ?? 0),
+    translationCount: Number(row.translationCount ?? 0),
     updatedAtLabel: formatDateLabel(row.updatedAt),
   } satisfies LocaleResourceRecord;
 }
@@ -162,16 +152,24 @@ export async function listTranslationsByLocale(
     page: number;
     pageSize: number;
     searchQuery?: string;
+    totalCountHint?: number;
   },
 ): Promise<TranslationResourcePage> {
   const whereClause = buildTranslationSearchCondition(localeCode, options.searchQuery);
-  const [countRow] = await db
-    .select({
-      count: sql<number>`count(*)`,
-    })
-    .from(translations)
-    .where(whereClause);
-  const totalCount = Number(countRow?.count ?? 0);
+  const normalizedSearch = options.searchQuery?.trim();
+  const totalCount =
+    !normalizedSearch && typeof options.totalCountHint === "number"
+      ? options.totalCountHint
+      : Number(
+          (
+            await db
+              .select({
+                count: sql<number>`count(*)`,
+              })
+              .from(translations)
+              .where(whereClause)
+          )[0]?.count ?? 0,
+        );
   const pageCount =
     totalCount === 0 ? 1 : Math.ceil(totalCount / Math.max(options.pageSize, 1));
   const currentPage = Math.min(Math.max(options.page, 1), pageCount);

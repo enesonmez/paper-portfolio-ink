@@ -11,7 +11,7 @@ import type {
   LocaleResourceRecord,
   TranslationResourceRecord,
 } from "~/lib/resources/resources.server";
-import { DASHBOARD_RESOURCES_MODAL } from "./href";
+import { DASHBOARD_RESOURCES_MODAL } from "./routing/href";
 
 export interface DashboardResourcesMetrics {
   activeLocales: number;

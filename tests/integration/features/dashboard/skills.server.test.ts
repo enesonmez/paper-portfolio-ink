@@ -220,7 +220,7 @@ describe("dashboard skills server", () => {
     });
 
     await expect(handleDashboardSkillsAction(context, request)).rejects.toMatchObject({
-      code: "skills.mutation.forbidden",
+      code: "skills.create.forbidden",
       responseData: {
         errors: {
           form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
@@ -229,6 +229,110 @@ describe("dashboard skills server", () => {
       status: 403,
     });
     expect(createSkillMock).not.toHaveBeenCalled();
+  });
+
+  it("returns a 403 form error for unauthorized update attempts", async () => {
+    const { handleDashboardSkillsAction } =
+      await import("~/features/dashboard/skills/server");
+
+    const request = new Request("http://localhost:3000/dashboard/skills", {
+      body: new URLSearchParams({
+        iconKey: "workflow",
+        intent: "update",
+        name: "Cloudflare Workflows",
+        skillId: "skill-1",
+        sortOrder: "1",
+        summary: "Workflow orchestration for edge-hosted product operations.",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-author",
+        role: "author",
+      },
+    });
+
+    await expect(handleDashboardSkillsAction(context, request)).rejects.toMatchObject({
+      code: "skills.update.forbidden",
+      responseData: {
+        errors: {
+          form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+        },
+      },
+      status: 403,
+    });
+    expect(parseSkillFormDataMock).not.toHaveBeenCalled();
+    expect(updateSkillMock).not.toHaveBeenCalled();
+  });
+
+  it("returns a 403 form error for unauthorized delete attempts", async () => {
+    const { handleDashboardSkillsAction } =
+      await import("~/features/dashboard/skills/server");
+
+    const request = new Request("http://localhost:3000/dashboard/skills", {
+      body: new URLSearchParams({
+        intent: "delete",
+        skillId: "skill-1",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-author",
+        role: "author",
+      },
+    });
+
+    await expect(handleDashboardSkillsAction(context, request)).rejects.toMatchObject({
+      code: "skills.delete.forbidden",
+      responseData: {
+        errors: {
+          form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+        },
+      },
+      status: 403,
+    });
+    expect(deleteSkillMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsupported mutation intents before authorization or writes", async () => {
+    const { handleDashboardSkillsAction } =
+      await import("~/features/dashboard/skills/server");
+
+    const request = new Request("http://localhost:3000/dashboard/skills", {
+      body: new URLSearchParams({
+        intent: "archive",
+        skillId: "skill-1",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    await expect(handleDashboardSkillsAction(context, request)).rejects.toMatchObject({
+      code: "skills.mutation.invalid_intent",
+      responseData: {
+        errors: {
+          form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+        },
+      },
+      status: 400,
+    });
+
+    expect(requireSessionMock).not.toHaveBeenCalled();
+    expect(createSkillMock).not.toHaveBeenCalled();
+    expect(updateSkillMock).not.toHaveBeenCalled();
+    expect(deleteSkillMock).not.toHaveBeenCalled();
   });
 
   it("updates a skill row when a valid edit action is posted", async () => {

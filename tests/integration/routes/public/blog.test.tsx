@@ -3,7 +3,7 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, vi } from "vitest";
 
 import { getSeedMessages, getSeedLocaleOptions } from "~/shared/i18n/i18n.shared";
-import { PublicBlogScreen } from "~/features/public/blog/screen";
+import { PublicBlogScreen } from "~/features/public/blog/ui/screen";
 import { meta } from "~/routes/public/blog/index";
 
 const posts = [

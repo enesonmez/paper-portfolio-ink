@@ -14,7 +14,7 @@ import {
   buildDashboardResourcesLocalesHref,
   buildDashboardResourcesTranslationsHref,
   type DashboardResourcesSection,
-} from "../href";
+} from "../routing/href";
 import type {
   DashboardResourcesMetrics,
   DashboardResourcesPermissions,

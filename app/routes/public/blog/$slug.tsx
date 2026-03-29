@@ -6,8 +6,8 @@ import type { loader as rootLoader } from "~/root";
 import { runLoaderWithErrorHandling } from "~/shared/errors/route-error-handling.server";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
-import { isPublicBlogPostNotFoundError } from "~/features/public/blog/errors";
-import { PublicBlogPostScreen } from "~/features/public/blog/post-screen";
+import { isPublicBlogPostNotFoundError } from "~/features/public/blog/post/errors";
+import { PublicBlogPostScreen } from "~/features/public/blog/post/screen";
 import { loadPublicBlogPostData } from "~/features/public/blog/server";
 import { siteConfig } from "~/lib/site";
 
@@ -84,7 +84,7 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
       const slug = params.slug;
 
       if (!slug) {
-        const errorModule = await import("~/features/public/blog/errors.server");
+        const errorModule = await import("~/features/public/blog/post/errors.server");
         const PublicBlogPostNotFoundError =
           errorModule.PublicBlogPostNotFoundError as new () => Error;
 

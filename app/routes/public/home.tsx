@@ -5,7 +5,7 @@ import { APP_ROUTE_ID } from "~/shared/errors/contracts";
 import type { loader as rootLoader } from "~/root";
 import { runLoaderWithErrorHandling } from "~/shared/errors/route-error-handling.server";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
-import { PublicHomeScreen } from "~/features/public/home/screen";
+import { PublicHomeScreen } from "~/features/public/home/ui/screen";
 import { loadPublicHomeData } from "~/features/public/home/server";
 
 type RootLoaderData = Exclude<Awaited<ReturnType<typeof rootLoader>>, Response>;

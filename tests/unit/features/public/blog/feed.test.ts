@@ -2,7 +2,7 @@ import {
   buildPublicBlogFeedHref,
   mergePublicBlogPosts,
   parsePublicBlogCursor,
-} from "~/features/public/blog/feed";
+} from "~/features/public/blog/data/feed";
 
 describe("public blog shared helpers", () => {
   it("returns null for missing or malformed cursors", () => {

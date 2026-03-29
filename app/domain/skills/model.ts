@@ -8,6 +8,10 @@ export const SKILL_MUTATION_INTENT = {
 
 export type SkillMutationIntent = ValueOf<typeof SKILL_MUTATION_INTENT>;
 
+export function isSkillMutationIntent(value: string): value is SkillMutationIntent {
+  return value in SKILL_MUTATION_INTENT;
+}
+
 export const SKILL_FORM_FIELD = {
   iconKey: "iconKey",
   intent: "intent",

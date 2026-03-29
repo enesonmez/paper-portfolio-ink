@@ -5,7 +5,7 @@ import { APP_ROUTE_ID } from "~/shared/errors/contracts";
 import type { loader as rootLoader } from "~/root";
 import { runLoaderWithErrorHandling } from "~/shared/errors/route-error-handling.server";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
-import { PublicBlogScreen } from "~/features/public/blog/screen";
+import { PublicBlogScreen } from "~/features/public/blog/ui/screen";
 import { loadPublicBlogData } from "~/features/public/blog/server";
 import { siteConfig } from "~/lib/site";
 

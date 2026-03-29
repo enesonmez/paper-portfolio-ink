@@ -6,6 +6,7 @@ import {
   POST_MUTATION_INTENT,
   POST_STATUS_VALUES,
   buildPostStatusOptions,
+  isPostMutationIntent,
 } from "~/domain/posts/model";
 import { createTranslator, getSeedMessages } from "~/shared/i18n/i18n.shared";
 
@@ -43,5 +44,12 @@ describe("post model contracts", () => {
       publishedAt: "publishedAt",
       status: "status",
     });
+  });
+
+  it("recognizes only supported mutation intents", () => {
+    expect(isPostMutationIntent("create")).toBe(true);
+    expect(isPostMutationIntent("update")).toBe(true);
+    expect(isPostMutationIntent("delete")).toBe(true);
+    expect(isPostMutationIntent("archive")).toBe(false);
   });
 });

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   RESOURCE_FORM_FIELD,
   RESOURCE_MUTATION_INTENT,
+  isResourceMutationIntent,
 } from "~/domain/resources/contract";
 
 describe("resource contracts", () => {
@@ -20,6 +21,7 @@ describe("resource contracts", () => {
   it("keeps resource form field names stable", () => {
     expect(RESOURCE_FORM_FIELD).toMatchObject({
       code: "code",
+      intent: "intent",
       locale: "locale",
       key: "key",
       originalCode: "originalCode",
@@ -27,5 +29,11 @@ describe("resource contracts", () => {
       originalLocale: "originalLocale",
       value: "value",
     });
+  });
+
+  it("identifies supported mutation intents", () => {
+    expect(isResourceMutationIntent("create-locale")).toBe(true);
+    expect(isResourceMutationIntent("delete-translation")).toBe(true);
+    expect(isResourceMutationIntent("archive-locale")).toBe(false);
   });
 });

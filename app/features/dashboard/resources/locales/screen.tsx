@@ -6,7 +6,10 @@ import { Button } from "~/components/ui/button";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 
 import { useDashboardResourcesCopy } from "../copy";
-import { DASHBOARD_RESOURCES_MODAL, buildDashboardResourcesLocalesHref } from "../href";
+import {
+  DASHBOARD_RESOURCES_MODAL,
+  buildDashboardResourcesLocalesHref,
+} from "../routing/href";
 import { useDashboardResourcesRouteContext } from "../layout/context";
 import { DashboardResourcesLocaleModal } from "./components/dashboard-resources-locale-modal";
 import { DashboardResourcesLocalesTable } from "./components/dashboard-resources-locales-table";

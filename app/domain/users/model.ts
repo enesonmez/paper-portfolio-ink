@@ -39,6 +39,10 @@ export const USER_MUTATION_INTENT = {
 
 export type UserMutationIntent = ValueOf<typeof USER_MUTATION_INTENT>;
 
+export function isUserMutationIntent(value: string): value is UserMutationIntent {
+  return value in USER_MUTATION_INTENT;
+}
+
 export const USER_FORM_FIELD = {
   avatarUrl: "avatarUrl",
   bio: "bio",

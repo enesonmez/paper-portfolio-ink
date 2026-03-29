@@ -2,7 +2,7 @@ import {
   buildPublicProjectsFeedHref,
   mergePublicProjects,
   parsePublicProjectsCursor,
-} from "~/features/public/projects/feed";
+} from "~/features/public/projects/data/feed";
 
 describe("public projects shared helpers", () => {
   it("returns null for missing or malformed cursors", () => {
