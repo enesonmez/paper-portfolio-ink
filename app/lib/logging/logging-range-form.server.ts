@@ -1,3 +1,4 @@
+import { LOGGING_FORM_FIELD, LOGGING_MUTATION_INTENT } from "~/domain/logging/model";
 import { z } from "zod";
 
 import { buildValidationError } from "~/shared/errors/builders.server";
@@ -16,7 +17,10 @@ import type {
 const rangeSchema = z
   .object({
     endAt: z.string().trim().min(1),
-    intent: z.enum(["delete-errors", "export-errors"]),
+    intent: z.enum([
+      LOGGING_MUTATION_INTENT.deleteErrors,
+      LOGGING_MUTATION_INTENT.exportErrors,
+    ]),
     startAt: z.string().trim().min(1),
   })
   .superRefine((value, ctx) => {
@@ -58,7 +62,7 @@ function buildRangeValidationState(
 ) {
   const parsed = rangeSchema.safeParse({
     endAt: rawValues.endAt,
-    intent: "export-errors",
+    intent: LOGGING_MUTATION_INTENT.exportErrors,
     startAt: rawValues.startAt,
   });
 
@@ -86,19 +90,19 @@ export function parseLoggingRangeFormData(
   t: ReturnType<typeof createTranslator>,
 ) {
   const rawValues = {
-    endAt: readStringField(formData, "endAt"),
-    startAt: readStringField(formData, "startAt"),
+    endAt: readStringField(formData, LOGGING_FORM_FIELD.endAt),
+    startAt: readStringField(formData, LOGGING_FORM_FIELD.startAt),
   };
   const parsed = rangeSchema.safeParse({
     endAt: rawValues.endAt,
-    intent: readStringField(formData, "intent"),
+    intent: readStringField(formData, LOGGING_FORM_FIELD.intent),
     startAt: rawValues.startAt,
   });
 
   if (!parsed.success) {
     throw buildValidationError<DashboardLoggingActionData>({
       action: APP_ERROR_ACTION.filter,
-      code: APP_ERROR_CODE.logging.rangeValidation,
+      code: APP_ERROR_CODE.logging.validation.range,
       message: "Logging range form validation failed",
       resource: APP_ERROR_RESOURCE.logs,
       responseData: {

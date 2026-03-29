@@ -49,3 +49,20 @@ test("filters seeded translation resources inside the admin settings area", asyn
   await expect(page.getByText("site.name")).toBeVisible();
   await expect(page.getByText("Enes Ink")).toBeVisible();
 });
+
+test("renders logging tools for an authenticated admin on the errors tab", async ({
+  page,
+}) => {
+  await page.goto(`${E2E_LOCALE_PREFIX}/dashboard/logging?tab=errors`);
+
+  await expect(page).toHaveURL(
+    new RegExp(`${E2E_LOCALE_PREFIX}/dashboard/logging\\?tab=errors$`),
+  );
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Audit ve hata loglari" }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: /Audit kayitlari/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Hata kayitlari/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: "TXT olarak indir" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Kayitlari sil" })).toBeVisible();
+});

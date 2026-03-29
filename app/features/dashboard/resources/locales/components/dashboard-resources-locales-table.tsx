@@ -15,7 +15,7 @@ import type { LocaleResourceRecord } from "~/lib/resources/resources.server";
 import {
   DASHBOARD_RESOURCES_MODAL,
   buildDashboardResourcesLocalesHref,
-} from "../../href";
+} from "../../routing/href";
 
 export function DashboardResourcesLocalesTable({
   canDelete,

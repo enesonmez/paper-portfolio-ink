@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { PUBLIC_BLOG_POST_NOT_FOUND_ERROR_NAME } from "~/features/public/blog/errors";
-import { PublicBlogPostNotFoundError } from "~/features/public/blog/errors.server";
+import { PUBLIC_BLOG_POST_NOT_FOUND_ERROR_NAME } from "~/features/public/blog/post/errors";
+import { PublicBlogPostNotFoundError } from "~/features/public/blog/post/errors.server";
 
 describe("public blog errors", () => {
   it("exposes a stable not-found error contract", () => {

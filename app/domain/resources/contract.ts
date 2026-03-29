@@ -11,6 +11,14 @@ export const RESOURCE_MUTATION_INTENT = {
 
 export type ResourceMutationIntent = ValueOf<typeof RESOURCE_MUTATION_INTENT>;
 
+export function isResourceMutationIntent(
+  value: string,
+): value is ResourceMutationIntent {
+  return Object.values(RESOURCE_MUTATION_INTENT).includes(
+    value as ResourceMutationIntent,
+  );
+}
+
 export const RESOURCE_FORM_FIELD = {
   code: "code",
   intent: "intent",

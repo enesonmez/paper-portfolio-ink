@@ -6,6 +6,7 @@ import {
   PROJECT_MUTATION_INTENT,
   PROJECT_STATUS_VALUES,
   buildProjectStatusOptions,
+  isProjectMutationIntent,
 } from "~/domain/projects/model";
 import { createTranslator, getSeedMessages } from "~/shared/i18n/i18n.shared";
 
@@ -43,5 +44,12 @@ describe("project model contracts", () => {
       projectId: "projectId",
       sortOrder: "sortOrder",
     });
+  });
+
+  it("recognizes only supported mutation intents", () => {
+    expect(isProjectMutationIntent("create")).toBe(true);
+    expect(isProjectMutationIntent("update")).toBe(true);
+    expect(isProjectMutationIntent("delete")).toBe(true);
+    expect(isProjectMutationIntent("archive")).toBe(false);
   });
 });

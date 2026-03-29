@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
 import { getSeedMessages, getSeedLocaleOptions } from "~/shared/i18n/i18n.shared";
-import { PublicBlogPostScreen } from "~/features/public/blog/post-screen";
+import { PublicBlogPostScreen } from "~/features/public/blog/post/screen";
 import {
   createEmptyPostContentDocument,
   serializePostContent,

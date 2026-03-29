@@ -44,7 +44,7 @@ describe("app error", () => {
 
   it("marks reported app errors to avoid duplicate logging", () => {
     const error = new AuthorizationError("Forbidden", {
-      code: APP_ERROR_CODE.logging.readForbidden,
+      code: APP_ERROR_CODE.logging.read.forbidden,
       expose: true,
       logSink: APP_ERROR_SINK.logHistory,
       severity: APP_ERROR_SEVERITY.warn,

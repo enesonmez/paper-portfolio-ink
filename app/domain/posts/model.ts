@@ -55,6 +55,10 @@ export const POST_MUTATION_INTENT = {
 
 export type PostMutationIntent = ValueOf<typeof POST_MUTATION_INTENT>;
 
+export function isPostMutationIntent(value: string): value is PostMutationIntent {
+  return value in POST_MUTATION_INTENT;
+}
+
 export const POST_FORM_FIELD = {
   content: "content",
   coverImageUrl: "coverImageUrl",

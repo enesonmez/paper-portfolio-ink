@@ -8,7 +8,7 @@ import {
 
 import type { DashboardLayoutOutletContext } from "~/features/dashboard/layout/identity";
 
-import { resolveDashboardResourcesSection } from "../href";
+import { resolveDashboardResourcesSection } from "../routing/href";
 import {
   mergeDashboardResourcesLocaleFormState,
   mergeDashboardResourcesTranslationFormState,

@@ -3,7 +3,6 @@ import {
   type SkillFormState,
   type SkillFormValues,
 } from "~/domain/skills/form";
-import {} from "~/domain/skills/model";
 import type { SkillOverview } from "~/lib/skills/skills.server";
 
 type ValueOf<T> = T[keyof T];

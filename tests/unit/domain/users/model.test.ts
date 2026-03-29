@@ -5,6 +5,7 @@ import {
   USER_MUTATION_INTENT,
   USER_ROLE_VALUES,
   buildUserRoleOptions,
+  isUserMutationIntent,
 } from "~/domain/users/model";
 import { createTranslator, getSeedMessages } from "~/shared/i18n/i18n.shared";
 
@@ -36,5 +37,12 @@ describe("user model contracts", () => {
       intent: "intent",
       userId: "userId",
     });
+  });
+
+  it("recognizes only supported mutation intents", () => {
+    expect(isUserMutationIntent("create")).toBe(true);
+    expect(isUserMutationIntent("update")).toBe(true);
+    expect(isUserMutationIntent("delete")).toBe(true);
+    expect(isUserMutationIntent("archive")).toBe(false);
   });
 });

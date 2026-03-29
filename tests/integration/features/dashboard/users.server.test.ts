@@ -258,7 +258,7 @@ describe("dashboard users server", () => {
     });
 
     await expect(handleDashboardUsersAction(context, request)).rejects.toMatchObject({
-      code: "users.mutation.forbidden",
+      code: "users.create.forbidden",
       responseData: {
         errors: {
           form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
@@ -268,6 +268,117 @@ describe("dashboard users server", () => {
     });
     expect(createUserMock).not.toHaveBeenCalled();
   }, 20000);
+
+  it("returns a 403 form error for unauthorized update attempts", async () => {
+    const { handleDashboardUsersAction } =
+      await import("~/features/dashboard/users/server");
+
+    const request = new Request("http://localhost:3000/dashboard/users", {
+      body: new URLSearchParams({
+        displayName: "Blocked Author",
+        email: "blocked@example.com",
+        intent: "update",
+        isActive: "on",
+        password: "",
+        role: "author",
+        userId: "user-author",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-author",
+        role: "author",
+      },
+    });
+
+    await expect(handleDashboardUsersAction(context, request)).rejects.toMatchObject({
+      code: "users.update.forbidden",
+      responseData: {
+        errors: {
+          form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+        },
+      },
+      status: 403,
+    });
+    expect(parseUserFormDataMock).not.toHaveBeenCalled();
+    expect(updateUserMock).not.toHaveBeenCalled();
+  }, 20000);
+
+  it("returns a 403 form error for unauthorized delete attempts", async () => {
+    const { handleDashboardUsersAction } =
+      await import("~/features/dashboard/users/server");
+
+    const request = new Request("http://localhost:3000/dashboard/users", {
+      body: new URLSearchParams({
+        intent: "delete",
+        userId: "user-author",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-author",
+        role: "author",
+      },
+    });
+
+    await expect(handleDashboardUsersAction(context, request)).rejects.toMatchObject({
+      code: "users.delete.forbidden",
+      responseData: {
+        errors: {
+          form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+        },
+      },
+      status: 403,
+    });
+    expect(deactivateUserMock).not.toHaveBeenCalled();
+  }, 20000);
+
+  it("rejects unsupported intents before auth or write paths run", async () => {
+    const { handleDashboardUsersAction } =
+      await import("~/features/dashboard/users/server");
+
+    const request = new Request("http://localhost:3000/dashboard/users", {
+      body: new URLSearchParams({
+        displayName: "Blocked Author",
+        email: "blocked@example.com",
+        intent: "archive",
+        password: "PaperInk1234!",
+        role: "author",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    await expect(handleDashboardUsersAction(context, request)).rejects.toMatchObject({
+      code: "users.mutation.invalid_intent",
+      details: {
+        intent: "archive",
+      },
+      responseData: {
+        errors: {
+          form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+        },
+      },
+      status: 400,
+    });
+    expect(requireSessionMock).not.toHaveBeenCalled();
+    expect(parseUserFormDataMock).not.toHaveBeenCalled();
+    expect(createUserMock).not.toHaveBeenCalled();
+    expect(updateUserMock).not.toHaveBeenCalled();
+    expect(deactivateUserMock).not.toHaveBeenCalled();
+  });
 
   it("deactivates users instead of deleting them", async () => {
     const { handleDashboardUsersAction } =

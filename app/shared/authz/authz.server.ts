@@ -5,6 +5,12 @@ export {
   denyActionIfMissingClaim,
   denyLoaderIfMissingClaim,
 } from "./guards";
+export {
+  assertAnyClaimAuthorized,
+  assertAuthorized,
+  assertClaimAuthorized,
+  withDashboardAccess,
+} from "./handlers.server";
 export { buildForbiddenFormState } from "./responses";
 export {
   getAuthorizationActorFromSession,

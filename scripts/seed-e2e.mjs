@@ -54,6 +54,24 @@ const FIXTURE_USERS = [
     storageKey: "localeOperator",
   },
   {
+    claimOverrides: [{ claimKey: "logs.export", effect: "grant" }],
+    displayName: "Ege Log Exporter",
+    email: "log-exporter@paper-portfolio-ink.local",
+    id: "e2e-user-log-exporter",
+    password: "PaperInk1234!",
+    role: "author",
+    storageKey: "logExporter",
+  },
+  {
+    claimOverrides: [{ claimKey: "logs.delete", effect: "grant" }],
+    displayName: "Deniz Log Cleaner",
+    email: "log-cleaner@paper-portfolio-ink.local",
+    id: "e2e-user-log-cleaner",
+    password: "PaperInk1234!",
+    role: "author",
+    storageKey: "logCleaner",
+  },
+  {
     claimOverrides: [
       { claimKey: "resources.translations.read", effect: "grant" },
       { claimKey: "resources.translations.create", effect: "grant" },

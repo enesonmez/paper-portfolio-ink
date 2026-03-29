@@ -208,6 +208,7 @@ describe("dashboard resources server", () => {
       page: 1,
       pageSize: 20,
       searchQuery: "jeler",
+      totalCountHint: 4,
     });
   }, 20000);
 
@@ -323,6 +324,7 @@ describe("dashboard resources server", () => {
       page: 99,
       pageSize: 20,
       searchQuery: "res",
+      totalCountHint: 41,
     });
     expect(response.translationPagination).toEqual({
       currentPage: 2,
@@ -571,13 +573,85 @@ describe("dashboard resources server", () => {
         }),
       ),
     ).rejects.toMatchObject({
-      code: "resources.mutation.forbidden",
+      code: "resources.locales.delete.forbidden",
       responseData: {
         actionError: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
       },
       status: 403,
     });
     expect(deleteLocaleMock).not.toHaveBeenCalled();
+    expect(listLocalesMock).not.toHaveBeenCalled();
+  }, 20000);
+
+  it("rejects invalid resource intents before resolving dashboard access", async () => {
+    const { handleDashboardResourcesAction } =
+      await import("~/features/dashboard/resources/server");
+
+    await expect(
+      handleDashboardResourcesAction(
+        context,
+        new Request("http://localhost:3000/dashboard/resources/locales", {
+          body: new URLSearchParams({
+            intent: "archive-locale",
+          }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          method: "POST",
+        }),
+      ),
+    ).rejects.toMatchObject({
+      code: "resources.mutation.invalid_intent",
+      responseData: {
+        actionError: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+      },
+      status: 400,
+    });
+    expect(requireSessionMock).not.toHaveBeenCalled();
+    expect(createLocaleMock).not.toHaveBeenCalled();
+    expect(updateLocaleMock).not.toHaveBeenCalled();
+    expect(deleteLocaleMock).not.toHaveBeenCalled();
+    expect(createTranslationMock).not.toHaveBeenCalled();
+    expect(updateTranslationMock).not.toHaveBeenCalled();
+    expect(deleteTranslationMock).not.toHaveBeenCalled();
+  }, 20000);
+
+  it("returns a 403 when the session lacks the matching translation mutation claim", async () => {
+    const { handleDashboardResourcesAction } =
+      await import("~/features/dashboard/resources/server");
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        claims: ["dashboard.access", "resources.translations.create"],
+        id: "user-translation-operator",
+        role: "author",
+      },
+    });
+
+    await expect(
+      handleDashboardResourcesAction(
+        context,
+        new Request("http://localhost:3000/dashboard/resources/translations", {
+          body: new URLSearchParams({
+            intent: "delete-translation",
+            originalKey: "dashboard.layout.navProjects",
+            originalLocale: "tr",
+          }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          method: "POST",
+        }),
+      ),
+    ).rejects.toMatchObject({
+      code: "resources.translations.delete.forbidden",
+      responseData: {
+        actionError: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+      },
+      status: 403,
+    });
+    expect(deleteTranslationMock).not.toHaveBeenCalled();
+    expect(listLocalesMock).not.toHaveBeenCalled();
   }, 20000);
 
   it("blocks deleting the last active locale", async () => {

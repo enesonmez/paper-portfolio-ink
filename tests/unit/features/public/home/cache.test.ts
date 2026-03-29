@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildPublicHomeCacheKey,
   publicHomeDataSchema,
-} from "~/features/public/home/cache";
+} from "~/features/public/home/data/cache";
 
 describe("public home cache helpers", () => {
   it("builds a stable home payload cache key", () => {

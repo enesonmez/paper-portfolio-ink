@@ -11,7 +11,7 @@ import {
 } from "~/domain/resources/contract";
 
 import { useDashboardResourcesCopy } from "../../copy";
-import { buildDashboardResourcesLocalesHref } from "../../href";
+import { buildDashboardResourcesLocalesHref } from "../../routing/href";
 import type { DashboardResourcesLocaleFormState } from "../../state";
 
 export function DashboardResourcesLocaleModal({

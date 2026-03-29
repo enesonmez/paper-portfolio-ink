@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { DASHBOARD_RESOURCES_MODAL } from "~/features/dashboard/resources/href";
+import { DASHBOARD_RESOURCES_MODAL } from "~/features/dashboard/resources/routing/href";
 import {
   buildDeniedDashboardResourcesLoaderData,
   buildDashboardResourcesMetrics,

@@ -23,6 +23,14 @@ const STORAGE_STATE_USERS = [
     user: E2E_USERS.localeOperator,
   },
   {
+    name: "log exporter",
+    user: E2E_USERS.logExporter,
+  },
+  {
+    name: "log cleaner",
+    user: E2E_USERS.logCleaner,
+  },
+  {
     name: "translation operator",
     user: E2E_USERS.translationOperator,
   },

@@ -170,4 +170,162 @@ describe("dashboard projects server", () => {
       "http://localhost:3000/__cache/public/projects/page-1",
     );
   });
+
+  it("returns an intent-specific 403 form error for unauthorized mutations", async () => {
+    const { handleDashboardProjectsAction } =
+      await import("~/features/dashboard/projects/server");
+
+    const request = new Request("http://localhost:3000/dashboard/projects", {
+      body: new URLSearchParams({
+        intent: "create",
+        slug: "blocked-project",
+        sortOrder: "1",
+        status: "published",
+        summary: "Portfolio and editorial system for Cloudflare.",
+        title: "Blocked Project",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-author",
+        role: "author",
+      },
+    });
+
+    await expect(handleDashboardProjectsAction(context, request)).rejects.toMatchObject(
+      {
+        code: "projects.create.forbidden",
+        responseData: {
+          errors: {
+            form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+          },
+        },
+        status: 403,
+      },
+    );
+    expect(createProjectMock).not.toHaveBeenCalled();
+  });
+
+  it("returns an intent-specific 403 form error for unauthorized update mutations", async () => {
+    const { handleDashboardProjectsAction } =
+      await import("~/features/dashboard/projects/server");
+
+    const request = new Request("http://localhost:3000/dashboard/projects", {
+      body: new URLSearchParams({
+        intent: "update",
+        projectId: "project-1",
+        slug: "blocked-project",
+        sortOrder: "1",
+        status: "published",
+        summary: "Portfolio and editorial system for Cloudflare.",
+        title: "Blocked Project",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-author",
+        role: "author",
+      },
+    });
+
+    await expect(handleDashboardProjectsAction(context, request)).rejects.toMatchObject(
+      {
+        code: "projects.update.forbidden",
+        responseData: {
+          errors: {
+            form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+          },
+        },
+        status: 403,
+      },
+    );
+    expect(parseProjectFormDataMock).not.toHaveBeenCalled();
+    expect(updateProjectMock).not.toHaveBeenCalled();
+  });
+
+  it("returns an intent-specific 403 form error for unauthorized delete mutations", async () => {
+    const { handleDashboardProjectsAction } =
+      await import("~/features/dashboard/projects/server");
+
+    const request = new Request("http://localhost:3000/dashboard/projects", {
+      body: new URLSearchParams({
+        intent: "delete",
+        projectId: "project-1",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-author",
+        role: "author",
+      },
+    });
+
+    await expect(handleDashboardProjectsAction(context, request)).rejects.toMatchObject(
+      {
+        code: "projects.delete.forbidden",
+        responseData: {
+          errors: {
+            form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+          },
+        },
+        status: 403,
+      },
+    );
+    expect(deleteProjectMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsupported intents before auth or write paths run", async () => {
+    const { handleDashboardProjectsAction } =
+      await import("~/features/dashboard/projects/server");
+
+    const request = new Request("http://localhost:3000/dashboard/projects", {
+      body: new URLSearchParams({
+        intent: "archive",
+        slug: "paper-portfolio-ink",
+        sortOrder: "1",
+        status: "published",
+        summary: "Portfolio and editorial system for Cloudflare.",
+        title: "Paper Portfolio Ink",
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      method: "POST",
+    });
+
+    await expect(handleDashboardProjectsAction(context, request)).rejects.toMatchObject(
+      {
+        code: "projects.mutation.invalid_intent",
+        details: {
+          intent: "archive",
+        },
+        responseData: {
+          errors: {
+            form: "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
+          },
+        },
+        status: 400,
+      },
+    );
+    expect(requireSessionMock).not.toHaveBeenCalled();
+    expect(parseProjectFormDataMock).not.toHaveBeenCalled();
+    expect(createProjectMock).not.toHaveBeenCalled();
+    expect(updateProjectMock).not.toHaveBeenCalled();
+    expect(deleteProjectMock).not.toHaveBeenCalled();
+  });
 });
