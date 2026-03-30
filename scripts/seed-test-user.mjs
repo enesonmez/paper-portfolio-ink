@@ -2,7 +2,7 @@ import { hashPassword } from "better-auth/crypto";
 import { getPlatformProxy } from "wrangler";
 
 const DEFAULT_USER = {
-  displayName: "Enes Test Admin",
+  displayName: "Paper Test Admin",
   email: "admin@paper-portfolio-ink.local",
   password: "PaperInk1234!",
   role: "admin",

@@ -110,6 +110,6 @@ describe("i18n server", () => {
       ],
     });
 
-    expect(payload.messages["site.title.blog"]).toBe("Blog | Enes Ink");
+    expect(payload.messages["site.title.blog"]).toBe("Blog | Paper Ink");
   });
 });

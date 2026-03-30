@@ -1,4 +1,4 @@
 export const siteConfig = {
-  name: "Enes Ink",
+  name: "Paper Ink",
   url: "https://paper-portfolio-ink.dev",
 } as const;

@@ -123,7 +123,7 @@ describe("blog detail route", () => {
       }),
     ).toEqual(
       expect.arrayContaining([
-        { title: "Edge Observability Playbook | Blog | Enes Ink" },
+        { title: "Edge Observability Playbook | Blog | Paper Ink" },
         {
           name: "description",
           content:
@@ -164,7 +164,7 @@ describe("blog detail route", () => {
           slug: "missing-story",
         },
       } as never),
-    ).toEqual(expect.arrayContaining([{ title: "Blog Post | Enes Ink" }]));
+    ).toEqual(expect.arrayContaining([{ title: "Blog Post | Paper Ink" }]));
   });
 
   it("renders a fallback paragraph for empty legacy content", () => {

@@ -47,7 +47,7 @@ test("filters seeded translation resources inside the admin settings area", asyn
   await page.getByRole("button", { name: /^Ara$/ }).click();
 
   await expect(page.getByText("site.name")).toBeVisible();
-  await expect(page.getByText("Enes Ink")).toBeVisible();
+  await expect(page.getByText("Paper Ink")).toBeVisible();
 });
 
 test("renders logging tools for an authenticated admin on the errors tab", async ({

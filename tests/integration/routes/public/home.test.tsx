@@ -35,7 +35,7 @@ describe("HomePage", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: /Hello, I am Enes/i,
+        name: /Hello, I am Paper/i,
       }),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "View projects" })).toHaveAttribute(

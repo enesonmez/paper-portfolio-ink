@@ -10,7 +10,7 @@ const FIXTURES = {
 
 const FIXTURE_USERS = [
   {
-    displayName: "Enes Test Admin",
+    displayName: "Paper Test Admin",
     email: process.env.SEED_USER_EMAIL ?? "admin@paper-portfolio-ink.local",
     id: "e2e-user-admin",
     password: process.env.SEED_USER_PASSWORD ?? "PaperInk1234!",

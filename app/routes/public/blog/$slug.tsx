@@ -30,7 +30,7 @@ export const meta: Route.MetaFunction = ({ data, location, matches }) => {
       : [];
   }
 
-  const pageTitle = `${data.post.title} | Blog | Enes Ink`;
+  const pageTitle = `${data.post.title} | Blog | ${siteConfig.name}`;
   const pageUrl = new URL(location.pathname, siteConfig.url).toString();
   const descriptors = [
     { title: pageTitle },

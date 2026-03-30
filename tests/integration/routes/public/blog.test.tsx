@@ -112,14 +112,14 @@ describe("blog route", () => {
       } as never),
     ).toEqual(
       expect.arrayContaining([
-        { title: "Blog | Enes Ink" },
+        { title: "Blog | Paper Ink" },
         {
           name: "description",
           content: "Edge-first teknik notlar, mimari denemeler ve uygulama gunlukleri.",
         },
         {
           property: "og:title",
-          content: "Blog | Enes Ink",
+          content: "Blog | Paper Ink",
         },
       ]),
     );
