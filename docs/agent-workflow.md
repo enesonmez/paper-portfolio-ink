@@ -22,7 +22,11 @@ Roadmap dışı değişikliklerde isimlendirme bakım amacıyla uyarlanabilir, a
 
 ## Git Strategy
 
-- Feature'a başlamadan önce `features/{Phase#}_{Task#}_{FeatureName}` formatında, açıklayıcı bir branch aç. Örnek: `features/Phase1_Task1.1_ProjectScaffolding.md`
-- Branch üzerinde çalış ve değişiklikleri bu branch'te tut.
-- Mevcut kullanıcı değişikliklerini geri alma veya ezme.
-- Git standartlarına uygun detaylı commit mesajları yaz.
+- `main` production branch'idir. Her zaman deploy edilebilir ve temiz tutulmalıdır.
+- Yeni işlerde `features/*`, bakım/refactor işlerinde `maintenance/*`, acil production düzeltmelerinde `hotfix/*` branch'i aç.
+- Branch isimleri kısa, açıklayıcı ve görev bağlamını yansıtır olmalıdır. Örnek: `features/Phase4_Task4.11_ResourcesCrud`, `maintenance/AuthEnvCleanup`.
+- Doğrudan `main` üzerinde geliştirme yapma. Önce branch aç, değişiklikleri o branch'te tamamla, sonra `main`e merge et.
+- `develop` benzeri kalıcı ara branch kullanma; entegrasyon PR branch preview'leri üzerinden yönetilir.
+- Mevcut kullanıcı değişikliklerini geri alma, ezme veya branch temizliği adına yok etme.
+- Commit mesajları standart, açıklayıcı ve değişikliğin nedenini de anlatır olmalıdır.
+- Mümkünse merge öncesi branch'i güncel `main` ile hizala ve doğrulama komutlarını branch üzerinde çalıştır.

@@ -12,7 +12,6 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
     "rootDirs": [".", "./.react-router/types"],
     "paths": {
       "#db": ["./db/index.ts"],

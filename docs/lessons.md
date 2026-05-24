@@ -159,6 +159,7 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Runtime auth secret'i kod icindeki sabit fallback ile degil environment contract'i ile zorunlu tutulmali; aksi halde public repodaki bir development degeri sessizce gercek deployment'a tasinabilir.
 - Local gelistirmede de auth davranisi production ile ayni kontratta kalmali; en temiz desen, gitignore altindaki gercek `.env` veya `.dev.vars` dosyasini olusturup auth secret'i oradan saglamak ve runtime icinde hic fallback tasimamak oldu.
 - Test fixture credential'lari repo icinde daginik ve insan-parolasina benzeyen string'lerle tutulmamalidir; tek noktadan uretilen acikca local-only degerler ve parola loglamasini kaldirmak push hijyenini belirgin sekilde iyilestirir.
+- TypeScript 6 ile `baseUrl` deprecate edildigi icin alias kullanan projelerde en dusuk riskli migrasyon, `paths` hedeflerini explicit `./...` prefiksiyle tutup `baseUrl` satirini tamamen kaldirmaktir; `ignoreDeprecations` ile uyari susturmak gecici ama kirilgan bir cozumdur.
 
 ## 8. What To Preserve Going Forward
 
