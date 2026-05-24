@@ -248,7 +248,7 @@ npm run db:seed:test-user
 Varsayilan bilgiler:
 
 - `admin@paper-portfolio-ink.local`
-- `PaperInk1234!`
+- `ExamplePass123!`
 
 ### Genel doğrulama
 

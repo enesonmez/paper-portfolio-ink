@@ -346,7 +346,7 @@ test.describe("admin positive mutation matrix", () => {
         displayName,
         email,
         intent: "create",
-        password: "PaperInk1234!",
+        password: "ExamplePass123!",
         role: "author",
       },
     );

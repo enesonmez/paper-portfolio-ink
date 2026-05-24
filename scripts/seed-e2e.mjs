@@ -8,12 +8,18 @@ const FIXTURES = {
   authorPostId: "e2e-post-author-owned-notes",
 };
 
+const DEFAULT_E2E_PASSWORD = "fixture-local-only-password";
+
+function resolveFixturePassword(storageKey) {
+  return process.env.E2E_USER_PASSWORD ?? `${DEFAULT_E2E_PASSWORD}-${storageKey}`;
+}
+
 const FIXTURE_USERS = [
   {
     displayName: "Paper Test Admin",
     email: process.env.SEED_USER_EMAIL ?? "admin@paper-portfolio-ink.local",
     id: "e2e-user-admin",
-    password: process.env.SEED_USER_PASSWORD ?? "PaperInk1234!",
+    password: process.env.SEED_USER_PASSWORD ?? resolveFixturePassword("admin"),
     role: "admin",
     storageKey: "admin",
   },
@@ -22,7 +28,7 @@ const FIXTURE_USERS = [
     displayName: "Ayla Test Author",
     email: "author@paper-portfolio-ink.local",
     id: "e2e-user-author",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("author"),
     role: "author",
     storageKey: "author",
   },
@@ -35,7 +41,7 @@ const FIXTURE_USERS = [
     displayName: "Rana Registry Auditor",
     email: "registry-auditor@paper-portfolio-ink.local",
     id: "e2e-user-registry-auditor",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("registry-auditor"),
     role: "author",
     storageKey: "registryAuditor",
   },
@@ -49,7 +55,7 @@ const FIXTURE_USERS = [
     displayName: "Lale Locale Operator",
     email: "locale-operator@paper-portfolio-ink.local",
     id: "e2e-user-locale-operator",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("locale-operator"),
     role: "author",
     storageKey: "localeOperator",
   },
@@ -58,7 +64,7 @@ const FIXTURE_USERS = [
     displayName: "Ege Log Exporter",
     email: "log-exporter@paper-portfolio-ink.local",
     id: "e2e-user-log-exporter",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("log-exporter"),
     role: "author",
     storageKey: "logExporter",
   },
@@ -67,7 +73,7 @@ const FIXTURE_USERS = [
     displayName: "Deniz Log Cleaner",
     email: "log-cleaner@paper-portfolio-ink.local",
     id: "e2e-user-log-cleaner",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("log-cleaner"),
     role: "author",
     storageKey: "logCleaner",
   },
@@ -81,7 +87,7 @@ const FIXTURE_USERS = [
     displayName: "Tuna Translation Operator",
     email: "translation-operator@paper-portfolio-ink.local",
     id: "e2e-user-translation-operator",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("translation-operator"),
     role: "author",
     storageKey: "translationOperator",
   },
@@ -95,7 +101,7 @@ const FIXTURE_USERS = [
     displayName: "Vera Revoked Admin",
     email: "revoked-admin@paper-portfolio-ink.local",
     id: "e2e-user-revoked-admin",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("revoked-admin"),
     role: "admin",
     storageKey: "revokedAdmin",
   },

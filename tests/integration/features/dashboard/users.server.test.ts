@@ -186,7 +186,7 @@ describe("dashboard users server", () => {
         displayName: "Ayla Author",
         email: "author@example.com",
         intent: "create",
-        password: "PaperInk1234!",
+        password: "ExamplePass123!",
         role: "author",
       }),
       headers: {
@@ -208,7 +208,7 @@ describe("dashboard users server", () => {
         displayName: "Ayla Author",
         email: "author@example.com",
         isActive: true,
-        password: "PaperInk1234!",
+        password: "ExamplePass123!",
         role: "author",
       },
     });
@@ -241,7 +241,7 @@ describe("dashboard users server", () => {
         displayName: "Blocked Author",
         email: "blocked@example.com",
         intent: "create",
-        password: "PaperInk1234!",
+        password: "ExamplePass123!",
         role: "author",
       }),
       headers: {
@@ -352,7 +352,7 @@ describe("dashboard users server", () => {
         displayName: "Blocked Author",
         email: "blocked@example.com",
         intent: "archive",
-        password: "PaperInk1234!",
+        password: "ExamplePass123!",
         role: "author",
       }),
       headers: {

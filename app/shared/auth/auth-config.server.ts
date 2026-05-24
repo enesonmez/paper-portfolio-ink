@@ -1,7 +1,5 @@
 import type { AuthRuntimeConfig } from "./auth-config";
 
-const DEV_AUTH_SECRET = "paper-portfolio-ink-dev-secret-0123456789";
-
 type AuthServerEnvName = "AUTH_SECRET" | "BETTER_AUTH_SECRET" | "BETTER_AUTH_URL";
 
 function readServerEnv(name: AuthServerEnvName) {
@@ -21,10 +19,17 @@ export function resolveAuthConfig(
   const origin = new URL(request.url).origin;
   const baseURL = override?.baseURL ?? readServerEnv("BETTER_AUTH_URL") ?? origin;
   const envSecret = readServerEnv("BETTER_AUTH_SECRET") ?? readServerEnv("AUTH_SECRET");
+  const secret = override?.secret ?? envSecret;
+
+  if (!secret) {
+    throw new Error(
+      "Missing auth secret. Provide BETTER_AUTH_SECRET or AUTH_SECRET before starting the app.",
+    );
+  }
 
   return {
     baseURL,
-    secret: override?.secret ?? envSecret ?? DEV_AUTH_SECRET,
+    secret,
     trustedOrigins: override?.trustedOrigins ?? [baseURL],
   };
 }

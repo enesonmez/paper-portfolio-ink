@@ -3,65 +3,70 @@ import path from "node:path";
 export const E2E_LOCALE = "tr";
 export const E2E_LOCALE_PREFIX = `/${E2E_LOCALE}`;
 export const E2E_BASE_URL = "http://127.0.0.1:4173";
+const DEFAULT_E2E_PASSWORD = "fixture-local-only-password";
 
 function buildStorageStatePath(filename: string) {
   return path.resolve(process.cwd(), "tests/e2e/.auth", filename);
+}
+
+function resolveFixturePassword(storageKey: string) {
+  return process.env.E2E_USER_PASSWORD ?? `${DEFAULT_E2E_PASSWORD}-${storageKey}`;
 }
 
 export const E2E_USERS = {
   admin: {
     email: process.env.SEED_USER_EMAIL ?? "admin@paper-portfolio-ink.local",
     id: "e2e-user-admin",
-    password: process.env.SEED_USER_PASSWORD ?? "PaperInk1234!",
+    password: process.env.SEED_USER_PASSWORD ?? resolveFixturePassword("admin"),
     role: "admin",
     storageStatePath: buildStorageStatePath("admin.json"),
   },
   author: {
     email: "author@paper-portfolio-ink.local",
     id: "e2e-user-author",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("author"),
     role: "author",
     storageStatePath: buildStorageStatePath("author.json"),
   },
   localeOperator: {
     email: "locale-operator@paper-portfolio-ink.local",
     id: "e2e-user-locale-operator",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("locale-operator"),
     role: "author",
     storageStatePath: buildStorageStatePath("locale-operator.json"),
   },
   logCleaner: {
     email: "log-cleaner@paper-portfolio-ink.local",
     id: "e2e-user-log-cleaner",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("log-cleaner"),
     role: "author",
     storageStatePath: buildStorageStatePath("log-cleaner.json"),
   },
   logExporter: {
     email: "log-exporter@paper-portfolio-ink.local",
     id: "e2e-user-log-exporter",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("log-exporter"),
     role: "author",
     storageStatePath: buildStorageStatePath("log-exporter.json"),
   },
   registryAuditor: {
     email: "registry-auditor@paper-portfolio-ink.local",
     id: "e2e-user-registry-auditor",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("registry-auditor"),
     role: "author",
     storageStatePath: buildStorageStatePath("registry-auditor.json"),
   },
   revokedAdmin: {
     email: "revoked-admin@paper-portfolio-ink.local",
     id: "e2e-user-revoked-admin",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("revoked-admin"),
     role: "admin",
     storageStatePath: buildStorageStatePath("revoked-admin.json"),
   },
   translationOperator: {
     email: "translation-operator@paper-portfolio-ink.local",
     id: "e2e-user-translation-operator",
-    password: "PaperInk1234!",
+    password: resolveFixturePassword("translation-operator"),
     role: "author",
     storageStatePath: buildStorageStatePath("translation-operator.json"),
   },

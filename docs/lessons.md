@@ -156,6 +156,9 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Brand copy'si DB merkezli i18n seed ile yonetiliyorsa ayni isim `messages.shared.ts`, SQL translation seed'i ve `siteConfig` gibi hardcoded metadata kaynaklarinda birlikte guncellenmelidir; aksi halde blog meta title gibi dar ama gorunur yuzeylerde sessiz branding drift'i olusuyor.
 - Route wrapper testleri tek basina yeterli gorunse de `auth/login` gibi kritik slice'larda feature server kontratini dogrudan testlemek gerekir; loader redirect normalizasyonu, action validation error shape'i ve auth service delegasyonu route testi disinda ayri feature integration testinde sabitlenince degisiklikler daha guvenle yapiliyor.
 - E2E kapsami yalnizca en populer route'lara bakmamalidir; public tarafta legacy `/projects` redirect'i, dashboard tarafinda `logging` gibi admin-only ama operasyonel onemi yuksek slice'lar gercek browser akisinda ayri assertion alinca coverage daha dengeli hale geliyor.
+- Runtime auth secret'i kod icindeki sabit fallback ile degil environment contract'i ile zorunlu tutulmali; aksi halde public repodaki bir development degeri sessizce gercek deployment'a tasinabilir.
+- Local gelistirmede de auth davranisi production ile ayni kontratta kalmali; en temiz desen, gitignore altindaki gercek `.env` veya `.dev.vars` dosyasini olusturup auth secret'i oradan saglamak ve runtime icinde hic fallback tasimamak oldu.
+- Test fixture credential'lari repo icinde daginik ve insan-parolasina benzeyen string'lerle tutulmamalidir; tek noktadan uretilen acikca local-only degerler ve parola loglamasini kaldirmak push hijyenini belirgin sekilde iyilestirir.
 
 ## 8. What To Preserve Going Forward
 

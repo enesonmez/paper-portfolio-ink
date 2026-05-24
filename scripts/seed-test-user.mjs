@@ -4,7 +4,7 @@ import { getPlatformProxy } from "wrangler";
 const DEFAULT_USER = {
   displayName: "Paper Test Admin",
   email: "admin@paper-portfolio-ink.local",
-  password: "PaperInk1234!",
+  password: "fixture-local-only-password-admin",
   role: "admin",
 };
 
@@ -91,7 +91,6 @@ async function seedTestUser() {
         {
           seeded: true,
           email: testUser.email,
-          password: testUser.password,
           role: testUser.role,
           userId,
         },

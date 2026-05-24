@@ -5,18 +5,16 @@ describe("auth config resolver", () => {
     vi.unstubAllEnvs();
   });
 
-  it("derives a safe local auth config from the request origin", async () => {
+  it("throws when no auth secret is configured", async () => {
     const { resolveAuthConfig } = await import("~/shared/auth/auth-config.server");
     const request = new Request("http://localhost:5173/login");
 
-    expect(resolveAuthConfig(request)).toEqual({
-      baseURL: "http://localhost:5173",
-      secret: "paper-portfolio-ink-dev-secret-0123456789",
-      trustedOrigins: ["http://localhost:5173"],
-    });
+    expect(() => resolveAuthConfig(request)).toThrow(
+      "Missing auth secret. Provide BETTER_AUTH_SECRET or AUTH_SECRET before starting the app.",
+    );
   });
 
-  it("prefers auth environment variables over the development fallback", async () => {
+  it("prefers auth environment variables over the request origin defaults", async () => {
     const { resolveAuthConfig } = await import("~/shared/auth/auth-config.server");
     const request = new Request("http://localhost:5173/login");
 
