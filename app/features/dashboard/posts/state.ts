@@ -9,7 +9,7 @@ import {
   type PostStatus,
 } from "~/domain/posts/model";
 import { useT } from "~/shared/i18n/i18n-react";
-import type { PostOverview } from "~/lib/posts/posts.server";
+import type { EditablePost, PostOverview } from "~/lib/posts/posts.server";
 
 type ValueOf<T> = T[keyof T];
 
@@ -86,9 +86,9 @@ export interface DashboardPostsHrefParams {
 }
 
 interface ResolveDashboardPostsFormArgs {
+  editablePost: EditablePost | null;
   editId: string | null;
   modal: string | null;
-  posts: PostOverview[];
 }
 
 interface BuildDashboardPostsFormStateArgs {
@@ -100,7 +100,7 @@ interface BuildDashboardPostsFormStateArgs {
   values: PostFormValues;
 }
 
-function toPostFormValues(post: PostOverview): PostFormValues {
+function toPostFormValues(post: EditablePost): PostFormValues {
   return buildPostFormValues({
     content: post.content,
     coverImageUrl: post.coverImageUrl ?? "",
@@ -202,22 +202,21 @@ export function buildDeniedDashboardPostsLoaderData(): DashboardPostsDeniedLoade
 }
 
 export function resolveDashboardPostsForm({
+  editablePost,
   editId,
   modal,
-  posts,
 }: ResolveDashboardPostsFormArgs): DashboardPostsFormState {
-  const editingPost = posts.find((post) => post.id === editId);
   const mode =
     modal === DASHBOARD_POSTS_MODAL.create
       ? DASHBOARD_POSTS_MODAL.create
-      : editingPost
+      : editablePost && editablePost.id === editId
         ? DASHBOARD_POSTS_MODAL.edit
         : null;
 
   return buildDashboardPostsFormState({
-    editingPostId: editingPost?.id,
+    editingPostId: editablePost?.id,
     mode,
-    values: editingPost ? toPostFormValues(editingPost) : buildPostFormValues(),
+    values: editablePost ? toPostFormValues(editablePost) : buildPostFormValues(),
   });
 }
 

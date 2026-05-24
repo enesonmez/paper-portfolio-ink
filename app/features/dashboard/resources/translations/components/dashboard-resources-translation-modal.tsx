@@ -25,21 +25,24 @@ export function DashboardResourcesTranslationModal({
   form,
   locales,
   selectedTranslationLocale,
-  translationPage,
+  translationCursor,
+  translationDirection,
   translationSearchQuery,
 }: {
   canSubmit: boolean;
   form: DashboardResourcesTranslationFormState;
   locales: LocaleResourceRecord[];
   selectedTranslationLocale: string;
-  translationPage: number;
+  translationCursor: string | null;
+  translationDirection: "next" | "previous";
   translationSearchQuery: string;
 }) {
   const to = useLocalizedPath();
   const { copy, formCopy } = useDashboardResourcesCopy();
   const translationsViewState = {
+    translationCursor,
+    translationDirection,
     translationLocale: selectedTranslationLocale,
-    translationPage,
     translationSearch: translationSearchQuery,
   } as const;
 

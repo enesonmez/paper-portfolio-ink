@@ -62,9 +62,17 @@ describe("dashboard posts state helpers", () => {
     });
     expect(
       resolveDashboardPostsForm({
+        editablePost: {
+          content: "# Cache window",
+          coverImageUrl: null,
+          excerpt: "Published",
+          id: "post-2",
+          slug: "cache-window",
+          status: "published",
+          title: "Cache window",
+        },
         editId: "post-2",
         modal: null,
-        posts,
       }),
     ).toMatchObject({
       editingPostId: "post-2",

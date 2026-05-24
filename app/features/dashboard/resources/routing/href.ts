@@ -17,12 +17,13 @@ export const DASHBOARD_RESOURCES_PATH = {
 } as const;
 
 export const DASHBOARD_RESOURCES_QUERY_PARAM = {
+  translationCursor: "translationCursor",
+  translationDirection: "translationDirection",
   editLocaleCode: "editLocaleCode",
   editTranslationKey: "editTranslationKey",
   editTranslationLocale: "editTranslationLocale",
   modal: "modal",
   translationLocale: "translationLocale",
-  translationPage: "translationPage",
   translationSearch: "translationSearch",
 } as const;
 
@@ -36,18 +37,20 @@ export const DASHBOARD_RESOURCES_MODAL = {
 export type DashboardResourcesModal = ValueOf<typeof DASHBOARD_RESOURCES_MODAL>;
 
 export interface DashboardResourcesHrefParams {
+  translationCursor?: string | null;
+  translationDirection?: "next" | "previous" | null;
   editLocaleCode?: string | null;
   editTranslationKey?: string | null;
   editTranslationLocale?: string | null;
   modal?: string | null;
   translationLocale?: string | null;
-  translationPage?: number | null;
   translationSearch?: string | null;
 }
 
 export interface DashboardResourcesTranslationsViewState {
+  translationCursor?: string | null;
+  translationDirection?: "next" | "previous" | null;
   translationLocale: string;
-  translationPage?: number | null;
   translationSearch: string;
 }
 
@@ -55,16 +58,6 @@ export const DASHBOARD_RESOURCES_TRANSLATIONS_PAGE_SIZE = 20;
 
 export function normalizeDashboardResourcesSearchQuery(value: string | null) {
   return value?.trim() ?? "";
-}
-
-export function normalizeDashboardResourcesPage(value: string | null) {
-  const parsedValue = Number(value);
-
-  if (!Number.isInteger(parsedValue) || parsedValue < 1) {
-    return 1;
-  }
-
-  return parsedValue;
 }
 
 export function resolveDashboardResourcesSection(
@@ -108,10 +101,17 @@ function buildDashboardResourcesHref(
     );
   }
 
-  if (params.translationPage && params.translationPage > 1) {
+  if (params.translationCursor) {
     searchParams.set(
-      DASHBOARD_RESOURCES_QUERY_PARAM.translationPage,
-      params.translationPage.toString(),
+      DASHBOARD_RESOURCES_QUERY_PARAM.translationCursor,
+      params.translationCursor,
+    );
+  }
+
+  if (params.translationDirection && params.translationDirection !== "next") {
+    searchParams.set(
+      DASHBOARD_RESOURCES_QUERY_PARAM.translationDirection,
+      params.translationDirection,
     );
   }
 
@@ -166,13 +166,17 @@ export function buildDashboardResourcesTranslationsHref(
   state: DashboardResourcesTranslationsViewState,
   overrides: Omit<
     DashboardResourcesHrefParams,
-    "translationLocale" | "translationPage" | "translationSearch"
+    | "translationCursor"
+    | "translationDirection"
+    | "translationLocale"
+    | "translationSearch"
   > = {},
 ) {
   return buildDashboardResourcesHref(DASHBOARD_RESOURCES_PATH.translations, {
     ...overrides,
+    translationCursor: state.translationCursor,
+    translationDirection: state.translationDirection,
     translationLocale: state.translationLocale,
-    translationPage: state.translationPage,
     translationSearch: state.translationSearch,
   });
 }

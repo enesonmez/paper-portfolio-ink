@@ -21,9 +21,13 @@ export interface DashboardResourcesMetrics {
 }
 
 export interface DashboardResourcesTranslationPagination {
-  currentPage: number;
-  pageCount: number;
+  currentCursor: string | null;
+  direction: "next" | "previous";
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  nextCursor: string | null;
   pageSize: number;
+  previousCursor: string | null;
   totalItems: number;
 }
 
@@ -108,17 +112,25 @@ interface ResolveDashboardResourcesStateArgs {
 }
 
 export function buildDashboardResourcesTranslationPagination(args: {
-  currentPage: number;
+  currentCursor: string | null;
+  direction: "next" | "previous";
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  nextCursor: string | null;
   pageSize?: number;
+  previousCursor: string | null;
   totalItems: number;
 }): DashboardResourcesTranslationPagination {
   const pageSize = args.pageSize ?? 20;
-  const pageCount = Math.max(1, Math.ceil(args.totalItems / pageSize));
 
   return {
-    currentPage: Math.min(Math.max(args.currentPage, 1), pageCount),
-    pageCount,
+    currentCursor: args.currentCursor,
+    direction: args.direction,
+    hasNextPage: args.hasNextPage,
+    hasPreviousPage: args.hasPreviousPage,
+    nextCursor: args.nextCursor,
     pageSize,
+    previousCursor: args.previousCursor,
     totalItems: args.totalItems,
   };
 }

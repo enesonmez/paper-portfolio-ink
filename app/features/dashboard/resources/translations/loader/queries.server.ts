@@ -3,6 +3,8 @@ import type { AppLoadContext } from "react-router";
 import {
   findTranslation,
   listTranslationsByLocale,
+  normalizeTranslationPaginationDirection,
+  parseTranslationCursor,
   type LocaleResourceRecord,
 } from "~/lib/resources/resources.server";
 
@@ -22,8 +24,13 @@ export interface LoadedTranslationState {
 function buildEmptyLoadedTranslationState(): LoadedTranslationState {
   return {
     pagination: buildDashboardResourcesTranslationPagination({
-      currentPage: 1,
+      currentCursor: null,
+      direction: "next",
+      hasNextPage: false,
+      hasPreviousPage: false,
+      nextCursor: null,
       pageSize: DASHBOARD_RESOURCES_TRANSLATIONS_PAGE_SIZE,
+      previousCursor: null,
       totalItems: 0,
     }),
     record: null,
@@ -57,7 +64,8 @@ export async function loadDashboardTranslationListing(args: {
         )
       : Promise.resolve(null),
     listTranslationsByLocale(args.context.db, args.requestState.selectedLocale, {
-      page: args.requestState.requestedPage,
+      cursor: parseTranslationCursor(args.requestState.cursor),
+      direction: normalizeTranslationPaginationDirection(args.requestState.direction),
       pageSize: DASHBOARD_RESOURCES_TRANSLATIONS_PAGE_SIZE,
       searchQuery: args.requestState.searchQuery,
       totalCountHint: selectedLocaleTranslationCount,
@@ -66,8 +74,13 @@ export async function loadDashboardTranslationListing(args: {
 
   return {
     pagination: buildDashboardResourcesTranslationPagination({
-      currentPage: page.currentPage,
+      currentCursor: args.requestState.cursor,
+      direction: args.requestState.direction,
+      hasNextPage: page.hasNextPage,
+      hasPreviousPage: page.hasPreviousPage,
+      nextCursor: page.nextCursor,
       pageSize: DASHBOARD_RESOURCES_TRANSLATIONS_PAGE_SIZE,
+      previousCursor: page.previousCursor,
       totalItems: page.totalCount,
     }),
     record,

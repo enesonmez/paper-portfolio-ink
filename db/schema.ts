@@ -70,17 +70,29 @@ export const posts = sqliteTable(
       .references(() => users.id, { onDelete: "restrict" }),
     title: text("title").notNull(),
     slug: text("slug").notNull(),
-    excerpt: text("excerpt"),
+    excerpt: text("excerpt").notNull().default(""),
     content: text("content").notNull(),
     coverImageUrl: text("cover_image_url"),
+    readingTimeMinutes: integer("reading_time_minutes").notNull().default(1),
     status: text("status").$type<PublishingStatus>().notNull().default("draft"),
     publishedAt: integer("published_at", { mode: "timestamp_ms" }),
     ...createTimestampColumns(),
   },
   (table) => [
     uniqueIndex("posts_slug_unique").on(table.slug),
-    index("posts_author_id_idx").on(table.authorId),
-    index("posts_status_published_at_idx").on(table.status, table.publishedAt),
+    index("posts_status_feed_idx").on(
+      table.status,
+      table.publishedAt,
+      table.updatedAt,
+      table.createdAt,
+      table.slug,
+    ),
+    index("posts_author_feed_idx").on(
+      table.authorId,
+      table.publishedAt,
+      table.updatedAt,
+      table.createdAt,
+    ),
   ],
 );
 
@@ -102,8 +114,14 @@ export const projects = sqliteTable(
   },
   (table) => [
     uniqueIndex("projects_slug_unique").on(table.slug),
-    index("projects_status_idx").on(table.status),
     index("projects_featured_sort_order_idx").on(table.isFeatured, table.sortOrder),
+    index("projects_status_feed_idx").on(
+      table.status,
+      table.isFeatured,
+      table.sortOrder,
+      table.createdAt,
+      table.slug,
+    ),
   ],
 );
 
@@ -296,7 +314,6 @@ export const translations = sqliteTable(
       columns: [table.locale, table.key],
       name: "translations_locale_key_pk",
     }),
-    index("translations_locale_idx").on(table.locale),
   ],
 );
 
@@ -323,7 +340,7 @@ export const logHistory = sqliteTable(
     createdAt: createCreatedAtColumn(),
   },
   (table) => [
-    index("log_history_created_at_idx").on(table.createdAt),
+    index("log_history_created_at_id_idx").on(table.createdAt, table.id),
     index("log_history_request_id_idx").on(table.requestId),
     index("log_history_resource_action_idx").on(table.resource, table.action),
     index("log_history_user_id_idx").on(table.userId),
@@ -356,7 +373,7 @@ export const logErrorHistory = sqliteTable(
     createdAt: createCreatedAtColumn(),
   },
   (table) => [
-    index("log_error_history_created_at_idx").on(table.createdAt),
+    index("log_error_history_created_at_id_idx").on(table.createdAt, table.id),
     index("log_error_history_request_id_idx").on(table.requestId),
     index("log_error_history_fingerprint_idx").on(table.fingerprint),
     index("log_error_history_code_idx").on(table.code),

@@ -71,6 +71,7 @@ describe("database schema", () => {
         "excerpt",
         "content",
         "cover_image_url",
+        "reading_time_minutes",
         "status",
         "published_at",
         "created_at",
@@ -146,7 +147,7 @@ describe("database schema", () => {
       expect.arrayContaining(["locale", "key", "value", "created_at", "updated_at"]),
     );
     expect(config.foreignKeys).toHaveLength(1);
-    expect(config.indexes).toHaveLength(1);
+    expect(config.indexes).toHaveLength(0);
   });
 
   it("defines the sessions table with Better Auth session columns", () => {
