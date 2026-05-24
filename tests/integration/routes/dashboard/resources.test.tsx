@@ -57,9 +57,13 @@ const baseRouteContext = {
   },
   selectedTranslationLocale: "tr",
   translationPagination: {
-    currentPage: 1,
-    pageCount: 1,
+    currentCursor: null,
+    direction: "next" as const,
+    hasNextPage: false,
+    hasPreviousPage: false,
+    nextCursor: null,
     pageSize: 20,
+    previousCursor: null,
     totalItems: 1,
   },
   translationSearchQuery: "",
@@ -140,9 +144,13 @@ describe("dashboard resources route", () => {
               permissions={baseRouteContext.permissions}
               selectedTranslationLocale={baseRouteContext.selectedTranslationLocale}
               translationPagination={{
-                currentPage: 2,
-                pageCount: 3,
+                currentCursor: '{"key":"dashboard.layout.navDashboard"}',
+                direction: "next",
+                hasNextPage: true,
+                hasPreviousPage: true,
+                nextCursor: '{"key":"dashboard.layout.navProjects"}',
                 pageSize: 20,
+                previousCursor: '{"key":"dashboard.layout.navAbout"}',
                 totalItems: 41,
               }}
               translationSearchQuery={baseRouteContext.translationSearchQuery}
@@ -156,9 +164,13 @@ describe("dashboard resources route", () => {
                     mode: "create",
                   },
                   translationPagination: {
-                    currentPage: 2,
-                    pageCount: 3,
+                    currentCursor: '{"key":"dashboard.layout.navDashboard"}',
+                    direction: "next",
+                    hasNextPage: true,
+                    hasPreviousPage: true,
+                    nextCursor: '{"key":"dashboard.layout.navProjects"}',
                     pageSize: 20,
+                    previousCursor: '{"key":"dashboard.layout.navAbout"}',
                     totalItems: 41,
                   },
                 }}

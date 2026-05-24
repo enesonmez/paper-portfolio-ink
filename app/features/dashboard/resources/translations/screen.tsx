@@ -29,8 +29,9 @@ export default function DashboardResourcesTranslationsScreen() {
     translations,
   } = useDashboardResourcesRouteContext();
   const translationsViewState = {
+    translationCursor: translationPagination.currentCursor,
+    translationDirection: translationPagination.direction,
     translationLocale: selectedTranslationLocale,
-    translationPage: translationPagination.currentPage,
     translationSearch: translationSearchQuery,
   } as const;
 
@@ -84,8 +85,9 @@ export default function DashboardResourcesTranslationsScreen() {
                   <Link
                     to={to(
                       buildDashboardResourcesTranslationsHref({
+                        translationCursor: null,
+                        translationDirection: "next",
                         translationLocale: localeRow.code,
-                        translationPage: null,
                         translationSearch: "",
                       }),
                     )}
@@ -128,7 +130,8 @@ export default function DashboardResourcesTranslationsScreen() {
                   to={to(
                     buildDashboardResourcesTranslationsHref({
                       ...translationsViewState,
-                      translationPage: null,
+                      translationCursor: null,
+                      translationDirection: "next",
                       translationSearch: "",
                     }),
                   )}
@@ -147,7 +150,8 @@ export default function DashboardResourcesTranslationsScreen() {
             paginationNextLabel={copy.paginationNextLabel}
             paginationPreviousLabel={copy.paginationPreviousLabel}
             selectedTranslationLocale={selectedTranslationLocale}
-            translationPage={translationPagination.currentPage}
+            translationCursor={translationPagination.currentCursor}
+            translationDirection={translationPagination.direction}
             translationSearchQuery={translationSearchQuery}
             translations={translations}
           />
@@ -162,7 +166,8 @@ export default function DashboardResourcesTranslationsScreen() {
         form={translationForm}
         locales={locales}
         selectedTranslationLocale={selectedTranslationLocale}
-        translationPage={translationPagination.currentPage}
+        translationCursor={translationPagination.currentCursor}
+        translationDirection={translationPagination.direction}
         translationSearchQuery={translationSearchQuery}
       />
     </>

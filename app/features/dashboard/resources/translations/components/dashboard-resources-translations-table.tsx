@@ -25,10 +25,11 @@ export function DashboardResourcesTranslationsTable({
   canUpdate,
   emptyState,
   pagination,
-  selectedTranslationLocale,
   paginationNextLabel,
   paginationPreviousLabel,
-  translationPage,
+  selectedTranslationLocale,
+  translationCursor,
+  translationDirection,
   translationSearchQuery,
   translations,
 }: {
@@ -36,15 +37,20 @@ export function DashboardResourcesTranslationsTable({
   canUpdate: boolean;
   emptyState?: string;
   pagination: {
-    currentPage: number;
-    pageCount: number;
+    currentCursor: string | null;
+    direction: "next" | "previous";
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    nextCursor: string | null;
     pageSize: number;
+    previousCursor: string | null;
     totalItems: number;
   };
   paginationNextLabel: string;
   paginationPreviousLabel: string;
   selectedTranslationLocale: string;
-  translationPage: number;
+  translationCursor: string | null;
+  translationDirection: "next" | "previous";
   translationSearchQuery: string;
   translations: TranslationResourceRecord[];
 }) {
@@ -52,18 +58,13 @@ export function DashboardResourcesTranslationsTable({
   const t = useT();
   const canManageTranslations = canUpdate || canDelete;
   const translationsViewState = {
+    translationCursor,
+    translationDirection,
     translationLocale: selectedTranslationLocale,
-    translationPage,
     translationSearch: translationSearchQuery,
   } as const;
-  const hasPreviousPage = pagination.currentPage > 1;
-  const hasNextPage = pagination.currentPage < pagination.pageCount;
-  const rangeStart =
-    pagination.totalItems === 0
-      ? 0
-      : (pagination.currentPage - 1) * pagination.pageSize + 1;
-  const rangeEnd =
-    pagination.totalItems === 0 ? 0 : rangeStart + translations.length - 1;
+  const hasPreviousPage = pagination.hasPreviousPage;
+  const hasNextPage = pagination.hasNextPage;
   const columns: DataTableColumn<TranslationResourceRecord>[] = [
     {
       cellClassName: "align-top",
@@ -177,7 +178,7 @@ export function DashboardResourcesTranslationsTable({
       {pagination.totalItems > 0 ? (
         <div className="flex flex-col gap-3 border-t-2 border-black pt-4 md:flex-row md:items-center md:justify-between">
           <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.14em] uppercase">
-            {`${rangeStart}-${rangeEnd} / ${pagination.totalItems}`}
+            {`${translations.length} / ${pagination.totalItems}`}
           </p>
           <div className="flex items-center gap-2 self-end md:self-auto">
             <Button
@@ -191,7 +192,8 @@ export function DashboardResourcesTranslationsTable({
                   to={to(
                     buildDashboardResourcesTranslationsHref({
                       ...translationsViewState,
-                      translationPage: pagination.currentPage - 1,
+                      translationCursor: pagination.previousCursor,
+                      translationDirection: "previous",
                     }),
                   )}
                 >
@@ -201,9 +203,6 @@ export function DashboardResourcesTranslationsTable({
                 <span>{paginationPreviousLabel}</span>
               )}
             </Button>
-            <p className="font-sans text-xs font-bold tracking-[0.14em] uppercase">
-              {`${pagination.currentPage} / ${pagination.pageCount}`}
-            </p>
             <Button
               asChild={hasNextPage}
               disabled={!hasNextPage}
@@ -215,7 +214,8 @@ export function DashboardResourcesTranslationsTable({
                   to={to(
                     buildDashboardResourcesTranslationsHref({
                       ...translationsViewState,
-                      translationPage: pagination.currentPage + 1,
+                      translationCursor: pagination.nextCursor,
+                      translationDirection: "next",
                     }),
                   )}
                 >

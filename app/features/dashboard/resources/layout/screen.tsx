@@ -110,8 +110,9 @@ export function DashboardResourcesLayout({
               <Link
                 to={to(
                   buildDashboardResourcesTranslationsHref({
+                    translationCursor: translationPagination.currentCursor,
+                    translationDirection: translationPagination.direction,
                     translationLocale: selectedTranslationLocale,
-                    translationPage: translationPagination.currentPage,
                     translationSearch: translationSearchQuery,
                   }),
                 )}

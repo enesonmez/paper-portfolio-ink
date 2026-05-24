@@ -46,13 +46,22 @@ describe("dashboard resources state helpers", () => {
     });
     expect(
       buildDashboardResourcesTranslationPagination({
-        currentPage: 99,
+        currentCursor: '{"key":"dashboard.layout.navHome"}',
+        direction: "next",
+        hasNextPage: true,
+        hasPreviousPage: true,
+        nextCursor: '{"key":"dashboard.layout.navProjects"}',
+        previousCursor: '{"key":"dashboard.layout.navAbout"}',
         totalItems: 21,
       }),
     ).toEqual({
-      currentPage: 2,
-      pageCount: 2,
+      currentCursor: '{"key":"dashboard.layout.navHome"}',
+      direction: "next",
+      hasNextPage: true,
+      hasPreviousPage: true,
+      nextCursor: '{"key":"dashboard.layout.navProjects"}',
       pageSize: 20,
+      previousCursor: '{"key":"dashboard.layout.navAbout"}',
       totalItems: 21,
     });
   });

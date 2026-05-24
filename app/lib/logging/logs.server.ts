@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, gt, gte, lt, lte, or, sql } from "drizzle-orm";
+import { z } from "zod";
 
 import { getDbFromContext } from "../../../db/context";
 import type { UserRole } from "../../../db/schema";
@@ -10,6 +11,7 @@ import {
   type LoggingCursor,
   type LoggingPaginationDirection,
 } from "~/domain/logging/model";
+import { getAppDataCache } from "~/shared/cache/data-cache.server";
 
 export interface LogHistoryEntryInput {
   action: string;
@@ -67,11 +69,11 @@ export interface LogPageOptions {
 
 export const DASHBOARD_LOGGING_PAGE_SIZE = 25;
 export const DASHBOARD_LOGGING_EXPORT_MAX_ROWS = 1000;
-
-type LogHistoryRow = Awaited<ReturnType<typeof listLogHistoryEntries>>[number];
-type LogErrorHistoryRow = Awaited<
-  ReturnType<typeof listLogErrorHistoryEntries>
->[number];
+const LOGGING_COUNTS_CACHE_KEY = "app://cache/dashboard/logging/counts";
+const loggingCountsSchema = z.object({
+  errorCount: z.number().int().nonnegative(),
+  historyCount: z.number().int().nonnegative(),
+});
 
 function toCursorDate(cursor: LoggingCursor) {
   return new Date(cursor.createdAtIso);
@@ -187,6 +189,7 @@ export async function insertLogHistoryEntry(
     userId: entry.userId ?? null,
     userRole: entry.userRole ?? null,
   });
+  await getAppDataCache(context).delete(LOGGING_COUNTS_CACHE_KEY);
 }
 
 export async function insertLogErrorHistoryEntry(
@@ -216,6 +219,7 @@ export async function insertLogErrorHistoryEntry(
     userId: entry.userId ?? null,
     userRole: entry.userRole ?? null,
   });
+  await getAppDataCache(context).delete(LOGGING_COUNTS_CACHE_KEY);
 }
 
 export async function listLogHistoryEntries(
@@ -241,44 +245,6 @@ export async function listLogHistoryEntries(
   }
 
   return query;
-}
-
-async function hasOlderLogHistoryEntries(
-  context: AppLoadContext,
-  row: Pick<LogHistoryRow, "createdAt" | "id">,
-) {
-  const db = getDbFromContext(context);
-  const result = await db
-    .select({ id: logHistory.id })
-    .from(logHistory)
-    .where(
-      buildOlderThanCursorFilter(logHistory.createdAt, logHistory.id, {
-        createdAtIso: row.createdAt.toISOString(),
-        id: row.id,
-      }),
-    )
-    .limit(1);
-
-  return result.length > 0;
-}
-
-async function hasNewerLogHistoryEntries(
-  context: AppLoadContext,
-  row: Pick<LogHistoryRow, "createdAt" | "id">,
-) {
-  const db = getDbFromContext(context);
-  const result = await db
-    .select({ id: logHistory.id })
-    .from(logHistory)
-    .where(
-      buildNewerThanCursorFilter(logHistory.createdAt, logHistory.id, {
-        createdAtIso: row.createdAt.toISOString(),
-        id: row.id,
-      }),
-    )
-    .limit(1);
-
-  return result.length > 0;
 }
 
 export async function listLogHistoryPage(
@@ -321,12 +287,15 @@ export async function listLogHistoryPage(
     direction === LOGGING_PAGINATION_DIRECTION.previous
       ? [...visibleRows].reverse()
       : visibleRows;
-  const firstEntry = entries[0];
-  const lastEntry = entries.at(-1);
-  const [hasOlderEntries, hasNewerEntries] = await Promise.all([
-    lastEntry ? hasOlderLogHistoryEntries(context, lastEntry) : false,
-    firstEntry ? hasNewerLogHistoryEntries(context, firstEntry) : false,
-  ]);
+  const hasExtraRow = orderedRows.length > pageSize;
+  const hasOlderEntries =
+    direction === LOGGING_PAGINATION_DIRECTION.previous
+      ? Boolean(options.cursor)
+      : hasExtraRow;
+  const hasNewerEntries =
+    direction === LOGGING_PAGINATION_DIRECTION.previous
+      ? hasExtraRow
+      : Boolean(options.cursor);
 
   return {
     entries,
@@ -363,44 +332,6 @@ export async function listLogErrorHistoryEntries(
   }
 
   return query;
-}
-
-async function hasOlderLogErrorHistoryEntries(
-  context: AppLoadContext,
-  row: Pick<LogErrorHistoryRow, "createdAt" | "id">,
-) {
-  const db = getDbFromContext(context);
-  const result = await db
-    .select({ id: logErrorHistory.id })
-    .from(logErrorHistory)
-    .where(
-      buildOlderThanCursorFilter(logErrorHistory.createdAt, logErrorHistory.id, {
-        createdAtIso: row.createdAt.toISOString(),
-        id: row.id,
-      }),
-    )
-    .limit(1);
-
-  return result.length > 0;
-}
-
-async function hasNewerLogErrorHistoryEntries(
-  context: AppLoadContext,
-  row: Pick<LogErrorHistoryRow, "createdAt" | "id">,
-) {
-  const db = getDbFromContext(context);
-  const result = await db
-    .select({ id: logErrorHistory.id })
-    .from(logErrorHistory)
-    .where(
-      buildNewerThanCursorFilter(logErrorHistory.createdAt, logErrorHistory.id, {
-        createdAtIso: row.createdAt.toISOString(),
-        id: row.id,
-      }),
-    )
-    .limit(1);
-
-  return result.length > 0;
 }
 
 export async function listLogErrorHistoryPage(
@@ -443,12 +374,15 @@ export async function listLogErrorHistoryPage(
     direction === LOGGING_PAGINATION_DIRECTION.previous
       ? [...visibleRows].reverse()
       : visibleRows;
-  const firstEntry = entries[0];
-  const lastEntry = entries.at(-1);
-  const [hasOlderEntries, hasNewerEntries] = await Promise.all([
-    lastEntry ? hasOlderLogErrorHistoryEntries(context, lastEntry) : false,
-    firstEntry ? hasNewerLogErrorHistoryEntries(context, firstEntry) : false,
-  ]);
+  const hasExtraRow = orderedRows.length > pageSize;
+  const hasOlderEntries =
+    direction === LOGGING_PAGINATION_DIRECTION.previous
+      ? Boolean(options.cursor)
+      : hasExtraRow;
+  const hasNewerEntries =
+    direction === LOGGING_PAGINATION_DIRECTION.previous
+      ? hasExtraRow
+      : Boolean(options.cursor);
 
   return {
     entries,
@@ -478,6 +412,10 @@ export async function deleteLogErrorHistoryEntriesByDateRange(
     .where(where)
     .returning({ id: logErrorHistory.id });
 
+  if (result.length > 0) {
+    await getAppDataCache(context).delete(LOGGING_COUNTS_CACHE_KEY);
+  }
+
   return result.length;
 }
 
@@ -497,7 +435,34 @@ export async function deleteLogHistoryEntriesByDateRange(
     .where(where)
     .returning({ id: logHistory.id });
 
+  if (result.length > 0) {
+    await getAppDataCache(context).delete(LOGGING_COUNTS_CACHE_KEY);
+  }
+
   return result.length;
+}
+
+async function countLogEntriesFromDb(context: AppLoadContext) {
+  const db = getDbFromContext(context);
+  const [historyCount, errorCount] = await Promise.all([
+    db
+      .select({
+        count: sql<number>`count(*)`,
+      })
+      .from(logHistory)
+      .then((rows) => rows[0]),
+    db
+      .select({
+        count: sql<number>`count(*)`,
+      })
+      .from(logErrorHistory)
+      .then((rows) => rows[0]),
+  ]);
+
+  return {
+    errorCount: Number(errorCount?.count ?? 0),
+    historyCount: Number(historyCount?.count ?? 0),
+  };
 }
 
 export async function countLogEntries(
@@ -507,31 +472,22 @@ export async function countLogEntries(
     includeHistoryCount?: boolean;
   } = {},
 ) {
-  const db = getDbFromContext(context);
   const includeHistoryCount = options.includeHistoryCount ?? true;
   const includeErrorCount = options.includeErrorCount ?? true;
-  const [historyCount, errorCount] = await Promise.all([
-    includeHistoryCount
-      ? db
-          .select({
-            count: sql<number>`count(*)`,
-          })
-          .from(logHistory)
-          .then((rows) => rows[0])
-      : Promise.resolve({ count: 0 }),
-    includeErrorCount
-      ? db
-          .select({
-            count: sql<number>`count(*)`,
-          })
-          .from(logErrorHistory)
-          .then((rows) => rows[0])
-      : Promise.resolve({ count: 0 }),
-  ]);
+  const cache = getAppDataCache(context);
+  let totals = await cache.get(LOGGING_COUNTS_CACHE_KEY, loggingCountsSchema);
+
+  if (!totals) {
+    totals = await countLogEntriesFromDb(context);
+    await cache.set(LOGGING_COUNTS_CACHE_KEY, totals, {
+      maxAgeSeconds: 60,
+      staleWhileRevalidateSeconds: 300,
+    });
+  }
 
   return {
-    errorCount: Number(errorCount?.count ?? 0),
-    historyCount: Number(historyCount?.count ?? 0),
+    errorCount: includeErrorCount ? totals.errorCount : 0,
+    historyCount: includeHistoryCount ? totals.historyCount : 0,
   };
 }
 

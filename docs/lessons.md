@@ -171,4 +171,6 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Dashboard alaninda auth ve role gate'i loader/action seviyesinde uygula.
 - Ortak UI desenleri tekrar etmeye basladigi anda primitive katmanina geri tasi.
 - Veritabani kurallarini sadece uygulama katmaninda degil, gerekliyse migration ve trigger seviyesinde de guvenceye al.
+- D1 uzerinde keyset pagination kullanmak tek basina yeterli degil; `ORDER BY` ve cursor alanlari ayni composite index ile hizalanmazsa SQLite yine temp B-tree kuruyor. Feed ve append-only log ekranlarinda index tasarimi her zaman gercek sira kontratiyla birlikte yapilmali.
+- Dashboard veya public liste ekranlari form/detail ihtiyaclari yuzunden tam rich-content kolonlarini tasimamali; liste read-model'i ile edit/detail read-model'i ayrildiginda hem SSR payload'i hem de D1 scan maliyeti belirgin sekilde dusuyor.
 - Her anlamli degisiklikten sonra `docs/features` ve gerekirse bu dokumani guncelle.

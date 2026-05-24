@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   buildDashboardResourcesLocalesHref,
   buildDashboardResourcesTranslationsHref,
-  normalizeDashboardResourcesPage,
   normalizeDashboardResourcesSearchQuery,
   resolveDashboardResourcesSection,
   resolveDashboardResourcesTranslationLocale,
@@ -36,8 +35,6 @@ describe("dashboard resources href helpers", () => {
   it("normalizes query values and resolves the active resources section", () => {
     expect(normalizeDashboardResourcesSearchQuery("  nav  ")).toBe("nav");
     expect(normalizeDashboardResourcesSearchQuery(null)).toBe("");
-    expect(normalizeDashboardResourcesPage("0")).toBe(1);
-    expect(normalizeDashboardResourcesPage("4")).toBe(4);
     expect(resolveDashboardResourcesSection("/tr/dashboard/resources/locales")).toBe(
       "locales",
     );
@@ -58,8 +55,9 @@ describe("dashboard resources href helpers", () => {
     expect(
       buildDashboardResourcesTranslationsHref(
         {
+          translationCursor: '{"key":"dashboard.layout.navHome"}',
+          translationDirection: "previous",
           translationLocale: "tr",
-          translationPage: 2,
           translationSearch: "  nav  ",
         },
         {
@@ -69,7 +67,7 @@ describe("dashboard resources href helpers", () => {
         },
       ),
     ).toBe(
-      "/dashboard/resources/translations?translationLocale=tr&translationPage=2&translationSearch=nav&modal=edit-translation&editTranslationLocale=tr&editTranslationKey=dashboard.layout.navProjects",
+      `/dashboard/resources/translations?translationLocale=tr&translationCursor=${encodeURIComponent('{"key":"dashboard.layout.navHome"}')}&translationDirection=previous&translationSearch=nav&modal=edit-translation&editTranslationLocale=tr&editTranslationKey=dashboard.layout.navProjects`,
     );
   });
 });

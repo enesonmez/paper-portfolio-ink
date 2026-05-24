@@ -1,4 +1,4 @@
-import { and, asc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
 
 import type { AppDb } from "../../../db";
 import { locales, translations } from "../../../db/schema";
@@ -24,8 +24,23 @@ export interface TranslationResourceRecord {
   value: string;
 }
 
+export const TRANSLATION_PAGINATION_DIRECTION = {
+  next: "next",
+  previous: "previous",
+} as const;
+
+export type TranslationPaginationDirection =
+  (typeof TRANSLATION_PAGINATION_DIRECTION)[keyof typeof TRANSLATION_PAGINATION_DIRECTION];
+
+export interface TranslationPaginationCursor {
+  key: string;
+}
+
 export interface TranslationResourcePage {
-  currentPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  nextCursor: string | null;
+  previousCursor: string | null;
   rows: TranslationResourceRecord[];
   totalCount: number;
 }
@@ -61,7 +76,7 @@ function escapeSqlLikeValue(value: string) {
 }
 
 function buildTranslationSearchCondition(localeCode: string, searchQuery?: string) {
-  const normalizedSearch = searchQuery?.trim().toLowerCase();
+  const normalizedSearch = searchQuery?.trim();
 
   if (!normalizedSearch) {
     return eq(translations.locale, localeCode);
@@ -72,10 +87,48 @@ function buildTranslationSearchCondition(localeCode: string, searchQuery?: strin
   return and(
     eq(translations.locale, localeCode),
     sql`(
-      lower(${translations.key}) like ${pattern} escape '\\'
-      or lower(${translations.value}) like ${pattern} escape '\\'
+      ${translations.key} like ${pattern} escape '\\' collate nocase
+      or ${translations.value} like ${pattern} escape '\\' collate nocase
     )`,
   );
+}
+
+function buildTranslationCursor(cursor: TranslationPaginationCursor) {
+  return JSON.stringify(cursor);
+}
+
+export function parseTranslationCursor(value: string | null) {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      "key" in parsed &&
+      typeof parsed.key === "string" &&
+      parsed.key.trim().length > 0
+    ) {
+      return {
+        key: parsed.key,
+      } satisfies TranslationPaginationCursor;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+export function normalizeTranslationPaginationDirection(
+  value: string | null,
+): TranslationPaginationDirection {
+  return value === TRANSLATION_PAGINATION_DIRECTION.previous
+    ? TRANSLATION_PAGINATION_DIRECTION.previous
+    : TRANSLATION_PAGINATION_DIRECTION.next;
 }
 
 const LOCALE_ORDER_BY = [asc(locales.sortOrder), asc(locales.code)] as const;
@@ -149,7 +202,8 @@ export async function listTranslationsByLocale(
   db: AppDb,
   localeCode: string,
   options: {
-    page: number;
+    cursor?: TranslationPaginationCursor | null;
+    direction?: TranslationPaginationDirection;
     pageSize: number;
     searchQuery?: string;
     totalCountHint?: number;
@@ -170,11 +224,9 @@ export async function listTranslationsByLocale(
               .where(whereClause)
           )[0]?.count ?? 0,
         );
-  const pageCount =
-    totalCount === 0 ? 1 : Math.ceil(totalCount / Math.max(options.pageSize, 1));
-  const currentPage = Math.min(Math.max(options.page, 1), pageCount);
-  const offset = (currentPage - 1) * options.pageSize;
-  const rows = await db
+  const pageSize = Math.max(options.pageSize, 1);
+  const direction = options.direction ?? TRANSLATION_PAGINATION_DIRECTION.next;
+  let query = db
     .select({
       createdAt: translations.createdAt,
       key: translations.key,
@@ -183,13 +235,44 @@ export async function listTranslationsByLocale(
       value: translations.value,
     })
     .from(translations)
-    .where(whereClause)
-    .orderBy(asc(translations.key))
-    .limit(Math.max(options.pageSize, 1))
-    .offset(offset);
+    .$dynamic();
+
+  query = query.where(
+    options.cursor
+      ? and(
+          whereClause,
+          direction === TRANSLATION_PAGINATION_DIRECTION.previous
+            ? sql`${translations.key} < ${options.cursor.key}`
+            : sql`${translations.key} > ${options.cursor.key}`,
+        )
+      : whereClause,
+  );
+
+  const orderedRows = await query
+    .orderBy(
+      direction === TRANSLATION_PAGINATION_DIRECTION.previous
+        ? desc(translations.key)
+        : asc(translations.key),
+    )
+    .limit(pageSize + 1);
+  const visibleRows = orderedRows.slice(0, pageSize);
+  const rows =
+    direction === TRANSLATION_PAGINATION_DIRECTION.previous
+      ? [...visibleRows].reverse()
+      : visibleRows;
+  const firstRow = rows[0];
+  const lastRow = rows.at(-1);
+  const hasExtraRow = orderedRows.length > pageSize;
+  const hasPreviousPage =
+    direction === TRANSLATION_PAGINATION_DIRECTION.previous
+      ? hasExtraRow
+      : Boolean(options.cursor);
+  const hasNextPage =
+    direction === TRANSLATION_PAGINATION_DIRECTION.next
+      ? hasExtraRow
+      : Boolean(options.cursor);
 
   return {
-    currentPage,
     rows: rows.map((row) => ({
       createdAtLabel: formatDateLabel(row.createdAt),
       key: row.key,
@@ -197,6 +280,14 @@ export async function listTranslationsByLocale(
       updatedAtLabel: formatDateLabel(row.updatedAt),
       value: row.value,
     })),
+    hasNextPage,
+    hasPreviousPage,
+    nextCursor:
+      hasNextPage && lastRow ? buildTranslationCursor({ key: lastRow.key }) : null,
+    previousCursor:
+      hasPreviousPage && firstRow
+        ? buildTranslationCursor({ key: firstRow.key })
+        : null,
     totalCount,
   };
 }

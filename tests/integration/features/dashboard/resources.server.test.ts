@@ -54,6 +54,20 @@ vi.mock("~/lib/resources/resources.server", () => ({
     ),
   listLocales: listLocalesMock,
   listTranslationsByLocale: listTranslationsByLocaleMock,
+  normalizeTranslationPaginationDirection: (value: string | null) =>
+    value === "previous" ? "previous" : "next",
+  parseTranslationCursor: (value: string | null) => {
+    if (!value) {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(value) as { key?: string };
+      return typeof parsed.key === "string" ? { key: parsed.key } : null;
+    } catch {
+      return null;
+    }
+  },
   updateLocale: updateLocaleMock,
   updateTranslation: updateTranslationMock,
 }));
@@ -138,7 +152,10 @@ describe("dashboard resources server", () => {
       },
     ]);
     listTranslationsByLocaleMock.mockResolvedValue({
-      currentPage: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+      nextCursor: null,
+      previousCursor: null,
       rows: [
         {
           createdAtLabel: "2026-03-21",
@@ -172,9 +189,13 @@ describe("dashboard resources server", () => {
       },
       selectedTranslationLocale: "tr",
       translationPagination: {
-        currentPage: 1,
-        pageCount: 1,
+        currentCursor: null,
+        direction: "next",
+        hasNextPage: false,
+        hasPreviousPage: false,
+        nextCursor: null,
         pageSize: 20,
+        previousCursor: null,
         totalItems: 1,
       },
       translationSearchQuery: "jeler",
@@ -205,7 +226,8 @@ describe("dashboard resources server", () => {
       }),
     ]);
     expect(listTranslationsByLocaleMock).toHaveBeenCalledWith({ query: {} }, "tr", {
-      page: 1,
+      cursor: null,
+      direction: "next",
       pageSize: 20,
       searchQuery: "jeler",
       totalCountHint: 4,
@@ -235,7 +257,10 @@ describe("dashboard resources server", () => {
       },
     ]);
     listTranslationsByLocaleMock.mockResolvedValue({
-      currentPage: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+      nextCursor: null,
+      previousCursor: null,
       rows: [
         {
           createdAtLabel: "2026-03-21",
@@ -261,9 +286,13 @@ describe("dashboard resources server", () => {
 
     expect(response.metrics.selectedLocaleTranslations).toBe(3);
     expect(response.translationPagination).toEqual({
-      currentPage: 1,
-      pageCount: 1,
+      currentCursor: null,
+      direction: "next",
+      hasNextPage: false,
+      hasPreviousPage: false,
+      nextCursor: null,
       pageSize: 20,
+      previousCursor: null,
       totalItems: 1,
     });
     expect(response.translations).toEqual([
@@ -273,7 +302,7 @@ describe("dashboard resources server", () => {
     ]);
   }, 20000);
 
-  it("loads a paginated translation page and clamps the current page to the last result page", async () => {
+  it("loads a cursor-based translation page for translation inventory", async () => {
     const { loadDashboardResourcesData } =
       await import("~/features/dashboard/resources/server");
 
@@ -296,7 +325,10 @@ describe("dashboard resources server", () => {
       },
     ]);
     listTranslationsByLocaleMock.mockResolvedValue({
-      currentPage: 2,
+      hasNextPage: true,
+      hasPreviousPage: true,
+      nextCursor: '{"key":"dashboard.layout.navSettings"}',
+      previousCursor: '{"key":"dashboard.layout.navProjects"}',
       rows: [
         {
           createdAtLabel: "2026-03-21",
@@ -312,7 +344,7 @@ describe("dashboard resources server", () => {
     const response = await loadDashboardResourcesData(
       context,
       new Request(
-        "http://localhost:3000/dashboard/resources/translations?translationLocale=en&translationSearch=res&translationPage=99",
+        "http://localhost:3000/dashboard/resources/translations?translationLocale=en&translationSearch=res&translationCursor=%7B%22key%22%3A%22dashboard.layout.navResources%22%7D&translationDirection=previous",
       ),
     );
 
@@ -321,15 +353,22 @@ describe("dashboard resources server", () => {
     }
 
     expect(listTranslationsByLocaleMock).toHaveBeenCalledWith({ query: {} }, "en", {
-      page: 99,
+      cursor: {
+        key: "dashboard.layout.navResources",
+      },
+      direction: "previous",
       pageSize: 20,
       searchQuery: "res",
       totalCountHint: 41,
     });
     expect(response.translationPagination).toEqual({
-      currentPage: 2,
-      pageCount: 2,
+      currentCursor: '{"key":"dashboard.layout.navResources"}',
+      direction: "previous",
+      hasNextPage: true,
+      hasPreviousPage: true,
+      nextCursor: '{"key":"dashboard.layout.navSettings"}',
       pageSize: 20,
+      previousCursor: '{"key":"dashboard.layout.navProjects"}',
       totalItems: 21,
     });
   }, 20000);
@@ -471,9 +510,13 @@ describe("dashboard resources server", () => {
       },
     });
     expect(response.translationPagination).toEqual({
-      currentPage: 1,
-      pageCount: 1,
+      currentCursor: null,
+      direction: "next",
+      hasNextPage: false,
+      hasPreviousPage: false,
+      nextCursor: null,
       pageSize: 20,
+      previousCursor: null,
       totalItems: 0,
     });
     expect(response.translationSearchQuery).toBe("");

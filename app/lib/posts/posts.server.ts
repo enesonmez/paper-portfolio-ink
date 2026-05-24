@@ -10,7 +10,6 @@ import type { PostSubmission } from "./post-form.server";
 
 export interface PostOverview {
   authorId: string;
-  content: string;
   coverImageUrl: string | null;
   createdAtLabel: string;
   excerpt: string;
@@ -33,6 +32,16 @@ export interface PublicPostListItem {
   title: string;
 }
 
+export interface EditablePost {
+  content: string;
+  coverImageUrl: string | null;
+  excerpt: string;
+  id: string;
+  slug: string;
+  status: PostStatus;
+  title: string;
+}
+
 export interface PublicPostDetail extends PublicPostListItem {
   authorBio: string | null;
   content: string;
@@ -47,11 +56,11 @@ export interface PublicPostsPage {
 
 interface PublicPostRecord {
   authorName: string;
-  content: string;
   coverImageUrl: string | null;
   createdAt: Date;
   excerpt: string | null;
   publishedAt: Date | null;
+  readingTimeMinutes: number;
   slug: string;
   title: string;
   updatedAt: Date;
@@ -80,6 +89,10 @@ function formatDateIso(value: Date) {
 
 function normalizeNullableUrl(value: string) {
   return value.length > 0 ? value : null;
+}
+
+function normalizeExcerpt(value: string) {
+  return value.trim();
 }
 
 interface PublicPostsCursorInput {
@@ -129,14 +142,8 @@ function getContentReadingTimeMinutes(content: string) {
   return Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE));
 }
 
-function buildExcerpt(content: string, excerpt: string | null) {
-  const normalizedExcerpt = excerpt?.trim() ?? "";
-
-  if (normalizedExcerpt.length > 0) {
-    return normalizedExcerpt;
-  }
-
-  return getPostContentPlainText(content).slice(0, 180).trim();
+function buildExcerpt(excerpt: string | null) {
+  return excerpt?.trim() ?? "";
 }
 
 function resolvePublicPublishedDate(post: {
@@ -161,10 +168,10 @@ function toPublicPostListItem(post: PublicPostRecord): PublicPostListItem {
   return {
     authorName: post.authorName,
     coverImageUrl: post.coverImageUrl,
-    excerpt: buildExcerpt(post.content, post.excerpt),
+    excerpt: buildExcerpt(post.excerpt),
     publishedAtIso: formatDateIso(publishedDate),
     publishedAtLabel: formatPublicDateLabel(publishedDate),
-    readingTimeMinutes: getContentReadingTimeMinutes(post.content),
+    readingTimeMinutes: post.readingTimeMinutes,
     slug: post.slug,
     title: post.title,
   };
@@ -172,7 +179,6 @@ function toPublicPostListItem(post: PublicPostRecord): PublicPostListItem {
 
 function toPostOverview(post: {
   authorId: string;
-  content: string;
   coverImageUrl: string | null;
   createdAt: Date;
   excerpt: string | null;
@@ -185,7 +191,6 @@ function toPostOverview(post: {
 }): PostOverview {
   return {
     authorId: post.authorId,
-    content: post.content,
     coverImageUrl: post.coverImageUrl,
     createdAtLabel: formatDateLabel(post.createdAt) ?? "-",
     excerpt: post.excerpt ?? "",
@@ -198,11 +203,45 @@ function toPostOverview(post: {
   };
 }
 
+function toEditablePost(post: {
+  content: string;
+  coverImageUrl: string | null;
+  excerpt: string | null;
+  id: string;
+  slug: string;
+  status: PostStatus;
+  title: string;
+}): EditablePost {
+  return {
+    content: post.content,
+    coverImageUrl: post.coverImageUrl,
+    excerpt: post.excerpt ?? "",
+    id: post.id,
+    slug: post.slug,
+    status: post.status,
+    title: post.title,
+  };
+}
+
+function buildPostPersistenceValues(submission: PostSubmission) {
+  const normalizedExcerpt = normalizeExcerpt(submission.excerpt);
+
+  return {
+    content: submission.content,
+    coverImageUrl: normalizeNullableUrl(submission.coverImageUrl),
+    excerpt: normalizedExcerpt,
+    publishedAt: resolvePublishedAt(submission),
+    readingTimeMinutes: getContentReadingTimeMinutes(submission.content),
+    slug: submission.slug,
+    status: submission.status,
+    title: submission.title,
+  };
+}
+
 export async function listPosts(db: AppDb): Promise<PostOverview[]> {
   const result = await db
     .select({
       authorId: posts.authorId,
-      content: posts.content,
       coverImageUrl: posts.coverImageUrl,
       createdAt: posts.createdAt,
       excerpt: posts.excerpt,
@@ -231,7 +270,6 @@ export async function listPostsByAuthor(
   const result = await db
     .select({
       authorId: posts.authorId,
-      content: posts.content,
       coverImageUrl: posts.coverImageUrl,
       createdAt: posts.createdAt,
       excerpt: posts.excerpt,
@@ -258,11 +296,11 @@ export async function listPublicPosts(db: AppDb): Promise<PublicPostListItem[]> 
   const result = await db
     .select({
       authorName: users.displayName,
-      content: posts.content,
       coverImageUrl: posts.coverImageUrl,
       createdAt: posts.createdAt,
       excerpt: posts.excerpt,
       publishedAt: posts.publishedAt,
+      readingTimeMinutes: posts.readingTimeMinutes,
       slug: posts.slug,
       title: posts.title,
       updatedAt: posts.updatedAt,
@@ -283,11 +321,11 @@ export async function listPublicPostsPage(
   const result = await db
     .select({
       authorName: users.displayName,
-      content: posts.content,
       coverImageUrl: posts.coverImageUrl,
       createdAt: posts.createdAt,
       excerpt: posts.excerpt,
       publishedAt: posts.publishedAt,
+      readingTimeMinutes: posts.readingTimeMinutes,
       slug: posts.slug,
       title: posts.title,
       updatedAt: posts.updatedAt,
@@ -337,11 +375,11 @@ export async function listPublicCompanionPosts(
   const result = await db
     .select({
       authorName: users.displayName,
-      content: posts.content,
       coverImageUrl: posts.coverImageUrl,
       createdAt: posts.createdAt,
       excerpt: posts.excerpt,
       publishedAt: posts.publishedAt,
+      readingTimeMinutes: posts.readingTimeMinutes,
       slug: posts.slug,
       title: posts.title,
       updatedAt: posts.updatedAt,
@@ -403,6 +441,7 @@ export async function getPublicPostBySlug(
       createdAt: posts.createdAt,
       excerpt: posts.excerpt,
       publishedAt: posts.publishedAt,
+      readingTimeMinutes: posts.readingTimeMinutes,
       slug: posts.slug,
       title: posts.title,
       updatedAt: posts.updatedAt,
@@ -423,10 +462,10 @@ export async function getPublicPostBySlug(
     authorName: post.authorName,
     content: post.content,
     coverImageUrl: post.coverImageUrl,
-    excerpt: buildExcerpt(post.content, post.excerpt),
+    excerpt: buildExcerpt(post.excerpt),
     publishedAtIso: formatDateIso(publishedDate),
     publishedAtLabel: formatPublicDateLabel(publishedDate),
-    readingTimeMinutes: getContentReadingTimeMinutes(post.content),
+    readingTimeMinutes: post.readingTimeMinutes,
     slug: post.slug,
     title: post.title,
     updatedAtIso: formatDateIso(post.updatedAt),
@@ -441,13 +480,64 @@ export async function createPost(
 ) {
   await db.insert(posts).values({
     authorId,
-    content: submission.content,
-    coverImageUrl: normalizeNullableUrl(submission.coverImageUrl),
-    excerpt: submission.excerpt,
-    publishedAt: resolvePublishedAt(submission),
-    slug: submission.slug,
-    status: submission.status,
-    title: submission.title,
+    ...buildPostPersistenceValues(submission),
+  });
+}
+
+export async function getPostById(
+  db: AppDb,
+  postId: string,
+): Promise<EditablePost | null> {
+  const [post] = await db
+    .select({
+      content: posts.content,
+      coverImageUrl: posts.coverImageUrl,
+      excerpt: posts.excerpt,
+      id: posts.id,
+      slug: posts.slug,
+      status: posts.status,
+      title: posts.title,
+    })
+    .from(posts)
+    .where(eq(posts.id, postId))
+    .limit(1);
+
+  if (!post) {
+    return null;
+  }
+
+  return toEditablePost({
+    ...post,
+    status: post.status,
+  });
+}
+
+export async function getPostByIdForAuthor(
+  db: AppDb,
+  postId: string,
+  authorId: string,
+): Promise<EditablePost | null> {
+  const [post] = await db
+    .select({
+      content: posts.content,
+      coverImageUrl: posts.coverImageUrl,
+      excerpt: posts.excerpt,
+      id: posts.id,
+      slug: posts.slug,
+      status: posts.status,
+      title: posts.title,
+    })
+    .from(posts)
+    .where(and(eq(posts.id, postId), eq(posts.authorId, authorId)))
+    .limit(1);
+
+  if (!post) {
+    return null;
+  }
+
+  return toEditablePost({
+    ...post,
+    status: post.status,
   });
 }
 
@@ -471,13 +561,7 @@ export async function updatePost(
   await db
     .update(posts)
     .set({
-      content: submission.content,
-      coverImageUrl: normalizeNullableUrl(submission.coverImageUrl),
-      excerpt: submission.excerpt,
-      publishedAt: resolvePublishedAt(submission),
-      slug: submission.slug,
-      status: submission.status,
-      title: submission.title,
+      ...buildPostPersistenceValues(submission),
       updatedAt: new Date(),
     })
     .where(eq(posts.id, postId));

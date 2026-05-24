@@ -9,6 +9,7 @@ import { AUTHORIZATION_CLAIM } from "~/shared/authz/model";
 import {
   canAccessDashboardPosts,
   canCreatePosts,
+  getAuthorizedEditablePost,
   listAuthorizedPosts,
 } from "~/shared/authz/post-policy.server";
 import {
@@ -44,15 +45,21 @@ export async function loadDashboardPostsData(
         isAllowed: canAccessDashboardPosts(actor),
       }),
     handle: async ({ actor }) => {
-      const posts = await listAuthorizedPosts(context, actor);
       const url = new URL(request.url);
+      const editId = url.searchParams.get("edit");
+      const [posts, editablePost] = await Promise.all([
+        listAuthorizedPosts(context, actor),
+        editId
+          ? getAuthorizedEditablePost(context, actor, editId)
+          : Promise.resolve(null),
+      ]);
 
       return {
         access: "granted",
         form: resolveDashboardPostsForm({
-          editId: url.searchParams.get("edit"),
+          editablePost,
+          editId,
           modal: url.searchParams.get("modal"),
-          posts,
         }),
         metrics: buildDashboardPostsMetrics(posts),
         permissions: {

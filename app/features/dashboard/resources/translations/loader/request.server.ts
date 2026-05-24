@@ -1,16 +1,17 @@
 import type { LocaleResourceRecord } from "~/lib/resources/resources.server";
 
 import {
+  DASHBOARD_RESOURCES_QUERY_PARAM,
   DASHBOARD_RESOURCES_MODAL,
-  normalizeDashboardResourcesPage,
   normalizeDashboardResourcesSearchQuery,
   resolveDashboardResourcesTranslationLocale,
 } from "../../routing/href";
 
 export interface TranslationRequestState {
+  cursor: string | null;
+  direction: "next" | "previous";
   editTranslationKey: string | null;
   editTranslationLocale: string | null;
-  requestedPage: number;
   searchQuery: string;
   selectedLocale: string;
 }
@@ -37,25 +38,36 @@ export function resolveTranslationViewStateFromUrl(args: {
 }): TranslationRequestState {
   if (!args.canReadTranslations) {
     return {
+      cursor: null,
+      direction: "next",
       editTranslationKey: null,
       editTranslationLocale: null,
-      requestedPage: 1,
       searchQuery: "",
       selectedLocale: "",
     };
   }
 
   return {
-    editTranslationKey: args.url.searchParams.get("editTranslationKey"),
-    editTranslationLocale: args.url.searchParams.get("editTranslationLocale"),
-    requestedPage: normalizeDashboardResourcesPage(
-      args.url.searchParams.get("translationPage"),
+    cursor: args.url.searchParams.get(
+      DASHBOARD_RESOURCES_QUERY_PARAM.translationCursor,
+    ),
+    direction:
+      args.url.searchParams.get(
+        DASHBOARD_RESOURCES_QUERY_PARAM.translationDirection,
+      ) === "previous"
+        ? "previous"
+        : "next",
+    editTranslationKey: args.url.searchParams.get(
+      DASHBOARD_RESOURCES_QUERY_PARAM.editTranslationKey,
+    ),
+    editTranslationLocale: args.url.searchParams.get(
+      DASHBOARD_RESOURCES_QUERY_PARAM.editTranslationLocale,
     ),
     searchQuery: normalizeDashboardResourcesSearchQuery(
-      args.url.searchParams.get("translationSearch"),
+      args.url.searchParams.get(DASHBOARD_RESOURCES_QUERY_PARAM.translationSearch),
     ),
     selectedLocale: resolveDashboardResourcesTranslationLocale(
-      args.url.searchParams.get("translationLocale"),
+      args.url.searchParams.get(DASHBOARD_RESOURCES_QUERY_PARAM.translationLocale),
       args.localeRows,
     ),
   };

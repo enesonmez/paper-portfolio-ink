@@ -2,6 +2,8 @@ import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../db/context";
 import {
+  getPostById,
+  getPostByIdForAuthor,
   getPostAuthorId,
   listPosts,
   listPostsByAuthor,
@@ -76,4 +78,29 @@ export async function canMutatePost(
   const authorId = await getPostAuthorId(getDbFromContext(context), postId);
 
   return authorId !== null && authorId === actor.userId;
+}
+
+export async function getAuthorizedEditablePost(
+  context: AppLoadContext,
+  actor: AuthorizationActor,
+  postId: string,
+) {
+  const db = getDbFromContext(context);
+
+  if (actorHasAnyClaim(actor, [AUTHORIZATION_CLAIM.postsReadAny])) {
+    return getPostById(db, postId);
+  }
+
+  if (
+    actor.userId &&
+    actorHasAnyClaim(actor, [
+      AUTHORIZATION_CLAIM.postsReadOwn,
+      AUTHORIZATION_CLAIM.postsUpdateOwn,
+      AUTHORIZATION_CLAIM.postsDeleteOwn,
+    ])
+  ) {
+    return getPostByIdForAuthor(db, postId, actor.userId);
+  }
+
+  return null;
 }
