@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import {
+  submitAuthorizedGet,
   signInAs,
   submitAuthorizedFetchForm,
   submitAuthorizedForm,
@@ -596,9 +597,9 @@ test.describe("logging action-only grants", () => {
     await signInAs(page, E2E_USERS.logExporter);
     await expectDeniedDashboardScreen(page, "/dashboard/logging", "author");
 
-    const response = await submitAuthorizedForm(
+    const response = await submitAuthorizedGet(
       page,
-      `${E2E_LOCALE_PREFIX}/dashboard/logging.data`,
+      `${E2E_LOCALE_PREFIX}/dashboard/logging/export`,
       {
         ...FUTURE_LOG_RANGE_FORM,
         intent: "export-errors",

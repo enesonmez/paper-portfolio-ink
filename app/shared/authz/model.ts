@@ -19,9 +19,12 @@ export type AuthorizationEffect = ValueOf<typeof AUTHORIZATION_EFFECT>;
 
 export const AUTHORIZATION_CLAIM = {
   dashboardAccess: "dashboard.access",
-  logsDelete: "logs.delete",
-  logsExport: "logs.export",
-  logsRead: "logs.read",
+  logsAuditDelete: "logs.audit.delete",
+  logsAuditExport: "logs.audit.export",
+  logsAuditRead: "logs.audit.read",
+  logsErrorDelete: "logs.error.delete",
+  logsErrorExport: "logs.error.export",
+  logsErrorRead: "logs.error.read",
   postsCreate: "posts.create",
   postsDeleteAny: "posts.delete.any",
   postsDeleteOwn: "posts.delete.own",
@@ -56,9 +59,12 @@ export type AuthorizationClaim = ValueOf<typeof AUTHORIZATION_CLAIM>;
 
 export const AUTHORIZATION_CLAIM_VALUES = [
   AUTHORIZATION_CLAIM.dashboardAccess,
-  AUTHORIZATION_CLAIM.logsRead,
-  AUTHORIZATION_CLAIM.logsExport,
-  AUTHORIZATION_CLAIM.logsDelete,
+  AUTHORIZATION_CLAIM.logsAuditRead,
+  AUTHORIZATION_CLAIM.logsAuditExport,
+  AUTHORIZATION_CLAIM.logsAuditDelete,
+  AUTHORIZATION_CLAIM.logsErrorRead,
+  AUTHORIZATION_CLAIM.logsErrorExport,
+  AUTHORIZATION_CLAIM.logsErrorDelete,
   AUTHORIZATION_CLAIM.postsReadOwn,
   AUTHORIZATION_CLAIM.postsReadAny,
   AUTHORIZATION_CLAIM.postsCreate,
@@ -108,23 +114,44 @@ export const AUTHORIZATION_CLAIM_DEFINITIONS: readonly AuthorizationClaimDefinit
     },
     {
       action: "read",
-      description: "Read dashboard audit and error logs.",
-      key: AUTHORIZATION_CLAIM.logsRead,
-      resource: "logs",
+      description: "Read dashboard audit logs.",
+      key: AUTHORIZATION_CLAIM.logsAuditRead,
+      resource: "logs.audit",
+      scope: AUTHORIZATION_SCOPE.global,
+    },
+    {
+      action: "export",
+      description: "Export dashboard audit logs.",
+      key: AUTHORIZATION_CLAIM.logsAuditExport,
+      resource: "logs.audit",
+      scope: AUTHORIZATION_SCOPE.global,
+    },
+    {
+      action: "delete",
+      description: "Delete dashboard audit logs by range.",
+      key: AUTHORIZATION_CLAIM.logsAuditDelete,
+      resource: "logs.audit",
+      scope: AUTHORIZATION_SCOPE.global,
+    },
+    {
+      action: "read",
+      description: "Read dashboard error logs.",
+      key: AUTHORIZATION_CLAIM.logsErrorRead,
+      resource: "logs.error",
       scope: AUTHORIZATION_SCOPE.global,
     },
     {
       action: "export",
       description: "Export dashboard error logs.",
-      key: AUTHORIZATION_CLAIM.logsExport,
-      resource: "logs",
+      key: AUTHORIZATION_CLAIM.logsErrorExport,
+      resource: "logs.error",
       scope: AUTHORIZATION_SCOPE.global,
     },
     {
       action: "delete",
       description: "Delete dashboard error logs by range.",
-      key: AUTHORIZATION_CLAIM.logsDelete,
-      resource: "logs",
+      key: AUTHORIZATION_CLAIM.logsErrorDelete,
+      resource: "logs.error",
       scope: AUTHORIZATION_SCOPE.global,
     },
     {
@@ -344,9 +371,12 @@ export const PROJECTS_AUTHORIZATION_CLAIMS = [
 ] as const satisfies readonly AuthorizationClaim[];
 
 export const LOGGING_AUTHORIZATION_CLAIMS = [
-  AUTHORIZATION_CLAIM.logsRead,
-  AUTHORIZATION_CLAIM.logsExport,
-  AUTHORIZATION_CLAIM.logsDelete,
+  AUTHORIZATION_CLAIM.logsAuditRead,
+  AUTHORIZATION_CLAIM.logsAuditExport,
+  AUTHORIZATION_CLAIM.logsAuditDelete,
+  AUTHORIZATION_CLAIM.logsErrorRead,
+  AUTHORIZATION_CLAIM.logsErrorExport,
+  AUTHORIZATION_CLAIM.logsErrorDelete,
 ] as const satisfies readonly AuthorizationClaim[];
 
 export const SKILLS_AUTHORIZATION_CLAIMS = [

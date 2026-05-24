@@ -123,7 +123,12 @@ export function getDashboardNavigation(
     });
   }
 
-  if (hasAuthorizationClaim(claims, AUTHORIZATION_CLAIM.logsRead)) {
+  if (
+    hasAnyAuthorizationClaim(claims, [
+      AUTHORIZATION_CLAIM.logsAuditRead,
+      AUTHORIZATION_CLAIM.logsErrorRead,
+    ])
+  ) {
     adminNavigation.push({
       icon: Logs,
       kind: "link",

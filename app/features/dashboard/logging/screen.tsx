@@ -1,13 +1,14 @@
-import { Form, Link } from "react-router";
+import { Link } from "react-router";
 
 import { DashboardAuthorizationAccessDeniedScreen } from "~/shared/authz/components/dashboard-authorization-access-denied-screen";
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { Button } from "~/components/ui/button";
-import { FormError, TextField } from "~/components/ui/form-field";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 
+import { LocalDateTime } from "./components/local-date-time";
+import { DashboardLoggingRangeForm } from "./components/range-form";
 import {
   buildDashboardLoggingHref,
   DASHBOARD_LOGGING_TAB,
@@ -29,47 +30,123 @@ export function DashboardLoggingScreen({
 }: DashboardLoggingScreenProps) {
   const to = useLocalizedPath();
   const { copy, labels } = useDashboardLoggingCopy();
+  const isHistoryTab = loaderData.selectedTab === DASHBOARD_LOGGING_TAB.history;
+  const currentPagination = isHistoryTab
+    ? loaderData.pagination.history
+    : loaderData.pagination.errors;
+  const exportIntent = isHistoryTab ? "export-history" : "export-errors";
+  const deleteIntent = isHistoryTab ? "delete-history" : "delete-errors";
+  const canExportCurrentTab = isHistoryTab
+    ? loaderData.permissions.canExportHistory
+    : loaderData.permissions.canExportErrors;
+  const visibleTabs = [
+    loaderData.permissions.canReadHistory
+      ? {
+          label: copy.historyTab,
+          tab: DASHBOARD_LOGGING_TAB.history,
+          total: loaderData.totals.history,
+        }
+      : null,
+    loaderData.permissions.canReadErrors
+      ? {
+          label: copy.systemTab,
+          tab: DASHBOARD_LOGGING_TAB.errors,
+          total: loaderData.totals.errors,
+        }
+      : null,
+  ].filter(
+    (
+      value,
+    ): value is {
+      label: string;
+      tab: (typeof DASHBOARD_LOGGING_TAB)[keyof typeof DASHBOARD_LOGGING_TAB];
+      total: number;
+    } => value !== null,
+  );
   const historyColumns: DataTableColumn<(typeof loaderData.entries.history)[number]>[] =
     [
       {
         header: labels.createdAt,
         id: "createdAt",
-        render: (row) => row.createdAt.toISOString(),
+        render: (row) => <LocalDateTime value={row.createdAt} />,
       },
+      { header: labels.resource, id: "resource", render: (row) => row.resource },
       { header: labels.action, id: "action", render: (row) => row.action },
       { header: labels.result, id: "result", render: (row) => row.result },
+      {
+        header: labels.statusCode,
+        id: "statusCode",
+        render: (row) => String(row.statusCode),
+      },
       { header: labels.message, id: "message", render: (row) => row.message },
+      { header: labels.method, id: "method", render: (row) => row.method },
       { header: labels.path, id: "path", render: (row) => row.path },
+      {
+        header: labels.requestId,
+        id: "requestId",
+        render: (row) => row.requestId,
+      },
       {
         header: labels.user,
         id: "user",
         render: (row) => row.userRole ?? row.userId ?? "-",
+      },
+      {
+        header: labels.target,
+        id: "target",
+        render: (row) => row.targetLabel ?? row.targetId ?? "-",
       },
     ];
   const errorColumns: DataTableColumn<(typeof loaderData.entries.errors)[number]>[] = [
     {
       header: labels.createdAt,
       id: "createdAt",
-      render: (row) => row.createdAt.toISOString(),
+      render: (row) => <LocalDateTime value={row.createdAt} />,
     },
     { header: labels.severity, id: "severity", render: (row) => row.severity },
+    { header: labels.category, id: "category", render: (row) => row.category },
     { header: labels.code, id: "code", render: (row) => row.code },
+    {
+      header: labels.statusCode,
+      id: "statusCode",
+      render: (row) => String(row.statusCode),
+    },
     { header: labels.message, id: "message", render: (row) => row.message },
+    { header: labels.method, id: "method", render: (row) => row.method },
     { header: labels.requestId, id: "requestId", render: (row) => row.requestId },
     { header: labels.path, id: "path", render: (row) => row.path },
+    {
+      header: labels.user,
+      id: "user",
+      render: (row) => row.userRole ?? row.userId ?? "-",
+    },
+    {
+      header: labels.locale,
+      id: "locale",
+      render: (row) => row.locale ?? "-",
+    },
+    {
+      header: labels.fingerprint,
+      id: "fingerprint",
+      render: (row) => row.fingerprint,
+    },
   ];
 
   return (
     <div className="space-y-8">
       <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <DashboardMetricCard
-          label={copy.metricsHistory}
-          value={String(loaderData.totals.history)}
-        />
-        <DashboardMetricCard
-          label={copy.metricsErrors}
-          value={String(loaderData.totals.errors)}
-        />
+        {loaderData.permissions.canReadHistory ? (
+          <DashboardMetricCard
+            label={copy.metricsHistory}
+            value={String(loaderData.totals.history)}
+          />
+        ) : null}
+        {loaderData.permissions.canReadErrors ? (
+          <DashboardMetricCard
+            label={copy.metricsErrors}
+            value={String(loaderData.totals.errors)}
+          />
+        ) : null}
       </section>
 
       <DashboardPanel className="space-y-4">
@@ -81,34 +158,25 @@ export function DashboardLoggingScreen({
         </h1>
 
         <div className="grid gap-3 md:grid-cols-2">
-          <Button
-            asChild
-            variant={
-              loaderData.selectedTab === DASHBOARD_LOGGING_TAB.history
-                ? "default"
-                : "secondary"
-            }
-            className="justify-between"
-          >
-            <Link to={to(buildDashboardLoggingHref(DASHBOARD_LOGGING_TAB.history))}>
-              <span>{copy.historyTab}</span>
-              <span>{loaderData.totals.history}</span>
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant={
-              loaderData.selectedTab === DASHBOARD_LOGGING_TAB.errors
-                ? "default"
-                : "secondary"
-            }
-            className="justify-between"
-          >
-            <Link to={to(buildDashboardLoggingHref(DASHBOARD_LOGGING_TAB.errors))}>
-              <span>{copy.systemTab}</span>
-              <span>{loaderData.totals.errors}</span>
-            </Link>
-          </Button>
+          {visibleTabs.map((tab) => (
+            <Button
+              key={tab.tab}
+              asChild
+              variant={loaderData.selectedTab === tab.tab ? "default" : "secondary"}
+              className="justify-between"
+            >
+              <Link
+                to={to(
+                  buildDashboardLoggingHref({
+                    tab: tab.tab,
+                  }),
+                )}
+              >
+                <span>{tab.label}</span>
+                <span>{tab.total}</span>
+              </Link>
+            </Button>
+          ))}
         </div>
       </DashboardPanel>
 
@@ -118,88 +186,119 @@ export function DashboardLoggingScreen({
         </DashboardPanel>
       ) : null}
 
-      {loaderData.selectedTab === DASHBOARD_LOGGING_TAB.history ? (
-        <DashboardPanel className="overflow-x-auto p-0">
-          <DataTable
-            columns={historyColumns}
-            emptyState={copy.emptyHistory}
-            getRowKey={(row) => row.id}
-            rows={loaderData.entries.history}
+      <div className="space-y-6">
+        <DashboardPanel className="space-y-4">
+          <h2 className="font-sans text-sm font-bold uppercase">
+            {copy.rangeFormTitle}
+          </h2>
+          <DashboardLoggingRangeForm
+            canDeleteCurrentTab={
+              isHistoryTab
+                ? loaderData.permissions.canDeleteHistory
+                : loaderData.permissions.canDeleteErrors
+            }
+            canExportCurrentTab={canExportCurrentTab}
+            deleteActionLabel={copy.deleteAction}
+            deleteIntent={deleteIntent}
+            endLabel={copy.filterEndLabel}
+            errorMessage={rangeForm.errors?.form}
+            exportAction={to("/dashboard/logging/export")}
+            exportActionLabel={copy.exportAction}
+            exportIntent={exportIntent}
+            rangeForm={rangeForm}
+            startLabel={copy.filterStartLabel}
           />
         </DashboardPanel>
-      ) : (
-        <div className="space-y-6">
-          <DashboardPanel className="space-y-4">
+
+        <DashboardPanel className="grid gap-4 md:grid-cols-2">
+          <div>
             <h2 className="font-sans text-sm font-bold uppercase">
-              {copy.rangeFormTitle}
+              {isHistoryTab ? copy.auditExportTitle : copy.errorExportTitle}
             </h2>
-            <Form method="post" className="grid gap-4 md:grid-cols-2">
-              <TextField
-                label={copy.filterStartLabel}
-                name="startAt"
-                type="datetime-local"
-                defaultValue={rangeForm.values.startAt}
-                error={rangeForm.errors?.startAt}
-              />
-              <TextField
-                label={copy.filterEndLabel}
-                name="endAt"
-                type="datetime-local"
-                defaultValue={rangeForm.values.endAt}
-                error={rangeForm.errors?.endAt}
-              />
-              <div className="md:col-span-2">
-                <FormError message={rangeForm.errors?.form} />
-              </div>
-              <div className="flex flex-wrap gap-3 md:col-span-2">
-                {loaderData.permissions.canExport ? (
-                  <Button type="submit" name="intent" value="export-errors">
-                    {copy.exportAction}
-                  </Button>
-                ) : null}
-                {loaderData.permissions.canDelete ? (
-                  <Button
-                    type="submit"
-                    variant="destructive"
-                    name="intent"
-                    value="delete-errors"
-                  >
-                    {copy.deleteAction}
-                  </Button>
-                ) : null}
-              </div>
-            </Form>
-          </DashboardPanel>
+            <p className="text-muted-foreground mt-2 font-sans text-sm">
+              {isHistoryTab ? copy.auditExportDescription : copy.errorExportDescription}
+            </p>
+          </div>
+          <div>
+            <h2 className="font-sans text-sm font-bold uppercase">
+              {isHistoryTab ? copy.auditDeleteTitle : copy.errorDeleteTitle}
+            </h2>
+            <p className="text-muted-foreground mt-2 font-sans text-sm">
+              {isHistoryTab ? copy.auditDeleteDescription : copy.errorDeleteDescription}
+            </p>
+          </div>
+        </DashboardPanel>
 
-          <DashboardPanel className="grid gap-4 md:grid-cols-2">
-            <div>
-              <h2 className="font-sans text-sm font-bold uppercase">
-                {copy.exportTitle}
-              </h2>
-              <p className="text-muted-foreground mt-2 font-sans text-sm">
-                {copy.exportDescription}
-              </p>
-            </div>
-            <div>
-              <h2 className="font-sans text-sm font-bold uppercase">
-                {copy.deleteTitle}
-              </h2>
-              <p className="text-muted-foreground mt-2 font-sans text-sm">
-                {copy.deleteDescription}
-              </p>
-            </div>
-          </DashboardPanel>
-
-          <DashboardPanel className="overflow-x-auto p-0">
+        <DashboardPanel className="space-y-4 overflow-x-auto p-4">
+          {isHistoryTab ? (
+            <DataTable
+              columns={historyColumns}
+              emptyState={copy.emptyHistory}
+              getRowKey={(row) => row.id}
+              rows={loaderData.entries.history}
+            />
+          ) : (
             <DataTable
               columns={errorColumns}
               emptyState={copy.emptyErrors}
               getRowKey={(row) => row.id}
               rows={loaderData.entries.errors}
             />
-          </DashboardPanel>
-        </div>
-      )}
+          )}
+
+          {currentPagination.hasNextPage || currentPagination.hasPreviousPage ? (
+            <div className="flex flex-col gap-3 border-t-2 border-black pt-4 md:flex-row md:items-center md:justify-end">
+              <div className="flex items-center gap-2 self-end md:self-auto">
+                <Button
+                  asChild={currentPagination.hasPreviousPage}
+                  disabled={!currentPagination.hasPreviousPage}
+                  size="sm"
+                  variant="secondary"
+                >
+                  {currentPagination.hasPreviousPage &&
+                  currentPagination.previousCursor ? (
+                    <Link
+                      to={to(
+                        buildDashboardLoggingHref({
+                          cursor: currentPagination.previousCursor,
+                          direction: "previous",
+                          tab: loaderData.selectedTab,
+                        }),
+                      )}
+                    >
+                      {copy.paginationPreviousLabel}
+                    </Link>
+                  ) : (
+                    <span>{copy.paginationPreviousLabel}</span>
+                  )}
+                </Button>
+                <Button
+                  asChild={currentPagination.hasNextPage}
+                  disabled={!currentPagination.hasNextPage}
+                  size="sm"
+                  variant="secondary"
+                >
+                  {currentPagination.hasNextPage && currentPagination.nextCursor ? (
+                    <Link
+                      to={to(
+                        buildDashboardLoggingHref({
+                          cursor: currentPagination.nextCursor,
+                          direction: "next",
+                          tab: loaderData.selectedTab,
+                        }),
+                      )}
+                    >
+                      {copy.paginationNextLabel}
+                    </Link>
+                  ) : (
+                    <span>{copy.paginationNextLabel}</span>
+                  )}
+                </Button>
+              </div>
+            </div>
+          ) : null}
+        </DashboardPanel>
+      </div>
     </div>
   );
 }

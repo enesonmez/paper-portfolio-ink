@@ -85,6 +85,7 @@ export const APP_ERROR_CODE = {
     },
     export: {
       forbidden: "logging.export.forbidden",
+      limitExceeded: "logging.export.limit_exceeded",
     },
     mutation: {
       invalidIntent: "logging.mutation.invalid_intent",

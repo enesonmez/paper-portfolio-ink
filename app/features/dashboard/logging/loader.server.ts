@@ -2,8 +2,13 @@ import type { AppLoadContext } from "react-router";
 
 import { loadDashboardLoggingOverview } from "~/lib/logging/logs.server";
 import {
+  LOGGING_QUERY_PARAM,
+  normalizeLoggingPaginationDirection,
+  parseLoggingCursor,
+} from "~/domain/logging/model";
+import {
   actorHasClaim,
-  assertClaimAuthorized,
+  assertAnyClaimAuthorized,
   withDashboardAccess,
 } from "~/shared/authz/authz.server";
 import { AUTHORIZATION_CLAIM } from "~/shared/authz/model";
@@ -17,6 +22,7 @@ import {
   buildDeniedLoaderData,
   buildGrantedLoggingLoaderData,
   normalizeLoggingTab,
+  resolveAccessibleLoggingTab,
   type DashboardLoggingLoaderData,
 } from "./state";
 
@@ -28,9 +34,9 @@ export async function loadDashboardLoggingData(
     request,
     context,
     authorize: ({ actor }) =>
-      assertClaimAuthorized({
+      assertAnyClaimAuthorized({
         actor,
-        claim: AUTHORIZATION_CLAIM.logsRead,
+        claims: [AUTHORIZATION_CLAIM.logsAuditRead, AUTHORIZATION_CLAIM.logsErrorRead],
         error: {
           action: APP_ERROR_ACTION.read,
           code: APP_ERROR_CODE.logging.read.forbidden,
@@ -42,21 +48,59 @@ export async function loadDashboardLoggingData(
       }),
     handle: async ({ actor }) => {
       const url = new URL(request.url);
-      const selectedTab = normalizeLoggingTab(url.searchParams.get("tab"));
-      const { errorEntries, historyEntries, totals } =
-        await loadDashboardLoggingOverview(context);
+      const requestedTab = normalizeLoggingTab(
+        url.searchParams.get(LOGGING_QUERY_PARAM.tab),
+      );
+      const canReadHistory = actorHasClaim(actor, AUTHORIZATION_CLAIM.logsAuditRead);
+      const canReadErrors = actorHasClaim(actor, AUTHORIZATION_CLAIM.logsErrorRead);
+      const selectedTab = resolveAccessibleLoggingTab({
+        canReadErrors,
+        canReadHistory,
+        requestedTab,
+      });
+      const cursor = parseLoggingCursor(
+        url.searchParams.get(LOGGING_QUERY_PARAM.cursor),
+      );
+      const direction = normalizeLoggingPaginationDirection(
+        url.searchParams.get(LOGGING_QUERY_PARAM.direction),
+      );
+      const { errorPage, historyPage, totals } = await loadDashboardLoggingOverview(
+        context,
+        {
+          errorPage:
+            canReadErrors && selectedTab === "errors"
+              ? {
+                  cursor,
+                  direction,
+                }
+              : undefined,
+          historyPage:
+            canReadHistory && selectedTab === "history"
+              ? {
+                  cursor,
+                  direction,
+                }
+              : undefined,
+          includeErrorTotals: canReadErrors,
+          includeHistoryTotals: canReadHistory,
+        },
+      );
 
       return buildGrantedLoggingLoaderData({
-        errorEntries,
-        historyEntries,
+        errorPage,
+        historyPage,
         permissions: {
-          canDelete: actorHasClaim(actor, AUTHORIZATION_CLAIM.logsDelete),
-          canExport: actorHasClaim(actor, AUTHORIZATION_CLAIM.logsExport),
+          canDeleteErrors: actorHasClaim(actor, AUTHORIZATION_CLAIM.logsErrorDelete),
+          canDeleteHistory: actorHasClaim(actor, AUTHORIZATION_CLAIM.logsAuditDelete),
+          canExportErrors: actorHasClaim(actor, AUTHORIZATION_CLAIM.logsErrorExport),
+          canExportHistory: actorHasClaim(actor, AUTHORIZATION_CLAIM.logsAuditExport),
+          canReadErrors,
+          canReadHistory,
         },
         selectedTab,
         totals: {
-          errors: totals.errorCount,
-          history: totals.historyCount,
+          errors: canReadErrors ? totals.errorCount : 0,
+          history: canReadHistory ? totals.historyCount : 0,
         },
       });
     },

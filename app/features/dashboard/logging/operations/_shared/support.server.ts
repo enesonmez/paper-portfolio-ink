@@ -8,16 +8,17 @@ export type DashboardLoggingRangeSubmission = ReturnType<
 
 export function buildLoggingRangeActionData(
   message: string,
+  values: DashboardLoggingRangeSubmission["values"] = {
+    endAt: "",
+    startAt: "",
+  },
 ): DashboardLoggingActionData {
   return {
     rangeForm: {
       errors: {
         form: message,
       },
-      values: {
-        endAt: "",
-        startAt: "",
-      },
+      values,
     },
   };
 }

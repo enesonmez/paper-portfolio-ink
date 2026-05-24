@@ -66,6 +66,7 @@
 - [x] Create, update, delete işlemlerinde ilgili akışın bilgisi ile `log_history` adında bir log tablosu oluştur. Kullanıcı ile eşleştir.
 - [x] Sistemde oluşan hataları loglayacak `log_error_history` adında bir log tablosu oluştur.
 - [x] Dashboard sidebar'a Logging sekmesi ekle. 'Tabbed Settings Page' tasarımı olsun. Tablarda log history ve log error history olsun. Log error history kısmı için belirli bir aralıktaki veriyi txt formatında alma özelliği olsun. Belirli bir aralıktaki log kayıtlarını silme özelliğide olsun. Sadece Admin rolü erişebilsin.
+- [x] Logging sekmesinde audit ve error tablolarına keyset paging ekle. Audit ve error aralık export işlemlerini Excel uyumlu dosya olarak sun ve iki tabloda da aralık bazlı delete akışını destekle.
 
 ## Phase 8: Analytics & Insights
 

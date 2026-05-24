@@ -63,6 +63,19 @@ test("renders logging tools for an authenticated admin on the errors tab", async
   ).toBeVisible();
   await expect(page.getByRole("link", { name: /Audit kayitlari/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /Hata kayitlari/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: "TXT olarak indir" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Excel olarak indir" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Kayitlari sil" })).toBeVisible();
+});
+
+test("downloads an Excel file from the logging export action", async ({ page }) => {
+  await page.goto(`${E2E_LOCALE_PREFIX}/dashboard/logging?tab=errors`);
+
+  await page.getByLabel("Baslangic tarihi").fill("2026-03-01T00:00");
+  await page.getByLabel("Bitis tarihi").fill("2026-04-01T00:00");
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Excel olarak indir" }).click();
+  const download = await downloadPromise;
+
+  expect(download.suggestedFilename()).toMatch(/^log-error-history-.*\.xlsx$/);
 });

@@ -54,7 +54,7 @@ const FIXTURE_USERS = [
     storageKey: "localeOperator",
   },
   {
-    claimOverrides: [{ claimKey: "logs.export", effect: "grant" }],
+    claimOverrides: [{ claimKey: "logs.error.export", effect: "grant" }],
     displayName: "Ege Log Exporter",
     email: "log-exporter@paper-portfolio-ink.local",
     id: "e2e-user-log-exporter",
@@ -63,7 +63,7 @@ const FIXTURE_USERS = [
     storageKey: "logExporter",
   },
   {
-    claimOverrides: [{ claimKey: "logs.delete", effect: "grant" }],
+    claimOverrides: [{ claimKey: "logs.error.delete", effect: "grant" }],
     displayName: "Deniz Log Cleaner",
     email: "log-cleaner@paper-portfolio-ink.local",
     id: "e2e-user-log-cleaner",

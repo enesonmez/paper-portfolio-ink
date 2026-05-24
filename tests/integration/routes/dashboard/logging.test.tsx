@@ -47,9 +47,31 @@ const grantedLoaderData = {
       },
     ],
   },
+  pagination: {
+    errors: {
+      direction: "next",
+      hasNextPage: true,
+      hasPreviousPage: false,
+      nextCursor: "next-error-cursor",
+      pageSize: 25,
+      previousCursor: null,
+    },
+    history: {
+      direction: "next",
+      hasNextPage: false,
+      hasPreviousPage: true,
+      nextCursor: null,
+      pageSize: 25,
+      previousCursor: "previous-history-cursor",
+    },
+  },
   permissions: {
-    canDelete: true,
-    canExport: true,
+    canDeleteErrors: true,
+    canDeleteHistory: true,
+    canExportErrors: true,
+    canExportHistory: true,
+    canReadErrors: true,
+    canReadHistory: true,
   },
   rangeForm: {
     values: {
@@ -92,7 +114,10 @@ describe("dashboard logging route", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Audit trail 1" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Error logs 1" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Download Excel" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Delete logs" })).toBeInTheDocument();
     expect(screen.getByText("Post updated")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Previous" })).toBeInTheDocument();
   });
 
   it("renders the error range tools and notice when the errors tab is selected", async () => {
@@ -106,6 +131,12 @@ describe("dashboard logging route", () => {
             <DashboardLoggingScreen
               loaderData={{
                 ...grantedLoaderData,
+                permissions: {
+                  ...grantedLoaderData.permissions,
+                  canDeleteHistory: false,
+                  canExportHistory: false,
+                  canReadHistory: false,
+                },
                 selectedTab: "errors",
               }}
               notice="2 error logs deleted."
@@ -130,10 +161,60 @@ describe("dashboard logging route", () => {
     render(<RouterProvider router={router} />);
 
     expect(screen.getByText("2 error logs deleted.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Download TXT" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Download Excel" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Delete logs" })).toBeInTheDocument();
     expect(screen.getByText("Range invalid")).toBeInTheDocument();
     expect(screen.getByText("Unhandled worker error")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Next" })).toBeInTheDocument();
+  });
+
+  it("hides unauthorized audit controls when the viewer only has error read access", async () => {
+    const { DashboardLoggingScreen } = await import("~/routes/dashboard/logging");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/logging",
+          element: (
+            <DashboardLoggingScreen
+              loaderData={{
+                ...grantedLoaderData,
+                entries: {
+                  ...grantedLoaderData.entries,
+                  history: [],
+                },
+                permissions: {
+                  canDeleteErrors: true,
+                  canDeleteHistory: false,
+                  canExportErrors: true,
+                  canExportHistory: false,
+                  canReadErrors: true,
+                  canReadHistory: false,
+                },
+                selectedTab: "errors",
+                totals: {
+                  errors: 1,
+                  history: 0,
+                },
+              }}
+              rangeForm={grantedLoaderData.rangeForm}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/logging?tab=history"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(screen.getByRole("link", { name: "Error logs 1" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Audit trail 0" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Download Excel" })).toBeInTheDocument();
+    expect(screen.queryByText("Post updated")).not.toBeInTheDocument();
   });
 
   it("renders the access denied screen for non-admin viewers", async () => {

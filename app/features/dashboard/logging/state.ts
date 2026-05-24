@@ -1,7 +1,13 @@
 import type {
+  loadDashboardLoggingOverview,
   listLogErrorHistoryEntries,
   listLogHistoryEntries,
 } from "~/lib/logging/logs.server";
+import {
+  LOGGING_PAGINATION_DIRECTION,
+  LOGGING_QUERY_PARAM,
+  type LoggingPaginationDirection,
+} from "~/domain/logging/model";
 
 export const DASHBOARD_LOGGING_TAB = {
   errors: "errors",
@@ -10,6 +16,15 @@ export const DASHBOARD_LOGGING_TAB = {
 
 export type DashboardLoggingTab =
   (typeof DASHBOARD_LOGGING_TAB)[keyof typeof DASHBOARD_LOGGING_TAB];
+
+export interface DashboardLoggingPaginationState {
+  direction: LoggingPaginationDirection;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  nextCursor: string | null;
+  pageSize: number;
+  previousCursor: string | null;
+}
 
 export interface DashboardLoggingRangeFormState {
   errors?: {
@@ -29,9 +44,17 @@ export interface DashboardLoggingGrantedLoaderData {
     errors: Awaited<ReturnType<typeof listLogErrorHistoryEntries>>;
     history: Awaited<ReturnType<typeof listLogHistoryEntries>>;
   };
+  pagination: {
+    errors: DashboardLoggingPaginationState;
+    history: DashboardLoggingPaginationState;
+  };
   permissions: {
-    canDelete: boolean;
-    canExport: boolean;
+    canDeleteErrors: boolean;
+    canDeleteHistory: boolean;
+    canExportErrors: boolean;
+    canExportHistory: boolean;
+    canReadErrors: boolean;
+    canReadHistory: boolean;
   };
   rangeForm: DashboardLoggingRangeFormState;
   selectedTab: DashboardLoggingTab;
@@ -47,9 +70,17 @@ export interface DashboardLoggingDeniedLoaderData {
     errors: [];
     history: [];
   };
+  pagination: {
+    errors: DashboardLoggingPaginationState;
+    history: DashboardLoggingPaginationState;
+  };
   permissions: {
-    canDelete: false;
-    canExport: false;
+    canDeleteErrors: false;
+    canDeleteHistory: false;
+    canExportErrors: false;
+    canExportHistory: false;
+    canReadErrors: false;
+    canReadHistory: false;
   };
   rangeForm: DashboardLoggingRangeFormState;
   selectedTab: DashboardLoggingTab;
@@ -77,6 +108,19 @@ export function buildEmptyRangeFormState(): DashboardLoggingRangeFormState {
   };
 }
 
+export function buildDashboardLoggingPaginationState(
+  direction: LoggingPaginationDirection = LOGGING_PAGINATION_DIRECTION.next,
+): DashboardLoggingPaginationState {
+  return {
+    direction,
+    hasNextPage: false,
+    hasPreviousPage: false,
+    nextCursor: null,
+    pageSize: 0,
+    previousCursor: null,
+  };
+}
+
 export function mergeDashboardLoggingRangeFormState(
   loaderForm: DashboardLoggingRangeFormState,
   actionData?: DashboardLoggingActionData,
@@ -97,9 +141,17 @@ export function buildDeniedLoaderData(): DashboardLoggingLoaderData {
       errors: [],
       history: [],
     },
+    pagination: {
+      errors: buildDashboardLoggingPaginationState(),
+      history: buildDashboardLoggingPaginationState(),
+    },
     permissions: {
-      canDelete: false,
-      canExport: false,
+      canDeleteErrors: false,
+      canDeleteHistory: false,
+      canExportErrors: false,
+      canExportHistory: false,
+      canReadErrors: false,
+      canReadHistory: false,
     },
     rangeForm: buildEmptyRangeFormState(),
     selectedTab: DASHBOARD_LOGGING_TAB.history,
@@ -111,8 +163,8 @@ export function buildDeniedLoaderData(): DashboardLoggingLoaderData {
 }
 
 export function buildGrantedLoggingLoaderData(args: {
-  errorEntries: Awaited<ReturnType<typeof listLogErrorHistoryEntries>>;
-  historyEntries: Awaited<ReturnType<typeof listLogHistoryEntries>>;
+  errorPage: Awaited<ReturnType<typeof loadDashboardLoggingOverview>>["errorPage"];
+  historyPage: Awaited<ReturnType<typeof loadDashboardLoggingOverview>>["historyPage"];
   permissions: DashboardLoggingGrantedLoaderData["permissions"];
   selectedTab: DashboardLoggingTab;
   totals: DashboardLoggingGrantedLoaderData["totals"];
@@ -120,8 +172,12 @@ export function buildGrantedLoggingLoaderData(args: {
   return {
     access: "granted",
     entries: {
-      errors: args.errorEntries,
-      history: args.historyEntries,
+      errors: args.errorPage.entries,
+      history: args.historyPage.entries,
+    },
+    pagination: {
+      errors: args.errorPage.pagination,
+      history: args.historyPage.pagination,
     },
     permissions: args.permissions,
     rangeForm: buildEmptyRangeFormState(),
@@ -130,6 +186,42 @@ export function buildGrantedLoggingLoaderData(args: {
   };
 }
 
-export function buildDashboardLoggingHref(tab: DashboardLoggingTab) {
-  return `/dashboard/logging?tab=${tab}`;
+export function resolveAccessibleLoggingTab(args: {
+  canReadErrors: boolean;
+  canReadHistory: boolean;
+  requestedTab: DashboardLoggingTab;
+}): DashboardLoggingTab {
+  if (args.requestedTab === DASHBOARD_LOGGING_TAB.history && args.canReadHistory) {
+    return DASHBOARD_LOGGING_TAB.history;
+  }
+
+  if (args.requestedTab === DASHBOARD_LOGGING_TAB.errors && args.canReadErrors) {
+    return DASHBOARD_LOGGING_TAB.errors;
+  }
+
+  if (args.canReadHistory) {
+    return DASHBOARD_LOGGING_TAB.history;
+  }
+
+  return DASHBOARD_LOGGING_TAB.errors;
+}
+
+export function buildDashboardLoggingHref(args: {
+  cursor?: string | null;
+  direction?: LoggingPaginationDirection | null;
+  tab: DashboardLoggingTab;
+}) {
+  const searchParams = new URLSearchParams({
+    [LOGGING_QUERY_PARAM.tab]: args.tab,
+  });
+
+  if (args.cursor) {
+    searchParams.set(LOGGING_QUERY_PARAM.cursor, args.cursor);
+  }
+
+  if (args.direction) {
+    searchParams.set(LOGGING_QUERY_PARAM.direction, args.direction);
+  }
+
+  return `/dashboard/logging?${searchParams.toString()}`;
 }

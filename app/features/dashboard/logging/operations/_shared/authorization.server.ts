@@ -23,10 +23,13 @@ function resolveLoggingMutationAuthorization(intent: LoggingMutationIntent) {
   const requiredClaim = resolveMutationClaim(
     intent,
     LOGGING_MUTATION_CLAIMS,
-    AUTHORIZATION_CLAIM.logsExport,
+    AUTHORIZATION_CLAIM.logsErrorExport,
   );
 
-  if (intent === LOGGING_MUTATION_INTENT.deleteErrors) {
+  if (
+    intent === LOGGING_MUTATION_INTENT.deleteErrors ||
+    intent === LOGGING_MUTATION_INTENT.deleteHistory
+  ) {
     return {
       action: APP_ERROR_ACTION.delete,
       code: APP_ERROR_CODE.logging.delete.forbidden,

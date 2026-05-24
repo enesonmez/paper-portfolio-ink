@@ -2,7 +2,7 @@ import type { AppLoadContext } from "react-router";
 
 import {
   DASHBOARD_LOGGING_EXPORT_MAX_ROWS,
-  listLogErrorHistoryEntriesAscending,
+  listLogHistoryEntriesAscending,
 } from "~/lib/logging/logs.server";
 import { buildValidationError } from "~/shared/errors/builders.server";
 import {
@@ -18,41 +18,39 @@ import type { DashboardLoggingActionData } from "../state";
 import type { DashboardLoggingRangeSubmission } from "./_shared/support.server";
 import { buildLoggingRangeActionData } from "./_shared/support.server";
 
-function buildLogErrorHistoryWorkbook(
-  rows: Awaited<ReturnType<typeof listLogErrorHistoryEntriesAscending>>,
+function buildLogHistoryWorkbook(
+  rows: Awaited<ReturnType<typeof listLogHistoryEntriesAscending>>,
 ) {
   return buildExcelWorkbook({
     columns: [
       { key: "id", label: "ID" },
       { key: "createdAt", label: "Created At" },
       { key: "requestId", label: "Request ID" },
-      { key: "fingerprint", label: "Fingerprint" },
-      { key: "code", label: "Code" },
-      { key: "category", label: "Category" },
-      { key: "severity", label: "Severity" },
+      { key: "resource", label: "Resource" },
+      { key: "action", label: "Action" },
+      { key: "result", label: "Result" },
       { key: "statusCode", label: "Status Code" },
       { key: "message", label: "Message" },
       { key: "path", label: "Path" },
       { key: "method", label: "Method" },
-      { key: "routeId", label: "Route ID" },
-      { key: "locale", label: "Locale" },
       { key: "userId", label: "User ID" },
       { key: "userRole", label: "User Role" },
-      { key: "stack", label: "Stack" },
+      { key: "targetId", label: "Target ID" },
+      { key: "targetLabel", label: "Target Label" },
       { key: "metadataJson", label: "Metadata JSON" },
     ] as const,
     rows,
-    sheetName: "Error Logs",
+    sheetName: "Audit Logs",
   });
 }
 
-export async function handleExportLogErrorsMutation(args: {
+export async function handleExportLogHistoryMutation(args: {
   context: AppLoadContext;
   request: Request;
   submission: DashboardLoggingRangeSubmission;
   t: ReturnType<typeof createTranslator>;
 }) {
-  const rows = await listLogErrorHistoryEntriesAscending(
+  const rows = await listLogHistoryEntriesAscending(
     args.context,
     {
       from: args.submission.startAt,
@@ -70,7 +68,7 @@ export async function handleExportLogErrorsMutation(args: {
       details: {
         limit: DASHBOARD_LOGGING_EXPORT_MAX_ROWS,
       },
-      message: "Error log export range exceeded the maximum row limit",
+      message: "Audit log export range exceeded the maximum row limit",
       resource: APP_ERROR_RESOURCE.logs,
       responseData: buildLoggingRangeActionData(
         args
@@ -89,17 +87,17 @@ export async function handleExportLogErrorsMutation(args: {
       endAt: args.submission.endAt.toISOString(),
       startAt: args.submission.startAt.toISOString(),
     },
-    message: "Error log range exported",
+    message: "Audit log range exported",
     request: args.request,
     resource: APP_ERROR_RESOURCE.logs,
     result: "success",
     statusCode: 200,
-    targetLabel: "error-log-export",
+    targetLabel: "audit-log-export",
   });
 
-  return new Response(buildLogErrorHistoryWorkbook(rows), {
+  return new Response(buildLogHistoryWorkbook(rows), {
     headers: {
-      "Content-Disposition": `attachment; filename="log-error-history-${args.submission.startAt.toISOString()}-${args.submission.endAt.toISOString()}.xlsx"`,
+      "Content-Disposition": `attachment; filename="log-history-${args.submission.startAt.toISOString()}-${args.submission.endAt.toISOString()}.xlsx"`,
       "Content-Type":
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     },

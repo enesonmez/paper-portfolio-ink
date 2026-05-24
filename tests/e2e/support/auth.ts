@@ -12,6 +12,38 @@ interface E2EUserCredentials {
   password: string;
 }
 
+function resolveLocalOffsetMinutes(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return String(date.getTimezoneOffset());
+}
+
+function withLoggingRangeOffsets(fields: Record<string, string>) {
+  const nextFields = { ...fields };
+
+  if (fields.startAt && !fields.startAtOffsetMinutes) {
+    const startAtOffsetMinutes = resolveLocalOffsetMinutes(fields.startAt);
+
+    if (startAtOffsetMinutes) {
+      nextFields.startAtOffsetMinutes = startAtOffsetMinutes;
+    }
+  }
+
+  if (fields.endAt && !fields.endAtOffsetMinutes) {
+    const endAtOffsetMinutes = resolveLocalOffsetMinutes(fields.endAt);
+
+    if (endAtOffsetMinutes) {
+      nextFields.endAtOffsetMinutes = endAtOffsetMinutes;
+    }
+  }
+
+  return nextFields;
+}
+
 export async function submitLoginForm(
   page: Page,
   credentials: E2EUserCredentials = {
@@ -58,7 +90,25 @@ export async function submitAuthorizedForm(
 ) {
   return page.context().request.post(new URL(path, E2E_BASE_URL).toString(), {
     failOnStatusCode: false,
-    form,
+    form: withLoggingRangeOffsets(form),
+    maxRedirects: 0,
+  });
+}
+
+export async function submitAuthorizedGet(
+  page: Page,
+  path: string,
+  query: Record<string, string>,
+) {
+  const url = new URL(path, E2E_BASE_URL);
+  const queryWithOffsets = withLoggingRangeOffsets(query);
+
+  for (const [key, value] of Object.entries(queryWithOffsets)) {
+    url.searchParams.set(key, value);
+  }
+
+  return page.context().request.get(url.toString(), {
+    failOnStatusCode: false,
     maxRedirects: 0,
   });
 }
@@ -68,6 +118,8 @@ export async function submitAuthorizedFetchForm(
   path: string,
   form: Record<string, string>,
 ) {
+  const formWithOffsets = withLoggingRangeOffsets(form);
+
   return page.evaluate(
     async ({ path: targetPath, form: formFields }) => {
       const response = await fetch(targetPath, {
@@ -83,6 +135,6 @@ export async function submitAuthorizedFetchForm(
         text: await response.text(),
       };
     },
-    { form, path },
+    { form: formWithOffsets, path },
   );
 }

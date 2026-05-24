@@ -18,8 +18,10 @@ import { AUTHORIZATION_CLAIM, type AuthorizationClaim } from "./model";
 type MutationClaimMap = Readonly<Record<string, AuthorizationClaim>>;
 
 export const LOGGING_MUTATION_CLAIMS = {
-  [LOGGING_MUTATION_INTENT.deleteErrors]: AUTHORIZATION_CLAIM.logsDelete,
-  [LOGGING_MUTATION_INTENT.exportErrors]: AUTHORIZATION_CLAIM.logsExport,
+  [LOGGING_MUTATION_INTENT.deleteHistory]: AUTHORIZATION_CLAIM.logsAuditDelete,
+  [LOGGING_MUTATION_INTENT.deleteErrors]: AUTHORIZATION_CLAIM.logsErrorDelete,
+  [LOGGING_MUTATION_INTENT.exportHistory]: AUTHORIZATION_CLAIM.logsAuditExport,
+  [LOGGING_MUTATION_INTENT.exportErrors]: AUTHORIZATION_CLAIM.logsErrorExport,
 } as const satisfies Record<LoggingMutationIntent, AuthorizationClaim>;
 
 export const PROJECT_MUTATION_CLAIMS = {
