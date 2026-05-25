@@ -6,9 +6,10 @@ import {
 } from "~/domain/configuration/form";
 import {
   ACCOUNT_CONFIGURATION_FORM_FIELD,
-  ACCOUNT_CONFIGURATION_KEY,
   ACCOUNT_CONFIGURATION_KEYS,
+  getAccountConfigurationDefinition,
   isAccountConfigurationKey,
+  isOptionalAccountConfigurationKey,
   type AccountConfigurationKey,
 } from "~/domain/configuration/model";
 import { buildValidationError } from "~/shared/errors/builders.server";
@@ -45,6 +46,12 @@ function createAccountConfigurationSchema(t: I18nTranslator) {
       value: z.string().trim(),
     })
     .superRefine((value, context) => {
+      const definition = getAccountConfigurationDefinition(value.key);
+
+      if (!definition) {
+        return;
+      }
+
       if (value.key === "site.name") {
         if (value.value.length < 2) {
           context.addIssue({
@@ -74,6 +81,10 @@ function createAccountConfigurationSchema(t: I18nTranslator) {
           });
         }
 
+        return;
+      }
+
+      if (isOptionalAccountConfigurationKey(value.key) && value.value.length === 0) {
         return;
       }
 
@@ -122,7 +133,7 @@ export function parseAccountConfigurationFormData(
         values: buildAccountConfigurationFormValues({
           key: isAccountConfigurationKey(rawValues.key)
             ? rawValues.key
-            : ACCOUNT_CONFIGURATION_KEY.projectName,
+            : ACCOUNT_CONFIGURATION_KEYS[0],
           value: rawValues.value,
         }),
       },

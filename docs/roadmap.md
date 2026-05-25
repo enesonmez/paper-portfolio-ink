@@ -24,7 +24,7 @@
 - [x] Projeler sayfası (`/projects`) ve proje kartları bileşenlerinin oluşturulması.
 - [x] Blog listeleme sayfası (`/blog`) ve SEO/Metadata uyumlu Blog Detay (`/blog/:slug`) sayfasının kodlanması.
 - [x] Ana sayfadaki skill kısmı db'ye bağlansın. Eğer skill yoksa bu bölüm gösterilmesin.
-- [ ] Projede kullanılan sosyal medya linkleri, site name ve site url cache'deki configuration-parameter değerlerinden alınsın. Projede eğer statik olarak kullanılan yerler var ise oralarıda dinamik hale getir.
+- [x] Projede kullanılan sosyal medya linkleri, site name ve site url cache'deki configuration-parameter değerlerinden alınsın. Projede eğer statik olarak kullanılan yerler var ise oralarıda dinamik hale getir.
 
 ## Phase 4: Admin Dashboard
 

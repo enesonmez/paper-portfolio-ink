@@ -72,4 +72,18 @@ describe("account configuration form parser", () => {
       });
     }
   });
+
+  it("accepts empty optional social links so they can be hidden on the public site", async () => {
+    const { parseAccountConfigurationFormData } =
+      await import("~/lib/configuration/configuration-form.server");
+    const formData = new FormData();
+
+    formData.set("key", "social.instagram");
+    formData.set("value", "   ");
+
+    expect(parseAccountConfigurationFormData(formData, t)).toEqual({
+      key: "social.instagram",
+      value: "",
+    });
+  });
 });

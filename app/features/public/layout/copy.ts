@@ -1,14 +1,16 @@
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
+import { useRootPublicSocialLinks, useRootSiteConfig } from "~/lib/site";
 
 export function usePublicLayoutCopy() {
   const t = useT();
   const to = useLocalizedPath();
+  const siteConfig = useRootSiteConfig();
 
   const copy = {
     footerCaption: t("public.layout.footerCaption"),
     footerCta: t("public.layout.footerCta"),
     footerEyebrow: t("public.layout.footerEyebrow"),
-    footerName: t("public.layout.footerName"),
+    footerName: siteConfig.name,
     footerYear: t("public.layout.footerYear"),
     navBlog: t("public.layout.navBlog"),
     navHome: t("public.layout.navHome"),
@@ -47,17 +49,6 @@ export function usePublicLayoutCopy() {
   };
 }
 
-export const PUBLIC_SOCIAL_LINKS = [
-  {
-    href: "https://github.com/enesonmez",
-    key: "github",
-  },
-  {
-    href: "https://www.linkedin.com/in/enesonmez/",
-    key: "linkedin",
-  },
-  {
-    href: "mailto:hello@paper-portfolio-ink.dev",
-    key: "mail",
-  },
-] as const;
+export function usePublicSocialLinks() {
+  return useRootPublicSocialLinks();
+}

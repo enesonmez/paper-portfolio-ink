@@ -2,47 +2,44 @@ import { useLoaderData } from "react-router";
 import type { Route } from "./+types/index";
 import { APP_ROUTE_ID } from "~/shared/errors/contracts";
 
-import type { loader as rootLoader } from "~/root";
 import { runLoaderWithErrorHandling } from "~/shared/errors/route-error-handling.server";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
 import { PublicProjectsScreen } from "~/features/public/projects/ui/screen";
 import { loadPublicProjectsData } from "~/features/public/projects/server";
-import { siteConfig } from "~/lib/site";
-
-type RootLoaderData = Exclude<Awaited<ReturnType<typeof rootLoader>>, Response>;
+import { buildSiteConfig, getRootLoaderDataFromMatches } from "~/lib/site";
 
 export function meta({ location, matches }: Route.MetaArgs) {
-  for (const match of matches) {
-    if (match && match.id === "root" && !(match.data instanceof Response)) {
-      const rootData = match.data as RootLoaderData;
-      const t = createTranslator(rootData.messages);
-      const title = t("site.title.projects");
-      const description = t("site.description.projects");
+  const rootData = getRootLoaderDataFromMatches(matches);
 
-      return [
-        { title },
-        {
-          name: "description",
-          content: description,
-        },
-        {
-          property: "og:title",
-          content: title,
-        },
-        {
-          property: "og:description",
-          content: description,
-        },
-        {
-          property: "og:type",
-          content: "website",
-        },
-        {
-          property: "og:url",
-          content: new URL(location.pathname, siteConfig.url).toString(),
-        },
-      ];
-    }
+  if (rootData) {
+    const t = createTranslator(rootData.messages);
+    const site = buildSiteConfig(rootData.configuration);
+    const title = t("site.title.projects", { siteName: site.name });
+    const description = t("site.description.projects");
+
+    return [
+      { title },
+      {
+        name: "description",
+        content: description,
+      },
+      {
+        property: "og:title",
+        content: title,
+      },
+      {
+        property: "og:description",
+        content: description,
+      },
+      {
+        property: "og:type",
+        content: "website",
+      },
+      {
+        property: "og:url",
+        content: new URL(location.pathname, site.url).toString(),
+      },
+    ];
   }
 
   return [];

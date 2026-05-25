@@ -1,9 +1,16 @@
 import { useT } from "~/shared/i18n/i18n-react";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
+import type { RootLoaderData } from "~/lib/site";
+import { buildSiteConfig, useOptionalRootLoaderData } from "~/lib/site";
 
-export function buildLoginMeta(t: I18nTranslator) {
+export function buildLoginMeta(
+  t: I18nTranslator,
+  configuration?: RootLoaderData["configuration"],
+) {
+  const site = buildSiteConfig(configuration);
+
   return [
-    { title: t("site.title.login") },
+    { title: t("site.title.login", { siteName: site.name }) },
     {
       name: "description",
       content: t("site.description.login"),
@@ -11,7 +18,12 @@ export function buildLoginMeta(t: I18nTranslator) {
   ] as const;
 }
 
-export function buildLoginCopy(t: I18nTranslator) {
+export function buildLoginCopy(
+  t: I18nTranslator,
+  configuration?: RootLoaderData["configuration"],
+) {
+  const site = buildSiteConfig(configuration);
+
   return {
     adminBadge: t("login.adminBadge"),
     buildLabel: t("login.buildLabel"),
@@ -28,12 +40,13 @@ export function buildLoginCopy(t: I18nTranslator) {
     returnToSite: t("login.returnToSite"),
     securityDescription: t("login.securityDescription"),
     securityLevel: t("login.securityLevel"),
-    siteName: t("login.siteName"),
+    siteName: site.name,
   } as const;
 }
 
 export function useLoginCopy() {
   const t = useT();
+  const rootData = useOptionalRootLoaderData();
 
-  return buildLoginCopy(t);
+  return buildLoginCopy(t, rootData?.configuration);
 }

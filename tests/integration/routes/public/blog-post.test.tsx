@@ -116,14 +116,33 @@ describe("blog detail route", () => {
           state: null,
           unstable_mask: undefined,
         },
-        matches: [] as never,
+        matches: [
+          {
+            data: {
+              configuration: {
+                "contact.email": "hello@example.dev",
+                "site.domainUrl": "https://portfolio.example.dev",
+                "site.name": "Example Portfolio",
+                "social.github": "https://github.com/example",
+                "social.instagram": "https://instagram.com/example",
+                "social.linkedin": "https://linkedin.com/in/example",
+                "social.x": "https://x.com/example",
+              },
+              locale: "en" as const,
+              messages: getSeedMessages("en"),
+              supportedLocales: getSeedLocaleOptions(),
+              theme: "light" as const,
+            },
+            id: "root",
+          },
+        ] as never,
         params: {
           slug: post.slug,
         },
       }),
     ).toEqual(
       expect.arrayContaining([
-        { title: "Edge Observability Playbook | Blog | Paper Ink" },
+        { title: "Edge Observability Playbook | Blog | Example Portfolio" },
         {
           name: "description",
           content:
@@ -137,12 +156,25 @@ describe("blog detail route", () => {
           property: "twitter:card",
           content: "summary_large_image",
         },
+        {
+          property: "og:url",
+          content: `https://portfolio.example.dev/blog/${post.slug}`,
+        },
       ]),
     );
   });
 
   it("falls back to a safe document when loader data is missing", () => {
     const rootData = {
+      configuration: {
+        "contact.email": "hello@example.dev",
+        "site.domainUrl": "https://portfolio.example.dev",
+        "site.name": "Example Portfolio",
+        "social.github": "https://github.com/example",
+        "social.instagram": "https://instagram.com/example",
+        "social.linkedin": "https://linkedin.com/in/example",
+        "social.x": "https://x.com/example",
+      },
       locale: "en" as const,
       messages: getSeedMessages("en"),
       supportedLocales: getSeedLocaleOptions(),
@@ -164,7 +196,7 @@ describe("blog detail route", () => {
           slug: "missing-story",
         },
       } as never),
-    ).toEqual(expect.arrayContaining([{ title: "Blog Post | Paper Ink" }]));
+    ).toEqual(expect.arrayContaining([{ title: "Blog Post | Example Portfolio" }]));
   });
 
   it("renders a fallback paragraph for empty legacy content", () => {

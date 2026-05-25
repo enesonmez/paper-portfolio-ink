@@ -31,7 +31,11 @@ export type AccountConfigurationValueKind =
 export interface AccountConfigurationDefinition {
   defaultValue: string;
   inputType: "email" | "text" | "url";
+  isPublicLink?: boolean;
+  isRequired?: boolean;
   key: AccountConfigurationKey;
+  publicLinkKey?: "github" | "instagram" | "linkedin" | "mail" | "x";
+  publicLinkOrder?: number;
   section: AccountConfigurationSection;
   valueKind: AccountConfigurationValueKind;
 }
@@ -40,6 +44,7 @@ export const ACCOUNT_CONFIGURATION_DEFINITIONS = [
   {
     defaultValue: "Paper Ink",
     inputType: "text",
+    isRequired: true,
     key: ACCOUNT_CONFIGURATION_KEY.projectName,
     section: ACCOUNT_CONFIGURATION_SECTION.identity,
     valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.text,
@@ -47,6 +52,7 @@ export const ACCOUNT_CONFIGURATION_DEFINITIONS = [
   {
     defaultValue: "https://paper-portfolio-ink.dev",
     inputType: "url",
+    isRequired: true,
     key: ACCOUNT_CONFIGURATION_KEY.projectDomainUrl,
     section: ACCOUNT_CONFIGURATION_SECTION.identity,
     valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.url,
@@ -54,35 +60,51 @@ export const ACCOUNT_CONFIGURATION_DEFINITIONS = [
   {
     defaultValue: "admin@paper-portfolio-ink.dev",
     inputType: "email",
+    isPublicLink: true,
+    isRequired: true,
     key: ACCOUNT_CONFIGURATION_KEY.contactEmail,
+    publicLinkKey: "mail",
+    publicLinkOrder: 50,
     section: ACCOUNT_CONFIGURATION_SECTION.identity,
     valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.email,
   },
   {
     defaultValue: "https://linkedin.com/in/enes-ink",
     inputType: "url",
+    isPublicLink: true,
     key: ACCOUNT_CONFIGURATION_KEY.socialLinkedin,
+    publicLinkKey: "linkedin",
+    publicLinkOrder: 20,
     section: ACCOUNT_CONFIGURATION_SECTION.presence,
     valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.url,
   },
   {
     defaultValue: "https://github.com/enesonmez",
     inputType: "url",
+    isPublicLink: true,
     key: ACCOUNT_CONFIGURATION_KEY.socialGithub,
+    publicLinkKey: "github",
+    publicLinkOrder: 10,
     section: ACCOUNT_CONFIGURATION_SECTION.presence,
     valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.url,
   },
   {
     defaultValue: "https://x.com/paperinkdev",
     inputType: "url",
+    isPublicLink: true,
     key: ACCOUNT_CONFIGURATION_KEY.socialX,
+    publicLinkKey: "x",
+    publicLinkOrder: 30,
     section: ACCOUNT_CONFIGURATION_SECTION.presence,
     valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.url,
   },
   {
     defaultValue: "https://instagram.com/paperportfolioink",
     inputType: "url",
+    isPublicLink: true,
     key: ACCOUNT_CONFIGURATION_KEY.socialInstagram,
+    publicLinkKey: "instagram",
+    publicLinkOrder: 40,
     section: ACCOUNT_CONFIGURATION_SECTION.presence,
     valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.url,
   },
@@ -132,4 +154,10 @@ export function getDefaultAccountConfigurationRecord() {
       definition.defaultValue,
     ]),
   ) as Record<AccountConfigurationKey, string>;
+}
+
+export function isOptionalAccountConfigurationKey(key: AccountConfigurationKey) {
+  const definition = getAccountConfigurationDefinition(key);
+
+  return !definition || !("isRequired" in definition) || definition.isRequired !== true;
 }

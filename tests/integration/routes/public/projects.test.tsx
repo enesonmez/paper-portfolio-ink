@@ -3,6 +3,8 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { PublicProjectsScreen } from "~/features/public/projects/ui/screen";
+import { getSeedMessages, getSeedLocaleOptions } from "~/shared/i18n/i18n.shared";
+import { meta } from "~/routes/public/projects/index";
 
 const baseProjects = [
   {
@@ -115,5 +117,48 @@ describe("ProjectsPage", () => {
       screen.getByRole("heading", { level: 2, name: "No public projects yet." }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Scroll to load more projects")).not.toBeInTheDocument();
+  });
+
+  it("returns metadata with the configured site identity", () => {
+    expect(
+      meta({
+        location: {
+          hash: "",
+          key: "default",
+          pathname: "/projects",
+          search: "",
+          state: null,
+          unstable_mask: undefined,
+        },
+        matches: [
+          {
+            data: {
+              configuration: {
+                "contact.email": "hello@example.dev",
+                "site.domainUrl": "https://portfolio.example.dev",
+                "site.name": "Example Portfolio",
+                "social.github": "https://github.com/example",
+                "social.instagram": "https://instagram.com/example",
+                "social.linkedin": "https://linkedin.com/in/example",
+                "social.x": "https://x.com/example",
+              },
+              locale: "en" as const,
+              messages: getSeedMessages("en"),
+              supportedLocales: getSeedLocaleOptions(),
+              theme: "light" as const,
+            },
+            id: "root",
+          },
+        ],
+      } as never),
+    ).toEqual(
+      expect.arrayContaining([
+        { title: "Projects | Example Portfolio" },
+        {
+          property: "og:url",
+          content: "https://portfolio.example.dev/projects",
+        },
+      ]),
+    );
   });
 });

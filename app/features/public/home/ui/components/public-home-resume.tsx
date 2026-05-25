@@ -1,4 +1,12 @@
-import { ArrowUpRight, FileUser, Github, Linkedin, Mail } from "lucide-react";
+import {
+  ArrowUpRight,
+  FileUser,
+  Github,
+  Instagram,
+  Linkedin,
+  Mail,
+  Twitter,
+} from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { useT } from "~/shared/i18n/i18n-react";
@@ -7,13 +15,16 @@ import { PUBLIC_HOME_SURFACE_CLASSNAME, usePublicHomeCopy } from "../copy";
 
 const SOCIAL_CARD_ICONS = {
   github: Github,
+  instagram: Instagram,
   linkedin: Linkedin,
   mail: Mail,
+  x: Twitter,
 } as const;
 
 export function PublicHomeResume() {
   const t = useT();
-  const { copy, resumeMeta, resumePoints, socialCards } = usePublicHomeCopy();
+  const { copy, primaryContactHref, resumeMeta, resumePoints, socialCards } =
+    usePublicHomeCopy();
 
   return (
     <section
@@ -71,7 +82,7 @@ export function PublicHomeResume() {
             size="lg"
             className="w-full text-center leading-5 whitespace-normal sm:w-auto"
           >
-            <a href="mailto:hello@paper-portfolio-ink.dev" className="w-full">
+            <a href={primaryContactHref} className="w-full">
               {copy.resumeCta}
               <ArrowUpRight className="size-5" aria-hidden="true" />
             </a>

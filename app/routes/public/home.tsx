@@ -2,33 +2,25 @@ import { useLoaderData } from "react-router";
 import type { Route } from "./+types/home";
 import { APP_ROUTE_ID } from "~/shared/errors/contracts";
 
-import type { loader as rootLoader } from "~/root";
 import { runLoaderWithErrorHandling } from "~/shared/errors/route-error-handling.server";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
 import { PublicHomeScreen } from "~/features/public/home/ui/screen";
 import { loadPublicHomeData } from "~/features/public/home/server";
-
-type RootLoaderData = Exclude<Awaited<ReturnType<typeof rootLoader>>, Response>;
+import { buildSiteConfig, getRootLoaderDataFromMatches } from "~/lib/site";
 
 export function meta({ matches }: Route.MetaArgs) {
-  let messages: RootLoaderData["messages"] | undefined;
-
-  for (const match of matches) {
-    if (match && match.id === "root" && !(match.data instanceof Response)) {
-      const rootData = match.data as RootLoaderData;
-      messages = rootData.messages;
-      break;
-    }
-  }
+  const rootData = getRootLoaderDataFromMatches(matches);
+  const messages = rootData?.messages;
 
   if (!messages) {
     return [];
   }
 
   const t = createTranslator(messages);
+  const site = buildSiteConfig(rootData?.configuration);
 
   return [
-    { title: t("site.title.home") },
+    { title: t("site.title.home", { siteName: site.name }) },
     { name: "description", content: t("site.description.home") },
   ];
 }

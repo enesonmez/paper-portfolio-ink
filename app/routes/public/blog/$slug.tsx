@@ -2,36 +2,33 @@ import { Link, useLoaderData, useRouteError } from "react-router";
 import type { Route } from "./+types/$slug";
 import { APP_ROUTE_ID } from "~/shared/errors/contracts";
 
-import type { loader as rootLoader } from "~/root";
 import { runLoaderWithErrorHandling } from "~/shared/errors/route-error-handling.server";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import { isPublicBlogPostNotFoundError } from "~/features/public/blog/post/errors";
 import { PublicBlogPostScreen } from "~/features/public/blog/post/screen";
 import { loadPublicBlogPostData } from "~/features/public/blog/server";
-import { siteConfig } from "~/lib/site";
-
-type RootLoaderData = Exclude<Awaited<ReturnType<typeof rootLoader>>, Response>;
+import { buildSiteConfig, getRootLoaderDataFromMatches } from "~/lib/site";
 
 export const meta: Route.MetaFunction = ({ data, location, matches }) => {
-  let messages: RootLoaderData["messages"] | undefined;
-
-  for (const match of matches) {
-    if (match && match.id === "root" && !(match.data instanceof Response)) {
-      const rootData = match.data as RootLoaderData;
-      messages = rootData.messages;
-      break;
-    }
-  }
+  const rootData = getRootLoaderDataFromMatches(matches);
+  const messages = rootData?.messages;
+  const site = buildSiteConfig(rootData?.configuration);
 
   if (!data) {
     return messages
-      ? [{ title: createTranslator(messages)("site.title.blogPostFallback") }]
+      ? [
+          {
+            title: createTranslator(messages)("site.title.blogPostFallback", {
+              siteName: site.name,
+            }),
+          },
+        ]
       : [];
   }
 
-  const pageTitle = `${data.post.title} | Blog | ${siteConfig.name}`;
-  const pageUrl = new URL(location.pathname, siteConfig.url).toString();
+  const pageTitle = `${data.post.title} | Blog | ${site.name}`;
+  const pageUrl = new URL(location.pathname, site.url).toString();
   const descriptors = [
     { title: pageTitle },
     {
