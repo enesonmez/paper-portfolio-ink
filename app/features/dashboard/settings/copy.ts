@@ -1,14 +1,11 @@
+import {
+  ACCOUNT_CONFIGURATION_KEY,
+  type AccountConfigurationKey,
+} from "~/domain/configuration/model";
 import { useT } from "~/shared/i18n/i18n-react";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
 import { DASHBOARD_SETTINGS_TAB, type DashboardSettingsTab } from "./state";
-
-export interface DashboardSettingsMetric {
-  accent?: "primary" | "surface";
-  label: string;
-  meta?: string;
-  value: string;
-}
 
 export interface DashboardSettingsTabLink {
   description: string;
@@ -44,6 +41,23 @@ export interface DashboardSettingsTabContent {
   title: string;
 }
 
+export interface DashboardSettingsAccountCard {
+  description: string;
+  eyebrow: string;
+  section: "identity" | "presence";
+  title: string;
+}
+
+export interface DashboardSettingsAccountFieldCopy {
+  hint: string;
+  label: string;
+}
+
+export type DashboardSettingsAccountFieldCopyMap = Record<
+  AccountConfigurationKey,
+  DashboardSettingsAccountFieldCopy
+>;
+
 function buildDashboardSettingsTabs(
   t: I18nTranslator,
 ): readonly DashboardSettingsTabLink[] {
@@ -75,68 +89,53 @@ function buildDashboardSettingsTabs(
   ] as const;
 }
 
+function buildDashboardSettingsAccountFieldCopy(
+  t: I18nTranslator,
+): DashboardSettingsAccountFieldCopyMap {
+  return {
+    [ACCOUNT_CONFIGURATION_KEY.contactEmail]: {
+      hint: t("dashboard.settings.account.field.contact.email.hint"),
+      label: t("dashboard.settings.account.field.contact.email.label"),
+    },
+    [ACCOUNT_CONFIGURATION_KEY.projectDomainUrl]: {
+      hint: t("dashboard.settings.account.field.site.domainUrl.hint"),
+      label: t("dashboard.settings.account.field.site.domainUrl.label"),
+    },
+    [ACCOUNT_CONFIGURATION_KEY.projectName]: {
+      hint: t("dashboard.settings.account.field.site.name.hint"),
+      label: t("dashboard.settings.account.field.site.name.label"),
+    },
+    [ACCOUNT_CONFIGURATION_KEY.socialGithub]: {
+      hint: t("dashboard.settings.account.field.social.github.hint"),
+      label: t("dashboard.settings.account.field.social.github.label"),
+    },
+    [ACCOUNT_CONFIGURATION_KEY.socialInstagram]: {
+      hint: t("dashboard.settings.account.field.social.instagram.hint"),
+      label: t("dashboard.settings.account.field.social.instagram.label"),
+    },
+    [ACCOUNT_CONFIGURATION_KEY.socialLinkedin]: {
+      hint: t("dashboard.settings.account.field.social.linkedin.hint"),
+      label: t("dashboard.settings.account.field.social.linkedin.label"),
+    },
+    [ACCOUNT_CONFIGURATION_KEY.socialX]: {
+      hint: t("dashboard.settings.account.field.social.x.hint"),
+      label: t("dashboard.settings.account.field.social.x.label"),
+    },
+  };
+}
+
 function buildDashboardSettingsContent(
   t: I18nTranslator,
 ): Record<DashboardSettingsTab, DashboardSettingsTabContent> {
   return {
     [DASHBOARD_SETTINGS_TAB.account]: {
-      cards: [
-        {
-          description: t("dashboard.settings.account.cardIdentityDescription"),
-          eyebrow: t("dashboard.settings.account.cardIdentityEyebrow"),
-          rows: [
-            {
-              hint: "Mock key: site.name",
-              label: "Project name",
-              value: "Paper Portfolio Ink",
-            },
-            {
-              hint: "Mock key: site.domain",
-              label: "Domain",
-              value: "https://paper-portfolio-ink.dev",
-            },
-            {
-              hint: "Mock key: contact.email",
-              label: "Primary email",
-              value: "admin@paper-portfolio-ink.dev",
-            },
-          ],
-          title: t("dashboard.settings.account.cardIdentityTitle"),
-        },
-        {
-          description: t("dashboard.settings.account.cardPresenceDescription"),
-          eyebrow: t("dashboard.settings.account.cardPresenceEyebrow"),
-          rows: [
-            {
-              hint: "Mock key: social.linkedin",
-              label: "LinkedIn",
-              value: "linkedin.com/in/enes-ink",
-            },
-            {
-              hint: "Mock key: social.github",
-              label: "GitHub",
-              value: "github.com/enesonmez",
-            },
-            {
-              hint: "Mock key: social.instagram",
-              label: "Instagram",
-              value: "instagram.com/paperportfolioink",
-            },
-            {
-              hint: "Mock key: social.x",
-              label: "X",
-              value: "x.com/paperinkdev",
-            },
-          ],
-          title: t("dashboard.settings.account.cardPresenceTitle"),
-        },
-      ],
+      cards: [],
       checklist: {
         description: t("dashboard.settings.account.checklistDescription"),
         items: [
-          "Account rows stay list-first, not form-first.",
-          "Popup edit intent will attach to each row in the next task.",
-          "Configuration cache purge will sit in this surface after persistence lands.",
+          "Rows stay list-first; the popup is the only write surface.",
+          "Successful writes purge the configuration cache explicitly.",
+          "Public consumers can reuse the same cache-backed registry.",
         ],
         title: t("dashboard.settings.account.checklistTitle"),
       },
@@ -218,7 +217,7 @@ function buildDashboardSettingsContent(
             {
               hint: "Audit contract",
               label: "Mutation logging",
-              value: "Required for future settings writes",
+              value: "Required for settings writes",
             },
             {
               hint: "Edge policy",
@@ -276,14 +275,14 @@ function buildDashboardSettingsContent(
               value: "Warm after first request",
             },
             {
-              hint: "Next flow",
+              hint: "Current flow",
               label: "Configuration cache",
-              value: "Pending D1-backed key-value layer",
+              value: "Warm after first request",
             },
             {
               hint: "Operator action",
               label: "Purge trigger",
-              value: "Planned from settings surface",
+              value: "Settings mutation invalidation",
             },
           ],
           title: t("dashboard.settings.runtime.cardCacheTitle"),
@@ -314,8 +313,8 @@ function buildDashboardSettingsContent(
       checklist: {
         description: t("dashboard.settings.runtime.checklistDescription"),
         items: [
-          "Add cache clear button after configuration persistence lands.",
-          "Keep warm-up and invalidation utilities outside the route module.",
+          "Add explicit cache controls for each cached registry in the runtime tab.",
+          "Keep warm-up and invalidation utilities outside route modules.",
           "Do not couple runtime status cards to client-only polling by default.",
         ],
         title: t("dashboard.settings.runtime.checklistTitle"),
@@ -327,14 +326,37 @@ function buildDashboardSettingsContent(
   };
 }
 
+function buildDashboardSettingsAccountCards(
+  t: I18nTranslator,
+): readonly DashboardSettingsAccountCard[] {
+  return [
+    {
+      description: t("dashboard.settings.account.cardIdentityDescription"),
+      eyebrow: t("dashboard.settings.account.cardIdentityEyebrow"),
+      section: "identity",
+      title: t("dashboard.settings.account.cardIdentityTitle"),
+    },
+    {
+      description: t("dashboard.settings.account.cardPresenceDescription"),
+      eyebrow: t("dashboard.settings.account.cardPresenceEyebrow"),
+      section: "presence",
+      title: t("dashboard.settings.account.cardPresenceTitle"),
+    },
+  ] as const;
+}
+
 export function useDashboardSettingsCopy() {
   const t = useT();
 
   return {
+    accountActionLabel: t("dashboard.settings.account.actionLabel"),
+    accountCards: buildDashboardSettingsAccountCards(t),
+    accountEditDescription: t("dashboard.settings.account.editDescription"),
+    accountEditTitle: t("dashboard.settings.account.editTitle"),
+    accountFields: buildDashboardSettingsAccountFieldCopy(t),
+    accountValueFallback: t("dashboard.settings.account.valueFallback"),
     content: buildDashboardSettingsContent(t),
     currentRoleLabel: t("dashboard.settings.currentRoleLabel"),
-    mockBadge: t("dashboard.settings.mockBadge"),
-    mockDescription: t("dashboard.settings.mockDescription"),
     pageDescription: t("dashboard.settings.pageDescription"),
     pageEyebrow: t("dashboard.settings.pageEyebrow"),
     pageTitle: t("dashboard.settings.pageTitle"),

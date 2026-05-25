@@ -7,20 +7,36 @@ import {
   DashboardSettingsScreen,
 } from "~/routes/dashboard/settings";
 
+const baseLoaderData = {
+  access: "granted" as const,
+  accountForm: {
+    editingKey: null,
+    isOpen: false,
+    mode: null,
+    values: {
+      key: "site.name" as const,
+      value: "",
+    },
+  },
+  accountValues: {
+    "contact.email": "admin@paper-portfolio-ink.dev",
+    "site.domainUrl": "https://paper-portfolio-ink.dev",
+    "site.name": "Paper Ink",
+    "social.github": "https://github.com/enesonmez",
+    "social.instagram": "https://instagram.com/paperportfolioink",
+    "social.linkedin": "https://linkedin.com/in/enes-ink",
+    "social.x": "https://x.com/paperinkdev",
+  },
+  selectedTab: "account" as const,
+};
+
 describe("dashboard settings route", () => {
-  it("renders the account tab mock surface", () => {
+  it("renders the account registry with persisted values", () => {
     const router = createMemoryRouter(
       [
         {
           path: "/dashboard/settings",
-          element: (
-            <DashboardSettingsScreen
-              loaderData={{
-                access: "granted",
-                selectedTab: "account",
-              }}
-            />
-          ),
+          element: <DashboardSettingsScreen loaderData={baseLoaderData} />,
         },
       ],
       {
@@ -33,9 +49,48 @@ describe("dashboard settings route", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Dashboard settings" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Account.*07/i })).toBeInTheDocument();
-    expect(screen.getByText("Paper Portfolio Ink")).toBeInTheDocument();
-    expect(screen.getByText("linkedin.com/in/enes-ink")).toBeInTheDocument();
+    expect(screen.getByText("Paper Ink")).toBeInTheDocument();
+    expect(screen.getByText("https://linkedin.com/in/enes-ink")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Project name/i })).toBeInTheDocument();
+  });
+
+  it("renders the account edit modal when requested", () => {
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/settings",
+          element: (
+            <DashboardSettingsScreen
+              loaderData={{
+                ...baseLoaderData,
+                accountForm: {
+                  editingKey: "site.name",
+                  isOpen: true,
+                  mode: "edit",
+                  values: {
+                    key: "site.name",
+                    value: "Paper Ink",
+                  },
+                },
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: [
+          "/dashboard/settings?tab=account&modal=edit-account-setting&setting=site.name",
+        ],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen.getByRole("dialog", { name: "Update account record" }),
+    ).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Paper Ink")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Edit record" })).toBeInTheDocument();
   });
 
   it("switches the visible content for the runtime tab", () => {
@@ -46,7 +101,7 @@ describe("dashboard settings route", () => {
           element: (
             <DashboardSettingsScreen
               loaderData={{
-                access: "granted",
+                ...baseLoaderData,
                 selectedTab: "runtime",
               }}
             />

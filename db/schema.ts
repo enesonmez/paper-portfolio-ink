@@ -334,6 +334,25 @@ export const translations = sqliteTable(
   ],
 );
 
+export const configurationParameters = sqliteTable(
+  "configuration_parameters",
+  {
+    key: text("key").primaryKey(),
+    value: text("value").notNull(),
+    ...createTimestampColumns(),
+  },
+  (table) => [
+    check(
+      "configuration_parameters_key_length_check",
+      sql`length(${table.key}) between 3 and 120`,
+    ),
+    check(
+      "configuration_parameters_key_spacing_check",
+      sql`instr(${table.key}, ' ') = 0`,
+    ),
+  ],
+);
+
 export const loginRateLimits = sqliteTable(
   "login_rate_limits",
   {
@@ -441,6 +460,7 @@ export const schema = {
   authorizationState,
   locales,
   translations,
+  configurationParameters,
   loginRateLimits,
   logHistory,
   logErrorHistory,

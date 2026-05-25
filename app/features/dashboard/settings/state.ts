@@ -1,3 +1,14 @@
+import {
+  buildAccountConfigurationFormValues,
+  type AccountConfigurationFormState,
+  type AccountConfigurationFormValues,
+} from "~/domain/configuration/form";
+import {
+  getDefaultAccountConfigurationRecord,
+  isAccountConfigurationKey,
+  type AccountConfigurationKey,
+} from "~/domain/configuration/model";
+
 export const DASHBOARD_SETTINGS_TAB = {
   account: "account",
   appearance: "appearance",
@@ -5,11 +16,34 @@ export const DASHBOARD_SETTINGS_TAB = {
   security: "security",
 } as const;
 
+export const DASHBOARD_SETTINGS_QUERY_PARAM = {
+  key: "setting",
+  modal: "modal",
+  tab: "tab",
+} as const;
+
+export const DASHBOARD_SETTINGS_MODAL = {
+  editAccount: "edit-account-setting",
+} as const;
+
 export type DashboardSettingsTab =
   (typeof DASHBOARD_SETTINGS_TAB)[keyof typeof DASHBOARD_SETTINGS_TAB];
 
+export type DashboardSettingsModal =
+  (typeof DASHBOARD_SETTINGS_MODAL)[keyof typeof DASHBOARD_SETTINGS_MODAL];
+
+export interface DashboardSettingsAccountFormViewState {
+  editingKey: AccountConfigurationKey | null;
+  errors?: AccountConfigurationFormState["errors"];
+  isOpen: boolean;
+  mode: "edit" | null;
+  values: AccountConfigurationFormValues;
+}
+
 export interface DashboardSettingsGrantedLoaderData {
   access: "granted";
+  accountForm: DashboardSettingsAccountFormViewState;
+  accountValues: Record<AccountConfigurationKey, string>;
   selectedTab: DashboardSettingsTab;
 }
 
@@ -21,6 +55,40 @@ export interface DashboardSettingsDeniedLoaderData {
 export type DashboardSettingsLoaderData =
   | DashboardSettingsDeniedLoaderData
   | DashboardSettingsGrantedLoaderData;
+
+interface ResolveDashboardSettingsAccountFormArgs {
+  accountValues: Record<AccountConfigurationKey, string>;
+  editKey: string | null;
+  modal: string | null;
+}
+
+interface BuildDashboardSettingsAccountFormStateArgs {
+  editingKey?: AccountConfigurationKey | null;
+  errors?: AccountConfigurationFormState["errors"];
+  mode: "edit" | null;
+  values: AccountConfigurationFormValues;
+}
+
+export interface DashboardSettingsHrefParams {
+  key?: AccountConfigurationKey | null;
+  modal?: DashboardSettingsModal | null;
+  tab: DashboardSettingsTab;
+}
+
+function buildDashboardSettingsAccountFormState({
+  editingKey,
+  errors,
+  mode,
+  values,
+}: BuildDashboardSettingsAccountFormStateArgs): DashboardSettingsAccountFormViewState {
+  return {
+    editingKey: editingKey ?? null,
+    errors,
+    isOpen: mode !== null,
+    mode,
+    values,
+  };
+}
 
 export function normalizeDashboardSettingsTab(
   value: string | null,
@@ -39,8 +107,28 @@ export function normalizeDashboardSettingsTab(
 
 export function buildDashboardSettingsHref(tab: DashboardSettingsTab) {
   const searchParams = new URLSearchParams({
-    tab,
+    [DASHBOARD_SETTINGS_QUERY_PARAM.tab]: tab,
   });
+
+  return `/dashboard/settings?${searchParams.toString()}`;
+}
+
+export function buildDashboardSettingsModalHref({
+  key,
+  modal,
+  tab,
+}: DashboardSettingsHrefParams) {
+  const searchParams = new URLSearchParams({
+    [DASHBOARD_SETTINGS_QUERY_PARAM.tab]: tab,
+  });
+
+  if (modal) {
+    searchParams.set(DASHBOARD_SETTINGS_QUERY_PARAM.modal, modal);
+  }
+
+  if (key) {
+    searchParams.set(DASHBOARD_SETTINGS_QUERY_PARAM.key, key);
+  }
 
   return `/dashboard/settings?${searchParams.toString()}`;
 }
@@ -50,4 +138,46 @@ export function buildDeniedDashboardSettingsLoaderData(): DashboardSettingsDenie
     access: "denied",
     selectedTab: DASHBOARD_SETTINGS_TAB.account,
   };
+}
+
+export function resolveDashboardSettingsAccountForm({
+  accountValues,
+  editKey,
+  modal,
+}: ResolveDashboardSettingsAccountFormArgs): DashboardSettingsAccountFormViewState {
+  if (
+    modal !== DASHBOARD_SETTINGS_MODAL.editAccount ||
+    !editKey ||
+    !isAccountConfigurationKey(editKey)
+  ) {
+    return buildDashboardSettingsAccountFormState({
+      mode: null,
+      values: buildAccountConfigurationFormValues(),
+    });
+  }
+
+  return buildDashboardSettingsAccountFormState({
+    editingKey: editKey,
+    mode: "edit",
+    values: buildAccountConfigurationFormValues({
+      key: editKey,
+      value: accountValues[editKey] ?? getDefaultAccountConfigurationRecord()[editKey],
+    }),
+  });
+}
+
+export function mergeDashboardSettingsAccountFormState(
+  loaderForm: DashboardSettingsAccountFormViewState,
+  actionData?: AccountConfigurationFormState,
+) {
+  if (!actionData) {
+    return loaderForm;
+  }
+
+  return buildDashboardSettingsAccountFormState({
+    editingKey: loaderForm.editingKey,
+    errors: actionData.errors,
+    mode: loaderForm.mode,
+    values: actionData.values,
+  });
 }

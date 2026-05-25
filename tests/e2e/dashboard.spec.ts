@@ -41,7 +41,32 @@ test("renders the dashboard shell and seeded content registries for an authentic
   await expect(
     page.getByRole("heading", { level: 1, name: "Dashboard ayarlari" }),
   ).toBeVisible();
+  await expect(page.getByText("Paper Ink")).toBeVisible();
+});
+
+test("updates an account configuration value from the settings modal", async ({
+  page,
+}) => {
+  await page.goto(`${E2E_LOCALE_PREFIX}/dashboard/settings?tab=account`);
+
+  await page.getByRole("link", { name: /Project name/i }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Account kaydini guncelle" }),
+  ).toBeVisible();
+
+  const input = page.getByLabel("Project name");
+  await input.fill("Paper Portfolio Ink");
+  await page.getByRole("button", { name: "Kaydi duzenle" }).click();
+
+  await expect(page).toHaveURL(
+    new RegExp(`${E2E_LOCALE_PREFIX}/dashboard/settings\\?tab=account$`),
+  );
   await expect(page.getByText("Paper Portfolio Ink")).toBeVisible();
+
+  await page.getByRole("link", { name: /Project name/i }).click();
+  await page.getByLabel("Project name").fill("Paper Ink");
+  await page.getByRole("button", { name: "Kaydi duzenle" }).click();
+  await expect(page.getByText("Paper Ink")).toBeVisible();
 });
 
 test("filters seeded translation resources inside the admin settings area", async ({
@@ -55,7 +80,7 @@ test("filters seeded translation resources inside the admin settings area", asyn
   await page.getByLabel("Ara").fill("site.name");
   await page.getByRole("button", { name: /^Ara$/ }).click();
 
-  await expect(page.getByText("site.name")).toBeVisible();
+  await expect(page.getByText("site.name", { exact: true })).toBeVisible();
   await expect(page.getByText("Paper Ink")).toBeVisible();
 });
 

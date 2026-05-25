@@ -1,4 +1,11 @@
+import {
+  ACCOUNT_CONFIGURATION_KEY,
+  getDefaultAccountConfigurationRecord,
+} from "~/domain/configuration/model";
+
+const defaultAccountConfiguration = getDefaultAccountConfigurationRecord();
+
 export const siteConfig = {
-  name: "Paper Ink",
-  url: "https://paper-portfolio-ink.dev",
+  name: defaultAccountConfiguration[ACCOUNT_CONFIGURATION_KEY.projectName],
+  url: defaultAccountConfiguration[ACCOUNT_CONFIGURATION_KEY.projectDomainUrl],
 } as const;

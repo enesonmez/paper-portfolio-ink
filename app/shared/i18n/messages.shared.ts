@@ -218,21 +218,47 @@ const tr = {
   "dashboard.authz.forbiddenError": "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
   "dashboard.authz.restrictedDescription": "Bu alani goruntuleme yetkiniz bulunmuyor.",
   "dashboard.authz.restrictedTitle": "Erisim reddedildi",
+  "dashboard.settings.account.actionLabel": "Kaydi duzenle",
   "dashboard.settings.account.cardIdentityDescription":
-    "Bir sonraki fazda configuration parameter kayitlarina donusecek cekirdek hesap satirlari.",
+    "Proje cekirdegi ve iletisim kanali cache-backed configuration parameter kayitlarindan okunur.",
   "dashboard.settings.account.cardIdentityEyebrow": "Kimlik kayitlari",
   "dashboard.settings.account.cardIdentityTitle": "Hesap cekirdegi",
   "dashboard.settings.account.cardPresenceDescription":
-    "Public yuzeylerde gorunecek sosyal ve iletisim kanallari icin mock baglanti iskeleti.",
+    "Public yuzeylerde kullanilacak sosyal linkler ayni key-value registry uzerinden yonetilir.",
   "dashboard.settings.account.cardPresenceEyebrow": "Public baglantilar",
   "dashboard.settings.account.cardPresenceTitle": "Dijital gorunurluk",
   "dashboard.settings.account.checklistDescription":
-    "Bu mock tasarim, bir sonraki configuration parameter gorevinin UI iskeletini simdiden sabitler.",
-  "dashboard.settings.account.checklistTitle": "Sonraki baglanti",
+    "Bu tab ilk request sonrasi isinan configuration cache'ini kullanan modal tabanli edit akisidir.",
+  "dashboard.settings.account.checklistTitle": "Isletim notlari",
   "dashboard.settings.account.description":
-    "Hesap, public link ve proje kimligi satirlarini popup-temelli editor akisi icin hazirlayan mock liste.",
+    "Email, sosyal linkler ve proje kimligini list-first yuzeyde tutan account registry.",
+  "dashboard.settings.account.editDescription":
+    "Secili configuration parameter degerini guncelle. Kayit D1'e yazilir ve configuration cache temizlenir.",
+  "dashboard.settings.account.editTitle": "Account kaydini guncelle",
   "dashboard.settings.account.eyebrow": "Hesap katmani",
+  "dashboard.settings.account.field.contact.email.hint":
+    "Public iletisim ve admin kimlik rotalari icin birincil e-posta.",
+  "dashboard.settings.account.field.contact.email.label": "Primary email",
+  "dashboard.settings.account.field.site.domainUrl.hint":
+    "Canonical site URL ve ilerideki metadata baglantilari.",
+  "dashboard.settings.account.field.site.domainUrl.label": "Domain URL",
+  "dashboard.settings.account.field.site.name.hint":
+    "Public meta title ve portfolio kimligi icin temel proje adi.",
+  "dashboard.settings.account.field.site.name.label": "Project name",
+  "dashboard.settings.account.field.social.github.hint":
+    "Repository ve acik kaynak profil baglantisi.",
+  "dashboard.settings.account.field.social.github.label": "GitHub",
+  "dashboard.settings.account.field.social.instagram.hint":
+    "Gorsel paylasim ve brand stream linki.",
+  "dashboard.settings.account.field.social.instagram.label": "Instagram",
+  "dashboard.settings.account.field.social.linkedin.hint":
+    "Profesyonel profil baglantisi.",
+  "dashboard.settings.account.field.social.linkedin.label": "LinkedIn",
+  "dashboard.settings.account.field.social.x.hint":
+    "Kisa guncellemeler ve dagitim kanali.",
+  "dashboard.settings.account.field.social.x.label": "X",
   "dashboard.settings.account.title": "Account tabi",
+  "dashboard.settings.account.valueFallback": "Henuz ayarlanmadi",
   "dashboard.settings.appearance.cardChromeDescription":
     "Dashboard kabugundeki grid, panel ve focus state tercihleri ayni retro comic dilinde hizalanir.",
   "dashboard.settings.appearance.cardChromeEyebrow": "Yuzey dili",
@@ -257,7 +283,7 @@ const tr = {
   "dashboard.settings.mockDescription":
     "Bu ekran bilincli olarak read-only tasarlandi. Ama amac, sonraki account ve cache gorevleri icin kalici tab iskeletini simdiden olusturmak.",
   "dashboard.settings.pageDescription":
-    "Tabbed settings page tasarimini server-first bir mock yuzey olarak ac; gercek mutation davranisi daha sonraki task'lerde eklenecek.",
+    "Tabbed settings page tasarimini server-first bir operasyon yuzeyine cevir; account tabi cache-backed kayitlari modal ile gunceller.",
   "dashboard.settings.pageEyebrow": "Ayar orchestrasyonu",
   "dashboard.settings.pageTitle": "Dashboard ayarlari",
   "dashboard.settings.restrictedDescription":
@@ -791,6 +817,11 @@ const tr = {
   "validation.resource.translation.value.min": "Translation degeri bos birakilamaz.",
   "validation.resource.translation.value.max":
     "Translation degeri en fazla 4000 karakter olabilir.",
+  "validation.settings.contactEmail": "Gecerli bir e-posta adresi gir.",
+  "validation.settings.key": "Gecerli bir configuration key sec.",
+  "validation.settings.projectName.max": "Proje adi en fazla 80 karakter olabilir.",
+  "validation.settings.projectName.min": "Proje adi en az 2 karakter olmali.",
+  "validation.settings.url": "Gecerli bir URL gir.",
   "validation.user.avatarUrl": "Gecerli bir avatar URL gir.",
   "validation.user.bio.max": "Biyografi en fazla 500 karakter olabilir.",
   "validation.user.displayName.min": "Gorunen ad en az 2 karakter olmali.",
@@ -1029,21 +1060,45 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.authz.restrictedDescription":
     "You do not have permission to view this area.",
   "dashboard.authz.restrictedTitle": "Access denied",
+  "dashboard.settings.account.actionLabel": "Edit record",
   "dashboard.settings.account.cardIdentityDescription":
-    "Core account rows that will map to configuration parameters in the next phase.",
+    "Project core and contact channels read from cache-backed configuration parameters.",
   "dashboard.settings.account.cardIdentityEyebrow": "Identity registry",
   "dashboard.settings.account.cardIdentityTitle": "Account core",
   "dashboard.settings.account.cardPresenceDescription":
-    "Mock social and contact links that will later power public profile surfaces.",
+    "Public-facing social links are managed through the same key-value registry.",
   "dashboard.settings.account.cardPresenceEyebrow": "Public links",
   "dashboard.settings.account.cardPresenceTitle": "Digital presence",
   "dashboard.settings.account.checklistDescription":
-    "This mock layout locks the UI skeleton for the upcoming configuration-parameter task.",
-  "dashboard.settings.account.checklistTitle": "Next handoff",
+    "This tab uses the configuration cache that warms after the first request and edits through modal actions.",
+  "dashboard.settings.account.checklistTitle": "Operating notes",
   "dashboard.settings.account.description":
-    "A mock list surface that prepares account, public link, and project identity rows for a popup editor flow.",
+    "An account registry that keeps email, social links, and project identity in a list-first surface.",
+  "dashboard.settings.account.editDescription":
+    "Update the selected configuration parameter. The value is written to D1 and the configuration cache is purged.",
+  "dashboard.settings.account.editTitle": "Update account record",
   "dashboard.settings.account.eyebrow": "Account layer",
+  "dashboard.settings.account.field.contact.email.hint":
+    "Primary email used for public contact and admin identity flows.",
+  "dashboard.settings.account.field.contact.email.label": "Primary email",
+  "dashboard.settings.account.field.site.domainUrl.hint":
+    "Canonical site URL and future metadata links.",
+  "dashboard.settings.account.field.site.domainUrl.label": "Domain URL",
+  "dashboard.settings.account.field.site.name.hint":
+    "Base project name for public metadata and portfolio identity.",
+  "dashboard.settings.account.field.site.name.label": "Project name",
+  "dashboard.settings.account.field.social.github.hint":
+    "Repository and open-source profile link.",
+  "dashboard.settings.account.field.social.github.label": "GitHub",
+  "dashboard.settings.account.field.social.instagram.hint": "Visual brand stream link.",
+  "dashboard.settings.account.field.social.instagram.label": "Instagram",
+  "dashboard.settings.account.field.social.linkedin.hint": "Professional profile link.",
+  "dashboard.settings.account.field.social.linkedin.label": "LinkedIn",
+  "dashboard.settings.account.field.social.x.hint":
+    "Short updates and distribution channel.",
+  "dashboard.settings.account.field.social.x.label": "X",
   "dashboard.settings.account.title": "Account tab",
+  "dashboard.settings.account.valueFallback": "Not configured yet",
   "dashboard.settings.appearance.cardChromeDescription":
     "Grid, panel, and focus-state decisions stay aligned to the same retro comic dashboard language.",
   "dashboard.settings.appearance.cardChromeEyebrow": "Surface language",
@@ -1068,7 +1123,7 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.settings.mockDescription":
     "This screen is intentionally read-only. The goal is to lock the long-lived tab skeleton before account and cache mutations arrive in later tasks.",
   "dashboard.settings.pageDescription":
-    "Open the tabbed settings page as a server-first mock surface; real mutation behavior will land in later tasks.",
+    "Turn the tabbed settings page into a server-first operational surface; the account tab edits cache-backed records through a modal.",
   "dashboard.settings.pageEyebrow": "Settings orchestration",
   "dashboard.settings.pageTitle": "Dashboard settings",
   "dashboard.settings.restrictedDescription":
@@ -1618,6 +1673,11 @@ const en: Record<keyof typeof tr, string> = {
   "validation.resource.translation.value.min": "Translation value cannot be empty.",
   "validation.resource.translation.value.max":
     "Translation value can be at most 4000 characters.",
+  "validation.settings.contactEmail": "Enter a valid email address.",
+  "validation.settings.key": "Select a valid configuration key.",
+  "validation.settings.projectName.max": "Project name can be at most 80 characters.",
+  "validation.settings.projectName.min": "Project name must be at least 2 characters.",
+  "validation.settings.url": "Enter a valid URL.",
   "validation.user.avatarUrl": "Enter a valid avatar URL.",
   "validation.user.bio.max": "Bio can be at most 500 characters.",
   "validation.user.displayName.min": "Display name must be at least 2 characters.",
