@@ -40,6 +40,11 @@
 
 - Veri akışı mümkün olduğunca React Router `loader` ve `action` ile zero-JS yaklaşımında tasarlanmalıdır.
 - D1 sorguları için indeksleme ve query optimization göz önünde bulundurulmalıdır.
+- Composite index'ler, gerçekte kullanılan `WHERE` + `ORDER BY` + cursor alanları ile birebir hizalanmalıdır; aksi halde SQLite temp B-tree kurar.
+- Büyük listelerde `OFFSET` yerine mümkün olduğunca keyset/cursor pagination tercih edilmelidir.
+- Liste ve feed sorgularında tam rich-content kolonları taşınmamalı; özet/list read-model'leri ile edit/detail read-model'leri ayrılmalıdır.
+- Sık çalışan `count(*)` veya operasyonel toplamlar her request'te yeniden hesaplanmamalı; uygun TTL cache ve write-side invalidation ile yönetilmelidir.
+- N+1 problemine dikkat edilmelidir.
 - Görseller Cloudflare Images/R2 hattında optimize formatlarla servis edilmelidir.
 - Client'a gereksiz paket yüklemelerden kaçın.
 - Projede kullanılmayan kütüphaneleri kaldır.

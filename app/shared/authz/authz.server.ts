@@ -14,6 +14,5 @@ export {
 export { buildForbiddenFormState } from "./responses";
 export {
   getAuthorizationActorFromSession,
-  getAuthorizationCache,
   requireDashboardActor,
 } from "./resolver.server";

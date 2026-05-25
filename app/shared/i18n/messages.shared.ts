@@ -726,6 +726,8 @@ const tr = {
   "validation.login.password.min": "Parola en az 8 karakter olmali.",
   "validation.login.password.max": "Parola en fazla 128 karakter olabilir.",
   "validation.login.invalidCredentials": "E-posta veya parola hatali.",
+  "validation.login.rateLimited":
+    "Cok fazla giris denemesi yapildi. Lutfen kisa bir sure sonra tekrar dene.",
   "validation.login.unavailable": "Giris su anda tamamlanamadi.",
   "validation.slug.taken": "Bu slug zaten kullanimda. Baska bir slug sec.",
   "aria.publicBlog.cover": "kapak gorseli",
@@ -1472,6 +1474,8 @@ const en: Record<keyof typeof tr, string> = {
   "validation.login.password.min": "Password must be at least 8 characters.",
   "validation.login.password.max": "Password can be at most 128 characters.",
   "validation.login.invalidCredentials": "Email or password is incorrect.",
+  "validation.login.rateLimited":
+    "Too many sign-in attempts were made. Please try again in a few minutes.",
   "validation.login.unavailable": "Login could not be completed right now.",
   "validation.slug.taken": "This slug is already in use. Choose another slug.",
   "aria.publicBlog.cover": "cover image",

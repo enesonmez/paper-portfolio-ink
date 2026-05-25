@@ -19,6 +19,7 @@ export interface PostContentDocument {
 }
 
 const SAFE_POST_LINK_PROTOCOLS = new Set(["http:", "https:", "mailto:"]);
+const SAFE_POST_IMAGE_PROTOCOLS = new Set(["http:", "https:"]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -217,6 +218,35 @@ export function sanitizePostLinkHref(href: string): string | null {
     }
 
     return normalizedHref;
+  } catch {
+    return null;
+  }
+}
+
+export function sanitizePostImageSrc(src: string): string | null {
+  const normalizedSrc = src.trim();
+
+  if (
+    normalizedSrc.length === 0 ||
+    normalizedSrc.startsWith("//") ||
+    normalizedSrc.startsWith("data:") ||
+    normalizedSrc.startsWith("blob:")
+  ) {
+    return null;
+  }
+
+  if (normalizedSrc.startsWith("/")) {
+    return normalizedSrc;
+  }
+
+  try {
+    const parsedUrl = new URL(normalizedSrc);
+
+    if (!SAFE_POST_IMAGE_PROTOCOLS.has(parsedUrl.protocol)) {
+      return null;
+    }
+
+    return normalizedSrc;
   } catch {
     return null;
   }

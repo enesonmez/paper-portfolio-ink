@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { authorizeLoggingMutationOrThrow } from "~/features/dashboard/logging/operations/_shared/authorization.server";
 
 describe("dashboard logging mutation authorization", () => {
-  it("requires export permission for export intent", () => {
+  it("requires both read and export permissions for export intent", () => {
     expect(() => {
       authorizeLoggingMutationOrThrow({
         actor: {
@@ -49,7 +49,7 @@ describe("dashboard logging mutation authorization", () => {
     }
   });
 
-  it("requires delete permission for delete intent", () => {
+  it("requires both read and delete permissions for delete intent", () => {
     expect(() => {
       authorizeLoggingMutationOrThrow({
         actor: {
@@ -95,12 +95,12 @@ describe("dashboard logging mutation authorization", () => {
     }
   });
 
-  it("splits audit and error mutation claims", () => {
+  it("splits audit and error mutation claims while requiring the matching read claim", () => {
     expect(() => {
       authorizeLoggingMutationOrThrow({
         actor: {
           authzVersion: 1,
-          claims: ["logs.error.export"],
+          claims: ["logs.error.read", "logs.error.export"],
           role: "author",
           userId: "user-author",
         },
@@ -115,7 +115,7 @@ describe("dashboard logging mutation authorization", () => {
       authorizeLoggingMutationOrThrow({
         actor: {
           authzVersion: 1,
-          claims: ["logs.error.delete"],
+          claims: ["logs.error.read", "logs.error.delete"],
           role: "author",
           userId: "user-author",
         },
@@ -125,6 +125,32 @@ describe("dashboard logging mutation authorization", () => {
     }).toThrowErrorMatchingInlineSnapshot(
       `[AuthorizationError: Logging mutation denied by authorization policy]`,
     );
+
+    expect(() => {
+      authorizeLoggingMutationOrThrow({
+        actor: {
+          authzVersion: 1,
+          claims: ["logs.audit.read", "logs.audit.export"],
+          role: "author",
+          userId: "user-author",
+        },
+        forbiddenMessage: "forbidden",
+        intent: "export-history",
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      authorizeLoggingMutationOrThrow({
+        actor: {
+          authzVersion: 1,
+          claims: ["logs.audit.read", "logs.audit.delete"],
+          role: "author",
+          userId: "user-author",
+        },
+        forbiddenMessage: "forbidden",
+        intent: "delete-history",
+      });
+    }).not.toThrow();
 
     expect(() => {
       authorizeLoggingMutationOrThrow({
@@ -137,19 +163,8 @@ describe("dashboard logging mutation authorization", () => {
         forbiddenMessage: "forbidden",
         intent: "export-history",
       });
-    }).not.toThrow();
-
-    expect(() => {
-      authorizeLoggingMutationOrThrow({
-        actor: {
-          authzVersion: 1,
-          claims: ["logs.audit.delete"],
-          role: "author",
-          userId: "user-author",
-        },
-        forbiddenMessage: "forbidden",
-        intent: "delete-history",
-      });
-    }).not.toThrow();
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[AuthorizationError: Logging mutation denied by authorization policy]`,
+    );
   });
 });

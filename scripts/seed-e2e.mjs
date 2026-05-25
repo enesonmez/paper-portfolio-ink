@@ -383,6 +383,8 @@ async function seedE2eFixtures() {
       resolvedUsers.map((user) => [user.storageKey, user]),
     );
 
+    await db.batch([db.prepare("DELETE FROM login_rate_limits")]);
+
     for (const user of resolvedUsers) {
       const passwordHash = await hashPassword(user.password);
       const accountId = await findExistingAccountId(db, user.id);
