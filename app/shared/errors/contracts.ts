@@ -201,9 +201,16 @@ export const APP_ERROR_CODE = {
     },
   },
   settings: {
+    mutation: {
+      invalidIntent: "settings.mutation.invalid_intent",
+    },
     read: {
       forbidden: "settings.read.forbidden",
     },
+    update: {
+      forbidden: "settings.update.forbidden",
+    },
+    validation: "settings.validation",
   },
   skills: {
     create: {

@@ -7,6 +7,7 @@ import {
   authorizationRoleClaims,
   authorizationState,
   authorizationUserClaimOverrides,
+  configurationParameters,
   loginRateLimits,
   locales,
   posts,
@@ -31,6 +32,7 @@ describe("database schema", () => {
       authorizationRoleClaims,
       authorizationState,
       authorizationUserClaimOverrides,
+      configurationParameters,
       loginRateLimits,
       posts,
       projects,
@@ -152,6 +154,16 @@ describe("database schema", () => {
     );
     expect(config.foreignKeys).toHaveLength(1);
     expect(config.indexes).toHaveLength(0);
+  });
+
+  it("defines the configuration parameters table for cache-backed key-value settings", () => {
+    const config = getTableConfig(configurationParameters);
+
+    expect(getColumnNames(configurationParameters)).toEqual(
+      expect.arrayContaining(["key", "value", "created_at", "updated_at"]),
+    );
+    expect(config.indexes).toHaveLength(0);
+    expect(config.checks).toHaveLength(2);
   });
 
   it("defines the sessions table with Better Auth session columns", () => {

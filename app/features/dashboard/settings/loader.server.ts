@@ -11,10 +11,13 @@ import {
   APP_ERROR_CODE,
   APP_ERROR_RESOURCE,
 } from "~/shared/errors/contracts";
+import { loadAccountConfigurationParameters } from "~/lib/configuration/configuration.server";
 
 import {
   buildDeniedDashboardSettingsLoaderData,
+  DASHBOARD_SETTINGS_QUERY_PARAM,
   normalizeDashboardSettingsTab,
+  resolveDashboardSettingsAccountForm,
   type DashboardSettingsLoaderData,
 } from "./state";
 
@@ -37,12 +40,21 @@ export async function loadDashboardSettingsData(
         },
         isAllowed: actorHasClaim(actor, AUTHORIZATION_CLAIM.settingsManage),
       }),
-    handle: () => {
+    handle: async () => {
       const url = new URL(request.url);
+      const accountValues = await loadAccountConfigurationParameters(context, request);
 
       return {
         access: "granted",
-        selectedTab: normalizeDashboardSettingsTab(url.searchParams.get("tab")),
+        accountForm: resolveDashboardSettingsAccountForm({
+          accountValues,
+          editKey: url.searchParams.get(DASHBOARD_SETTINGS_QUERY_PARAM.key),
+          modal: url.searchParams.get(DASHBOARD_SETTINGS_QUERY_PARAM.modal),
+        }),
+        accountValues,
+        selectedTab: normalizeDashboardSettingsTab(
+          url.searchParams.get(DASHBOARD_SETTINGS_QUERY_PARAM.tab),
+        ),
       };
     },
   });
