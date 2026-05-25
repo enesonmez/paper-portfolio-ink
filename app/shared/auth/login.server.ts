@@ -11,6 +11,7 @@ import {
   APP_ERROR_SEVERITY,
   APP_ERROR_SINK,
   ExternalServiceError,
+  isAppError,
 } from "~/shared/errors/app-error.server";
 import {
   APP_ERROR_ACTION,
@@ -28,6 +29,12 @@ import {
   type I18nTranslator,
 } from "~/shared/i18n/i18n.shared";
 import { findUserByEmail } from "~/lib/users/users.server";
+import {
+  assertLoginRateLimitAllowed,
+  clearLoginRateLimitFailures,
+  recordLoginRateLimitFailure,
+  shouldTrackLoginRateLimitFailure,
+} from "./login-rate-limit.server";
 
 import { resolveAuthConfig } from "./auth-config.server";
 import { createAuth } from "./auth.server";
@@ -233,7 +240,17 @@ export async function signInWithEmail({
   supportedLocaleCodes,
   t,
 }: SignInWithEmailOptions) {
+  const authConfig = resolveAuthConfig(request, context.auth);
+
   try {
+    await assertLoginRateLimitAllowed({
+      db: context.db,
+      request,
+      secret: authConfig.secret,
+      submission,
+      t,
+    });
+
     const existingUser = await findUserByEmail(context.db, submission.email);
 
     if (existingUser && !existingUser.isActive) {
@@ -257,7 +274,7 @@ export async function signInWithEmail({
 
     const auth = createAuth({
       db: context.db,
-      ...resolveAuthConfig(request, context.auth),
+      ...authConfig,
     });
     const response = await auth.api.signInEmail({
       body: {
@@ -330,10 +347,23 @@ export async function signInWithEmail({
     );
     const headers = new Headers(response.headers);
 
+    try {
+      await clearLoginRateLimitFailures({
+        db: context.db,
+        request,
+        secret: authConfig.secret,
+        submission,
+      });
+    } catch {
+      // Login success should not fail because throttle cleanup could not be persisted.
+    }
+
     return redirect(redirectTarget, {
       headers,
     });
   } catch (error) {
+    let normalizedError = error;
+
     if (isAPIError(error)) {
       const status = resolveApiErrorStatus(error);
       const formState: LoginFormState = {
@@ -347,32 +377,44 @@ export async function signInWithEmail({
       };
 
       if (status >= 500) {
-        throw new ExternalServiceError("Email sign-in provider threw an API error", {
-          code: APP_ERROR_CODE.auth.login.providerException,
+        normalizedError = new ExternalServiceError(
+          "Email sign-in provider threw an API error",
+          {
+            code: APP_ERROR_CODE.auth.login.providerException,
+            details: {
+              providerStatus: status,
+            },
+            expose: true,
+            logSink: APP_ERROR_SINK.logErrorHistory,
+            responseData: formState,
+            severity: APP_ERROR_SEVERITY.error,
+            status,
+          },
+        );
+      } else {
+        normalizedError = buildAuthorizationError<LoginFormState>({
+          action: APP_ERROR_ACTION.login,
+          code: APP_ERROR_CODE.auth.login.apiError,
           details: {
             providerStatus: status,
           },
-          expose: true,
-          logSink: APP_ERROR_SINK.logErrorHistory,
+          message: "Login rejected by auth API",
+          resource: APP_ERROR_RESOURCE.authLogin,
           responseData: formState,
-          severity: APP_ERROR_SEVERITY.error,
           status,
         });
       }
+    }
 
-      throw buildAuthorizationError<LoginFormState>({
-        action: APP_ERROR_ACTION.login,
-        code: APP_ERROR_CODE.auth.login.apiError,
-        details: {
-          providerStatus: status,
-        },
-        message: "Login rejected by auth API",
-        resource: APP_ERROR_RESOURCE.authLogin,
-        responseData: formState,
-        status,
+    if (shouldTrackLoginRateLimitFailure(normalizedError)) {
+      await recordLoginRateLimitFailure({
+        db: context.db,
+        request,
+        secret: authConfig.secret,
+        submission,
       });
     }
 
-    throw error;
+    throw isAppError(normalizedError) ? normalizedError : error;
   }
 }

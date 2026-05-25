@@ -467,7 +467,7 @@ describe("dashboard logging server", () => {
     expect(listLogErrorHistoryEntriesAscendingMock).not.toHaveBeenCalled();
   });
 
-  it("exports error logs when the session only has the export claim", async () => {
+  it("requires the matching read claim before exporting error logs", async () => {
     const { loadDashboardLoggingExportFile } =
       await import("~/features/dashboard/logging/server");
 
@@ -491,19 +491,13 @@ describe("dashboard logging server", () => {
         startAt: "2026-03-29T19:00",
       },
     });
-    listLogErrorHistoryEntriesAscendingMock.mockResolvedValue([]);
-
-    const response = await loadDashboardLoggingExportFile(context, request);
-
-    if (!(response instanceof Response)) {
-      throw new Error("Expected export response");
-    }
-
-    const workbookBytes = new Uint8Array(await response.arrayBuffer());
-
-    expect(response.status).toBe(200);
-    expect(workbookBytes.slice(0, 2)).toEqual(new Uint8Array([0x50, 0x4b]));
-    expect(response.headers.get("Content-Disposition")).toContain("log-error-history-");
+    await expect(
+      loadDashboardLoggingExportFile(context, request),
+    ).rejects.toMatchObject({
+      code: "logging.export.forbidden",
+      status: 403,
+    });
+    expect(listLogErrorHistoryEntriesAscendingMock).not.toHaveBeenCalled();
   });
 
   it("returns a 403 form error for sessions without delete permission", async () => {
@@ -557,7 +551,7 @@ describe("dashboard logging server", () => {
     expect(deleteLogErrorHistoryEntriesByDateRangeMock).not.toHaveBeenCalled();
   });
 
-  it("deletes error logs when the session only has the delete claim", async () => {
+  it("requires the matching read claim before deleting error logs", async () => {
     const { handleDashboardLoggingAction } =
       await import("~/features/dashboard/logging/server");
 
@@ -589,13 +583,11 @@ describe("dashboard logging server", () => {
         startAt: "2026-03-29T19:00",
       },
     });
-    deleteLogErrorHistoryEntriesByDateRangeMock.mockResolvedValue(1);
-
-    await expect(handleDashboardLoggingAction(context, request)).resolves.toMatchObject(
-      {
-        notice: "1 hata logu silindi.",
-      },
-    );
+    await expect(handleDashboardLoggingAction(context, request)).rejects.toMatchObject({
+      code: "logging.delete.forbidden",
+      status: 403,
+    });
+    expect(deleteLogErrorHistoryEntriesByDateRangeMock).not.toHaveBeenCalled();
   });
 
   it("exports audit logs for an authorized admin session", async () => {

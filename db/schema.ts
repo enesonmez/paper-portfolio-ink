@@ -12,6 +12,8 @@ import {
 export type UserRole = "admin" | "author";
 export type AuthorizationClaimScope = "any" | "global" | "own";
 export type AuthorizationEffect = "grant" | "revoke";
+export type AuthorizationStateKey = "global";
+export type LoginRateLimitScope = "email" | "ip";
 type PublishingStatus = "draft" | "published" | "archived";
 export type LogHistoryResult = "failure" | "success";
 export type LogSeverity = "critical" | "error" | "info" | "warn";
@@ -273,6 +275,21 @@ export const authorizationUserClaimOverrides = sqliteTable(
   ],
 );
 
+export const authorizationState = sqliteTable(
+  "authorization_state",
+  {
+    key: text("key").$type<AuthorizationStateKey>().primaryKey(),
+    revision: integer("revision").notNull().default(1),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+  },
+  (table) => [
+    check("authorization_state_key_check", sql`${table.key} = 'global'`),
+    check("authorization_state_revision_check", sql`${table.revision} >= 1`),
+  ],
+);
+
 export const locales = sqliteTable(
   "locales",
   {
@@ -314,6 +331,31 @@ export const translations = sqliteTable(
       columns: [table.locale, table.key],
       name: "translations_locale_key_pk",
     }),
+  ],
+);
+
+export const loginRateLimits = sqliteTable(
+  "login_rate_limits",
+  {
+    scope: text("scope").$type<LoginRateLimitScope>().notNull(),
+    identifierHash: text("identifier_hash").notNull(),
+    failureCount: integer("failure_count").notNull().default(0),
+    windowStartedAt: integer("window_started_at", {
+      mode: "timestamp_ms",
+    }).notNull(),
+    blockedUntil: integer("blocked_until", {
+      mode: "timestamp_ms",
+    }),
+    ...createTimestampColumns(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.scope, table.identifierHash],
+      name: "login_rate_limits_scope_identifier_hash_pk",
+    }),
+    index("login_rate_limits_blocked_until_idx").on(table.blockedUntil),
+    check("login_rate_limits_failure_count_check", sql`${table.failureCount} >= 0`),
+    check("login_rate_limits_scope_check", sql`${table.scope} in ('email', 'ip')`),
   ],
 );
 
@@ -396,8 +438,10 @@ export const schema = {
   authorizationClaims,
   authorizationRoleClaims,
   authorizationUserClaimOverrides,
+  authorizationState,
   locales,
   translations,
+  loginRateLimits,
   logHistory,
   logErrorHistory,
 };

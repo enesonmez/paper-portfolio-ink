@@ -2,6 +2,7 @@ import { Fragment, createElement, type ReactNode } from "react";
 
 import {
   coercePostContentDocument,
+  sanitizePostImageSrc,
   sanitizePostLinkHref,
   type PostContentMark,
   type PostContentNode,
@@ -128,7 +129,10 @@ function renderNode(node: PostContentNode, key: string): ReactNode {
     case "horizontalRule":
       return <hr key={key} />;
     case "image": {
-      const src = typeof node.attrs?.src === "string" ? node.attrs.src : null;
+      const src =
+        typeof node.attrs?.src === "string"
+          ? sanitizePostImageSrc(node.attrs.src)
+          : null;
       const alt = typeof node.attrs?.alt === "string" ? node.attrs.alt : "";
 
       if (!src) {

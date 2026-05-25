@@ -10,6 +10,20 @@ const { createAuthMock, findUserByEmailMock, signInEmailMock } = vi.hoisted(() =
   };
 });
 
+const {
+  assertLoginRateLimitAllowedMock,
+  clearLoginRateLimitFailuresMock,
+  recordLoginRateLimitFailureMock,
+  shouldTrackLoginRateLimitFailureMock,
+} = vi.hoisted(() => {
+  return {
+    assertLoginRateLimitAllowedMock: vi.fn(),
+    clearLoginRateLimitFailuresMock: vi.fn(),
+    recordLoginRateLimitFailureMock: vi.fn(),
+    shouldTrackLoginRateLimitFailureMock: vi.fn(() => false),
+  };
+});
+
 vi.mock("~/shared/auth/auth.server", () => {
   return {
     createAuth: createAuthMock,
@@ -32,6 +46,15 @@ vi.mock("~/lib/users/users.server", () => {
   };
 });
 
+vi.mock("~/shared/auth/login-rate-limit.server", () => {
+  return {
+    assertLoginRateLimitAllowed: assertLoginRateLimitAllowedMock,
+    clearLoginRateLimitFailures: clearLoginRateLimitFailuresMock,
+    recordLoginRateLimitFailure: recordLoginRateLimitFailureMock,
+    shouldTrackLoginRateLimitFailure: shouldTrackLoginRateLimitFailureMock,
+  };
+});
+
 const t = createTranslator(getSeedMessages("tr"));
 
 describe("login server helpers", () => {
@@ -39,6 +62,14 @@ describe("login server helpers", () => {
     createAuthMock.mockReset();
     findUserByEmailMock.mockReset();
     signInEmailMock.mockReset();
+    assertLoginRateLimitAllowedMock.mockReset();
+    clearLoginRateLimitFailuresMock.mockReset();
+    recordLoginRateLimitFailureMock.mockReset();
+    shouldTrackLoginRateLimitFailureMock.mockReset();
+    assertLoginRateLimitAllowedMock.mockResolvedValue(undefined);
+    clearLoginRateLimitFailuresMock.mockResolvedValue(undefined);
+    recordLoginRateLimitFailureMock.mockResolvedValue(undefined);
+    shouldTrackLoginRateLimitFailureMock.mockReturnValue(false);
   }, 20000);
 
   it("builds a dashboard login redirect url from a protected request", async () => {
@@ -160,6 +191,7 @@ describe("login server helpers", () => {
     expect(response.headers.get("set-cookie")).toContain(
       "better-auth.session_token=abc",
     );
+    expect(clearLoginRateLimitFailuresMock).toHaveBeenCalledOnce();
   }, 20000);
 
   it("returns a user-facing form error when Better Auth answers with invalid credentials", async () => {
@@ -217,6 +249,42 @@ describe("login server helpers", () => {
       },
       status: 401,
     });
+  });
+
+  it("blocks login when the throttle policy is already active", async () => {
+    const request = new Request("http://localhost:3000/login", {
+      method: "POST",
+    });
+    const { signInWithEmail } = await import("~/shared/auth/login.server");
+    const rateLimitError = Object.assign(new Error("rate limited"), {
+      code: "auth.login.rate_limited",
+      status: 429,
+    });
+
+    assertLoginRateLimitAllowedMock.mockRejectedValue(rateLimitError);
+
+    await expect(
+      signInWithEmail({
+        request,
+        context: {
+          db: { query: {} },
+          runtime: { platform: "node" },
+        } as never,
+        locale: "tr",
+        submission: {
+          email: "admin@example.com",
+          password: "password1234",
+          redirectTo: "/dashboard",
+        },
+        supportedLocaleCodes: ["tr", "en"],
+        t,
+      }),
+    ).rejects.toMatchObject({
+      code: "auth.login.rate_limited",
+      status: 429,
+    });
+    expect(findUserByEmailMock).not.toHaveBeenCalled();
+    expect(signInEmailMock).not.toHaveBeenCalled();
   });
 
   it("blocks inactive users before Better Auth creates a session", async () => {

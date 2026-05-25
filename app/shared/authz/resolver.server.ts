@@ -4,14 +4,11 @@ import { z } from "zod";
 
 import { getDbFromContext } from "../../../db/context";
 import {
+  authorizationState,
   authorizationRoleClaims,
   authorizationUserClaimOverrides,
 } from "../../../db/schema";
-import {
-  getAppDataCache,
-  loadCachedData,
-  type AppDataCache,
-} from "~/shared/cache/data-cache.server";
+import { loadCachedData } from "~/shared/cache/data-cache.server";
 import { buildLoginRedirect } from "~/shared/auth/login.server";
 import { requireSession } from "~/shared/auth/session.server";
 import {
@@ -45,12 +42,17 @@ interface EffectiveClaimOverride {
   effect: AuthorizationEffect;
 }
 
-function buildAuthorizationCacheKey(
-  request: Request,
-  userId: string,
-  authzVersion: number,
-) {
-  return new URL(`/__cache/authz/${userId}/${authzVersion}`, request.url).toString();
+function buildAuthorizationCacheKey(args: {
+  authzVersion: number;
+  request: Request;
+  revision: number;
+  role: string;
+  userId: string;
+}) {
+  return new URL(
+    `/__cache/authz/${args.userId}/${args.role}/${args.authzVersion}/${args.revision}`,
+    args.request.url,
+  ).toString();
 }
 
 function sortAuthorizationClaims(claims: Iterable<AuthorizationClaim>) {
@@ -146,6 +148,29 @@ async function loadEffectiveClaimsFromDb(
   return applyClaimOverrides(roleClaims, overrides);
 }
 
+async function loadAuthorizationRevision(context: AppLoadContext) {
+  const db = getDbFromContext(context);
+
+  if (!("select" in db) || typeof db.select !== "function") {
+    return null;
+  }
+
+  try {
+    const rows = await db
+      .select({
+        revision: authorizationState.revision,
+      })
+      .from(authorizationState)
+      .where(eq(authorizationState.key, "global"));
+
+    const revision = rows[0]?.revision;
+
+    return typeof revision === "number" && revision >= 1 ? revision : null;
+  } catch {
+    return null;
+  }
+}
+
 async function loadEffectiveClaims(
   context: AppLoadContext,
   request: Request,
@@ -159,9 +184,21 @@ async function loadEffectiveClaims(
     return isUserRole(role) ? [...getDefaultClaimsForRole(role)] : [];
   }
 
+  const revision = await loadAuthorizationRevision(context);
+
+  if (revision === null) {
+    return loadEffectiveClaimsFromDb(context, userId, role);
+  }
+
   return loadCachedData({
     context,
-    key: buildAuthorizationCacheKey(request, userId, authzVersion),
+    key: buildAuthorizationCacheKey({
+      authzVersion,
+      request,
+      revision,
+      role,
+      userId,
+    }),
     load: () => loadEffectiveClaimsFromDb(context, userId, role),
     options: {
       maxAgeSeconds: 60 * 10,
@@ -197,12 +234,14 @@ export async function getAuthorizationActorFromSession(
   }
 
   const promise = (async () => {
+    const db = getDbFromContext(context);
+    const dbCanResolveClaims = "select" in db && typeof db.select === "function";
     const userId = getSessionUserId(session);
     const role = getSessionUserRole(session);
     const authzVersion = getSessionUserAuthzVersion(session);
     const explicitClaims = getAuthorizationClaimSet(session);
 
-    if (explicitClaims.length > 0) {
+    if (!dbCanResolveClaims && explicitClaims.length > 0) {
       return buildAuthorizationActor({
         authzVersion,
         claims: normalizeAuthorizationClaims(explicitClaims),
@@ -249,10 +288,4 @@ export async function requireDashboardActor(
     actor: await getAuthorizationActorFromSession(context, request, session),
     sessionUser: getSessionUserSnapshot(session),
   };
-}
-
-export function getAuthorizationCache(
-  context: Pick<AppLoadContext, "cache" | "runtime">,
-) {
-  return getAppDataCache(context) satisfies AppDataCache;
 }

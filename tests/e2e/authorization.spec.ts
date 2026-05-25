@@ -18,7 +18,6 @@ import {
 } from "./support/constants";
 
 const FORBIDDEN_FLOW_MESSAGE = "Bu islemi gerceklestirme yetkiniz bulunmuyor.";
-const EMPTY_LOG_DELETE_NOTICE = "0 hata logu silindi.";
 
 const FUTURE_LOG_RANGE_FORM = {
   endAt: "2030-01-01T01:00",
@@ -591,7 +590,7 @@ test.describe("translation-only resource operator", () => {
 });
 
 test.describe("logging action-only grants", () => {
-  test("allows export actions without logging read access when only export is granted", async ({
+  test("rejects export actions without the matching logging read access", async ({
     page,
   }) => {
     await signInAs(page, E2E_USERS.logExporter);
@@ -606,11 +605,11 @@ test.describe("logging action-only grants", () => {
       },
     );
 
-    expect(response.status()).toBe(200);
-    await expect(response.text()).resolves.not.toContain(FORBIDDEN_FLOW_MESSAGE);
+    expect(response.status()).toBe(403);
+    await expect(response.text()).resolves.toContain(FORBIDDEN_FLOW_MESSAGE);
   });
 
-  test("allows delete actions without logging read access when only delete is granted", async ({
+  test("rejects delete actions without the matching logging read access", async ({
     page,
   }) => {
     await signInAs(page, E2E_USERS.logCleaner);
@@ -625,8 +624,8 @@ test.describe("logging action-only grants", () => {
       },
     );
 
-    expect(response.status()).toBe(200);
-    await expect(response.text()).resolves.toContain(EMPTY_LOG_DELETE_NOTICE);
+    expect(response.status()).toBe(403);
+    await expect(response.text()).resolves.toContain(FORBIDDEN_FLOW_MESSAGE);
   });
 });
 

@@ -70,6 +70,7 @@ export const APP_ERROR_CODE = {
       apiError: "auth.login.api_error",
       inactiveUser: "auth.login.inactive_user",
       invalidCredentials: "auth.login.invalid_credentials",
+      rateLimited: "auth.login.rate_limited",
       providerException: "auth.login.provider_exception",
       providerFailure: "auth.login.provider_failure",
       validation: "auth.login.validation",

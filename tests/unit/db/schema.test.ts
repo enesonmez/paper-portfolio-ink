@@ -5,7 +5,9 @@ import {
   accounts,
   authorizationClaims,
   authorizationRoleClaims,
+  authorizationState,
   authorizationUserClaimOverrides,
+  loginRateLimits,
   locales,
   posts,
   projects,
@@ -27,7 +29,9 @@ describe("database schema", () => {
       accounts,
       authorizationClaims,
       authorizationRoleClaims,
+      authorizationState,
       authorizationUserClaimOverrides,
+      loginRateLimits,
       posts,
       projects,
       sessions,
@@ -212,6 +216,7 @@ describe("database schema", () => {
   it("defines the authorization claims registry tables", () => {
     const claimsConfig = getTableConfig(authorizationClaims);
     const roleClaimsConfig = getTableConfig(authorizationRoleClaims);
+    const stateConfig = getTableConfig(authorizationState);
     const overridesConfig = getTableConfig(authorizationUserClaimOverrides);
 
     expect(getColumnNames(authorizationClaims)).toEqual(
@@ -237,8 +242,29 @@ describe("database schema", () => {
         "updated_at",
       ]),
     );
+    expect(getColumnNames(authorizationState)).toEqual(
+      expect.arrayContaining(["key", "revision", "updated_at"]),
+    );
     expect(claimsConfig.indexes).toHaveLength(1);
     expect(roleClaimsConfig.foreignKeys).toHaveLength(1);
+    expect(stateConfig.checks).toHaveLength(2);
     expect(overridesConfig.foreignKeys).toHaveLength(2);
+  });
+
+  it("defines the login rate limit table for credential throttling", () => {
+    const config = getTableConfig(loginRateLimits);
+
+    expect(getColumnNames(loginRateLimits)).toEqual(
+      expect.arrayContaining([
+        "scope",
+        "identifier_hash",
+        "failure_count",
+        "window_started_at",
+        "blocked_until",
+        "created_at",
+        "updated_at",
+      ]),
+    );
+    expect(config.indexes).toHaveLength(1);
   });
 });

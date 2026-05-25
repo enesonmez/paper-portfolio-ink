@@ -6,6 +6,7 @@ import {
   getPostContentPlainText,
   normalizePostContentValue,
   parsePostContentDocument,
+  sanitizePostImageSrc,
   sanitizePostLinkHref,
   serializePostContent,
 } from "~/domain/posts/content";
@@ -54,5 +55,15 @@ describe("post content helpers", () => {
     );
     expect(sanitizePostLinkHref("javascript:alert(1)")).toBeNull();
     expect(sanitizePostLinkHref("data:text/html,<script>alert(1)</script>")).toBeNull();
+  });
+
+  it("allows only safe public image sources", () => {
+    expect(sanitizePostImageSrc("https://paper-portfolio-ink.dev/image.webp")).toBe(
+      "https://paper-portfolio-ink.dev/image.webp",
+    );
+    expect(sanitizePostImageSrc("/cdn/image.webp")).toBe("/cdn/image.webp");
+    expect(sanitizePostImageSrc("data:image/svg+xml,<svg></svg>")).toBeNull();
+    expect(sanitizePostImageSrc("blob:https://paper-portfolio-ink.dev/id")).toBeNull();
+    expect(sanitizePostImageSrc("//tracker.example/pixel.gif")).toBeNull();
   });
 });
