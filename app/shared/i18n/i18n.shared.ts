@@ -20,7 +20,21 @@ export const NORMALIZED_LOCALE_CODE_PATTERN = /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/;
 const LOCALE_CODE_PATTERN = /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i;
 const SEED_LOCALE_CODES = I18N_SEED_LOCALES.map((locale) => locale.code);
 
-export type I18nTranslator = (key: TranslationKey) => string;
+export type I18nTranslationValues = Record<string, string | number>;
+export type I18nTranslator = (
+  key: TranslationKey,
+  values?: I18nTranslationValues,
+) => string;
+
+function interpolateMessage(template: string, values?: I18nTranslationValues) {
+  if (!values) {
+    return template;
+  }
+
+  return Object.entries(values).reduce((result, [key, value]) => {
+    return result.replaceAll(`{${key}}`, String(value));
+  }, template);
+}
 
 function parseCookieHeader(cookieHeader: string | null) {
   if (!cookieHeader) {
@@ -202,7 +216,7 @@ export function stripLocalePrefix(
 }
 
 export function createTranslator(messages: TranslationDictionary): I18nTranslator {
-  return (key) => messages[key];
+  return (key, values) => interpolateMessage(messages[key], values);
 }
 
 export function mergeMessages(

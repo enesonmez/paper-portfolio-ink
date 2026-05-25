@@ -2,11 +2,12 @@ import { ArrowUpRight, ArrowUpToLine, TerminalSquare } from "lucide-react";
 
 import { useT } from "~/shared/i18n/i18n-react";
 
-import { PUBLIC_SOCIAL_LINKS, usePublicLayoutCopy } from "../copy";
+import { usePublicLayoutCopy, usePublicSocialLinks } from "../copy";
 
 export function PublicSiteFooter() {
   const t = useT();
   const { copy } = usePublicLayoutCopy();
+  const socialLinks = usePublicSocialLinks();
 
   return (
     <footer className="bg-background border-t-2 border-black">
@@ -27,7 +28,7 @@ export function PublicSiteFooter() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            {PUBLIC_SOCIAL_LINKS.map((link) => (
+            {socialLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}

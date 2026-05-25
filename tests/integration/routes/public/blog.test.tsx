@@ -92,6 +92,15 @@ describe("blog route", () => {
 
   it("returns SEO metadata for the public blog index", () => {
     const rootData = {
+      configuration: {
+        "contact.email": "hello@example.dev",
+        "site.domainUrl": "https://portfolio.example.dev",
+        "site.name": "Example Portfolio",
+        "social.github": "https://github.com/example",
+        "social.instagram": "https://instagram.com/example",
+        "social.linkedin": "https://linkedin.com/in/example",
+        "social.x": "https://x.com/example",
+      },
       locale: "tr" as const,
       messages: getSeedMessages("tr"),
       supportedLocales: getSeedLocaleOptions(),
@@ -112,14 +121,18 @@ describe("blog route", () => {
       } as never),
     ).toEqual(
       expect.arrayContaining([
-        { title: "Blog | Paper Ink" },
+        { title: "Blog | Example Portfolio" },
         {
           name: "description",
           content: "Edge-first teknik notlar, mimari denemeler ve uygulama gunlukleri.",
         },
         {
           property: "og:title",
-          content: "Blog | Paper Ink",
+          content: "Blog | Example Portfolio",
+        },
+        {
+          property: "og:url",
+          content: "https://portfolio.example.dev/blog",
         },
       ]),
     );

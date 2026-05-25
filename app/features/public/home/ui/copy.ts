@@ -1,5 +1,11 @@
 import { useT } from "~/shared/i18n/i18n-react";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
+import {
+  buildPrimaryContactHref,
+  buildPublicSocialLinks,
+  useOptionalRootLoaderData,
+} from "~/lib/site";
+import type { RootLoaderData } from "~/lib/site";
 
 export function buildPublicHomeCopy(t: I18nTranslator) {
   return {
@@ -64,27 +70,18 @@ export function buildPublicHomeFeaturedProjectsCopy(t: I18nTranslator) {
   } as const;
 }
 
-export function buildPublicHomeSocialCards(t: I18nTranslator) {
-  return [
-    {
-      description: t("public.home.social.github.description"),
-      href: "https://github.com/enesonmez",
-      key: "github",
-      label: t("public.home.social.github.label"),
-    },
-    {
-      description: t("public.home.social.linkedin.description"),
-      href: "https://www.linkedin.com/in/enesonmez/",
-      key: "linkedin",
-      label: t("public.home.social.linkedin.label"),
-    },
-    {
-      description: t("public.home.social.mail.description"),
-      href: "mailto:hello@paper-portfolio-ink.dev",
-      key: "mail",
-      label: t("public.home.social.mail.label"),
-    },
-  ] as const;
+export function buildPublicHomeSocialCards(
+  t: I18nTranslator,
+  configuration?: RootLoaderData["configuration"],
+) {
+  const socialLinks = buildPublicSocialLinks(configuration);
+
+  return socialLinks.map((link) => ({
+    description: t(`public.home.social.${link.key}.description`),
+    href: link.href,
+    key: link.key,
+    label: t(`public.home.social.${link.key}.label`),
+  }));
 }
 
 export function buildPublicHomeResumePoints(t: I18nTranslator) {
@@ -115,15 +112,18 @@ export function buildPublicHomeResumeMeta(t: I18nTranslator) {
 
 export function usePublicHomeCopy() {
   const t = useT();
+  const rootData = useOptionalRootLoaderData();
+  const configuration = rootData?.configuration;
 
   return {
     copy: buildPublicHomeCopy(t),
     featuredProjectsCopy: buildPublicHomeFeaturedProjectsCopy(t),
     highlights: buildPublicHomeHighlights(t),
     metrics: buildPublicHomeMetrics(t),
+    primaryContactHref: buildPrimaryContactHref(configuration),
     resumeMeta: buildPublicHomeResumeMeta(t),
     resumePoints: buildPublicHomeResumePoints(t),
-    socialCards: buildPublicHomeSocialCards(t),
+    socialCards: buildPublicHomeSocialCards(t, configuration),
   };
 }
 

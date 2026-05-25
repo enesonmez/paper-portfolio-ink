@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { createTranslator } from "~/shared/i18n/i18n.shared";
 import { loadI18nPayload, loadSupportedLocales } from "~/shared/i18n/i18n.server";
 import { locales, translations } from "#db/schema";
 
@@ -110,6 +111,9 @@ describe("i18n server", () => {
       ],
     });
 
-    expect(payload.messages["site.title.blog"]).toBe("Blog | Paper Ink");
+    expect(payload.messages["site.title.blog"]).toBe("Blog | {siteName}");
+    expect(
+      createTranslator(payload.messages)("site.title.blog", { siteName: "Paper Ink" }),
+    ).toBe("Blog | Paper Ink");
   });
 });

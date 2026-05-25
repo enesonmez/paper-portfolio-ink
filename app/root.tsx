@@ -17,7 +17,7 @@ import { AppI18nProvider } from "~/shared/i18n/i18n-react";
 import { runLoaderWithErrorHandling } from "~/shared/errors/route-error-handling.server";
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
 import { createTranslator, getSeedMessages } from "~/shared/i18n/i18n.shared";
-import { warmAccountConfigurationCache } from "~/lib/configuration/configuration.server";
+import { loadAccountConfigurationParameters } from "~/lib/configuration/configuration.server";
 import { isPublicPathname } from "~/features/public/layout/routing";
 import { PUBLIC_THEME } from "~/features/public/layout/theme";
 import { PublicSiteLayout } from "~/features/public/layout/layout";
@@ -35,12 +35,13 @@ export async function loader({
   return runLoaderWithErrorHandling({
     context,
     handler: async () => {
-      const [i18n] = await Promise.all([
+      const [configuration, i18n] = await Promise.all([
+        loadAccountConfigurationParameters(context, request),
         loadI18nPayload(context, request),
-        warmAccountConfigurationCache(context, request),
       ]);
 
       return {
+        configuration,
         ...i18n,
         theme: getThemeFromRequest(request),
       };

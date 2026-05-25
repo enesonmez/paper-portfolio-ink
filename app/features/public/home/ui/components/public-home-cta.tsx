@@ -8,7 +8,7 @@ import { usePublicHomeCopy } from "../copy";
 
 export function PublicHomeCta() {
   const to = useLocalizedPath();
-  const { copy } = usePublicHomeCopy();
+  const { copy, primaryContactHref } = usePublicHomeCopy();
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16 lg:px-12">
@@ -30,7 +30,7 @@ export function PublicHomeCta() {
               size="lg"
               className="bg-black whitespace-normal text-white dark:bg-black dark:text-white"
             >
-              <a href="mailto:hello@paper-portfolio-ink.dev">
+              <a href={primaryContactHref}>
                 {copy.ctaPrimary}
                 <ArrowRight className="size-5" aria-hidden="true" />
               </a>

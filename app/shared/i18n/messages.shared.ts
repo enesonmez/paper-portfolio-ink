@@ -30,11 +30,11 @@ const tr = {
   "common.delete": "Sil",
   "common.deactivate": "Pasiflestir",
   "site.name": "Paper Ink",
-  "site.title.home": "Paper Ink | Edge-First Portfolyo ve Notlar",
-  "site.title.projects": "Projeler | Paper Ink",
-  "site.title.blog": "Blog | Paper Ink",
-  "site.title.blogPostFallback": "Blog Yazisi | Paper Ink",
-  "site.title.login": "Dashboard girisi | Paper Ink",
+  "site.title.home": "{siteName} | Edge-First Portfolyo ve Notlar",
+  "site.title.projects": "Projeler | {siteName}",
+  "site.title.blog": "Blog | {siteName}",
+  "site.title.blogPostFallback": "Blog Yazisi | {siteName}",
+  "site.title.login": "Dashboard girisi | {siteName}",
   "site.description.home":
     "Cloudflare uzerinde calisan, performans odakli portfolyo ve teknik blog sistemi.",
   "site.description.projects": "Secili projeler, teknik ozetler ve uygulama notlari.",
@@ -64,8 +64,10 @@ const tr = {
   "public.layout.themeLightLabel": "Paper Comic",
   "public.layout.themeToggle": "Tema",
   "public.layout.social.github": "GitHub",
+  "public.layout.social.instagram": "Instagram",
   "public.layout.social.linkedin": "LinkedIn",
   "public.layout.social.mail": "Mail",
+  "public.layout.social.x": "X",
   "public.home.availability": "Secili freelance ve urun is birlikleri icin uygunum.",
   "public.home.ctaBody":
     "Keskin karakteri olan ve teslimati guvenilir bir portfolyo, teknik blog, dashboard veya editor akisi mi gerekiyor?",
@@ -110,11 +112,17 @@ const tr = {
   "public.home.featuredProjects.repoCta": "Repo gor",
   "public.home.social.github.label": "GitHub",
   "public.home.social.github.description": "Kod, deneyler ve uygulama detaylari.",
+  "public.home.social.instagram.label": "Instagram",
+  "public.home.social.instagram.description":
+    "Gorsel notlar, brand paylasimlari ve sahne arkasi akislar.",
   "public.home.social.linkedin.label": "LinkedIn",
   "public.home.social.linkedin.description": "Profesyonel profil, deneyim ve network.",
   "public.home.social.mail.label": "E-posta",
   "public.home.social.mail.description":
     "Proje talepleri, ozgecmis istekleri ve dogrudan iletisim.",
+  "public.home.social.x.label": "X",
+  "public.home.social.x.description":
+    "Kisa guncellemeler, shipping notlari ve dagitim akisi.",
   "public.home.resumePoint.1": "Full-stack urun muhendisligi",
   "public.home.resumePoint.2": "Admin workflow tasarimi",
   "public.home.resumePoint.3": "Performans ve SEO guclendirmesi",
@@ -246,16 +254,16 @@ const tr = {
     "Public meta title ve portfolio kimligi icin temel proje adi.",
   "dashboard.settings.account.field.site.name.label": "Project name",
   "dashboard.settings.account.field.social.github.hint":
-    "Repository ve acik kaynak profil baglantisi.",
+    "Repository ve acik kaynak profil baglantisi. Bos birakilirsa public yuzeyde gosterilmez.",
   "dashboard.settings.account.field.social.github.label": "GitHub",
   "dashboard.settings.account.field.social.instagram.hint":
-    "Gorsel paylasim ve brand stream linki.",
+    "Gorsel paylasim ve brand stream linki. Bos birakilirsa public yuzeyde gosterilmez.",
   "dashboard.settings.account.field.social.instagram.label": "Instagram",
   "dashboard.settings.account.field.social.linkedin.hint":
-    "Profesyonel profil baglantisi.",
+    "Profesyonel profil baglantisi. Bos birakilirsa public yuzeyde gosterilmez.",
   "dashboard.settings.account.field.social.linkedin.label": "LinkedIn",
   "dashboard.settings.account.field.social.x.hint":
-    "Kisa guncellemeler ve dagitim kanali.",
+    "Kisa guncellemeler ve dagitim kanali. Bos birakilirsa public yuzeyde gosterilmez.",
   "dashboard.settings.account.field.social.x.label": "X",
   "dashboard.settings.account.title": "Account tabi",
   "dashboard.settings.account.valueFallback": "Henuz ayarlanmadi",
@@ -866,11 +874,11 @@ const en: Record<keyof typeof tr, string> = {
   "common.delete": "Delete",
   "common.deactivate": "Deactivate",
   "site.name": "Paper Ink",
-  "site.title.home": "Paper Ink | Edge-First Portfolio and Notes",
-  "site.title.projects": "Projects | Paper Ink",
-  "site.title.blog": "Blog | Paper Ink",
-  "site.title.blogPostFallback": "Blog Post | Paper Ink",
-  "site.title.login": "Dashboard login | Paper Ink",
+  "site.title.home": "{siteName} | Edge-First Portfolio and Notes",
+  "site.title.projects": "Projects | {siteName}",
+  "site.title.blog": "Blog | {siteName}",
+  "site.title.blogPostFallback": "Blog Post | {siteName}",
+  "site.title.login": "Dashboard login | {siteName}",
   "site.description.home":
     "Performance-focused portfolio and technical blog system running on Cloudflare.",
   "site.description.projects":
@@ -901,8 +909,10 @@ const en: Record<keyof typeof tr, string> = {
   "public.layout.themeLightLabel": "Paper Comic",
   "public.layout.themeToggle": "Theme",
   "public.layout.social.github": "GitHub",
+  "public.layout.social.instagram": "Instagram",
   "public.layout.social.linkedin": "LinkedIn",
   "public.layout.social.mail": "Mail",
+  "public.layout.social.x": "X",
   "public.home.availability":
     "Available for selected freelance and product collaborations.",
   "public.home.ctaBody":
@@ -949,12 +959,18 @@ const en: Record<keyof typeof tr, string> = {
   "public.home.social.github.label": "GitHub",
   "public.home.social.github.description":
     "Code, experiments, and implementation details.",
+  "public.home.social.instagram.label": "Instagram",
+  "public.home.social.instagram.description":
+    "Visual notes, brand drops, and behind-the-scenes updates.",
   "public.home.social.linkedin.label": "LinkedIn",
   "public.home.social.linkedin.description":
     "Professional profile, experience, and network.",
   "public.home.social.mail.label": "Email",
   "public.home.social.mail.description":
     "Project inquiries, resume requests, and direct contact.",
+  "public.home.social.x.label": "X",
+  "public.home.social.x.description":
+    "Short updates, shipping notes, and release distribution.",
   "public.home.resumePoint.1": "Full-stack product engineering",
   "public.home.resumePoint.2": "Admin workflow design",
   "public.home.resumePoint.3": "Performance and SEO hardening",
@@ -1088,14 +1104,16 @@ const en: Record<keyof typeof tr, string> = {
     "Base project name for public metadata and portfolio identity.",
   "dashboard.settings.account.field.site.name.label": "Project name",
   "dashboard.settings.account.field.social.github.hint":
-    "Repository and open-source profile link.",
+    "Repository and open-source profile link. Leave empty to hide it on the public site.",
   "dashboard.settings.account.field.social.github.label": "GitHub",
-  "dashboard.settings.account.field.social.instagram.hint": "Visual brand stream link.",
+  "dashboard.settings.account.field.social.instagram.hint":
+    "Visual brand stream link. Leave empty to hide it on the public site.",
   "dashboard.settings.account.field.social.instagram.label": "Instagram",
-  "dashboard.settings.account.field.social.linkedin.hint": "Professional profile link.",
+  "dashboard.settings.account.field.social.linkedin.hint":
+    "Professional profile link. Leave empty to hide it on the public site.",
   "dashboard.settings.account.field.social.linkedin.label": "LinkedIn",
   "dashboard.settings.account.field.social.x.hint":
-    "Short updates and distribution channel.",
+    "Short updates and distribution channel. Leave empty to hide it on the public site.",
   "dashboard.settings.account.field.social.x.label": "X",
   "dashboard.settings.account.title": "Account tab",
   "dashboard.settings.account.valueFallback": "Not configured yet",
