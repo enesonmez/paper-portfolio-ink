@@ -49,6 +49,7 @@ export const APP_ROUTE_ID = {
   dashboardResourcesLayout: "dashboard.resources.layout",
   dashboardResourcesLocales: "dashboard.resources.locales",
   dashboardResourcesTranslations: "dashboard.resources.translations",
+  dashboardSettings: "dashboard.settings",
   dashboardSkills: "dashboard.skills",
   dashboardUsers: "dashboard.users",
   localeAction: "locale.action",
@@ -197,6 +198,11 @@ export const APP_ERROR_CODE = {
         notFound: "resources.translations.update.not_found",
       },
       validation: "resources.translations.validation",
+    },
+  },
+  settings: {
+    read: {
+      forbidden: "settings.read.forbidden",
     },
   },
   skills: {

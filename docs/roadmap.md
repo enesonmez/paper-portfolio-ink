@@ -37,10 +37,13 @@
 - [x] Kullanıcılar için CRUD işlemlerinin yapılması.
 - [x] Logout yapısının oluşturulması.
 - [x] Beceriler için `/skills` menüsü altında listeleme, create ve delete işlemleri.
-- [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı içine `/account` tabı ekle. İçerisinde email, linkedin, github, x, instagram linkleri, proje ismi, proje domain url'ini alacak yapı olsun. Form şeklinde olmasın. Listelensin üzerine tıklayınca po-up çıksın ve orada kayıt edilsin. DB de configuration-parameter tablosu oluştur ve oraya key-value şeklinde kaydet. Bu tablodaki değerler proje ayağa kalktığında ilk istek sonrası cache alınmalı. `/settings` sayfasının bir bölümünde cache temizle butonu olsun. Eğer kullanıcı sayfanın herhangi bir yerindeki configuration-parameter'ı değiştirirse bu buton ile cache'i temizleyip tekrar güncel değerleri cache'e alabilsin.
+- [ ] `/settings` menüsü için 'Tabbed Settings Page' tasarımı içine `/account` tabı ekle. İçerisinde email, linkedin, github, x, instagram linkleri, proje ismi, proje domain url'ini alacak yapı olsun. Form şeklinde olmasın. Listelensin üzerine tıklayınca po-up çıksın ve orada kayıt edilsin. DB de configuration-parameter tablosu oluştur ve oraya key-value şeklinde kaydet. Bu tablodaki değerler proje ayağa kalktığında ilk istek sonrası cache alınmalı.
 - [x] Locale ve Transalations tablolarını yönetebileceğim CRUD işlemlerinin yapılması. Cache odaklı geliştirilecek. Menü `/resources` olsun. İçerisinde 'Tabbed Settings Page' tasarımı olsun. Tablarda locale ve translations olsun.
 - [ ] `/user` sekmesinde claim tanımlama veya çıkarma butonu koy. Tıklayınca modal üzerinden aksiyon aldır. Role güncellemeyide bu modal içine al, user güncellemeden çıkar. authz_version'u bu modal üzerinden kontrol et.
 - [ ] Dashboard Overview: Genel istatistiklerin (toplam yazı, proje, aktif kullanıcı, toplam skill) gösterildiği bir özet ekranı. Post'ların tümünün görüntülenme sayısının günlük - aylık kırılım ile gösterecek grafik. log_history üzerinden son 5 kaydın listelenmesi. Admin tüm kayıtlar üzerinden diğer kullanıcılar sadece kendi log'ları.
+- [ ] `/settings` sayfasında `/runtime` tabı ekle. Projedeki cache'lenen tüm yapılar yer alsın ve her yapı için bir buton ile cache temizleyip tekrar cache alma yapısı kurulsun. Her yapı için ayrı buton olsun.
+- [ ] `/settings` sayfasında `/apperance` tabı ekle. Projede renk paleti ve font değişim imkanı versin. Seçilen değerler configuration-parameter tablosunda tutulsun.
+- [ ] `/settings` sayfasında `/security` tabı ekle. Session'ı olan kullanıcıları görüntüleme ve bunların session'larını sonlandırma yapısı kuralım.
 
 ## Phase 5: Optimization & Launch
 

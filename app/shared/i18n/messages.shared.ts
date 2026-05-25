@@ -218,6 +218,85 @@ const tr = {
   "dashboard.authz.forbiddenError": "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
   "dashboard.authz.restrictedDescription": "Bu alani goruntuleme yetkiniz bulunmuyor.",
   "dashboard.authz.restrictedTitle": "Erisim reddedildi",
+  "dashboard.settings.account.cardIdentityDescription":
+    "Bir sonraki fazda configuration parameter kayitlarina donusecek cekirdek hesap satirlari.",
+  "dashboard.settings.account.cardIdentityEyebrow": "Kimlik kayitlari",
+  "dashboard.settings.account.cardIdentityTitle": "Hesap cekirdegi",
+  "dashboard.settings.account.cardPresenceDescription":
+    "Public yuzeylerde gorunecek sosyal ve iletisim kanallari icin mock baglanti iskeleti.",
+  "dashboard.settings.account.cardPresenceEyebrow": "Public baglantilar",
+  "dashboard.settings.account.cardPresenceTitle": "Dijital gorunurluk",
+  "dashboard.settings.account.checklistDescription":
+    "Bu mock tasarim, bir sonraki configuration parameter gorevinin UI iskeletini simdiden sabitler.",
+  "dashboard.settings.account.checklistTitle": "Sonraki baglanti",
+  "dashboard.settings.account.description":
+    "Hesap, public link ve proje kimligi satirlarini popup-temelli editor akisi icin hazirlayan mock liste.",
+  "dashboard.settings.account.eyebrow": "Hesap katmani",
+  "dashboard.settings.account.title": "Account tabi",
+  "dashboard.settings.appearance.cardChromeDescription":
+    "Dashboard kabugundeki grid, panel ve focus state tercihleri ayni retro comic dilinde hizalanir.",
+  "dashboard.settings.appearance.cardChromeEyebrow": "Yuzey dili",
+  "dashboard.settings.appearance.cardChromeTitle": "Dashboard chrome",
+  "dashboard.settings.appearance.cardVoiceDescription":
+    "Bilingual copy ve editorial ton mock satirlar uzerinden korunur.",
+  "dashboard.settings.appearance.cardVoiceEyebrow": "Icerik tonu",
+  "dashboard.settings.appearance.cardVoiceTitle": "Yazi sistemi",
+  "dashboard.settings.appearance.checklistDescription":
+    "Gercek tercih depolamasi gelmeden once tasarim kararlarini gorunur tutan referans katmani.",
+  "dashboard.settings.appearance.checklistTitle": "Mock tema notlari",
+  "dashboard.settings.appearance.description":
+    "Tema, tipografi ve dashboard density kararlarini gercek preference katmani gelmeden once sabitleyen gorunum.",
+  "dashboard.settings.appearance.eyebrow": "Gorunum katmani",
+  "dashboard.settings.appearance.title": "Appearance tabi",
+  "dashboard.settings.currentRoleLabel": "Mevcut rol",
+  "dashboard.settings.metricGuardRails": "Koruma katmani",
+  "dashboard.settings.metricProfileFields": "Mock alan",
+  "dashboard.settings.metricRuntimeSurfaces": "Runtime yuzeyi",
+  "dashboard.settings.metricTabCount": "Tab modulu",
+  "dashboard.settings.mockBadge": "Mock only",
+  "dashboard.settings.mockDescription":
+    "Bu ekran bilincli olarak read-only tasarlandi. Ama amac, sonraki account ve cache gorevleri icin kalici tab iskeletini simdiden olusturmak.",
+  "dashboard.settings.pageDescription":
+    "Tabbed settings page tasarimini server-first bir mock yuzey olarak ac; gercek mutation davranisi daha sonraki task'lerde eklenecek.",
+  "dashboard.settings.pageEyebrow": "Ayar orchestrasyonu",
+  "dashboard.settings.pageTitle": "Dashboard ayarlari",
+  "dashboard.settings.restrictedDescription":
+    "Bu settings yuzeyini gormek icin gerekli claim sizde yok.",
+  "dashboard.settings.restrictedTitle": "Kisitli akis",
+  "dashboard.settings.runtime.cardCacheDescription":
+    "I18n ve gelecek configuration parameter cache'i ayni invalidation dilini paylasacak sekilde planlandi.",
+  "dashboard.settings.runtime.cardCacheEyebrow": "Cache yolu",
+  "dashboard.settings.runtime.cardCacheTitle": "Runtime cache kontrati",
+  "dashboard.settings.runtime.cardDeliveryDescription":
+    "Cloudflare Pages, D1 ve Worker kisitlari tek sayfalik bir kontrol paneli mantiginda gorunur tutuluyor.",
+  "dashboard.settings.runtime.cardDeliveryEyebrow": "Dagitim yuzeyi",
+  "dashboard.settings.runtime.cardDeliveryTitle": "Edge teslimati",
+  "dashboard.settings.runtime.checklistDescription":
+    "Cache temizleme butonu ve config warm-up gibi gercek operasyonlar icin hazir bekleyen gorev listesi.",
+  "dashboard.settings.runtime.checklistTitle": "Bekleyen runtime aksiyonlari",
+  "dashboard.settings.runtime.description":
+    "Cache, deployment ve observability yuzeylerini settings modulu altinda toplayan mock runtime gorunumu.",
+  "dashboard.settings.runtime.eyebrow": "Runtime katmani",
+  "dashboard.settings.runtime.title": "Runtime tabi",
+  "dashboard.settings.security.cardAccessDescription":
+    "Loader-first authz gate ve settings.manage claim'i mock tasarim icinde de acikca gorunur.",
+  "dashboard.settings.security.cardAccessEyebrow": "Erisim cercevesi",
+  "dashboard.settings.security.cardAccessTitle": "Yetki modeli",
+  "dashboard.settings.security.cardSessionDescription":
+    "Session ve audit beklentileri, ilerideki gercek settings mutasyonlarinin guvenlik limitlerini tarif eder.",
+  "dashboard.settings.security.cardSessionEyebrow": "Session kurali",
+  "dashboard.settings.security.cardSessionTitle": "Oturum posturu",
+  "dashboard.settings.security.checklistDescription":
+    "Mutasyonlar gelmeden once bile guvenlik beklentilerini sayfa ustunde belgelendiren kontrol listesi.",
+  "dashboard.settings.security.checklistTitle": "Koruma notlari",
+  "dashboard.settings.security.description":
+    "Session, authz ve audit beklentilerini gercek kayit akislarindan once tanimlayan koruma tab'i.",
+  "dashboard.settings.security.eyebrow": "Guvenlik katmani",
+  "dashboard.settings.security.title": "Security tabi",
+  "dashboard.settings.tab.account": "Account",
+  "dashboard.settings.tab.appearance": "Appearance",
+  "dashboard.settings.tab.runtime": "Runtime",
+  "dashboard.settings.tab.security": "Security",
   "dashboard.projects.createActionLabel": "Yeni proje olustur",
   "dashboard.projects.createDescription":
     "Yeni bir proje olustur ve dashboard kaydina ekle.",
@@ -950,6 +1029,85 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.authz.restrictedDescription":
     "You do not have permission to view this area.",
   "dashboard.authz.restrictedTitle": "Access denied",
+  "dashboard.settings.account.cardIdentityDescription":
+    "Core account rows that will map to configuration parameters in the next phase.",
+  "dashboard.settings.account.cardIdentityEyebrow": "Identity registry",
+  "dashboard.settings.account.cardIdentityTitle": "Account core",
+  "dashboard.settings.account.cardPresenceDescription":
+    "Mock social and contact links that will later power public profile surfaces.",
+  "dashboard.settings.account.cardPresenceEyebrow": "Public links",
+  "dashboard.settings.account.cardPresenceTitle": "Digital presence",
+  "dashboard.settings.account.checklistDescription":
+    "This mock layout locks the UI skeleton for the upcoming configuration-parameter task.",
+  "dashboard.settings.account.checklistTitle": "Next handoff",
+  "dashboard.settings.account.description":
+    "A mock list surface that prepares account, public link, and project identity rows for a popup editor flow.",
+  "dashboard.settings.account.eyebrow": "Account layer",
+  "dashboard.settings.account.title": "Account tab",
+  "dashboard.settings.appearance.cardChromeDescription":
+    "Grid, panel, and focus-state decisions stay aligned to the same retro comic dashboard language.",
+  "dashboard.settings.appearance.cardChromeEyebrow": "Surface language",
+  "dashboard.settings.appearance.cardChromeTitle": "Dashboard chrome",
+  "dashboard.settings.appearance.cardVoiceDescription":
+    "Bilingual copy and editorial tone are preserved through mock planning rows.",
+  "dashboard.settings.appearance.cardVoiceEyebrow": "Content voice",
+  "dashboard.settings.appearance.cardVoiceTitle": "Writing system",
+  "dashboard.settings.appearance.checklistDescription":
+    "A reference layer that keeps design decisions visible until real preference storage arrives.",
+  "dashboard.settings.appearance.checklistTitle": "Mock theme notes",
+  "dashboard.settings.appearance.description":
+    "A planning view that stabilizes theme, typography, and dashboard density decisions before a real preference layer exists.",
+  "dashboard.settings.appearance.eyebrow": "Appearance layer",
+  "dashboard.settings.appearance.title": "Appearance tab",
+  "dashboard.settings.currentRoleLabel": "Current role",
+  "dashboard.settings.metricGuardRails": "Guard rails",
+  "dashboard.settings.metricProfileFields": "Mock fields",
+  "dashboard.settings.metricRuntimeSurfaces": "Runtime surfaces",
+  "dashboard.settings.metricTabCount": "Tab modules",
+  "dashboard.settings.mockBadge": "Mock only",
+  "dashboard.settings.mockDescription":
+    "This screen is intentionally read-only. The goal is to lock the long-lived tab skeleton before account and cache mutations arrive in later tasks.",
+  "dashboard.settings.pageDescription":
+    "Open the tabbed settings page as a server-first mock surface; real mutation behavior will land in later tasks.",
+  "dashboard.settings.pageEyebrow": "Settings orchestration",
+  "dashboard.settings.pageTitle": "Dashboard settings",
+  "dashboard.settings.restrictedDescription":
+    "You do not have the claim required to view this settings surface.",
+  "dashboard.settings.restrictedTitle": "Restricted flow",
+  "dashboard.settings.runtime.cardCacheDescription":
+    "The existing i18n cache and future configuration-parameter cache are planned around the same invalidation language.",
+  "dashboard.settings.runtime.cardCacheEyebrow": "Cache path",
+  "dashboard.settings.runtime.cardCacheTitle": "Runtime cache contract",
+  "dashboard.settings.runtime.cardDeliveryDescription":
+    "Cloudflare Pages, D1, and Worker runtime constraints stay visible through a single planning panel.",
+  "dashboard.settings.runtime.cardDeliveryEyebrow": "Delivery surface",
+  "dashboard.settings.runtime.cardDeliveryTitle": "Edge delivery",
+  "dashboard.settings.runtime.checklistDescription":
+    "A ready backlog for real operations such as cache purge and config warm-up.",
+  "dashboard.settings.runtime.checklistTitle": "Pending runtime actions",
+  "dashboard.settings.runtime.description":
+    "A mock runtime view that groups cache, deployment, and observability surfaces under the settings module.",
+  "dashboard.settings.runtime.eyebrow": "Runtime layer",
+  "dashboard.settings.runtime.title": "Runtime tab",
+  "dashboard.settings.security.cardAccessDescription":
+    "The loader-first authz gate and settings.manage claim remain explicit even in the mock phase.",
+  "dashboard.settings.security.cardAccessEyebrow": "Access frame",
+  "dashboard.settings.security.cardAccessTitle": "Authorization model",
+  "dashboard.settings.security.cardSessionDescription":
+    "Session and audit expectations define the security ceiling for future settings mutations.",
+  "dashboard.settings.security.cardSessionEyebrow": "Session policy",
+  "dashboard.settings.security.cardSessionTitle": "Session posture",
+  "dashboard.settings.security.checklistDescription":
+    "A visible control list that documents security expectations before mutations ship.",
+  "dashboard.settings.security.checklistTitle": "Protection notes",
+  "dashboard.settings.security.description":
+    "A guard-rail tab that defines session, authz, and audit expectations before real persistence lands.",
+  "dashboard.settings.security.eyebrow": "Security layer",
+  "dashboard.settings.security.title": "Security tab",
+  "dashboard.settings.tab.account": "Account",
+  "dashboard.settings.tab.appearance": "Appearance",
+  "dashboard.settings.tab.runtime": "Runtime",
+  "dashboard.settings.tab.security": "Security",
   "dashboard.projects.createActionLabel": "Create new project",
   "dashboard.projects.createDescription":
     "Create a new project and add it to the dashboard registry.",

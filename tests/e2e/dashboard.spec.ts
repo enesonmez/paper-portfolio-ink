@@ -33,6 +33,15 @@ test("renders the dashboard shell and seeded content registries for an authentic
   await page.getByRole("link", { name: /Kullanicilar/i }).click();
   await expect(page).toHaveURL(new RegExp(`${E2E_LOCALE_PREFIX}/dashboard/users$`));
   await expect(page.getByText(E2E_ADMIN_EMAIL, { exact: true })).toBeVisible();
+
+  await page.getByRole("link", { name: /Ayarlar/i }).click();
+  await expect(page).toHaveURL(
+    new RegExp(`${E2E_LOCALE_PREFIX}/dashboard/settings\\?tab=account$`),
+  );
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Dashboard ayarlari" }),
+  ).toBeVisible();
+  await expect(page.getByText("Paper Portfolio Ink")).toBeVisible();
 });
 
 test("filters seeded translation resources inside the admin settings area", async ({

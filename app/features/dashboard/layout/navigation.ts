@@ -137,17 +137,17 @@ export function getDashboardNavigation(
       to: buildLocalizedPath(locale, "/dashboard/logging"),
     });
   }
-
-  const staticNavigation: readonly DashboardNavigationItem[] = [
-    {
+  if (hasAuthorizationClaim(claims, AUTHORIZATION_CLAIM.settingsManage)) {
+    adminNavigation.push({
       icon: Settings,
-      kind: "static",
+      kind: "link",
       label: t("dashboard.layout.navSettings"),
-      note: t("dashboard.layout.navStatusLater"),
-    },
-  ];
+      statusLabel: t("dashboard.layout.navStatusLive"),
+      to: buildLocalizedPath(locale, "/dashboard/settings?tab=account"),
+    });
+  }
 
-  return [...baseNavigation, ...adminNavigation, ...staticNavigation];
+  return [...baseNavigation, ...adminNavigation];
 }
 
 export const DASHBOARD_LAYOUT_ICON = {
