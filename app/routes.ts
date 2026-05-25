@@ -22,6 +22,7 @@ export default [
         route("locales", "./routes/dashboard/resources/locales.tsx"),
         route("translations", "./routes/dashboard/resources/translations.tsx"),
       ]),
+      route("settings", "./routes/dashboard/settings.tsx"),
       route("skills", "./routes/dashboard/skills.tsx"),
       route("users", "./routes/dashboard/users.tsx"),
       route("logging/export", "./routes/dashboard/logging-export.ts"),

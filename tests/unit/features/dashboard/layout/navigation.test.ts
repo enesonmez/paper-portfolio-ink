@@ -19,24 +19,20 @@ describe("dashboard navigation", () => {
         "/tr/dashboard/posts",
         "/tr/dashboard/projects",
         "/tr/dashboard/resources",
+        "/tr/dashboard/settings?tab=account",
         "/tr/dashboard/skills",
         "/tr/dashboard/users",
       ]),
     );
   });
 
-  it("omits admin-only links for non-admin roles and keeps static settings", () => {
+  it("omits admin-only links for non-admin roles", () => {
     const navigation = getDashboardNavigation("en", DEFAULT_ROLE_CLAIMS.author, t);
     const linkTargets = navigation
       .filter((item) => item.kind === "link")
       .map((item) => item.to);
-    const staticItem = navigation.find((item) => item.kind === "static");
 
     expect(linkTargets).toEqual(["/en/dashboard", "/en/dashboard/posts"]);
-    expect(staticItem).toMatchObject({
-      kind: "static",
-      label: t("dashboard.layout.navSettings"),
-      note: t("dashboard.layout.navStatusLater"),
-    });
+    expect(navigation).toHaveLength(2);
   });
 });
