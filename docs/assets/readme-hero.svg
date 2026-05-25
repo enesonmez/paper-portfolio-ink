@@ -1,0 +1,64 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Paper Portfolio Ink overview</title>
+  <desc id="desc">Banner showing the public site, dashboard, and platform stack for the Paper Portfolio Ink project.</desc>
+  <rect width="1200" height="420" rx="28" fill="#0F172A"/>
+  <rect x="24" y="24" width="1152" height="372" rx="24" fill="url(#bg)"/>
+  <circle cx="1060" cy="108" r="118" fill="#F97316" fill-opacity="0.14"/>
+  <circle cx="188" cy="344" r="104" fill="#38BDF8" fill-opacity="0.12"/>
+  <text x="72" y="104" fill="#F8FAFC" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700">
+    Paper Portfolio Ink
+  </text>
+  <text x="72" y="148" fill="#CBD5E1" font-family="Arial, Helvetica, sans-serif" font-size="20">
+    Edge-first portfolio, technical blog, and admin dashboard on React Router and Cloudflare.
+  </text>
+
+  <rect x="72" y="196" width="312" height="144" rx="20" fill="#111827" fill-opacity="0.92" stroke="#38BDF8" stroke-opacity="0.55"/>
+  <text x="96" y="232" fill="#7DD3FC" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700">
+    Public Surface
+  </text>
+  <text x="96" y="266" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    Localized home, blog, and projects
+  </text>
+  <text x="96" y="292" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="15">
+    Server-rendered pages, cache-aware feeds,
+  </text>
+  <text x="96" y="314" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="15">
+    safe rich-content rendering, theme and locale actions
+  </text>
+
+  <rect x="444" y="196" width="312" height="144" rx="20" fill="#111827" fill-opacity="0.92" stroke="#F97316" stroke-opacity="0.6"/>
+  <text x="468" y="232" fill="#FDBA74" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700">
+    Dashboard Surface
+  </text>
+  <text x="468" y="266" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    Posts, projects, skills, users, resources, logging
+  </text>
+  <text x="468" y="292" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="15">
+    Better Auth sessions, claim-based authz,
+  </text>
+  <text x="468" y="314" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="15">
+    export tooling, D1-backed login throttling
+  </text>
+
+  <rect x="816" y="196" width="312" height="144" rx="20" fill="#111827" fill-opacity="0.92" stroke="#A78BFA" stroke-opacity="0.55"/>
+  <text x="840" y="232" fill="#C4B5FD" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700">
+    Platform Core
+  </text>
+  <text x="840" y="266" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    React Router v7, Cloudflare Pages, D1, Drizzle
+  </text>
+  <text x="840" y="292" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="15">
+    TypeScript, Zod, Vitest, Playwright,
+  </text>
+  <text x="840" y="314" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="15">
+    vertical slices and runtime-safe cache adapters
+  </text>
+
+  <defs>
+    <linearGradient id="bg" x1="72" y1="44" x2="1128" y2="376" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827"/>
+      <stop offset="0.5" stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,119 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Usage guide map</title>
+  <desc id="desc">Diagram showing local setup, public site usage, authentication, and dashboard operations for Paper Portfolio Ink.</desc>
+  <rect width="1200" height="760" rx="28" fill="#F8FAFC"/>
+  <rect x="24" y="24" width="1152" height="712" rx="24" fill="#E2E8F0"/>
+
+  <text x="72" y="88" fill="#0F172A" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="700">
+    Paper Portfolio Ink Usage Map
+  </text>
+  <text x="72" y="122" fill="#475569" font-family="Arial, Helvetica, sans-serif" font-size="18">
+    Follow the path from local setup to public browsing, secure login, and dashboard operations.
+  </text>
+
+  <rect x="72" y="168" width="250" height="168" rx="20" fill="#0F172A"/>
+  <text x="96" y="208" fill="#7DD3FC" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700">
+    1. Local Setup
+  </text>
+  <text x="96" y="242" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    npm install
+  </text>
+  <text x="96" y="266" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    copy .env
+  </text>
+  <text x="96" y="290" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    migrate local D1
+  </text>
+  <text x="96" y="314" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    seed admin user
+  </text>
+
+  <rect x="370" y="168" width="250" height="168" rx="20" fill="#082F49"/>
+  <text x="394" y="208" fill="#7DD3FC" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700">
+    2. Public Routes
+  </text>
+  <text x="394" y="242" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    /:locale
+  </text>
+  <text x="394" y="266" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    /:locale/blog
+  </text>
+  <text x="394" y="290" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    /:locale/projects
+  </text>
+  <text x="394" y="314" fill="#E2E8F0" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    locale and theme actions
+  </text>
+
+  <rect x="668" y="168" width="250" height="168" rx="20" fill="#431407"/>
+  <text x="692" y="208" fill="#FDBA74" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700">
+    3. Authentication
+  </text>
+  <text x="692" y="242" fill="#FDE68A" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    /:locale/login
+  </text>
+  <text x="692" y="266" fill="#FDE68A" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    Better Auth session
+  </text>
+  <text x="692" y="290" fill="#FDE68A" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    D1-backed rate limit
+  </text>
+  <text x="692" y="314" fill="#FDE68A" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    redirect to dashboard
+  </text>
+
+  <rect x="966" y="168" width="162" height="168" rx="20" fill="#312E81"/>
+  <text x="990" y="208" fill="#C4B5FD" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700">
+    4. Dashboard
+  </text>
+  <text x="990" y="242" fill="#E9D5FF" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    claims
+  </text>
+  <text x="990" y="266" fill="#E9D5FF" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    loaders
+  </text>
+  <text x="990" y="290" fill="#E9D5FF" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    actions
+  </text>
+  <text x="990" y="314" fill="#E9D5FF" font-family="Arial, Helvetica, sans-serif" font-size="16">
+    audit logs
+  </text>
+
+  <rect x="72" y="418" width="496" height="250" rx="20" fill="#FFFFFF" stroke="#CBD5E1"/>
+  <text x="100" y="458" fill="#0F172A" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">
+    Public Experience
+  </text>
+  <text x="100" y="496" fill="#334155" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    - Localized landing page with featured projects and skills
+  </text>
+  <text x="100" y="526" fill="#334155" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    - Blog listing, post detail, safe links and image sources
+  </text>
+  <text x="100" y="556" fill="#334155" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    - Project listing with progressive feed loading
+  </text>
+  <text x="100" y="586" fill="#334155" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    - Theme and locale persistence without client-only state
+  </text>
+
+  <rect x="632" y="418" width="496" height="250" rx="20" fill="#FFFFFF" stroke="#CBD5E1"/>
+  <text x="660" y="458" fill="#0F172A" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">
+    Dashboard Operations
+  </text>
+  <text x="660" y="496" fill="#334155" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    - Posts, projects, skills, users, locales, translations
+  </text>
+  <text x="660" y="526" fill="#334155" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    - Claim-aware navigation, read-write separation, typed errors
+  </text>
+  <text x="660" y="556" fill="#334155" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    - Logging exports and deletes require matching read claims
+  </text>
+  <text x="660" y="586" fill="#334155" font-family="Arial, Helvetica, sans-serif" font-size="17">
+    - Revision-based authz cache keeps permission revokes fresh
+  </text>
+
+  <path d="M322 252H370" stroke="#0F172A" stroke-width="4" stroke-linecap="round"/>
+  <path d="M620 252H668" stroke="#0F172A" stroke-width="4" stroke-linecap="round"/>
+  <path d="M918 252H966" stroke="#0F172A" stroke-width="4" stroke-linecap="round"/>
+</svg>

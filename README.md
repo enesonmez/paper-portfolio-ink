@@ -2,6 +2,17 @@
 
 Edge-first personal portfolio and technical blog built with React Router v7, Cloudflare Pages, and D1. The project combines a localized public website with a protected admin dashboard for content, users, resources, and operational logging.
 
+<p>
+  <img alt="React Router v7" src="https://img.shields.io/badge/React_Router-v7-CA4245?logo=reactrouter&logoColor=white">
+  <img alt="Cloudflare Pages" src="https://img.shields.io/badge/Cloudflare-Pages-F38020?logo=cloudflarepages&logoColor=white">
+  <img alt="Cloudflare D1" src="https://img.shields.io/badge/Database-D1-F59E0B?logo=cloudflare&logoColor=white">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript&logoColor=white">
+  <img alt="Vitest" src="https://img.shields.io/badge/Tested_with-Vitest-6E9F18?logo=vitest&logoColor=white">
+  <img alt="Playwright" src="https://img.shields.io/badge/E2E-Playwright-2EAD33?logo=playwright&logoColor=white">
+</p>
+
+![Project Overview](./docs/assets/readme-hero.svg)
+
 ## Highlights
 
 - Server-first React Router architecture with Cloudflare-compatible runtime boundaries.
@@ -26,6 +37,12 @@ Edge-first personal portfolio and technical blog built with React Router v7, Clo
 - Playwright
 
 ## Application Surfaces
+
+| Surface     | Focus                            | Primary routes                                     |
+| ----------- | -------------------------------- | -------------------------------------------------- |
+| Public site | Localized content delivery       | `/:locale`, `/:locale/blog`, `/:locale/projects`   |
+| Dashboard   | Protected CRUD and operations    | `/:locale/dashboard/*`                             |
+| System      | Auth and browser/runtime actions | `/api/auth/*`, `/:locale/login`, `/:locale/logout` |
 
 ### Public Site
 
@@ -154,6 +171,13 @@ npm run e2e
 - [Agent Workflow](./docs/agent-workflow.md)
 - [Roadmap](./docs/roadmap.md)
 - [Lessons Learned](./docs/lessons.md)
+
+## Visual Map
+
+The deeper operator flow is documented with a dedicated image-backed guide:
+
+- [Detailed Usage Guide](./docs/usage-guide.md)
+- [Usage Guide Visual Map](./docs/assets/usage-guide-map.svg)
 
 ## Detailed Feature Notes
 

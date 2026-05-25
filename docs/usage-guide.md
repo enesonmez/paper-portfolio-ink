@@ -2,7 +2,25 @@
 
 This guide explains how to use the project locally, how the public site behaves, and how to operate the admin dashboard safely.
 
+<p>
+  <img alt="Setup" src="https://img.shields.io/badge/Guide-Setup-0F172A">
+  <img alt="Public" src="https://img.shields.io/badge/Surface-Public-0369A1">
+  <img alt="Authentication" src="https://img.shields.io/badge/Security-Authentication-9A3412">
+  <img alt="Dashboard" src="https://img.shields.io/badge/Surface-Dashboard-5B21B6">
+  <img alt="Verification" src="https://img.shields.io/badge/Flow-Verification-166534">
+</p>
+
+![Usage Guide Map](./assets/usage-guide-map.svg)
+
 ## 1. Local Setup Workflow
+
+| Step      | Command                     | Purpose                                       |
+| --------- | --------------------------- | --------------------------------------------- |
+| Install   | `npm install`               | Installs application and tooling dependencies |
+| Configure | `cp .env.example .env`      | Creates the local auth configuration source   |
+| Migrate   | `npm run db:migrate:local`  | Applies local D1 schema migrations            |
+| Seed      | `npm run db:seed:test-user` | Creates a local admin account                 |
+| Run       | `npm run dev`               | Starts the localized app in development mode  |
 
 ### Install and configure
 
@@ -50,6 +68,13 @@ Open `http://localhost:5173`.
 ## 2. Public Site Guide
 
 All public routes are localized and live under `/:locale/*`. The default locale redirect is handled automatically.
+
+| Area       | Route group                         | Notes                                          |
+| ---------- | ----------------------------------- | ---------------------------------------------- |
+| Home       | `/:locale`                          | Portfolio landing page with featured content   |
+| Blog       | `/:locale/blog*`                    | Feed and post detail routes                    |
+| Projects   | `/:locale/projects*`                | Public project listing and progressive loading |
+| UI actions | `/:locale/locale`, `/:locale/theme` | Locale and theme persistence                   |
 
 ### Home page
 
@@ -156,6 +181,16 @@ Behavior notes:
 ## 4. Dashboard Guide
 
 The dashboard is mounted under `/:locale/dashboard` and protected by session and claim checks.
+
+| Section   | Route                            | Main capability                             |
+| --------- | -------------------------------- | ------------------------------------------- |
+| Overview  | `/:locale/dashboard`             | Entry shell and permission-aware navigation |
+| Posts     | `/:locale/dashboard/posts`       | Post CRUD with owner or any-scope authz     |
+| Projects  | `/:locale/dashboard/projects`    | Project CRUD with read-write claim split    |
+| Skills    | `/:locale/dashboard/skills`      | Lightweight registry management             |
+| Users     | `/:locale/dashboard/users`       | User management with admin safeguards       |
+| Resources | `/:locale/dashboard/resources/*` | Locale and translation administration       |
+| Logging   | `/:locale/dashboard/logging*`    | Audit and error operations                  |
 
 ### Dashboard overview
 
@@ -346,6 +381,7 @@ Notes:
 ## 8. Related Documentation
 
 - [README](../README.md)
+- [README Overview Visual](./assets/readme-hero.svg)
 - [Engineering Standards](./engineering-standards.md)
 - [Agent Workflow](./agent-workflow.md)
 - [Roadmap](./roadmap.md)
