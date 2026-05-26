@@ -7,6 +7,22 @@ export function buildDashboardUsersCopy(t: I18nTranslator) {
 
   return {
     actionBlockedTitle: authzCopy.actionBlockedTitle,
+    accessActionLabel: t("dashboard.users.accessActionLabel"),
+    accessDescription: t("dashboard.users.accessDescription"),
+    accessRoleSaveLabel: t("dashboard.users.accessRoleSaveLabel"),
+    accessTitle: t("dashboard.users.accessTitle"),
+    accessVersionLabel: t("dashboard.users.accessVersionLabel"),
+    claimDefineLabel: t("dashboard.users.claimDefineLabel"),
+    claimEffectiveLabel: t("dashboard.users.claimEffectiveLabel"),
+    claimGrantedLabel: t("dashboard.users.claimGrantedLabel"),
+    claimOverrideGrantLabel: t("dashboard.users.claimOverrideGrantLabel"),
+    claimOverrideRevokeLabel: t("dashboard.users.claimOverrideRevokeLabel"),
+    claimRevokedLabel: t("dashboard.users.claimRevokedLabel"),
+    claimRegistryTitle: t("dashboard.users.claimRegistryTitle"),
+    claimRemoveLabel: t("dashboard.users.claimRemoveLabel"),
+    claimRoleDefaultLabel: t("dashboard.users.claimRoleDefaultLabel"),
+    claimScopeLabel: t("dashboard.users.claimScopeLabel"),
+    claimScopeNoneLabel: t("dashboard.users.claimScopeNoneLabel"),
     activeFilterLabel: t("dashboard.users.filter.active.label"),
     clearFiltersLabel: t("dashboard.users.clearFiltersLabel"),
     createActionLabel: t("dashboard.users.createActionLabel"),
@@ -58,6 +74,7 @@ export function buildDashboardUsersFormCopy(t: I18nTranslator) {
     },
     errors: {
       createDuplicateEmail: t("dashboard.users.form.error.createDuplicateEmail"),
+      authzVersionMismatch: t("dashboard.users.form.error.authzVersionMismatch"),
       deactivateMissingUser: t("dashboard.users.form.error.deactivateMissingUser"),
       forbidden: authzCopy.forbiddenError,
       lastActiveAdminDeactivate: t(

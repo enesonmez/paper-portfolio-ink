@@ -16,19 +16,19 @@ import { useDashboardUsersCopy } from "../copy";
 import {
   buildDashboardUsersHref,
   type DashboardUsersHrefParams,
-  type DashboardUsersFormState,
+  type DashboardUsersProfileFormState,
   useDashboardUserRoleOptions,
 } from "../state";
 
 interface DashboardUsersModalProps {
-  form: DashboardUsersFormState;
+  form: DashboardUsersProfileFormState;
   listHrefState: Pick<
     DashboardUsersHrefParams,
     "active" | "cursor" | "direction" | "role" | "search"
   >;
 }
 
-export function DashboardUsersModalView({
+export function DashboardUsersProfileModalView({
   form,
   listHrefState,
 }: DashboardUsersModalProps) {
@@ -63,11 +63,14 @@ export function DashboardUsersModalView({
           }
         />
         {form.mode === "edit" && form.editingUserId ? (
-          <input
-            type="hidden"
-            name={USER_FORM_FIELD.userId}
-            value={form.editingUserId}
-          />
+          <>
+            <input
+              type="hidden"
+              name={USER_FORM_FIELD.userId}
+              value={form.editingUserId}
+            />
+            <input type="hidden" name={USER_FORM_FIELD.role} value={form.values.role} />
+          </>
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -88,7 +91,13 @@ export function DashboardUsersModalView({
           />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_14rem]">
+        <div
+          className={
+            form.mode === "edit"
+              ? "space-y-2"
+              : "grid gap-4 md:grid-cols-[minmax(0,1fr)_14rem]"
+          }
+        >
           <div className="space-y-2">
             <TextField
               defaultValue={form.values.password}
@@ -104,13 +113,15 @@ export function DashboardUsersModalView({
               </p>
             ) : null}
           </div>
-          <SelectField
-            defaultValue={form.values.role}
-            error={form.errors?.role}
-            label={formCopy.role.label}
-            name={USER_FORM_FIELD.role}
-            options={roleOptions}
-          />
+          {form.mode === "create" ? (
+            <SelectField
+              defaultValue={form.values.role}
+              error={form.errors?.role}
+              label={formCopy.role.label}
+              name={USER_FORM_FIELD.role}
+              options={roleOptions}
+            />
+          ) : null}
         </div>
 
         <label className="flex items-center gap-3 font-sans text-xs font-bold tracking-[0.16em] uppercase">

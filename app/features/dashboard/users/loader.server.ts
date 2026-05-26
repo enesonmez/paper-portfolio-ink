@@ -2,6 +2,7 @@ import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
 import {
+  getUserAuthorizationById,
   getUserOverviewById,
   listUsersPage,
   parseDashboardUsersCursor,
@@ -27,7 +28,8 @@ import {
   buildDashboardUsersMetrics,
   buildDashboardUsersPaginationState,
   buildDashboardUsersViewState,
-  resolveDashboardUsersForm,
+  resolveDashboardUsersAuthorizationForm,
+  resolveDashboardUsersProfileForm,
   type DashboardUsersLoaderData,
 } from "./state";
 
@@ -57,8 +59,9 @@ export async function loadDashboardUsersData(
       const db = getDbFromContext(context);
       const url = new URL(request.url);
       const editId = url.searchParams.get(DASHBOARD_USERS_QUERY_PARAM.edit);
+      const modal = url.searchParams.get(DASHBOARD_USERS_QUERY_PARAM.modal);
       const viewState = buildDashboardUsersViewState(url);
-      const [userPage, editableUser] = await Promise.all([
+      const [userPage, editableUser, authorizationUser] = await Promise.all([
         listUsersPage(db, {
           active:
             viewState.active === DASHBOARD_USERS_ACTIVE_FILTER.all
@@ -73,15 +76,24 @@ export async function loadDashboardUsersData(
               : viewState.role,
           searchQuery: viewState.searchQuery,
         }),
-        editId ? getUserOverviewById(db, editId) : Promise.resolve(null),
+        modal === "edit" && editId
+          ? getUserOverviewById(db, editId)
+          : Promise.resolve(null),
+        modal === "access" && editId
+          ? getUserAuthorizationById(db, editId)
+          : Promise.resolve(null),
       ]);
 
       return {
         access: "granted",
         filters: buildDashboardUsersFilters(viewState),
-        form: resolveDashboardUsersForm({
+        authorizationForm: resolveDashboardUsersAuthorizationForm({
+          authorizationUser,
+          modal,
+        }),
+        profileForm: resolveDashboardUsersProfileForm({
           editId,
-          modal: url.searchParams.get(DASHBOARD_USERS_QUERY_PARAM.modal),
+          modal,
           users: editableUser ? [editableUser] : [],
         }),
         metrics: buildDashboardUsersMetrics(userPage.metrics),

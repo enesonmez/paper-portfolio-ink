@@ -1,14 +1,25 @@
 import {
+  buildUserAuthorizationFormValues,
   buildUserFormValues,
+  type UserAuthorizationFormState,
+  type UserAuthorizationFormValues,
   type UserFormState,
   type UserFormValues,
 } from "~/domain/users/form";
 import { USER_ROLE, buildUserRoleOptions, type UserRole } from "~/domain/users/model";
-import { useT } from "~/shared/i18n/i18n-react";
 import type {
   DashboardUsersMetrics as DashboardUsersPageMetrics,
+  UserAuthorizationRecord,
   UserOverview,
 } from "~/lib/users/users.server";
+import {
+  AUTHORIZATION_CLAIM_DEFINITIONS,
+  getDefaultClaimsForRole,
+  type AuthorizationClaim,
+  type AuthorizationEffect,
+} from "~/shared/authz/model";
+import { useT } from "~/shared/i18n/i18n-react";
+
 import {
   buildDashboardPaginationState,
   DASHBOARD_PAGINATION_DIRECTION,
@@ -30,6 +41,7 @@ export const DASHBOARD_USERS_QUERY_PARAM = {
 } as const;
 
 export const DASHBOARD_USERS_MODAL = {
+  access: "access",
   create: "create",
   edit: "edit",
 } as const;
@@ -66,12 +78,36 @@ export interface DashboardUsersPermissions {
   canUpdate: boolean;
 }
 
-export interface DashboardUsersFormState {
+export interface DashboardUsersProfileFormState {
   editingUserId: string | null;
   errors?: UserFormState["errors"];
   isOpen: boolean;
-  mode: DashboardUsersModalMode | null;
+  mode: Extract<DashboardUsersModalMode, "create" | "edit"> | null;
   values: UserFormValues;
+}
+
+export interface DashboardUsersAuthorizationClaimState {
+  action: string;
+  claimKey: AuthorizationClaim;
+  description: string;
+  effect: AuthorizationEffect | null;
+  isEffective: boolean;
+  isRoleGranted: boolean;
+  resource: string;
+  scope: string | null;
+}
+
+export interface DashboardUsersAuthorizationFormState {
+  authzVersion: number | null;
+  claims: DashboardUsersAuthorizationClaimState[];
+  editingUserEmail: string;
+  editingUserId: string | null;
+  editingUserName: string;
+  errors?: UserAuthorizationFormState["errors"];
+  isOpen: boolean;
+  isUserActive: boolean;
+  mode: Extract<DashboardUsersModalMode, "access"> | null;
+  values: UserAuthorizationFormValues;
 }
 
 export interface DashboardUsersFilters {
@@ -82,11 +118,12 @@ export interface DashboardUsersFilters {
 
 export interface DashboardUsersGrantedLoaderData {
   access: "granted";
+  authorizationForm: DashboardUsersAuthorizationFormState;
   filters: DashboardUsersFilters;
-  form: DashboardUsersFormState;
   metrics: DashboardUsersMetrics;
   pagination: DashboardPaginationState;
   permissions: DashboardUsersPermissions;
+  profileForm: DashboardUsersProfileFormState;
   users: UserOverview[];
 }
 
@@ -98,27 +135,56 @@ export type DashboardUsersLoaderData =
   | DashboardUsersDeniedLoaderData
   | DashboardUsersGrantedLoaderData;
 
+export interface DashboardUsersActionState {
+  actionError?: string;
+  authorizationForm?: Pick<
+    DashboardUsersAuthorizationFormState,
+    "editingUserId" | "errors" | "isOpen" | "mode" | "values"
+  >;
+  profileForm?: Pick<
+    DashboardUsersProfileFormState,
+    "editingUserId" | "errors" | "isOpen" | "mode" | "values"
+  >;
+}
+
 export interface DashboardUsersHrefParams {
   active?: DashboardUsersActiveFilter | null;
   cursor?: string | null;
   direction?: DashboardPaginationDirection | null;
   editId?: string | null;
-  modal?: Extract<DashboardUsersModalMode, "create"> | null;
+  modal?: DashboardUsersModalMode | null;
   role?: DashboardUsersRoleFilter | null;
   search?: string | null;
 }
 
-interface ResolveDashboardUsersFormArgs {
+interface ResolveDashboardUsersProfileFormArgs {
   editId: string | null;
   modal: string | null;
   users: UserOverview[];
 }
 
-interface BuildDashboardUsersFormStateArgs {
+interface ResolveDashboardUsersAuthorizationFormArgs {
+  authorizationUser: UserAuthorizationRecord | null;
+  modal: string | null;
+}
+
+interface BuildDashboardUsersProfileFormStateArgs {
   editingUserId?: string | null;
   errors?: UserFormState["errors"];
-  mode: DashboardUsersModalMode | null;
+  mode: DashboardUsersProfileFormState["mode"];
   values: UserFormValues;
+}
+
+interface BuildDashboardUsersAuthorizationFormStateArgs {
+  authzVersion?: number | null;
+  claims?: DashboardUsersAuthorizationClaimState[];
+  editingUserEmail?: string;
+  editingUserId?: string | null;
+  editingUserName?: string;
+  errors?: UserAuthorizationFormState["errors"];
+  isUserActive?: boolean;
+  mode: DashboardUsersAuthorizationFormState["mode"];
+  values: UserAuthorizationFormValues;
 }
 
 export interface DashboardUsersViewState {
@@ -141,16 +207,68 @@ function toUserFormValues(user: UserOverview): UserFormValues {
   });
 }
 
-function buildDashboardUsersFormState({
+function buildDashboardUsersProfileFormState({
   editingUserId,
   errors,
   mode,
   values,
-}: BuildDashboardUsersFormStateArgs): DashboardUsersFormState {
+}: BuildDashboardUsersProfileFormStateArgs): DashboardUsersProfileFormState {
   return {
     editingUserId: editingUserId ?? null,
     errors,
     isOpen: mode !== null,
+    mode,
+    values,
+  };
+}
+
+function buildDashboardUsersAuthorizationClaims(
+  user: UserAuthorizationRecord,
+): DashboardUsersAuthorizationClaimState[] {
+  const roleClaims = new Set(getDefaultClaimsForRole(user.role));
+  const overrideMap = new Map(
+    user.overrides.map((override) => [override.claimKey, override.effect]),
+  );
+
+  return AUTHORIZATION_CLAIM_DEFINITIONS.map((definition) => {
+    const effect = overrideMap.get(definition.key) ?? null;
+    const isRoleGranted = roleClaims.has(definition.key);
+    const isEffective =
+      effect === "grant" ? true : effect === "revoke" ? false : isRoleGranted;
+
+    return {
+      action: definition.action,
+      claimKey: definition.key,
+      description: definition.description,
+      effect,
+      isEffective,
+      isRoleGranted,
+      resource: definition.resource,
+      scope: definition.scope,
+    };
+  });
+}
+
+function buildDashboardUsersAuthorizationFormState({
+  authzVersion,
+  claims,
+  editingUserEmail,
+  editingUserId,
+  editingUserName,
+  errors,
+  isUserActive,
+  mode,
+  values,
+}: BuildDashboardUsersAuthorizationFormStateArgs): DashboardUsersAuthorizationFormState {
+  return {
+    authzVersion: authzVersion ?? null,
+    claims: claims ?? [],
+    editingUserEmail: editingUserEmail ?? "",
+    editingUserId: editingUserId ?? null,
+    editingUserName: editingUserName ?? "",
+    errors,
+    isOpen: mode !== null,
+    isUserActive: isUserActive ?? true,
     mode,
     values,
   };
@@ -278,43 +396,86 @@ export function formatDashboardUserRole(role: UserRole) {
   return role.toUpperCase();
 }
 
-export function resolveDashboardUsersForm({
+export function resolveDashboardUsersProfileForm({
   editId,
   modal,
   users,
-}: ResolveDashboardUsersFormArgs): DashboardUsersFormState {
+}: ResolveDashboardUsersProfileFormArgs): DashboardUsersProfileFormState {
   const editingUser = users.find((user) => user.id === editId);
   const mode =
     modal === DASHBOARD_USERS_MODAL.create
       ? DASHBOARD_USERS_MODAL.create
-      : editingUser
+      : modal === DASHBOARD_USERS_MODAL.edit && editingUser
         ? DASHBOARD_USERS_MODAL.edit
         : null;
 
-  return buildDashboardUsersFormState({
+  return buildDashboardUsersProfileFormState({
     editingUserId: editingUser?.id,
     mode,
     values: editingUser ? toUserFormValues(editingUser) : buildUserFormValues(),
   });
 }
 
-export function mergeDashboardUsersFormState(
-  loaderForm: DashboardUsersFormState,
-  actionData?: UserFormState,
-): DashboardUsersFormState {
-  if (!actionData) {
-    return buildDashboardUsersFormState({
-      editingUserId: loaderForm.editingUserId,
-      mode: loaderForm.mode,
-      values: loaderForm.values,
+export function resolveDashboardUsersAuthorizationForm({
+  authorizationUser,
+  modal,
+}: ResolveDashboardUsersAuthorizationFormArgs): DashboardUsersAuthorizationFormState {
+  if (modal !== DASHBOARD_USERS_MODAL.access || !authorizationUser) {
+    return buildDashboardUsersAuthorizationFormState({
+      mode: null,
+      values: buildUserAuthorizationFormValues(),
     });
   }
 
-  return buildDashboardUsersFormState({
-    editingUserId: loaderForm.editingUserId,
-    errors: actionData.errors,
-    mode: loaderForm.mode,
-    values: actionData.values,
+  return buildDashboardUsersAuthorizationFormState({
+    authzVersion: authorizationUser.authzVersion,
+    claims: buildDashboardUsersAuthorizationClaims(authorizationUser),
+    editingUserEmail: authorizationUser.email,
+    editingUserId: authorizationUser.id,
+    editingUserName: authorizationUser.displayName,
+    isUserActive: authorizationUser.isActive,
+    mode: DASHBOARD_USERS_MODAL.access,
+    values: buildUserAuthorizationFormValues({
+      authzVersion: authorizationUser.authzVersion.toString(),
+      role: authorizationUser.role,
+    }),
+  });
+}
+
+export function mergeDashboardUsersProfileFormState(
+  loaderForm: DashboardUsersProfileFormState,
+  actionData?: DashboardUsersActionState,
+): DashboardUsersProfileFormState {
+  if (!actionData?.profileForm) {
+    return loaderForm;
+  }
+
+  return buildDashboardUsersProfileFormState({
+    editingUserId: actionData.profileForm.editingUserId,
+    errors: actionData.profileForm.errors,
+    mode: actionData.profileForm.mode,
+    values: actionData.profileForm.values,
+  });
+}
+
+export function mergeDashboardUsersAuthorizationFormState(
+  loaderForm: DashboardUsersAuthorizationFormState,
+  actionData?: DashboardUsersActionState,
+): DashboardUsersAuthorizationFormState {
+  if (!actionData?.authorizationForm) {
+    return loaderForm;
+  }
+
+  return buildDashboardUsersAuthorizationFormState({
+    authzVersion: loaderForm.authzVersion,
+    claims: loaderForm.claims,
+    editingUserEmail: loaderForm.editingUserEmail,
+    editingUserId: actionData.authorizationForm.editingUserId,
+    editingUserName: loaderForm.editingUserName,
+    errors: actionData.authorizationForm.errors,
+    isUserActive: loaderForm.isUserActive,
+    mode: actionData.authorizationForm.mode,
+    values: actionData.authorizationForm.values,
   });
 }
 

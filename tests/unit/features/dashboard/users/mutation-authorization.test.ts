@@ -18,6 +18,7 @@ describe("dashboard users mutation authorization", () => {
         formCopy: {
           errors: {
             createDuplicateEmail: "duplicate",
+            authzVersionMismatch: "stale",
             deactivateMissingUser: "missing-delete",
             forbidden: "forbidden",
             lastActiveAdminDeactivate: "last-admin-deactivate",
@@ -60,6 +61,7 @@ describe("dashboard users mutation authorization", () => {
         formCopy: {
           errors: {
             createDuplicateEmail: "duplicate",
+            authzVersionMismatch: "stale",
             deactivateMissingUser: "missing-delete",
             forbidden: "forbidden",
             lastActiveAdminDeactivate: "last-admin-deactivate",

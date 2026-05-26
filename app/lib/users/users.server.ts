@@ -3,8 +3,14 @@ import { and, asc, desc, eq, gt, like, lt, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "../../../db";
-import { accounts, users } from "../../../db/schema";
+import { accounts, authorizationUserClaimOverrides, users } from "../../../db/schema";
 import { USER_ROLE, type UserRole } from "~/domain/users/model";
+import {
+  isAuthorizationClaim,
+  isAuthorizationEffect,
+  type AuthorizationClaim,
+  type AuthorizationEffect,
+} from "~/shared/authz/model";
 
 import type { UserSubmission } from "./user-form.server";
 
@@ -25,6 +31,17 @@ export interface UserRecord {
   id: string;
   isActive: boolean;
   role: UserRole;
+}
+
+export interface UserClaimOverrideRecord {
+  claimKey: AuthorizationClaim;
+  effect: AuthorizationEffect;
+}
+
+export interface UserAuthorizationRecord extends UserRecord {
+  authzVersion: number;
+  displayName: string;
+  overrides: UserClaimOverrideRecord[];
 }
 
 export interface DashboardUsersMetrics {
@@ -74,6 +91,26 @@ function formatDateLabel(value: Date) {
 
 function normalizeNullableString(value: string) {
   return value.length > 0 ? value : null;
+}
+
+function normalizeClaimOverrideRows(
+  rows: Array<{
+    claimKey: string;
+    effect: string;
+  }>,
+) {
+  return rows.flatMap((row) => {
+    if (!isAuthorizationClaim(row.claimKey) || !isAuthorizationEffect(row.effect)) {
+      return [];
+    }
+
+    return [
+      {
+        claimKey: row.claimKey,
+        effect: row.effect,
+      },
+    ] satisfies UserClaimOverrideRecord[];
+  });
 }
 
 function toUserOverview(user: {
@@ -397,6 +434,49 @@ export async function getUserById(
   return user ?? null;
 }
 
+export async function getUserAuthorizationById(
+  db: AppDb,
+  userId: string,
+): Promise<UserAuthorizationRecord | null> {
+  const [userRows, overrideRows] = await Promise.all([
+    db
+      .select({
+        authzVersion: users.authzVersion,
+        displayName: users.displayName,
+        email: users.email,
+        id: users.id,
+        isActive: users.isActive,
+        role: users.role,
+      })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1),
+    db
+      .select({
+        claimKey: authorizationUserClaimOverrides.claimKey,
+        effect: authorizationUserClaimOverrides.effect,
+      })
+      .from(authorizationUserClaimOverrides)
+      .where(eq(authorizationUserClaimOverrides.userId, userId))
+      .orderBy(asc(authorizationUserClaimOverrides.claimKey)),
+  ]);
+  const user = userRows[0];
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    authzVersion: user.authzVersion,
+    displayName: user.displayName,
+    email: user.email,
+    id: user.id,
+    isActive: user.isActive,
+    overrides: normalizeClaimOverrideRows(overrideRows),
+    role: user.role,
+  };
+}
+
 export async function countActiveAdmins(db: AppDb) {
   const [result] = await db
     .select({
@@ -462,19 +542,31 @@ export async function updateUser(
   submission: UserSubmission,
 ) {
   const timestamp = new Date();
+  const currentUser = await getUserById(db, userId);
+  const shouldBumpAuthzVersion =
+    currentUser !== null &&
+    (currentUser.isActive !== submission.isActive ||
+      currentUser.role !== submission.role);
+  const updateValues = {
+    avatarUrl: normalizeNullableString(submission.avatarUrl),
+    bio: normalizeNullableString(submission.bio),
+    displayName: submission.displayName,
+    email: submission.email,
+    isActive: submission.isActive,
+    role: submission.role,
+    updatedAt: timestamp,
+  };
 
   await db
     .update(users)
-    .set({
-      avatarUrl: normalizeNullableString(submission.avatarUrl),
-      authzVersion: sql`${users.authzVersion} + 1`,
-      bio: normalizeNullableString(submission.bio),
-      displayName: submission.displayName,
-      email: submission.email,
-      isActive: submission.isActive,
-      role: submission.role,
-      updatedAt: timestamp,
-    })
+    .set(
+      shouldBumpAuthzVersion
+        ? {
+            ...updateValues,
+            authzVersion: sql`${users.authzVersion} + 1`,
+          }
+        : updateValues,
+    )
     .where(eq(users.id, userId));
 
   if (submission.password.length === 0) {
@@ -490,6 +582,76 @@ export async function updateUser(
       updatedAt: timestamp,
     })
     .where(and(eq(accounts.userId, userId), eq(accounts.providerId, "credential")));
+}
+
+export async function updateUserRoleWithVersionGuard(args: {
+  db: AppDb;
+  expectedAuthzVersion: number;
+  role: UserRole;
+  userId: string;
+}) {
+  const updatedRows = await args.db
+    .update(users)
+    .set({
+      authzVersion: sql`${users.authzVersion} + 1`,
+      role: args.role,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(eq(users.id, args.userId), eq(users.authzVersion, args.expectedAuthzVersion)),
+    )
+    .returning({
+      authzVersion: users.authzVersion,
+      id: users.id,
+      role: users.role,
+    });
+
+  return updatedRows.length > 0;
+}
+
+export async function upsertUserClaimOverrideWithVersionGuard(args: {
+  db: AppDb;
+  effect: AuthorizationEffect;
+  expectedAuthzVersion: number;
+  claimKey: AuthorizationClaim;
+  userId: string;
+}) {
+  const versionUpdated = await args.db
+    .update(users)
+    .set({
+      authzVersion: sql`${users.authzVersion} + 1`,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(eq(users.id, args.userId), eq(users.authzVersion, args.expectedAuthzVersion)),
+    )
+    .returning({
+      id: users.id,
+    });
+
+  if (versionUpdated.length === 0) {
+    return false;
+  }
+
+  await args.db
+    .insert(authorizationUserClaimOverrides)
+    .values({
+      claimKey: args.claimKey,
+      effect: args.effect,
+      userId: args.userId,
+    })
+    .onConflictDoUpdate({
+      set: {
+        effect: args.effect,
+        updatedAt: new Date(),
+      },
+      target: [
+        authorizationUserClaimOverrides.userId,
+        authorizationUserClaimOverrides.claimKey,
+      ],
+    });
+
+  return true;
 }
 
 export async function deactivateUser(db: AppDb, userId: string) {

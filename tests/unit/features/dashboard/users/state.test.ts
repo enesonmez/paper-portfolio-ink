@@ -3,14 +3,19 @@ import { describe, expect, it } from "vitest";
 import {
   buildDashboardUsersHref,
   buildDashboardUsersMetrics,
-  mergeDashboardUsersFormState,
-  resolveDashboardUsersForm,
+  mergeDashboardUsersAuthorizationFormState,
+  mergeDashboardUsersProfileFormState,
+  resolveDashboardUsersAuthorizationForm,
+  resolveDashboardUsersProfileForm,
 } from "~/features/dashboard/users/state";
 
 describe("dashboard users state helpers", () => {
-  it("builds hrefs and counts only active users in dashboard metrics", () => {
+  it("builds hrefs and preserves dashboard metrics", () => {
     expect(buildDashboardUsersHref({ modal: "create" })).toBe(
       "/dashboard/users?modal=create",
+    );
+    expect(buildDashboardUsersHref({ editId: "user-1", modal: "access" })).toBe(
+      "/dashboard/users?modal=access&edit=user-1",
     );
     expect(
       buildDashboardUsersMetrics({
@@ -25,10 +30,10 @@ describe("dashboard users state helpers", () => {
     });
   });
 
-  it("resolves edit form state and merges action values", () => {
-    const loaderForm = resolveDashboardUsersForm({
+  it("resolves profile form state and merges action values", () => {
+    const loaderForm = resolveDashboardUsersProfileForm({
       editId: "user-1",
-      modal: null,
+      modal: "edit",
       users: [
         {
           avatarUrl: "https://images.paper-portfolio-ink.dev/admin.webp",
@@ -59,18 +64,23 @@ describe("dashboard users state helpers", () => {
     });
 
     expect(
-      mergeDashboardUsersFormState(loaderForm, {
-        errors: {
-          email: "Already taken",
-        },
-        values: {
-          avatarUrl: "",
-          bio: "",
-          displayName: "Admin",
-          email: "admin@example.com",
-          isActive: true,
-          password: "",
-          role: "admin",
+      mergeDashboardUsersProfileFormState(loaderForm, {
+        profileForm: {
+          editingUserId: "user-1",
+          errors: {
+            email: "Already taken",
+          },
+          isOpen: true,
+          mode: "edit",
+          values: {
+            avatarUrl: "",
+            bio: "",
+            displayName: "Admin",
+            email: "admin@example.com",
+            isActive: true,
+            password: "",
+            role: "admin",
+          },
         },
       }),
     ).toMatchObject({
@@ -80,6 +90,72 @@ describe("dashboard users state helpers", () => {
       },
       isOpen: true,
       mode: "edit",
+    });
+  });
+
+  it("resolves authorization modal state and keeps claim entries while merging errors", () => {
+    const loaderForm = resolveDashboardUsersAuthorizationForm({
+      authorizationUser: {
+        authzVersion: 7,
+        displayName: "Admin",
+        email: "admin@example.com",
+        id: "user-1",
+        isActive: true,
+        overrides: [
+          {
+            claimKey: "users.delete",
+            effect: "revoke",
+          },
+        ],
+        role: "admin",
+      },
+      modal: "access",
+    });
+
+    expect(loaderForm).toMatchObject({
+      authzVersion: 7,
+      editingUserEmail: "admin@example.com",
+      editingUserId: "user-1",
+      editingUserName: "Admin",
+      isOpen: true,
+      mode: "access",
+      values: {
+        authzVersion: "7",
+        role: "admin",
+      },
+    });
+    expect(
+      loaderForm.claims.find((claim) => claim.claimKey === "users.delete"),
+    ).toMatchObject({
+      effect: "revoke",
+      isEffective: false,
+      isRoleGranted: true,
+    });
+
+    expect(
+      mergeDashboardUsersAuthorizationFormState(loaderForm, {
+        authorizationForm: {
+          editingUserId: "user-1",
+          errors: {
+            form: "Stale version",
+          },
+          isOpen: true,
+          mode: "access",
+          values: {
+            authzVersion: "7",
+            claimKey: "users.delete",
+            role: "admin",
+          },
+        },
+      }),
+    ).toMatchObject({
+      authzVersion: 7,
+      editingUserId: "user-1",
+      errors: {
+        form: "Stale version",
+      },
+      isOpen: true,
+      mode: "access",
     });
   });
 });

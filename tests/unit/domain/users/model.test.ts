@@ -30,9 +30,14 @@ describe("user model contracts", () => {
     expect(USER_MUTATION_INTENT).toEqual({
       create: "create",
       delete: "delete",
+      grantClaim: "grant-claim",
+      revokeClaim: "revoke-claim",
       update: "update",
+      updateAccessRole: "update-access-role",
     });
     expect(USER_FORM_FIELD).toMatchObject({
+      authzVersion: "authzVersion",
+      claimKey: "claimKey",
       email: "email",
       intent: "intent",
       userId: "userId",
@@ -43,6 +48,9 @@ describe("user model contracts", () => {
     expect(isUserMutationIntent("create")).toBe(true);
     expect(isUserMutationIntent("update")).toBe(true);
     expect(isUserMutationIntent("delete")).toBe(true);
+    expect(isUserMutationIntent("grant-claim")).toBe(true);
+    expect(isUserMutationIntent("revoke-claim")).toBe(true);
+    expect(isUserMutationIntent("update-access-role")).toBe(true);
     expect(isUserMutationIntent("archive")).toBe(false);
   });
 });

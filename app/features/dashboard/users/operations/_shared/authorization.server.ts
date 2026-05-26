@@ -69,6 +69,18 @@ function resolveUserMutationAuthorization(intent: UserMutationIntent) {
     };
   }
 
+  if (
+    intent === USER_MUTATION_INTENT.updateAccessRole ||
+    intent === USER_MUTATION_INTENT.grantClaim ||
+    intent === USER_MUTATION_INTENT.revokeClaim
+  ) {
+    return {
+      action: APP_ERROR_ACTION.update,
+      code: APP_ERROR_CODE.users.update.forbidden,
+      requiredClaim,
+    };
+  }
+
   return {
     action: APP_ERROR_ACTION.create,
     code: APP_ERROR_CODE.users.create.forbidden,
