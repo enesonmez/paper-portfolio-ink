@@ -23,8 +23,10 @@ export default function DashboardProjectsRoute() {
   return (
     <DashboardProjectsScreen
       actionError={!loaderData.form.isOpen ? actionData?.errors?.form : undefined}
+      filters={loaderData.filters}
       form={mergeDashboardProjectsFormState(loaderData.form, actionData)}
       metrics={loaderData.metrics}
+      pagination={loaderData.pagination}
       permissions={loaderData.permissions}
       projects={loaderData.projects}
     />

@@ -9,14 +9,29 @@ import {
   type PostStatus,
 } from "~/domain/posts/model";
 import { useT } from "~/shared/i18n/i18n-react";
-import type { EditablePost, PostOverview } from "~/lib/posts/posts.server";
+import type {
+  DashboardPostListMetrics,
+  EditablePost,
+  PostOverview,
+} from "~/lib/posts/posts.server";
+import {
+  buildDashboardPaginationState,
+  DASHBOARD_PAGINATION_DIRECTION,
+  normalizeDashboardPaginationDirection,
+  type DashboardPaginationDirection,
+  type DashboardPaginationState,
+} from "../shared/pagination";
 
 type ValueOf<T> = T[keyof T];
 
 export const DASHBOARD_POSTS_QUERY_PARAM = {
+  cursor: "cursor",
+  direction: "direction",
   edit: "edit",
   presentation: "presentation",
   modal: "modal",
+  search: "search",
+  status: "status",
 } as const;
 
 export const DASHBOARD_POSTS_MODAL = {
@@ -36,11 +51,26 @@ export type DashboardPostsPresentationMode = ValueOf<
 >;
 
 export type DashboardStatusTone = "danger" | "neutral" | "success" | "warning";
+export const DASHBOARD_POSTS_PAGE_SIZE = 20;
+export const DASHBOARD_POSTS_STATUS_FILTER = {
+  all: "all",
+  archived: POST_STATUS.archived,
+  draft: POST_STATUS.draft,
+  published: POST_STATUS.published,
+} as const;
+
+export type DashboardPostsStatusFilter =
+  (typeof DASHBOARD_POSTS_STATUS_FILTER)[keyof typeof DASHBOARD_POSTS_STATUS_FILTER];
 
 export interface DashboardPostsMetrics {
   draftCount: number;
   publishedCount: number;
   totalCount: number;
+}
+
+export interface DashboardPostsFilters {
+  searchQuery: string;
+  status: DashboardPostsStatusFilter;
 }
 
 export interface DashboardPostsPermissions {
@@ -61,16 +91,20 @@ export interface DashboardPostsFormState {
 
 export interface DashboardPostsGrantedLoaderData {
   access: "granted";
+  filters: DashboardPostsFilters;
   form: DashboardPostsFormState;
   metrics: DashboardPostsMetrics;
+  pagination: DashboardPaginationState;
   permissions: DashboardPostsPermissions;
   posts: PostOverview[];
 }
 
 export interface DashboardPostsDeniedLoaderData {
   access: "denied";
+  filters: DashboardPostsFilters;
   form: DashboardPostsFormState;
   metrics: DashboardPostsMetrics;
+  pagination: DashboardPaginationState;
   permissions: DashboardPostsPermissions;
   posts: PostOverview[];
 }
@@ -80,9 +114,13 @@ export type DashboardPostsLoaderData =
   | DashboardPostsGrantedLoaderData;
 
 export interface DashboardPostsHrefParams {
+  cursor?: string | null;
+  direction?: DashboardPaginationDirection | null;
   editId?: string | null;
   modal?: Extract<DashboardPostsModalMode, "create"> | null;
   presentation?: DashboardPostsPresentationMode | null;
+  search?: string | null;
+  status?: DashboardPostsStatusFilter | null;
 }
 
 interface ResolveDashboardPostsFormArgs {
@@ -98,6 +136,13 @@ interface BuildDashboardPostsFormStateArgs {
   presentation?: DashboardPostsPresentationMode;
   slugSuggestion?: string | null;
   values: PostFormValues;
+}
+
+export interface DashboardPostsViewState {
+  cursor: string | null;
+  direction: DashboardPaginationDirection;
+  searchQuery: string;
+  status: DashboardPostsStatusFilter;
 }
 
 function toPostFormValues(post: EditablePost): PostFormValues {
@@ -137,6 +182,25 @@ function buildDashboardPostsFormState({
 export function buildDashboardPostsHref(params: DashboardPostsHrefParams = {}) {
   const searchParams = new URLSearchParams();
 
+  if (params.search) {
+    searchParams.set(DASHBOARD_POSTS_QUERY_PARAM.search, params.search);
+  }
+
+  if (params.status && params.status !== DASHBOARD_POSTS_STATUS_FILTER.all) {
+    searchParams.set(DASHBOARD_POSTS_QUERY_PARAM.status, params.status);
+  }
+
+  if (params.cursor) {
+    searchParams.set(DASHBOARD_POSTS_QUERY_PARAM.cursor, params.cursor);
+  }
+
+  if (
+    params.direction &&
+    (params.direction !== DASHBOARD_PAGINATION_DIRECTION.next || params.cursor)
+  ) {
+    searchParams.set(DASHBOARD_POSTS_QUERY_PARAM.direction, params.direction);
+  }
+
   if (params.modal) {
     searchParams.set(DASHBOARD_POSTS_QUERY_PARAM.modal, params.modal);
   }
@@ -174,24 +238,95 @@ export function formatDashboardPostTitle(title: string) {
 }
 
 export function buildDashboardPostsMetrics(
-  posts: PostOverview[],
+  metrics: DashboardPostListMetrics,
 ): DashboardPostsMetrics {
   return {
-    draftCount: posts.filter((post) => post.status === POST_STATUS.draft).length,
-    publishedCount: posts.filter((post) => post.status === POST_STATUS.published)
-      .length,
-    totalCount: posts.length,
+    draftCount: metrics.draftCount,
+    publishedCount: metrics.publishedCount,
+    totalCount: metrics.totalCount,
+  };
+}
+
+export function buildDashboardPostsFilters(
+  viewState: DashboardPostsViewState,
+): DashboardPostsFilters {
+  return {
+    searchQuery: viewState.searchQuery,
+    status: viewState.status,
+  };
+}
+
+export function buildDashboardPostsPaginationState(args: {
+  currentCursor: string | null;
+  direction: DashboardPaginationDirection;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+  nextCursor?: string | null;
+  pageSize?: number;
+  previousCursor?: string | null;
+}): DashboardPaginationState {
+  return buildDashboardPaginationState({
+    currentCursor: args.currentCursor,
+    direction: args.direction,
+    hasNextPage: args.hasNextPage,
+    hasPreviousPage: args.hasPreviousPage,
+    nextCursor: args.nextCursor,
+    pageSize: args.pageSize ?? DASHBOARD_POSTS_PAGE_SIZE,
+    previousCursor: args.previousCursor,
+  });
+}
+
+export function normalizeDashboardPostsSearchQuery(value: string | null) {
+  return value?.trim() ?? "";
+}
+
+export function normalizeDashboardPostsStatusFilter(
+  value: string | null,
+): DashboardPostsStatusFilter {
+  return value === POST_STATUS.archived ||
+    value === POST_STATUS.draft ||
+    value === POST_STATUS.published
+    ? value
+    : DASHBOARD_POSTS_STATUS_FILTER.all;
+}
+
+export function buildDashboardPostsViewState(url: URL): DashboardPostsViewState {
+  return {
+    cursor: url.searchParams.get(DASHBOARD_POSTS_QUERY_PARAM.cursor),
+    direction: normalizeDashboardPaginationDirection(
+      url.searchParams.get(DASHBOARD_POSTS_QUERY_PARAM.direction),
+    ),
+    searchQuery: normalizeDashboardPostsSearchQuery(
+      url.searchParams.get(DASHBOARD_POSTS_QUERY_PARAM.search),
+    ),
+    status: normalizeDashboardPostsStatusFilter(
+      url.searchParams.get(DASHBOARD_POSTS_QUERY_PARAM.status),
+    ),
   };
 }
 
 export function buildDeniedDashboardPostsLoaderData(): DashboardPostsDeniedLoaderData {
   return {
     access: "denied",
+    filters: buildDashboardPostsFilters({
+      cursor: null,
+      direction: DASHBOARD_PAGINATION_DIRECTION.next,
+      searchQuery: "",
+      status: DASHBOARD_POSTS_STATUS_FILTER.all,
+    }),
     form: buildDashboardPostsFormState({
       mode: null,
       values: buildPostFormValues(),
     }),
-    metrics: buildDashboardPostsMetrics([]),
+    metrics: buildDashboardPostsMetrics({
+      draftCount: 0,
+      publishedCount: 0,
+      totalCount: 0,
+    }),
+    pagination: buildDashboardPostsPaginationState({
+      currentCursor: null,
+      direction: DASHBOARD_PAGINATION_DIRECTION.next,
+    }),
     permissions: {
       canCreate: false,
       canDelete: false,
@@ -248,4 +383,16 @@ export function useDashboardPostStatusOptions() {
   const t = useT();
 
   return buildPostStatusOptions(t);
+}
+
+export function useDashboardPostStatusFilterOptions() {
+  const t = useT();
+
+  return [
+    {
+      label: t("dashboard.posts.filter.status.all"),
+      value: DASHBOARD_POSTS_STATUS_FILTER.all,
+    },
+    ...buildPostStatusOptions(t),
+  ] as const;
 }

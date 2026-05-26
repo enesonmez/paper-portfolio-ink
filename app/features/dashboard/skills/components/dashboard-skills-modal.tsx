@@ -15,11 +15,16 @@ import { SKILL_FORM_FIELD, SKILL_MUTATION_INTENT } from "~/domain/skills/model";
 import { suggestSlugFromTitle } from "~/lib/slug";
 
 import { useDashboardSkillsCopy } from "../copy";
-import { buildDashboardSkillsHref, type DashboardSkillsFormState } from "../state";
+import {
+  buildDashboardSkillsHref,
+  type DashboardSkillsFormState,
+  type DashboardSkillsHrefParams,
+} from "../state";
 import { DashboardSkillsIconPicker } from "./dashboard-skills-icon-picker";
 
 interface DashboardSkillsModalProps {
   form: DashboardSkillsFormState;
+  listHrefState: Pick<DashboardSkillsHrefParams, "cursor" | "direction" | "search">;
 }
 
 interface DashboardSkillsModalFormProps extends DashboardSkillsModalProps {
@@ -36,6 +41,7 @@ function DashboardSkillsModalForm({
   form,
   intent,
   isEditMode,
+  listHrefState,
   title,
 }: DashboardSkillsModalFormProps) {
   const to = useLocalizedPath();
@@ -54,7 +60,7 @@ function DashboardSkillsModalForm({
     <DashboardModal
       description={description}
       title={title}
-      to={to(buildDashboardSkillsHref())}
+      to={to(buildDashboardSkillsHref(listHrefState))}
     >
       <Form method="post" className="space-y-4">
         <input type="hidden" name={SKILL_FORM_FIELD.intent} value={intent} />
@@ -132,7 +138,9 @@ function DashboardSkillsModalForm({
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button asChild variant="secondary" className="tracking-[0.14em]">
-            <Link to={to(buildDashboardSkillsHref())}>{formCopy.cancelLabel}</Link>
+            <Link to={to(buildDashboardSkillsHref(listHrefState))}>
+              {formCopy.cancelLabel}
+            </Link>
           </Button>
           <Button
             type="submit"
@@ -147,7 +155,10 @@ function DashboardSkillsModalForm({
   );
 }
 
-export function DashboardSkillsModalView({ form }: DashboardSkillsModalProps) {
+export function DashboardSkillsModalView({
+  form,
+  listHrefState,
+}: DashboardSkillsModalProps) {
   const { copy } = useDashboardSkillsCopy();
 
   if (!form.isOpen || !form.mode) {
@@ -182,6 +193,7 @@ export function DashboardSkillsModalView({ form }: DashboardSkillsModalProps) {
         form.values.summary,
       ].join(":")}
       form={form}
+      listHrefState={listHrefState}
       title={modalVariant.title}
     />
   );

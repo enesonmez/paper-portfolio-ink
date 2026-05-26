@@ -49,6 +49,7 @@ const grantedLoaderData = {
   },
   pagination: {
     errors: {
+      currentCursor: null,
       direction: "next",
       hasNextPage: true,
       hasPreviousPage: false,
@@ -57,6 +58,7 @@ const grantedLoaderData = {
       previousCursor: null,
     },
     history: {
+      currentCursor: null,
       direction: "next",
       hasNextPage: false,
       hasPreviousPage: true,

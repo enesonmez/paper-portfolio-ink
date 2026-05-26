@@ -11,22 +11,11 @@ describe("dashboard skills state helpers", () => {
   it("builds stable hrefs and metrics from skill rows", () => {
     expect(
       buildDashboardSkillsHref({
+        search: "cloudflare",
         editId: "skill-1",
       }),
-    ).toBe("/dashboard/skills?edit=skill-1");
-    expect(
-      buildDashboardSkillsMetrics([
-        {
-          createdAtLabel: "2026-03-20",
-          iconKey: "workflow",
-          id: "skill-1",
-          name: "React Router",
-          slug: "react-router",
-          sortOrder: 0,
-          summary: "SSR-first flows.",
-        },
-      ]),
-    ).toEqual({
+    ).toBe("/dashboard/skills?search=cloudflare&edit=skill-1");
+    expect(buildDashboardSkillsMetrics(1)).toEqual({
       totalCount: 1,
     });
   });

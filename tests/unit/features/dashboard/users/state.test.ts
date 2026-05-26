@@ -13,45 +13,15 @@ describe("dashboard users state helpers", () => {
       "/dashboard/users?modal=create",
     );
     expect(
-      buildDashboardUsersMetrics([
-        {
-          avatarUrl: null,
-          bio: null,
-          createdAtLabel: "2026-03-20",
-          displayName: "Admin",
-          email: "admin@example.com",
-          id: "user-1",
-          isActive: true,
-          role: "admin",
-          updatedAtLabel: "2026-03-20",
-        },
-        {
-          avatarUrl: null,
-          bio: null,
-          createdAtLabel: "2026-03-20",
-          displayName: "Author",
-          email: "author@example.com",
-          id: "user-2",
-          isActive: true,
-          role: "author",
-          updatedAtLabel: "2026-03-20",
-        },
-        {
-          avatarUrl: null,
-          bio: null,
-          createdAtLabel: "2026-03-20",
-          displayName: "Inactive",
-          email: "inactive@example.com",
-          id: "user-3",
-          isActive: false,
-          role: "admin",
-          updatedAtLabel: "2026-03-20",
-        },
-      ]),
+      buildDashboardUsersMetrics({
+        adminCount: 2,
+        authorCount: 1,
+        totalCount: 3,
+      }),
     ).toEqual({
-      adminCount: 1,
+      adminCount: 2,
       authorCount: 1,
-      totalCount: 2,
+      totalCount: 3,
     });
   });
 

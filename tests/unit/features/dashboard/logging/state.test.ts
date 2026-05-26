@@ -22,6 +22,7 @@ describe("dashboard logging state helpers", () => {
       },
       pagination: {
         errors: {
+          currentCursor: null,
           direction: "next",
           hasNextPage: false,
           hasPreviousPage: false,
@@ -30,6 +31,7 @@ describe("dashboard logging state helpers", () => {
           previousCursor: null,
         },
         history: {
+          currentCursor: null,
           direction: "next",
           hasNextPage: false,
           hasPreviousPage: false,
@@ -62,6 +64,8 @@ describe("dashboard logging state helpers", () => {
 
   it("builds granted payloads and prefers action range state when available", () => {
     const loaderData = buildGrantedLoggingLoaderData({
+      currentCursor: "next-error",
+      direction: "next",
       errorPage: {
         entries: [
           {
@@ -149,6 +153,7 @@ describe("dashboard logging state helpers", () => {
       },
       pagination: {
         errors: {
+          currentCursor: "next-error",
           direction: "next",
           hasNextPage: true,
           hasPreviousPage: false,
@@ -157,6 +162,7 @@ describe("dashboard logging state helpers", () => {
           previousCursor: null,
         },
         history: {
+          currentCursor: null,
           direction: "next",
           hasNextPage: false,
           hasPreviousPage: true,

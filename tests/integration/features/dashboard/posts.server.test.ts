@@ -15,6 +15,7 @@ const {
   isPostSlugTakenMock,
   listAuthorizedPostsMock,
   listPostsMock,
+  parseDashboardPostsCursorMock,
   parsePostFormDataMock,
   requireSessionMock,
   updatePostMock,
@@ -32,6 +33,7 @@ const {
     isPostSlugTakenMock: vi.fn(),
     listAuthorizedPostsMock: vi.fn(),
     listPostsMock: vi.fn(),
+    parseDashboardPostsCursorMock: vi.fn(),
     parsePostFormDataMock: vi.fn(),
     requireSessionMock: vi.fn(),
     updatePostMock: vi.fn(),
@@ -45,6 +47,7 @@ vi.mock("~/lib/posts/posts.server", () => {
     findAvailablePostSlug: findAvailablePostSlugMock,
     isPostSlugTaken: isPostSlugTakenMock,
     listPosts: listPostsMock,
+    parseDashboardPostsCursor: parseDashboardPostsCursorMock,
     updatePost: updatePostMock,
   };
 });
@@ -99,6 +102,7 @@ describe("dashboard posts server", () => {
     isPostSlugTakenMock.mockReset();
     listAuthorizedPostsMock.mockReset();
     listPostsMock.mockReset();
+    parseDashboardPostsCursorMock.mockReset();
     parsePostFormDataMock.mockReset();
     requireSessionMock.mockReset();
     updatePostMock.mockReset();
@@ -106,6 +110,7 @@ describe("dashboard posts server", () => {
     canAccessDashboardPostsMock.mockReturnValue(true);
     canCreatePostsMock.mockReturnValue(true);
     canMutatePostMock.mockResolvedValue(true);
+    parseDashboardPostsCursorMock.mockReturnValue(null);
   }, 20000);
 
   it("loads post inventory and metrics for the dashboard route", async () => {
@@ -118,34 +123,45 @@ describe("dashboard posts server", () => {
         role: "admin",
       },
     });
-    listAuthorizedPostsMock.mockResolvedValue([
-      {
-        authorId: "user-1",
-        content: "# Edge telemetry",
-        coverImageUrl: null,
-        createdAtLabel: "2026-03-14",
-        excerpt: "Draft note",
-        id: "post-1",
-        publishedAtLabel: null,
-        slug: "edge-telemetry",
-        status: "draft",
-        title: "Edge telemetry",
-        updatedAtLabel: "2026-03-14",
+    listAuthorizedPostsMock.mockResolvedValue({
+      items: [
+        {
+          authorId: "user-1",
+          coverImageUrl: null,
+          createdAtLabel: "2026-03-14",
+          excerpt: "Draft note",
+          id: "post-1",
+          publishedAtLabel: null,
+          slug: "edge-telemetry",
+          status: "draft",
+          title: "Edge telemetry",
+          updatedAtLabel: "2026-03-14",
+        },
+        {
+          authorId: "user-2",
+          coverImageUrl: null,
+          createdAtLabel: "2026-03-15",
+          excerpt: "Published note",
+          id: "post-2",
+          publishedAtLabel: "2026-03-16",
+          slug: "durable-objects",
+          status: "published",
+          title: "Durable objects",
+          updatedAtLabel: "2026-03-16",
+        },
+      ],
+      metrics: {
+        draftCount: 1,
+        publishedCount: 1,
+        totalCount: 2,
       },
-      {
-        authorId: "user-2",
-        content: "# Durable objects",
-        coverImageUrl: null,
-        createdAtLabel: "2026-03-15",
-        excerpt: "Published note",
-        id: "post-2",
-        publishedAtLabel: "2026-03-16",
-        slug: "durable-objects",
-        status: "published",
-        title: "Durable objects",
-        updatedAtLabel: "2026-03-16",
+      pagination: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        nextCursor: null,
+        previousCursor: null,
       },
-    ]);
+    });
 
     const response = await loadDashboardPostsData(
       context,

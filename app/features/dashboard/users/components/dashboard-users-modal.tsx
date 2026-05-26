@@ -15,15 +15,23 @@ import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/domain/users/model";
 import { useDashboardUsersCopy } from "../copy";
 import {
   buildDashboardUsersHref,
+  type DashboardUsersHrefParams,
   type DashboardUsersFormState,
   useDashboardUserRoleOptions,
 } from "../state";
 
 interface DashboardUsersModalProps {
   form: DashboardUsersFormState;
+  listHrefState: Pick<
+    DashboardUsersHrefParams,
+    "active" | "cursor" | "direction" | "role" | "search"
+  >;
 }
 
-export function DashboardUsersModalView({ form }: DashboardUsersModalProps) {
+export function DashboardUsersModalView({
+  form,
+  listHrefState,
+}: DashboardUsersModalProps) {
   const to = useLocalizedPath();
   const { copy, formCopy } = useDashboardUsersCopy();
   const roleOptions = useDashboardUserRoleOptions();
@@ -42,7 +50,7 @@ export function DashboardUsersModalView({ form }: DashboardUsersModalProps) {
     <DashboardModal
       description={description}
       title={title}
-      to={to(buildDashboardUsersHref())}
+      to={to(buildDashboardUsersHref(listHrefState))}
     >
       <Form method="post" className="space-y-4">
         <input
@@ -135,7 +143,9 @@ export function DashboardUsersModalView({ form }: DashboardUsersModalProps) {
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button asChild variant="secondary" className="tracking-[0.14em]">
-            <Link to={to(buildDashboardUsersHref())}>{formCopy.cancelLabel}</Link>
+            <Link to={to(buildDashboardUsersHref(listHrefState))}>
+              {formCopy.cancelLabel}
+            </Link>
           </Button>
           <Button
             type="submit"

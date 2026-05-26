@@ -9,9 +9,13 @@ describe("dashboard projects shared helpers", () => {
     expect(buildDashboardProjectsHref({ modal: "create" })).toBe(
       "/dashboard/projects?modal=create",
     );
-    expect(buildDashboardProjectsHref({ editId: "project-1" })).toBe(
-      "/dashboard/projects?edit=project-1",
-    );
+    expect(
+      buildDashboardProjectsHref({
+        editId: "project-1",
+        search: "edge",
+        status: "published",
+      }),
+    ).toBe("/dashboard/projects?search=edge&status=published&edit=project-1");
   });
 
   it("maps project status to consistent badge tones", async () => {
