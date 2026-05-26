@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { DashboardAuthorizationAccessDeniedScreen } from "~/shared/authz/components/dashboard-authorization-access-denied-screen";
 import { DashboardMetricCard } from "~/components/dashboard/metric-card";
 import { DashboardPanel } from "~/components/dashboard/panel";
+import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { Button } from "~/components/ui/button";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
@@ -247,55 +248,28 @@ export function DashboardLoggingScreen({
           )}
 
           {currentPagination.hasNextPage || currentPagination.hasPreviousPage ? (
-            <div className="flex flex-col gap-3 border-t-2 border-black pt-4 md:flex-row md:items-center md:justify-end">
-              <div className="flex items-center gap-2 self-end md:self-auto">
-                <Button
-                  asChild={currentPagination.hasPreviousPage}
-                  disabled={!currentPagination.hasPreviousPage}
-                  size="sm"
-                  variant="secondary"
-                >
-                  {currentPagination.hasPreviousPage &&
-                  currentPagination.previousCursor ? (
-                    <Link
-                      to={to(
-                        buildDashboardLoggingHref({
-                          cursor: currentPagination.previousCursor,
-                          direction: "previous",
-                          tab: loaderData.selectedTab,
-                        }),
-                      )}
-                    >
-                      {copy.paginationPreviousLabel}
-                    </Link>
-                  ) : (
-                    <span>{copy.paginationPreviousLabel}</span>
-                  )}
-                </Button>
-                <Button
-                  asChild={currentPagination.hasNextPage}
-                  disabled={!currentPagination.hasNextPage}
-                  size="sm"
-                  variant="secondary"
-                >
-                  {currentPagination.hasNextPage && currentPagination.nextCursor ? (
-                    <Link
-                      to={to(
-                        buildDashboardLoggingHref({
-                          cursor: currentPagination.nextCursor,
-                          direction: "next",
-                          tab: loaderData.selectedTab,
-                        }),
-                      )}
-                    >
-                      {copy.paginationNextLabel}
-                    </Link>
-                  ) : (
-                    <span>{copy.paginationNextLabel}</span>
-                  )}
-                </Button>
-              </div>
-            </div>
+            <DashboardPaginationControls
+              nextHref={
+                currentPagination.hasNextPage && currentPagination.nextCursor
+                  ? buildDashboardLoggingHref({
+                      cursor: currentPagination.nextCursor,
+                      direction: "next",
+                      tab: loaderData.selectedTab,
+                    })
+                  : null
+              }
+              nextLabel={copy.paginationNextLabel}
+              previousHref={
+                currentPagination.hasPreviousPage && currentPagination.previousCursor
+                  ? buildDashboardLoggingHref({
+                      cursor: currentPagination.previousCursor,
+                      direction: "previous",
+                      tab: loaderData.selectedTab,
+                    })
+                  : null
+              }
+              previousLabel={copy.paginationPreviousLabel}
+            />
           ) : null}
         </DashboardPanel>
       </div>

@@ -19,11 +19,18 @@ import {
 } from "~/shared/errors/contracts";
 
 import {
+  DASHBOARD_POSTS_PAGE_SIZE,
+  DASHBOARD_POSTS_QUERY_PARAM,
+  DASHBOARD_POSTS_STATUS_FILTER,
   buildDeniedDashboardPostsLoaderData,
+  buildDashboardPostsFilters,
   buildDashboardPostsMetrics,
+  buildDashboardPostsPaginationState,
+  buildDashboardPostsViewState,
   resolveDashboardPostsForm,
   type DashboardPostsLoaderData,
 } from "./state";
+import { parseDashboardPostsCursor } from "~/lib/posts/posts.server";
 
 export async function loadDashboardPostsData(
   context: AppLoadContext,
@@ -47,8 +54,18 @@ export async function loadDashboardPostsData(
     handle: async ({ actor }) => {
       const url = new URL(request.url);
       const editId = url.searchParams.get("edit");
-      const [posts, editablePost] = await Promise.all([
-        listAuthorizedPosts(context, actor),
+      const viewState = buildDashboardPostsViewState(url);
+      const [postPage, editablePost] = await Promise.all([
+        listAuthorizedPosts(context, actor, {
+          cursor: parseDashboardPostsCursor(viewState.cursor),
+          direction: viewState.direction,
+          pageSize: DASHBOARD_POSTS_PAGE_SIZE,
+          searchQuery: viewState.searchQuery,
+          status:
+            viewState.status === DASHBOARD_POSTS_STATUS_FILTER.all
+              ? undefined
+              : viewState.status,
+        }),
         editId
           ? getAuthorizedEditablePost(context, actor, editId)
           : Promise.resolve(null),
@@ -56,12 +73,22 @@ export async function loadDashboardPostsData(
 
       return {
         access: "granted",
+        filters: buildDashboardPostsFilters(viewState),
         form: resolveDashboardPostsForm({
           editablePost,
           editId,
-          modal: url.searchParams.get("modal"),
+          modal: url.searchParams.get(DASHBOARD_POSTS_QUERY_PARAM.modal),
         }),
-        metrics: buildDashboardPostsMetrics(posts),
+        metrics: buildDashboardPostsMetrics(postPage.metrics),
+        pagination: buildDashboardPostsPaginationState({
+          currentCursor: viewState.cursor,
+          direction: viewState.direction,
+          hasNextPage: postPage.pagination.hasNextPage,
+          hasPreviousPage: postPage.pagination.hasPreviousPage,
+          nextCursor: postPage.pagination.nextCursor,
+          pageSize: DASHBOARD_POSTS_PAGE_SIZE,
+          previousCursor: postPage.pagination.previousCursor,
+        }),
         permissions: {
           canCreate: canCreatePosts(actor),
           canDelete: actorHasAnyClaim(actor, [
@@ -73,7 +100,7 @@ export async function loadDashboardPostsData(
             AUTHORIZATION_CLAIM.postsUpdateOwn,
           ]),
         },
-        posts,
+        posts: postPage.items,
       };
     },
   });

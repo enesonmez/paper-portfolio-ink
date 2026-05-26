@@ -2,6 +2,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { Form, Link } from "react-router";
 
 import { DashboardPanel } from "~/components/dashboard/panel";
+import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
 import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { Button } from "~/components/ui/button";
@@ -14,21 +15,33 @@ import {
   buildDashboardProjectsHref,
   formatDashboardProjectTitle,
   getProjectStatusTone,
+  type DashboardProjectsFilters,
   type DashboardProjectsPermissions,
 } from "../state";
+import type { DashboardPaginationState } from "../../shared/pagination";
 
 interface DashboardProjectsTableProps {
+  filters: DashboardProjectsFilters;
+  pagination: DashboardPaginationState;
   permissions: DashboardProjectsPermissions;
   projects: ProjectOverview[];
 }
 
 export function DashboardProjectsTable({
+  filters,
+  pagination,
   permissions,
   projects,
 }: DashboardProjectsTableProps) {
   const { copy } = useDashboardProjectsCopy();
   const to = useLocalizedPath();
   const t = useT();
+  const listHrefState = {
+    cursor: pagination.currentCursor,
+    direction: pagination.direction,
+    search: filters.searchQuery,
+    status: filters.status,
+  } as const;
 
   const columns: DataTableColumn<ProjectOverview>[] = [
     {
@@ -95,7 +108,14 @@ export function DashboardProjectsTable({
               className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               aria-label={`${t("aria.projects.edit")} ${formatDashboardProjectTitle(project.title)}`}
             >
-              <Link to={to(buildDashboardProjectsHref({ editId: project.id }))}>
+              <Link
+                to={to(
+                  buildDashboardProjectsHref({
+                    ...listHrefState,
+                    editId: project.id,
+                  }),
+                )}
+              >
                 <Pencil className="size-4" aria-hidden="true" />
               </Link>
             </Button>
@@ -129,13 +149,38 @@ export function DashboardProjectsTable({
   }
 
   return (
-    <DashboardPanel className="overflow-x-auto p-0">
+    <DashboardPanel className="space-y-4 overflow-x-auto p-4">
       <DataTable
         columns={columns}
         emptyState={copy.emptyState}
         getRowKey={(project) => project.id}
         rows={projects}
         bodyClassName="font-sans"
+      />
+
+      <DashboardPaginationControls
+        nextHref={
+          pagination.hasNextPage && pagination.nextCursor
+            ? buildDashboardProjectsHref({
+                search: filters.searchQuery,
+                status: filters.status,
+                cursor: pagination.nextCursor,
+                direction: "next",
+              })
+            : null
+        }
+        nextLabel={copy.paginationNextLabel}
+        previousHref={
+          pagination.hasPreviousPage && pagination.previousCursor
+            ? buildDashboardProjectsHref({
+                search: filters.searchQuery,
+                status: filters.status,
+                cursor: pagination.previousCursor,
+                direction: "previous",
+              })
+            : null
+        }
+        previousLabel={copy.paginationPreviousLabel}
       />
     </DashboardPanel>
   );

@@ -8,6 +8,10 @@ import {
   LOGGING_QUERY_PARAM,
   type LoggingPaginationDirection,
 } from "~/domain/logging/model";
+import {
+  buildDashboardPaginationState,
+  type DashboardPaginationState,
+} from "../shared/pagination";
 
 export const DASHBOARD_LOGGING_TAB = {
   errors: "errors",
@@ -17,14 +21,7 @@ export const DASHBOARD_LOGGING_TAB = {
 export type DashboardLoggingTab =
   (typeof DASHBOARD_LOGGING_TAB)[keyof typeof DASHBOARD_LOGGING_TAB];
 
-export interface DashboardLoggingPaginationState {
-  direction: LoggingPaginationDirection;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  nextCursor: string | null;
-  pageSize: number;
-  previousCursor: string | null;
-}
+export type DashboardLoggingPaginationState = DashboardPaginationState;
 
 export interface DashboardLoggingRangeFormState {
   errors?: {
@@ -111,14 +108,11 @@ export function buildEmptyRangeFormState(): DashboardLoggingRangeFormState {
 export function buildDashboardLoggingPaginationState(
   direction: LoggingPaginationDirection = LOGGING_PAGINATION_DIRECTION.next,
 ): DashboardLoggingPaginationState {
-  return {
+  return buildDashboardPaginationState({
+    currentCursor: null,
     direction,
-    hasNextPage: false,
-    hasPreviousPage: false,
-    nextCursor: null,
     pageSize: 0,
-    previousCursor: null,
-  };
+  });
 }
 
 export function mergeDashboardLoggingRangeFormState(
@@ -163,6 +157,8 @@ export function buildDeniedLoaderData(): DashboardLoggingLoaderData {
 }
 
 export function buildGrantedLoggingLoaderData(args: {
+  currentCursor: string | null;
+  direction: LoggingPaginationDirection;
   errorPage: Awaited<ReturnType<typeof loadDashboardLoggingOverview>>["errorPage"];
   historyPage: Awaited<ReturnType<typeof loadDashboardLoggingOverview>>["historyPage"];
   permissions: DashboardLoggingGrantedLoaderData["permissions"];
@@ -176,8 +172,28 @@ export function buildGrantedLoggingLoaderData(args: {
       history: args.historyPage.entries,
     },
     pagination: {
-      errors: args.errorPage.pagination,
-      history: args.historyPage.pagination,
+      errors: buildDashboardPaginationState({
+        currentCursor:
+          args.selectedTab === DASHBOARD_LOGGING_TAB.errors ? args.currentCursor : null,
+        direction: args.direction,
+        hasNextPage: args.errorPage.pagination.hasNextPage,
+        hasPreviousPage: args.errorPage.pagination.hasPreviousPage,
+        nextCursor: args.errorPage.pagination.nextCursor,
+        pageSize: args.errorPage.pagination.pageSize,
+        previousCursor: args.errorPage.pagination.previousCursor,
+      }),
+      history: buildDashboardPaginationState({
+        currentCursor:
+          args.selectedTab === DASHBOARD_LOGGING_TAB.history
+            ? args.currentCursor
+            : null,
+        direction: args.direction,
+        hasNextPage: args.historyPage.pagination.hasNextPage,
+        hasPreviousPage: args.historyPage.pagination.hasPreviousPage,
+        nextCursor: args.historyPage.pagination.nextCursor,
+        pageSize: args.historyPage.pagination.pageSize,
+        previousCursor: args.historyPage.pagination.previousCursor,
+      }),
     },
     permissions: args.permissions,
     rangeForm: buildEmptyRangeFormState(),

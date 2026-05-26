@@ -26,6 +26,7 @@ Sen Senior Full-Stack Architect seviyesinde bir AI agent'sın. Gereksiz açıkla
 - Merkezi hata yönetim metodlarını ve sınıflarını her feature'da kullan. `app/shared/errors`
 - Başarılı işlemler sonucu loglama yap. `app/shared/logging`
 - Authorization metodlarını ve sınfılarını her feature'da kullan. `app/shared/authz`
+- Her geliştirme öncesi plan yap.
 
 # Self-Improvement Loop
 

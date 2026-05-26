@@ -7,6 +7,7 @@ export function buildDashboardSkillsCopy(t: I18nTranslator) {
 
   return {
     actionBlockedTitle: authzCopy.actionBlockedTitle,
+    clearFiltersLabel: t("dashboard.skills.clearFiltersLabel"),
     createActionLabel: t("dashboard.skills.createActionLabel"),
     createDescription: t("dashboard.skills.createDescription"),
     createTitle: t("dashboard.skills.createTitle"),
@@ -16,9 +17,14 @@ export function buildDashboardSkillsCopy(t: I18nTranslator) {
     editTitle: t("dashboard.skills.editTitle"),
     emptyState: t("dashboard.skills.emptyState"),
     inventoryEyebrow: t("dashboard.skills.inventoryEyebrow"),
+    paginationNextLabel: t("dashboard.skills.paginationNextLabel"),
+    paginationPreviousLabel: t("dashboard.skills.paginationPreviousLabel"),
     registryTitle: t("dashboard.skills.registryTitle"),
     restrictedDescription: authzCopy.restrictedDescription,
     restrictedTitle: authzCopy.restrictedTitle,
+    searchActionLabel: t("dashboard.skills.searchActionLabel"),
+    searchLabel: t("dashboard.skills.searchLabel"),
+    searchPlaceholder: t("dashboard.skills.searchPlaceholder"),
     tableActionsLabel: t("dashboard.skills.tableActionsLabel"),
     tableCreatedLabel: t("dashboard.skills.tableCreatedLabel"),
     tableIconLabel: t("dashboard.skills.tableIconLabel"),

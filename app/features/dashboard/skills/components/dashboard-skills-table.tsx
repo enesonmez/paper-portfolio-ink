@@ -2,6 +2,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { Form, Link } from "react-router";
 
 import { DashboardPanel } from "~/components/dashboard/panel";
+import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
@@ -13,15 +14,21 @@ import { useDashboardSkillsCopy } from "../copy";
 import {
   buildDashboardSkillsHref,
   formatDashboardSkillName,
+  type DashboardSkillsFilters,
   type DashboardSkillsPermissions,
 } from "../state";
+import type { DashboardPaginationState } from "../../shared/pagination";
 
 interface DashboardSkillsTableProps {
+  filters: DashboardSkillsFilters;
+  pagination: DashboardPaginationState;
   permissions: DashboardSkillsPermissions;
   skills: SkillOverview[];
 }
 
 export function DashboardSkillsTable({
+  filters,
+  pagination,
   permissions,
   skills,
 }: DashboardSkillsTableProps) {
@@ -29,6 +36,11 @@ export function DashboardSkillsTable({
   const t = useT();
   const { copy } = useDashboardSkillsCopy();
   const iconOptions = useSkillIconOptions();
+  const listHrefState = {
+    cursor: pagination.currentCursor,
+    direction: pagination.direction,
+    search: filters.searchQuery,
+  } as const;
   const columns: DataTableColumn<SkillOverview>[] = [
     {
       cellClassName: "align-top",
@@ -106,7 +118,14 @@ export function DashboardSkillsTable({
               className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               aria-label={`${t("common.edit")} ${formatDashboardSkillName(skill.name)}`}
             >
-              <Link to={to(buildDashboardSkillsHref({ editId: skill.id }))}>
+              <Link
+                to={to(
+                  buildDashboardSkillsHref({
+                    ...listHrefState,
+                    editId: skill.id,
+                  }),
+                )}
+              >
                 <Pencil className="size-4" aria-hidden="true" />
               </Link>
             </Button>
@@ -136,13 +155,36 @@ export function DashboardSkillsTable({
   }
 
   return (
-    <DashboardPanel className="overflow-x-auto p-0">
+    <DashboardPanel className="space-y-4 overflow-x-auto p-4">
       <DataTable
         columns={columns}
         emptyState={copy.emptyState}
         getRowKey={(skill) => skill.id}
         rows={skills}
         bodyClassName="font-sans"
+      />
+
+      <DashboardPaginationControls
+        nextHref={
+          pagination.hasNextPage && pagination.nextCursor
+            ? buildDashboardSkillsHref({
+                search: filters.searchQuery,
+                cursor: pagination.nextCursor,
+                direction: "next",
+              })
+            : null
+        }
+        nextLabel={copy.paginationNextLabel}
+        previousHref={
+          pagination.hasPreviousPage && pagination.previousCursor
+            ? buildDashboardSkillsHref({
+                search: filters.searchQuery,
+                cursor: pagination.previousCursor,
+                direction: "previous",
+              })
+            : null
+        }
+        previousLabel={copy.paginationPreviousLabel}
       />
     </DashboardPanel>
   );

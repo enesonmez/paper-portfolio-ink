@@ -326,7 +326,9 @@ test.describe("admin positive mutation matrix", () => {
 
     expect(response.status()).toBe(302);
 
-    await page.goto(`${E2E_LOCALE_PREFIX}/dashboard/skills`);
+    await page.goto(
+      `${E2E_LOCALE_PREFIX}/dashboard/skills?search=${encodeURIComponent(name)}`,
+    );
     await expect(page.getByText(formatDashboardRegistryLabel(name))).toBeVisible();
     await expect(page.getByText(summary).first()).toBeVisible();
   });
@@ -352,8 +354,9 @@ test.describe("admin positive mutation matrix", () => {
 
     expect(response.status()).toBe(302);
 
-    await page.goto(`${E2E_LOCALE_PREFIX}/dashboard/users`);
-    await expect(page.getByText(email, { exact: true })).toBeVisible();
+    await page.goto(
+      `${E2E_LOCALE_PREFIX}/dashboard/users?search=${encodeURIComponent(displayName)}`,
+    );
     await expect(page.getByText(displayName).first()).toBeVisible();
   });
 

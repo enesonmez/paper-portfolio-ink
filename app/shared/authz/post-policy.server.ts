@@ -5,8 +5,7 @@ import {
   getPostById,
   getPostByIdForAuthor,
   getPostAuthorId,
-  listPosts,
-  listPostsByAuthor,
+  listPostsPage,
 } from "~/lib/posts/posts.server";
 
 import { actorHasAnyClaim, type AuthorizationActor } from "./authz.server";
@@ -31,11 +30,18 @@ export function canCreatePosts(actor: AuthorizationActor) {
 export async function listAuthorizedPosts(
   context: AppLoadContext,
   actor: AuthorizationActor,
+  options: {
+    cursor?: Parameters<typeof listPostsPage>[1]["cursor"];
+    direction?: Parameters<typeof listPostsPage>[1]["direction"];
+    pageSize: number;
+    searchQuery?: string;
+    status?: Parameters<typeof listPostsPage>[1]["status"];
+  },
 ) {
   const db = getDbFromContext(context);
 
   if (actorHasAnyClaim(actor, [AUTHORIZATION_CLAIM.postsReadAny])) {
-    return listPosts(db);
+    return listPostsPage(db, options);
   }
 
   if (
@@ -46,10 +52,26 @@ export async function listAuthorizedPosts(
       AUTHORIZATION_CLAIM.postsDeleteOwn,
     ])
   ) {
-    return listPostsByAuthor(db, actor.userId);
+    return listPostsPage(db, {
+      ...options,
+      authorId: actor.userId,
+    });
   }
 
-  return [];
+  return {
+    items: [],
+    metrics: {
+      draftCount: 0,
+      publishedCount: 0,
+      totalCount: 0,
+    },
+    pagination: {
+      hasNextPage: false,
+      hasPreviousPage: false,
+      nextCursor: null,
+      previousCursor: null,
+    },
+  };
 }
 
 export async function canMutatePost(

@@ -2,6 +2,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { Form, Link } from "react-router";
 
 import { DashboardPanel } from "~/components/dashboard/panel";
+import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
 import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
@@ -14,18 +15,33 @@ import {
   buildDashboardPostsHref,
   formatDashboardPostTitle,
   getPostStatusTone,
+  type DashboardPostsFilters,
   type DashboardPostsPermissions,
 } from "../state";
+import type { DashboardPaginationState } from "../../shared/pagination";
 
 interface DashboardPostsTableProps {
+  filters: DashboardPostsFilters;
+  pagination: DashboardPaginationState;
   permissions: DashboardPostsPermissions;
   posts: PostOverview[];
 }
 
-export function DashboardPostsTable({ permissions, posts }: DashboardPostsTableProps) {
+export function DashboardPostsTable({
+  filters,
+  pagination,
+  permissions,
+  posts,
+}: DashboardPostsTableProps) {
   const { copy } = useDashboardPostsCopy();
   const to = useLocalizedPath();
   const t = useT();
+  const listHrefState = {
+    cursor: pagination.currentCursor,
+    direction: pagination.direction,
+    search: filters.searchQuery,
+    status: filters.status,
+  } as const;
 
   const columns: DataTableColumn<PostOverview>[] = [
     {
@@ -94,7 +110,14 @@ export function DashboardPostsTable({ permissions, posts }: DashboardPostsTableP
               className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               aria-label={`${t("aria.projects.edit")} ${formatDashboardPostTitle(post.title)}`}
             >
-              <Link to={to(buildDashboardPostsHref({ editId: post.id }))}>
+              <Link
+                to={to(
+                  buildDashboardPostsHref({
+                    ...listHrefState,
+                    editId: post.id,
+                  }),
+                )}
+              >
                 <Pencil className="size-4" aria-hidden="true" />
               </Link>
             </Button>
@@ -124,13 +147,38 @@ export function DashboardPostsTable({ permissions, posts }: DashboardPostsTableP
   }
 
   return (
-    <DashboardPanel className="overflow-x-auto p-0">
+    <DashboardPanel className="space-y-4 overflow-x-auto p-4">
       <DataTable
         columns={columns}
         emptyState={copy.emptyState}
         getRowKey={(post) => post.id}
         rows={posts}
         bodyClassName="font-sans"
+      />
+
+      <DashboardPaginationControls
+        nextHref={
+          pagination.hasNextPage && pagination.nextCursor
+            ? buildDashboardPostsHref({
+                search: filters.searchQuery,
+                status: filters.status,
+                cursor: pagination.nextCursor,
+                direction: "next",
+              })
+            : null
+        }
+        nextLabel={copy.paginationNextLabel}
+        previousHref={
+          pagination.hasPreviousPage && pagination.previousCursor
+            ? buildDashboardPostsHref({
+                search: filters.searchQuery,
+                status: filters.status,
+                cursor: pagination.previousCursor,
+                direction: "previous",
+              })
+            : null
+        }
+        previousLabel={copy.paginationPreviousLabel}
       />
     </DashboardPanel>
   );

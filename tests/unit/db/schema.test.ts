@@ -62,7 +62,7 @@ describe("database schema", () => {
         "updated_at",
       ]),
     );
-    expect(config.indexes).toHaveLength(2);
+    expect(config.indexes).toHaveLength(3);
   });
 
   it("defines the posts table with publishing metadata and author linkage", () => {
@@ -85,7 +85,7 @@ describe("database schema", () => {
       ]),
     );
     expect(config.foreignKeys).toHaveLength(1);
-    expect(config.indexes).toHaveLength(3);
+    expect(config.indexes).toHaveLength(5);
   });
 
   it("defines the projects table with visibility and sorting metadata", () => {

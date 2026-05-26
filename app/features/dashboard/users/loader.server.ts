@@ -1,7 +1,11 @@
 import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
-import { listUsers } from "~/lib/users/users.server";
+import {
+  getUserOverviewById,
+  listUsersPage,
+  parseDashboardUsersCursor,
+} from "~/lib/users/users.server";
 import {
   actorHasClaim,
   assertClaimAuthorized,
@@ -15,7 +19,14 @@ import {
 } from "~/shared/errors/contracts";
 
 import {
+  DASHBOARD_USERS_ACTIVE_FILTER,
+  DASHBOARD_USERS_PAGE_SIZE,
+  DASHBOARD_USERS_QUERY_PARAM,
+  DASHBOARD_USERS_ROLE_FILTER,
+  buildDashboardUsersFilters,
   buildDashboardUsersMetrics,
+  buildDashboardUsersPaginationState,
+  buildDashboardUsersViewState,
   resolveDashboardUsersForm,
   type DashboardUsersLoaderData,
 } from "./state";
@@ -44,23 +55,51 @@ export async function loadDashboardUsersData(
       }),
     handle: async ({ actor }) => {
       const db = getDbFromContext(context);
-      const users = await listUsers(db);
       const url = new URL(request.url);
+      const editId = url.searchParams.get(DASHBOARD_USERS_QUERY_PARAM.edit);
+      const viewState = buildDashboardUsersViewState(url);
+      const [userPage, editableUser] = await Promise.all([
+        listUsersPage(db, {
+          active:
+            viewState.active === DASHBOARD_USERS_ACTIVE_FILTER.all
+              ? undefined
+              : viewState.active === DASHBOARD_USERS_ACTIVE_FILTER.active,
+          cursor: parseDashboardUsersCursor(viewState.cursor),
+          direction: viewState.direction,
+          pageSize: DASHBOARD_USERS_PAGE_SIZE,
+          role:
+            viewState.role === DASHBOARD_USERS_ROLE_FILTER.all
+              ? undefined
+              : viewState.role,
+          searchQuery: viewState.searchQuery,
+        }),
+        editId ? getUserOverviewById(db, editId) : Promise.resolve(null),
+      ]);
 
       return {
         access: "granted",
+        filters: buildDashboardUsersFilters(viewState),
         form: resolveDashboardUsersForm({
-          editId: url.searchParams.get("edit"),
-          modal: url.searchParams.get("modal"),
-          users,
+          editId,
+          modal: url.searchParams.get(DASHBOARD_USERS_QUERY_PARAM.modal),
+          users: editableUser ? [editableUser] : [],
         }),
-        metrics: buildDashboardUsersMetrics(users),
+        metrics: buildDashboardUsersMetrics(userPage.metrics),
+        pagination: buildDashboardUsersPaginationState({
+          currentCursor: viewState.cursor,
+          direction: viewState.direction,
+          hasNextPage: userPage.pagination.hasNextPage,
+          hasPreviousPage: userPage.pagination.hasPreviousPage,
+          nextCursor: userPage.pagination.nextCursor,
+          pageSize: DASHBOARD_USERS_PAGE_SIZE,
+          previousCursor: userPage.pagination.previousCursor,
+        }),
         permissions: {
           canCreate: actorHasClaim(actor, AUTHORIZATION_CLAIM.usersCreate),
           canDelete: actorHasClaim(actor, AUTHORIZATION_CLAIM.usersDelete),
           canUpdate: actorHasClaim(actor, AUTHORIZATION_CLAIM.usersUpdate),
         },
-        users,
+        users: userPage.items,
       };
     },
   });

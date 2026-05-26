@@ -12,6 +12,10 @@ vi.mock("@tiptap/react", () => {
 });
 
 const baseScreenProps = {
+  filters: {
+    searchQuery: "",
+    status: "all" as const,
+  },
   form: {
     editingPostId: null,
     errors: {},
@@ -33,6 +37,15 @@ const baseScreenProps = {
     draftCount: 1,
     publishedCount: 2,
     totalCount: 3,
+  },
+  pagination: {
+    currentCursor: null,
+    direction: "next" as const,
+    hasNextPage: false,
+    hasPreviousPage: false,
+    nextCursor: null,
+    pageSize: 20,
+    previousCursor: null,
   },
   permissions: {
     canCreate: true,

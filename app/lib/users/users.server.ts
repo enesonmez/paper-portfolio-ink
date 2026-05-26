@@ -1,5 +1,6 @@
 import { hashPassword } from "better-auth/crypto";
-import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, like, lt, ne, or, sql } from "drizzle-orm";
+import { z } from "zod";
 
 import type { AppDb } from "../../../db";
 import { accounts, users } from "../../../db/schema";
@@ -26,12 +27,155 @@ export interface UserRecord {
   role: UserRole;
 }
 
+export interface DashboardUsersMetrics {
+  adminCount: number;
+  authorCount: number;
+  totalCount: number;
+}
+
+export interface DashboardUsersCursor {
+  displayName: string;
+  email: string;
+  id: string;
+  isActive: boolean;
+  role: UserRole;
+}
+
+export interface DashboardUsersPage {
+  items: UserOverview[];
+  metrics: DashboardUsersMetrics;
+  pagination: {
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    nextCursor: string | null;
+    previousCursor: string | null;
+  };
+}
+
+interface DashboardUsersCursorRecord {
+  displayName: string;
+  email: string;
+  id: string;
+  isActive: boolean;
+  role: UserRole;
+}
+
+const dashboardUsersCursorSchema = z.object({
+  displayName: z.string().trim().min(1),
+  email: z.string().trim().email(),
+  id: z.string().trim().min(1),
+  isActive: z.boolean(),
+  role: z.enum([USER_ROLE.admin, USER_ROLE.author]),
+});
+
 function formatDateLabel(value: Date) {
   return value.toISOString().slice(0, 10);
 }
 
 function normalizeNullableString(value: string) {
   return value.length > 0 ? value : null;
+}
+
+function toUserOverview(user: {
+  avatarUrl: string | null;
+  bio: string | null;
+  createdAt: Date;
+  displayName: string;
+  email: string;
+  id: string;
+  isActive: boolean;
+  role: UserRole;
+  updatedAt: Date;
+}): UserOverview {
+  return {
+    avatarUrl: user.avatarUrl,
+    bio: user.bio,
+    createdAtLabel: formatDateLabel(user.createdAt),
+    displayName: user.displayName,
+    email: user.email,
+    id: user.id,
+    isActive: user.isActive,
+    role: user.role,
+    updatedAtLabel: formatDateLabel(user.updatedAt),
+  };
+}
+
+export function buildDashboardUsersCursor(cursor: DashboardUsersCursor) {
+  return JSON.stringify(cursor);
+}
+
+export function parseDashboardUsersCursor(
+  value: string | null,
+): DashboardUsersCursorRecord | null {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return dashboardUsersCursorSchema.parse(JSON.parse(value));
+  } catch {
+    return null;
+  }
+}
+
+function buildDashboardUsersSearchFilter(searchQuery: string) {
+  if (searchQuery.length === 0) {
+    return undefined;
+  }
+
+  const pattern = `%${searchQuery}%`;
+
+  return or(like(users.displayName, pattern), like(users.email, pattern));
+}
+
+function buildDashboardUsersCursorWhere(cursor: DashboardUsersCursorRecord) {
+  return or(
+    lt(users.isActive, cursor.isActive),
+    and(eq(users.isActive, cursor.isActive), gt(users.role, cursor.role)),
+    and(
+      eq(users.isActive, cursor.isActive),
+      eq(users.role, cursor.role),
+      gt(users.displayName, cursor.displayName),
+    ),
+    and(
+      eq(users.isActive, cursor.isActive),
+      eq(users.role, cursor.role),
+      eq(users.displayName, cursor.displayName),
+      gt(users.email, cursor.email),
+    ),
+    and(
+      eq(users.isActive, cursor.isActive),
+      eq(users.role, cursor.role),
+      eq(users.displayName, cursor.displayName),
+      eq(users.email, cursor.email),
+      gt(users.id, cursor.id),
+    ),
+  );
+}
+
+function buildDashboardUsersPreviousCursorWhere(cursor: DashboardUsersCursorRecord) {
+  return or(
+    gt(users.isActive, cursor.isActive),
+    and(eq(users.isActive, cursor.isActive), lt(users.role, cursor.role)),
+    and(
+      eq(users.isActive, cursor.isActive),
+      eq(users.role, cursor.role),
+      lt(users.displayName, cursor.displayName),
+    ),
+    and(
+      eq(users.isActive, cursor.isActive),
+      eq(users.role, cursor.role),
+      eq(users.displayName, cursor.displayName),
+      lt(users.email, cursor.email),
+    ),
+    and(
+      eq(users.isActive, cursor.isActive),
+      eq(users.role, cursor.role),
+      eq(users.displayName, cursor.displayName),
+      eq(users.email, cursor.email),
+      lt(users.id, cursor.id),
+    ),
+  );
 }
 
 export function isUniqueUserEmailConstraintError(error: unknown) {
@@ -63,17 +207,158 @@ export async function listUsers(db: AppDb): Promise<UserOverview[]> {
       asc(users.email),
     );
 
-  return result.map((user) => ({
-    avatarUrl: user.avatarUrl,
-    bio: user.bio,
-    createdAtLabel: formatDateLabel(user.createdAt),
-    displayName: user.displayName,
-    email: user.email,
-    id: user.id,
-    isActive: user.isActive,
-    role: user.role,
-    updatedAtLabel: formatDateLabel(user.updatedAt),
-  }));
+  return result.map((user) => toUserOverview({ ...user, role: user.role }));
+}
+
+export async function listUsersPage(
+  db: AppDb,
+  options: {
+    active?: boolean;
+    cursor?: DashboardUsersCursorRecord | null;
+    direction?: "next" | "previous";
+    pageSize: number;
+    role?: UserRole;
+    searchQuery?: string;
+  },
+): Promise<DashboardUsersPage> {
+  const direction = options.direction ?? "next";
+  const filters = [
+    options.active === undefined ? undefined : eq(users.isActive, options.active),
+    options.role ? eq(users.role, options.role) : undefined,
+    buildDashboardUsersSearchFilter(options.searchQuery ?? ""),
+    options.cursor
+      ? direction === "previous"
+        ? buildDashboardUsersPreviousCursorWhere(options.cursor)
+        : buildDashboardUsersCursorWhere(options.cursor)
+      : undefined,
+  ].filter((filter) => filter !== undefined);
+  const whereClause =
+    filters.length === 0
+      ? undefined
+      : filters.length === 1
+        ? filters[0]
+        : and(...filters);
+  let pageQuery = db
+    .select({
+      avatarUrl: users.avatarUrl,
+      bio: users.bio,
+      createdAt: users.createdAt,
+      displayName: users.displayName,
+      email: users.email,
+      id: users.id,
+      isActive: users.isActive,
+      role: users.role,
+      updatedAt: users.updatedAt,
+    })
+    .from(users)
+    .$dynamic();
+
+  if (whereClause) {
+    pageQuery = pageQuery.where(whereClause);
+  }
+
+  const orderedRows = await pageQuery
+    .orderBy(
+      direction === "previous" ? asc(users.isActive) : desc(users.isActive),
+      direction === "previous" ? desc(users.role) : asc(users.role),
+      direction === "previous" ? desc(users.displayName) : asc(users.displayName),
+      direction === "previous" ? desc(users.email) : asc(users.email),
+      direction === "previous" ? desc(users.id) : asc(users.id),
+    )
+    .limit(options.pageSize + 1);
+  const visibleRows = orderedRows.slice(0, options.pageSize);
+  const items = direction === "previous" ? [...visibleRows].reverse() : visibleRows;
+  const metricsFilters = [
+    options.active === undefined ? undefined : eq(users.isActive, options.active),
+    options.role ? eq(users.role, options.role) : undefined,
+    buildDashboardUsersSearchFilter(options.searchQuery ?? ""),
+  ].filter((filter) => filter !== undefined);
+  const metricsWhere =
+    metricsFilters.length === 0
+      ? undefined
+      : metricsFilters.length === 1
+        ? metricsFilters[0]
+        : and(...metricsFilters);
+  let metricsQuery = db
+    .select({
+      adminCount: sql<number>`sum(case when ${users.role} = 'admin' then 1 else 0 end)`,
+      authorCount: sql<number>`sum(case when ${users.role} = 'author' then 1 else 0 end)`,
+      totalCount: sql<number>`count(*)`,
+    })
+    .from(users)
+    .$dynamic();
+
+  if (metricsWhere) {
+    metricsQuery = metricsQuery.where(metricsWhere);
+  }
+
+  const [metrics] = await metricsQuery;
+  const firstItem = items[0];
+  const lastItem = items.at(-1);
+  const hasExtraRow = orderedRows.length > options.pageSize;
+  const hasNextPage = direction === "previous" ? Boolean(options.cursor) : hasExtraRow;
+  const hasPreviousPage =
+    direction === "previous" ? hasExtraRow : Boolean(options.cursor);
+
+  return {
+    items: items.map((user) => toUserOverview({ ...user, role: user.role })),
+    metrics: {
+      adminCount: Number(metrics?.adminCount ?? 0),
+      authorCount: Number(metrics?.authorCount ?? 0),
+      totalCount: Number(metrics?.totalCount ?? 0),
+    },
+    pagination: {
+      hasNextPage,
+      hasPreviousPage,
+      nextCursor:
+        hasNextPage && lastItem
+          ? buildDashboardUsersCursor({
+              displayName: lastItem.displayName,
+              email: lastItem.email,
+              id: lastItem.id,
+              isActive: lastItem.isActive,
+              role: lastItem.role,
+            })
+          : null,
+      previousCursor:
+        hasPreviousPage && firstItem
+          ? buildDashboardUsersCursor({
+              displayName: firstItem.displayName,
+              email: firstItem.email,
+              id: firstItem.id,
+              isActive: firstItem.isActive,
+              role: firstItem.role,
+            })
+          : null,
+    },
+  };
+}
+
+export async function getUserOverviewById(
+  db: AppDb,
+  userId: string,
+): Promise<UserOverview | null> {
+  const [user] = await db
+    .select({
+      avatarUrl: users.avatarUrl,
+      bio: users.bio,
+      createdAt: users.createdAt,
+      displayName: users.displayName,
+      email: users.email,
+      id: users.id,
+      isActive: users.isActive,
+      role: users.role,
+      updatedAt: users.updatedAt,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (!user) {
+    return null;
+  }
+
+  return toUserOverview({ ...user, role: user.role });
 }
 
 export async function findUserByEmail(

@@ -2,6 +2,11 @@ import type { AppLoadContext } from "react-router";
 
 import { getDbFromContext } from "../../../../db/context";
 import {
+  getSkillById,
+  listSkillsPage,
+  parseDashboardSkillsCursor,
+} from "~/lib/skills/skills.server";
+import {
   actorHasClaim,
   assertClaimAuthorized,
   withDashboardAccess,
@@ -12,10 +17,14 @@ import {
   APP_ERROR_CODE,
   APP_ERROR_RESOURCE,
 } from "~/shared/errors/contracts";
-import { listSkills } from "~/lib/skills/skills.server";
 
 import {
+  DASHBOARD_SKILLS_PAGE_SIZE,
+  DASHBOARD_SKILLS_QUERY_PARAM,
+  buildDashboardSkillsFilters,
   buildDashboardSkillsMetrics,
+  buildDashboardSkillsPaginationState,
+  buildDashboardSkillsViewState,
   resolveDashboardSkillsForm,
   type DashboardSkillsLoaderData,
 } from "./state";
@@ -43,23 +52,43 @@ export async function loadDashboardSkillsData(
     context,
     handle: async ({ actor }) => {
       const db = getDbFromContext(context);
-      const skillRows = await listSkills(db);
       const url = new URL(request.url);
+      const editId = url.searchParams.get(DASHBOARD_SKILLS_QUERY_PARAM.edit);
+      const viewState = buildDashboardSkillsViewState(url);
+      const [skillPage, editableSkill] = await Promise.all([
+        listSkillsPage(db, {
+          cursor: parseDashboardSkillsCursor(viewState.cursor),
+          direction: viewState.direction,
+          pageSize: DASHBOARD_SKILLS_PAGE_SIZE,
+          searchQuery: viewState.searchQuery,
+        }),
+        editId ? getSkillById(db, editId) : Promise.resolve(null),
+      ]);
 
       return {
         access: "granted",
+        filters: buildDashboardSkillsFilters(viewState),
         form: resolveDashboardSkillsForm({
-          editId: url.searchParams.get("edit"),
-          modal: url.searchParams.get("modal"),
-          skills: skillRows,
+          editId,
+          modal: url.searchParams.get(DASHBOARD_SKILLS_QUERY_PARAM.modal),
+          skills: editableSkill ? [editableSkill] : [],
         }),
-        metrics: buildDashboardSkillsMetrics(skillRows),
+        metrics: buildDashboardSkillsMetrics(skillPage.totalCount),
+        pagination: buildDashboardSkillsPaginationState({
+          currentCursor: viewState.cursor,
+          direction: viewState.direction,
+          hasNextPage: skillPage.pagination.hasNextPage,
+          hasPreviousPage: skillPage.pagination.hasPreviousPage,
+          nextCursor: skillPage.pagination.nextCursor,
+          pageSize: DASHBOARD_SKILLS_PAGE_SIZE,
+          previousCursor: skillPage.pagination.previousCursor,
+        }),
         permissions: {
           canCreate: actorHasClaim(actor, AUTHORIZATION_CLAIM.skillsCreate),
           canDelete: actorHasClaim(actor, AUTHORIZATION_CLAIM.skillsDelete),
           canUpdate: actorHasClaim(actor, AUTHORIZATION_CLAIM.skillsUpdate),
         },
-        skills: skillRows,
+        skills: skillPage.items,
       };
     },
     request,

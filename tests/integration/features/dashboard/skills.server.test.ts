@@ -8,8 +8,11 @@ const {
   cacheSetMock,
   createSkillMock,
   deleteSkillMock,
+  getSkillByIdMock,
   isSkillSlugTakenMock,
+  listSkillsPageMock,
   listSkillsMock,
+  parseDashboardSkillsCursorMock,
   parseSkillFormDataMock,
   requireSessionMock,
   updateSkillMock,
@@ -19,8 +22,11 @@ const {
   cacheSetMock: vi.fn(),
   createSkillMock: vi.fn(),
   deleteSkillMock: vi.fn(),
+  getSkillByIdMock: vi.fn(),
   isSkillSlugTakenMock: vi.fn(),
+  listSkillsPageMock: vi.fn(),
   listSkillsMock: vi.fn(),
+  parseDashboardSkillsCursorMock: vi.fn(),
   parseSkillFormDataMock: vi.fn(),
   requireSessionMock: vi.fn(),
   updateSkillMock: vi.fn(),
@@ -29,8 +35,11 @@ const {
 vi.mock("~/lib/skills/skills.server", () => ({
   createSkill: createSkillMock,
   deleteSkill: deleteSkillMock,
+  getSkillById: getSkillByIdMock,
   isSkillSlugTaken: isSkillSlugTakenMock,
   listSkills: listSkillsMock,
+  listSkillsPage: listSkillsPageMock,
+  parseDashboardSkillsCursor: parseDashboardSkillsCursorMock,
   updateSkill: updateSkillMock,
 }));
 
@@ -66,11 +75,15 @@ describe("dashboard skills server", () => {
     cacheSetMock.mockReset();
     createSkillMock.mockReset();
     deleteSkillMock.mockReset();
+    getSkillByIdMock.mockReset();
     isSkillSlugTakenMock.mockReset();
+    listSkillsPageMock.mockReset();
     listSkillsMock.mockReset();
+    parseDashboardSkillsCursorMock.mockReset();
     parseSkillFormDataMock.mockReset();
     requireSessionMock.mockReset();
     updateSkillMock.mockReset();
+    parseDashboardSkillsCursorMock.mockReturnValue(null);
   });
 
   it("loads the skills registry for authenticated sessions", async () => {
@@ -83,17 +96,27 @@ describe("dashboard skills server", () => {
         role: "admin",
       },
     });
-    listSkillsMock.mockResolvedValue([
-      {
-        createdAtLabel: "2026-03-21",
-        iconKey: "database",
-        id: "skill-1",
-        name: "Cloudflare D1",
-        sortOrder: 3,
-        slug: "cloudflare-d1",
-        summary: "Distributed relational data workflows for edge-hosted applications.",
+    listSkillsPageMock.mockResolvedValue({
+      items: [
+        {
+          createdAtLabel: "2026-03-21",
+          iconKey: "database",
+          id: "skill-1",
+          name: "Cloudflare D1",
+          sortOrder: 3,
+          slug: "cloudflare-d1",
+          summary:
+            "Distributed relational data workflows for edge-hosted applications.",
+        },
+      ],
+      pagination: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        nextCursor: null,
+        previousCursor: null,
       },
-    ]);
+      totalCount: 1,
+    });
 
     const response = await loadDashboardSkillsData(
       context,
@@ -145,7 +168,7 @@ describe("dashboard skills server", () => {
       },
       status: 403,
     });
-    expect(listSkillsMock).not.toHaveBeenCalled();
+    expect(listSkillsPageMock).not.toHaveBeenCalled();
   });
 
   it("returns a name error when the submitted skill already exists", async () => {

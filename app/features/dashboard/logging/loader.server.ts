@@ -58,9 +58,8 @@ export async function loadDashboardLoggingData(
         canReadHistory,
         requestedTab,
       });
-      const cursor = parseLoggingCursor(
-        url.searchParams.get(LOGGING_QUERY_PARAM.cursor),
-      );
+      const currentCursor = url.searchParams.get(LOGGING_QUERY_PARAM.cursor);
+      const cursor = parseLoggingCursor(currentCursor);
       const direction = normalizeLoggingPaginationDirection(
         url.searchParams.get(LOGGING_QUERY_PARAM.direction),
       );
@@ -87,6 +86,8 @@ export async function loadDashboardLoggingData(
       );
 
       return buildGrantedLoggingLoaderData({
+        currentCursor,
+        direction,
         errorPage,
         historyPage,
         permissions: {

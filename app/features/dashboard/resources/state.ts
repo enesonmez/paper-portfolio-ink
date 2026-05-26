@@ -11,6 +11,10 @@ import type {
   LocaleResourceRecord,
   TranslationResourceRecord,
 } from "~/lib/resources/resources.server";
+import {
+  buildDashboardPaginationState,
+  type DashboardPaginationState,
+} from "../shared/pagination";
 import { DASHBOARD_RESOURCES_MODAL } from "./routing/href";
 
 export interface DashboardResourcesMetrics {
@@ -20,14 +24,7 @@ export interface DashboardResourcesMetrics {
   totalTranslations: number;
 }
 
-export interface DashboardResourcesTranslationPagination {
-  currentCursor: string | null;
-  direction: "next" | "previous";
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  nextCursor: string | null;
-  pageSize: number;
-  previousCursor: string | null;
+export interface DashboardResourcesTranslationPagination extends DashboardPaginationState {
   totalItems: number;
 }
 
@@ -124,13 +121,15 @@ export function buildDashboardResourcesTranslationPagination(args: {
   const pageSize = args.pageSize ?? 20;
 
   return {
-    currentCursor: args.currentCursor,
-    direction: args.direction,
-    hasNextPage: args.hasNextPage,
-    hasPreviousPage: args.hasPreviousPage,
-    nextCursor: args.nextCursor,
-    pageSize,
-    previousCursor: args.previousCursor,
+    ...buildDashboardPaginationState({
+      currentCursor: args.currentCursor,
+      direction: args.direction,
+      hasNextPage: args.hasNextPage,
+      hasPreviousPage: args.hasPreviousPage,
+      nextCursor: args.nextCursor,
+      pageSize,
+      previousCursor: args.previousCursor,
+    }),
     totalItems: args.totalItems,
   };
 }

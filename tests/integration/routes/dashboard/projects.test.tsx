@@ -3,6 +3,10 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, it } from "vitest";
 
 const baseScreenProps = {
+  filters: {
+    searchQuery: "",
+    status: "all" as const,
+  },
   form: {
     editingProjectId: null,
     errors: {},
@@ -26,6 +30,15 @@ const baseScreenProps = {
     featuredCount: 1,
     liveCount: 2,
     totalCount: 3,
+  },
+  pagination: {
+    currentCursor: null,
+    direction: "next" as const,
+    hasNextPage: false,
+    hasPreviousPage: false,
+    nextCursor: null,
+    pageSize: 20,
+    previousCursor: null,
   },
   permissions: {
     canCreate: true,

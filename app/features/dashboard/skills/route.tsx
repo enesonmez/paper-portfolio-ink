@@ -20,8 +20,10 @@ export default function DashboardSkillsRoute() {
   return (
     <DashboardSkillsScreen
       actionError={!loaderData.form.isOpen ? actionData?.errors?.form : undefined}
+      filters={loaderData.filters}
       form={mergeDashboardSkillsFormState(loaderData.form, actionData)}
       metrics={loaderData.metrics}
+      pagination={loaderData.pagination}
       permissions={loaderData.permissions}
       skills={loaderData.skills}
     />

@@ -1,6 +1,7 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { Form, Link } from "react-router";
 
+import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
@@ -15,6 +16,7 @@ import {
   DASHBOARD_RESOURCES_MODAL,
   buildDashboardResourcesTranslationsHref,
 } from "../../routing/href";
+import type { DashboardResourcesTranslationPagination } from "../../state";
 
 function buildValuePreview(value: string) {
   return value.length > 100 ? `${value.slice(0, 100)}...` : value;
@@ -36,16 +38,7 @@ export function DashboardResourcesTranslationsTable({
   canDelete: boolean;
   canUpdate: boolean;
   emptyState?: string;
-  pagination: {
-    currentCursor: string | null;
-    direction: "next" | "previous";
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    nextCursor: string | null;
-    pageSize: number;
-    previousCursor: string | null;
-    totalItems: number;
-  };
+  pagination: DashboardResourcesTranslationPagination;
   paginationNextLabel: string;
   paginationPreviousLabel: string;
   selectedTranslationLocale: string;
@@ -176,57 +169,30 @@ export function DashboardResourcesTranslationsTable({
       />
 
       {pagination.totalItems > 0 ? (
-        <div className="flex flex-col gap-3 border-t-2 border-black pt-4 md:flex-row md:items-center md:justify-between">
-          <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.14em] uppercase">
-            {`${translations.length} / ${pagination.totalItems}`}
-          </p>
-          <div className="flex items-center gap-2 self-end md:self-auto">
-            <Button
-              asChild={hasPreviousPage}
-              disabled={!hasPreviousPage}
-              size="sm"
-              variant="secondary"
-            >
-              {hasPreviousPage ? (
-                <Link
-                  to={to(
-                    buildDashboardResourcesTranslationsHref({
-                      ...translationsViewState,
-                      translationCursor: pagination.previousCursor,
-                      translationDirection: "previous",
-                    }),
-                  )}
-                >
-                  {paginationPreviousLabel}
-                </Link>
-              ) : (
-                <span>{paginationPreviousLabel}</span>
-              )}
-            </Button>
-            <Button
-              asChild={hasNextPage}
-              disabled={!hasNextPage}
-              size="sm"
-              variant="secondary"
-            >
-              {hasNextPage ? (
-                <Link
-                  to={to(
-                    buildDashboardResourcesTranslationsHref({
-                      ...translationsViewState,
-                      translationCursor: pagination.nextCursor,
-                      translationDirection: "next",
-                    }),
-                  )}
-                >
-                  {paginationNextLabel}
-                </Link>
-              ) : (
-                <span>{paginationNextLabel}</span>
-              )}
-            </Button>
-          </div>
-        </div>
+        <DashboardPaginationControls
+          align="between"
+          nextHref={
+            hasNextPage
+              ? buildDashboardResourcesTranslationsHref({
+                  ...translationsViewState,
+                  translationCursor: pagination.nextCursor,
+                  translationDirection: "next",
+                })
+              : null
+          }
+          nextLabel={paginationNextLabel}
+          previousHref={
+            hasPreviousPage
+              ? buildDashboardResourcesTranslationsHref({
+                  ...translationsViewState,
+                  translationCursor: pagination.previousCursor,
+                  translationDirection: "previous",
+                })
+              : null
+          }
+          previousLabel={paginationPreviousLabel}
+          summary={`${translations.length} / ${pagination.totalItems}`}
+        />
       ) : null}
     </DashboardPanel>
   );

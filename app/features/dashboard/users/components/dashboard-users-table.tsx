@@ -2,6 +2,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { Form, Link } from "react-router";
 
 import { DashboardPanel } from "~/components/dashboard/panel";
+import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
 import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
@@ -13,18 +14,34 @@ import { useDashboardUsersCopy } from "../copy";
 import {
   buildDashboardUsersHref,
   formatDashboardUserRole,
+  type DashboardUsersFilters,
   type DashboardUsersPermissions,
 } from "../state";
+import type { DashboardPaginationState } from "../../shared/pagination";
 
 interface DashboardUsersTableProps {
+  filters: DashboardUsersFilters;
+  pagination: DashboardPaginationState;
   permissions: DashboardUsersPermissions;
   users: UserOverview[];
 }
 
-export function DashboardUsersTable({ permissions, users }: DashboardUsersTableProps) {
+export function DashboardUsersTable({
+  filters,
+  pagination,
+  permissions,
+  users,
+}: DashboardUsersTableProps) {
   const to = useLocalizedPath();
   const t = useT();
   const { copy } = useDashboardUsersCopy();
+  const listHrefState = {
+    active: filters.active,
+    cursor: pagination.currentCursor,
+    direction: pagination.direction,
+    role: filters.role,
+    search: filters.searchQuery,
+  } as const;
   const columns: DataTableColumn<UserOverview>[] = [
     {
       cellClassName: "align-top",
@@ -93,7 +110,14 @@ export function DashboardUsersTable({ permissions, users }: DashboardUsersTableP
               className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
               aria-label={`${t("common.edit")} ${user.email}`}
             >
-              <Link to={to(buildDashboardUsersHref({ editId: user.id }))}>
+              <Link
+                to={to(
+                  buildDashboardUsersHref({
+                    ...listHrefState,
+                    editId: user.id,
+                  }),
+                )}
+              >
                 <Pencil className="size-4" aria-hidden="true" />
               </Link>
             </Button>
@@ -123,13 +147,40 @@ export function DashboardUsersTable({ permissions, users }: DashboardUsersTableP
   }
 
   return (
-    <DashboardPanel className="overflow-x-auto p-0">
+    <DashboardPanel className="space-y-4 overflow-x-auto p-4">
       <DataTable
         bodyClassName="font-sans"
         columns={columns}
         emptyState={copy.emptyState}
         getRowKey={(user) => user.id}
         rows={users}
+      />
+
+      <DashboardPaginationControls
+        nextHref={
+          pagination.hasNextPage && pagination.nextCursor
+            ? buildDashboardUsersHref({
+                active: filters.active,
+                cursor: pagination.nextCursor,
+                direction: "next",
+                role: filters.role,
+                search: filters.searchQuery,
+              })
+            : null
+        }
+        nextLabel={copy.paginationNextLabel}
+        previousHref={
+          pagination.hasPreviousPage && pagination.previousCursor
+            ? buildDashboardUsersHref({
+                active: filters.active,
+                cursor: pagination.previousCursor,
+                direction: "previous",
+                role: filters.role,
+                search: filters.searchQuery,
+              })
+            : null
+        }
+        previousLabel={copy.paginationPreviousLabel}
       />
     </DashboardPanel>
   );

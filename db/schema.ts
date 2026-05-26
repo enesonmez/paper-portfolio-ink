@@ -60,6 +60,13 @@ export const users = sqliteTable(
   (table) => [
     uniqueIndex("users_email_unique").on(table.email),
     index("users_role_idx").on(table.role),
+    index("users_dashboard_registry_idx").on(
+      sql`${table.isActive} desc`,
+      sql`${table.role} asc`,
+      sql`${table.displayName} asc`,
+      sql`${table.email} asc`,
+      sql`${table.id} asc`,
+    ),
   ],
 );
 
@@ -84,16 +91,29 @@ export const posts = sqliteTable(
     uniqueIndex("posts_slug_unique").on(table.slug),
     index("posts_status_feed_idx").on(
       table.status,
-      table.publishedAt,
-      table.updatedAt,
-      table.createdAt,
-      table.slug,
+      sql`${table.publishedAt} desc`,
+      sql`${table.updatedAt} desc`,
+      sql`${table.createdAt} desc`,
+      sql`${table.slug} asc`,
+    ),
+    index("posts_dashboard_status_idx").on(
+      table.status,
+      sql`${table.updatedAt} desc`,
+      sql`${table.createdAt} desc`,
+      sql`${table.slug} asc`,
     ),
     index("posts_author_feed_idx").on(
       table.authorId,
-      table.publishedAt,
-      table.updatedAt,
-      table.createdAt,
+      sql`${table.publishedAt} desc`,
+      sql`${table.updatedAt} desc`,
+      sql`${table.createdAt} desc`,
+      sql`${table.slug} asc`,
+    ),
+    index("posts_dashboard_author_idx").on(
+      table.authorId,
+      sql`${table.updatedAt} desc`,
+      sql`${table.createdAt} desc`,
+      sql`${table.slug} asc`,
     ),
   ],
 );
@@ -116,13 +136,18 @@ export const projects = sqliteTable(
   },
   (table) => [
     uniqueIndex("projects_slug_unique").on(table.slug),
-    index("projects_featured_sort_order_idx").on(table.isFeatured, table.sortOrder),
     index("projects_status_feed_idx").on(
       table.status,
-      table.isFeatured,
-      table.sortOrder,
-      table.createdAt,
-      table.slug,
+      sql`${table.isFeatured} desc`,
+      sql`${table.sortOrder} asc`,
+      sql`${table.createdAt} desc`,
+      sql`${table.slug} asc`,
+    ),
+    index("projects_dashboard_order_idx").on(
+      sql`${table.isFeatured} desc`,
+      sql`${table.sortOrder} asc`,
+      sql`${table.createdAt} desc`,
+      sql`${table.slug} asc`,
     ),
   ],
 );
@@ -140,7 +165,12 @@ export const skills = sqliteTable(
   },
   (table) => [
     uniqueIndex("skills_slug_unique").on(table.slug),
-    index("skills_name_idx").on(table.name),
+    index("skills_registry_idx").on(
+      sql`${table.sortOrder} asc`,
+      sql`${table.name} asc`,
+      sql`${table.createdAt} asc`,
+      sql`${table.slug} asc`,
+    ),
   ],
 );
 

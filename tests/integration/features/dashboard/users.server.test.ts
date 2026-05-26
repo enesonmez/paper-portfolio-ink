@@ -10,8 +10,11 @@ const {
   createUserMock,
   deactivateUserMock,
   getUserByIdMock,
+  getUserOverviewByIdMock,
   isUserEmailTakenMock,
+  listUsersPageMock,
   listUsersMock,
+  parseDashboardUsersCursorMock,
   parseUserFormDataMock,
   requireSessionMock,
   updateUserMock,
@@ -24,8 +27,11 @@ const {
     createUserMock: vi.fn(),
     deactivateUserMock: vi.fn(),
     getUserByIdMock: vi.fn(),
+    getUserOverviewByIdMock: vi.fn(),
     isUserEmailTakenMock: vi.fn(),
+    listUsersPageMock: vi.fn(),
     listUsersMock: vi.fn(),
+    parseDashboardUsersCursorMock: vi.fn(),
     parseUserFormDataMock: vi.fn(),
     requireSessionMock: vi.fn(),
     updateUserMock: vi.fn(),
@@ -38,8 +44,11 @@ vi.mock("~/lib/users/users.server", () => {
     createUser: createUserMock,
     deactivateUser: deactivateUserMock,
     getUserById: getUserByIdMock,
+    getUserOverviewById: getUserOverviewByIdMock,
     isUserEmailTaken: isUserEmailTakenMock,
     listUsers: listUsersMock,
+    listUsersPage: listUsersPageMock,
+    parseDashboardUsersCursor: parseDashboardUsersCursorMock,
     updateUser: updateUserMock,
   };
 });
@@ -80,11 +89,15 @@ describe("dashboard users server", () => {
     createUserMock.mockReset();
     deactivateUserMock.mockReset();
     getUserByIdMock.mockReset();
+    getUserOverviewByIdMock.mockReset();
     isUserEmailTakenMock.mockReset();
+    listUsersPageMock.mockReset();
     listUsersMock.mockReset();
+    parseDashboardUsersCursorMock.mockReset();
     parseUserFormDataMock.mockReset();
     requireSessionMock.mockReset();
     updateUserMock.mockReset();
+    parseDashboardUsersCursorMock.mockReturnValue(null);
   }, 20000);
 
   it("loads the users registry for admin sessions", async () => {
@@ -97,30 +110,43 @@ describe("dashboard users server", () => {
         role: "admin",
       },
     });
-    listUsersMock.mockResolvedValue([
-      {
-        avatarUrl: null,
-        bio: "Platform owner",
-        createdAtLabel: "2026-03-20",
-        displayName: "Enes Admin",
-        email: "admin@example.com",
-        id: "user-admin",
-        isActive: true,
-        role: "admin",
-        updatedAtLabel: "2026-03-20",
+    listUsersPageMock.mockResolvedValue({
+      items: [
+        {
+          avatarUrl: null,
+          bio: "Platform owner",
+          createdAtLabel: "2026-03-20",
+          displayName: "Enes Admin",
+          email: "admin@example.com",
+          id: "user-admin",
+          isActive: true,
+          role: "admin",
+          updatedAtLabel: "2026-03-20",
+        },
+        {
+          avatarUrl: null,
+          bio: "Editorial operator",
+          createdAtLabel: "2026-03-18",
+          displayName: "Ayla Author",
+          email: "author@example.com",
+          id: "user-author",
+          isActive: true,
+          role: "author",
+          updatedAtLabel: "2026-03-19",
+        },
+      ],
+      metrics: {
+        adminCount: 1,
+        authorCount: 1,
+        totalCount: 2,
       },
-      {
-        avatarUrl: null,
-        bio: "Editorial operator",
-        createdAtLabel: "2026-03-18",
-        displayName: "Ayla Author",
-        email: "author@example.com",
-        id: "user-author",
-        isActive: true,
-        role: "author",
-        updatedAtLabel: "2026-03-19",
+      pagination: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        nextCursor: null,
+        previousCursor: null,
       },
-    ]);
+    });
 
     const response = await loadDashboardUsersData(
       context,
@@ -174,7 +200,7 @@ describe("dashboard users server", () => {
       },
       status: 403,
     });
-    expect(listUsersMock).not.toHaveBeenCalled();
+    expect(listUsersPageMock).not.toHaveBeenCalled();
   }, 20000);
 
   it("creates a new user when the session belongs to an admin", async () => {

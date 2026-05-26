@@ -20,8 +20,10 @@ export default function DashboardUsersRoute() {
   return (
     <DashboardUsersScreen
       actionError={!loaderData.form.isOpen ? actionData?.errors?.form : undefined}
+      filters={loaderData.filters}
       form={mergeDashboardUsersFormState(loaderData.form, actionData)}
       metrics={loaderData.metrics}
+      pagination={loaderData.pagination}
       permissions={loaderData.permissions}
       users={loaderData.users}
     />

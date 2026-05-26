@@ -13,10 +13,14 @@ describe("dashboard posts state helpers", () => {
     expect(buildDashboardPostsHref()).toBe("/dashboard/posts");
     expect(
       buildDashboardPostsHref({
+        search: "edge",
+        status: "draft",
         modal: "create",
         presentation: "fullscreen",
       }),
-    ).toBe("/dashboard/posts?modal=create&presentation=fullscreen");
+    ).toBe(
+      "/dashboard/posts?search=edge&status=draft&modal=create&presentation=fullscreen",
+    );
     expect(
       buildDashboardPostsHref({
         editId: "post-1",
@@ -26,36 +30,13 @@ describe("dashboard posts state helpers", () => {
   });
 
   it("derives metrics and edit form state from post rows", () => {
-    const posts = [
-      {
-        authorId: "user-1",
-        content: "# Edge note",
-        coverImageUrl: null,
-        createdAtLabel: "2026-03-20",
-        excerpt: "Draft",
-        id: "post-1",
-        publishedAtLabel: null,
-        slug: "edge-note",
-        status: "draft" as const,
-        title: "Edge note",
-        updatedAtLabel: "2026-03-20",
-      },
-      {
-        authorId: "user-1",
-        content: "# Cache window",
-        coverImageUrl: null,
-        createdAtLabel: "2026-03-21",
-        excerpt: "Published",
-        id: "post-2",
-        publishedAtLabel: "2026-03-21",
-        slug: "cache-window",
-        status: "published" as const,
-        title: "Cache window",
-        updatedAtLabel: "2026-03-21",
-      },
-    ];
-
-    expect(buildDashboardPostsMetrics(posts)).toEqual({
+    expect(
+      buildDashboardPostsMetrics({
+        draftCount: 1,
+        publishedCount: 1,
+        totalCount: 2,
+      }),
+    ).toEqual({
       draftCount: 1,
       publishedCount: 1,
       totalCount: 2,

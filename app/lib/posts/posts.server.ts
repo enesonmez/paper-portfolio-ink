@@ -1,4 +1,5 @@
-import { and, asc, desc, eq, gt, lt, ne, or } from "drizzle-orm";
+import { and, asc, desc, eq, gt, like, lt, ne, or, sql } from "drizzle-orm";
+import { z } from "zod";
 
 import type { AppDb } from "../../../db";
 import { posts, users } from "../../../db/schema";
@@ -52,6 +53,29 @@ export interface PublicPostDetail extends PublicPostListItem {
 export interface PublicPostsPage {
   items: PublicPostListItem[];
   nextCursor: string | null;
+}
+
+export interface DashboardPostListMetrics {
+  draftCount: number;
+  publishedCount: number;
+  totalCount: number;
+}
+
+export interface DashboardPostsCursor {
+  createdAtIso: string;
+  slug: string;
+  updatedAtIso: string;
+}
+
+export interface DashboardPostsPage {
+  items: PostOverview[];
+  metrics: DashboardPostListMetrics;
+  pagination: {
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    nextCursor: string | null;
+    previousCursor: string | null;
+  };
 }
 
 interface PublicPostRecord {
@@ -109,8 +133,44 @@ interface PublicPostsCursorRecord {
   updatedAt: Date;
 }
 
+interface DashboardPostsCursorRecord {
+  createdAt: Date;
+  slug: string;
+  updatedAt: Date;
+}
+
+const dashboardPostsCursorSchema = z.object({
+  createdAtIso: z.string().datetime(),
+  slug: z.string().trim().min(1),
+  updatedAtIso: z.string().datetime(),
+});
+
 function encodePublicPostsCursor(cursor: PublicPostsCursorInput) {
   return JSON.stringify(cursor);
+}
+
+export function buildDashboardPostsCursor(cursor: DashboardPostsCursor) {
+  return JSON.stringify(cursor);
+}
+
+export function parseDashboardPostsCursor(
+  value: string | null,
+): DashboardPostsCursorRecord | null {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const parsed = dashboardPostsCursorSchema.parse(JSON.parse(value));
+
+    return {
+      createdAt: new Date(parsed.createdAtIso),
+      slug: parsed.slug,
+      updatedAt: new Date(parsed.updatedAtIso),
+    };
+  } catch {
+    return null;
+  }
 }
 
 function buildPublicPostsCursorWhere(cursor: PublicPostsCursorRecord) {
@@ -132,6 +192,64 @@ function buildPublicPostsCursorWhere(cursor: PublicPostsCursorRecord) {
       gt(posts.slug, cursor.slug),
     ),
   );
+}
+
+function buildDashboardPostsCursorWhere(cursor: DashboardPostsCursorRecord) {
+  return or(
+    lt(posts.updatedAt, cursor.updatedAt),
+    and(eq(posts.updatedAt, cursor.updatedAt), lt(posts.createdAt, cursor.createdAt)),
+    and(
+      eq(posts.updatedAt, cursor.updatedAt),
+      eq(posts.createdAt, cursor.createdAt),
+      gt(posts.slug, cursor.slug),
+    ),
+  );
+}
+
+function buildDashboardPostsPreviousCursorWhere(cursor: DashboardPostsCursorRecord) {
+  return or(
+    gt(posts.updatedAt, cursor.updatedAt),
+    and(eq(posts.updatedAt, cursor.updatedAt), gt(posts.createdAt, cursor.createdAt)),
+    and(
+      eq(posts.updatedAt, cursor.updatedAt),
+      eq(posts.createdAt, cursor.createdAt),
+      lt(posts.slug, cursor.slug),
+    ),
+  );
+}
+
+function buildDashboardPostsSearchFilter(searchQuery: string) {
+  if (searchQuery.length === 0) {
+    return undefined;
+  }
+
+  const pattern = `%${searchQuery}%`;
+
+  return or(
+    like(posts.title, pattern),
+    like(posts.slug, pattern),
+    like(posts.excerpt, pattern),
+  );
+}
+
+function buildDashboardPostsMetricsSelection() {
+  return {
+    draftCount: sql<number>`sum(case when ${posts.status} = 'draft' then 1 else 0 end)`,
+    publishedCount: sql<number>`sum(case when ${posts.status} = 'published' then 1 else 0 end)`,
+    totalCount: sql<number>`count(*)`,
+  };
+}
+
+function toDashboardPostListMetrics(metrics?: {
+  draftCount: number | null;
+  publishedCount: number | null;
+  totalCount: number | null;
+}): DashboardPostListMetrics {
+  return {
+    draftCount: Number(metrics?.draftCount ?? 0),
+    publishedCount: Number(metrics?.publishedCount ?? 0),
+    totalCount: Number(metrics?.totalCount ?? 0),
+  };
 }
 
 function getContentReadingTimeMinutes(content: string) {
@@ -261,6 +379,122 @@ export async function listPosts(db: AppDb): Promise<PostOverview[]> {
       status: post.status,
     }),
   );
+}
+
+export async function listPostsPage(
+  db: AppDb,
+  options: {
+    authorId?: string;
+    cursor?: DashboardPostsCursorRecord | null;
+    direction?: "next" | "previous";
+    pageSize: number;
+    searchQuery?: string;
+    status?: PostStatus;
+  },
+): Promise<DashboardPostsPage> {
+  const direction = options.direction ?? "next";
+  const filters = [
+    options.authorId ? eq(posts.authorId, options.authorId) : undefined,
+    options.status ? eq(posts.status, options.status) : undefined,
+    buildDashboardPostsSearchFilter(options.searchQuery ?? ""),
+    options.cursor
+      ? direction === "previous"
+        ? buildDashboardPostsPreviousCursorWhere(options.cursor)
+        : buildDashboardPostsCursorWhere(options.cursor)
+      : undefined,
+  ].filter((filter) => filter !== undefined);
+  const whereClause =
+    filters.length === 0
+      ? undefined
+      : filters.length === 1
+        ? filters[0]
+        : and(...filters);
+  let pageQuery = db
+    .select({
+      authorId: posts.authorId,
+      coverImageUrl: posts.coverImageUrl,
+      createdAt: posts.createdAt,
+      excerpt: posts.excerpt,
+      id: posts.id,
+      publishedAt: posts.publishedAt,
+      slug: posts.slug,
+      status: posts.status,
+      title: posts.title,
+      updatedAt: posts.updatedAt,
+    })
+    .from(posts)
+    .$dynamic();
+
+  if (whereClause) {
+    pageQuery = pageQuery.where(whereClause);
+  }
+
+  const orderedRows = await pageQuery
+    .orderBy(
+      direction === "previous" ? asc(posts.updatedAt) : desc(posts.updatedAt),
+      direction === "previous" ? asc(posts.createdAt) : desc(posts.createdAt),
+      direction === "previous" ? desc(posts.slug) : asc(posts.slug),
+    )
+    .limit(options.pageSize + 1);
+  const visibleRows = orderedRows.slice(0, options.pageSize);
+  const items = direction === "previous" ? [...visibleRows].reverse() : visibleRows;
+  const metricsFilters = [
+    options.authorId ? eq(posts.authorId, options.authorId) : undefined,
+    options.status ? eq(posts.status, options.status) : undefined,
+    buildDashboardPostsSearchFilter(options.searchQuery ?? ""),
+  ].filter((filter) => filter !== undefined);
+  const metricsWhere =
+    metricsFilters.length === 0
+      ? undefined
+      : metricsFilters.length === 1
+        ? metricsFilters[0]
+        : and(...metricsFilters);
+  let metricsQuery = db
+    .select(buildDashboardPostsMetricsSelection())
+    .from(posts)
+    .$dynamic();
+
+  if (metricsWhere) {
+    metricsQuery = metricsQuery.where(metricsWhere);
+  }
+
+  const [metrics] = await metricsQuery;
+  const firstItem = items[0];
+  const lastItem = items.at(-1);
+  const hasExtraRow = orderedRows.length > options.pageSize;
+  const hasNextPage = direction === "previous" ? Boolean(options.cursor) : hasExtraRow;
+  const hasPreviousPage =
+    direction === "previous" ? hasExtraRow : Boolean(options.cursor);
+
+  return {
+    items: items.map((post) =>
+      toPostOverview({
+        ...post,
+        status: post.status,
+      }),
+    ),
+    metrics: toDashboardPostListMetrics(metrics),
+    pagination: {
+      hasNextPage,
+      hasPreviousPage,
+      nextCursor:
+        hasNextPage && lastItem
+          ? buildDashboardPostsCursor({
+              createdAtIso: lastItem.createdAt.toISOString(),
+              slug: lastItem.slug,
+              updatedAtIso: lastItem.updatedAt.toISOString(),
+            })
+          : null,
+      previousCursor:
+        hasPreviousPage && firstItem
+          ? buildDashboardPostsCursor({
+              createdAtIso: firstItem.createdAt.toISOString(),
+              slug: firstItem.slug,
+              updatedAtIso: firstItem.updatedAt.toISOString(),
+            })
+          : null,
+    },
+  };
 }
 
 export async function listPostsByAuthor(

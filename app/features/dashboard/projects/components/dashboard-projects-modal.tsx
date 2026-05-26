@@ -17,14 +17,22 @@ import { useDashboardProjectsCopy } from "../copy";
 import {
   buildDashboardProjectsHref,
   useDashboardProjectStatusOptions,
+  type DashboardProjectsHrefParams,
   type DashboardProjectsFormState,
 } from "../state";
 
 interface DashboardProjectsModalProps {
   form: DashboardProjectsFormState;
+  listHrefState: Pick<
+    DashboardProjectsHrefParams,
+    "cursor" | "direction" | "search" | "status"
+  >;
 }
 
-export function DashboardProjectsModalView({ form }: DashboardProjectsModalProps) {
+export function DashboardProjectsModalView({
+  form,
+  listHrefState,
+}: DashboardProjectsModalProps) {
   const to = useLocalizedPath();
   const { copy, formCopy } = useDashboardProjectsCopy();
   const statusOptions = useDashboardProjectStatusOptions();
@@ -44,7 +52,7 @@ export function DashboardProjectsModalView({ form }: DashboardProjectsModalProps
     <DashboardModal
       description={description}
       title={title}
-      to={to("/dashboard/projects")}
+      to={to(buildDashboardProjectsHref(listHrefState))}
     >
       <Form method="post" className="space-y-4">
         <input
@@ -159,7 +167,9 @@ export function DashboardProjectsModalView({ form }: DashboardProjectsModalProps
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button asChild variant="secondary" className="tracking-[0.14em]">
-            <Link to={to(buildDashboardProjectsHref())}>{formCopy.cancelLabel}</Link>
+            <Link to={to(buildDashboardProjectsHref(listHrefState))}>
+              {formCopy.cancelLabel}
+            </Link>
           </Button>
           <Button
             type="submit"

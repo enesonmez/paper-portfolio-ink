@@ -8,14 +8,26 @@ import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/domain/posts/model";
 
 import { useDashboardPostsCopy } from "../copy";
-import { useDashboardPostStatusOptions, type DashboardPostsFormState } from "../state";
+import {
+  buildDashboardPostsHref,
+  useDashboardPostStatusOptions,
+  type DashboardPostsFormState,
+  type DashboardPostsHrefParams,
+} from "../state";
 import { DashboardPostsEditor } from "./dashboard-posts-editor";
 
 interface DashboardPostsComposeViewProps {
   form: DashboardPostsFormState;
+  listHrefState: Pick<
+    DashboardPostsHrefParams,
+    "cursor" | "direction" | "search" | "status"
+  >;
 }
 
-export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewProps) {
+export function DashboardPostsComposeView({
+  form,
+  listHrefState,
+}: DashboardPostsComposeViewProps) {
   const to = useLocalizedPath();
   const t = useT();
   const { copy, formCopy } = useDashboardPostsCopy();
@@ -58,7 +70,10 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 md:px-6">
             <div className="flex items-center gap-3">
               <Button asChild variant="secondary" size="iconSm">
-                <Link to={to("/dashboard/posts")} aria-label={formCopy.backToListLabel}>
+                <Link
+                  to={to(buildDashboardPostsHref(listHrefState))}
+                  aria-label={formCopy.backToListLabel}
+                >
                   <ArrowLeft className="size-4" aria-hidden="true" />
                 </Link>
               </Button>
@@ -85,7 +100,7 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
               </Button>
               <Button asChild variant="secondary" size="iconSm">
                 <Link
-                  to={to("/dashboard/posts")}
+                  to={to(buildDashboardPostsHref(listHrefState))}
                   aria-label={formCopy.closeFullscreenLabel}
                 >
                   <X className="size-4" aria-hidden="true" />
@@ -169,7 +184,7 @@ export function DashboardPostsComposeView({ form }: DashboardPostsComposeViewPro
                   variant="secondary"
                   className="justify-between tracking-[0.12em]"
                 >
-                  <Link to={to("/dashboard/posts")}>
+                  <Link to={to(buildDashboardPostsHref(listHrefState))}>
                     {formCopy.backToListLabel}
                     <ArrowLeft className="size-4" aria-hidden="true" />
                   </Link>
