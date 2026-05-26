@@ -3,25 +3,26 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, it } from "vitest";
 
 const baseScreenProps = {
+  authorizationForm: {
+    authzVersion: null,
+    claims: [],
+    editingUserEmail: "",
+    editingUserId: null,
+    editingUserName: "",
+    errors: {},
+    isOpen: false,
+    isUserActive: true,
+    mode: null,
+    values: {
+      authzVersion: "1",
+      claimKey: "",
+      role: "author" as const,
+    },
+  },
   filters: {
     active: "all" as const,
     role: "all" as const,
     searchQuery: "",
-  },
-  form: {
-    editingUserId: null,
-    errors: {},
-    isOpen: false,
-    mode: null,
-    values: {
-      avatarUrl: "",
-      bio: "",
-      displayName: "",
-      email: "",
-      isActive: true,
-      password: "",
-      role: "author" as const,
-    },
   },
   metrics: {
     adminCount: 1,
@@ -41,6 +42,21 @@ const baseScreenProps = {
     canCreate: true,
     canDelete: true,
     canUpdate: true,
+  },
+  profileForm: {
+    editingUserId: null,
+    errors: {},
+    isOpen: false,
+    mode: null,
+    values: {
+      avatarUrl: "",
+      bio: "",
+      displayName: "",
+      email: "",
+      isActive: true,
+      password: "",
+      role: "author" as const,
+    },
   },
   users: [
     {
@@ -133,8 +149,8 @@ describe("dashboard users route", () => {
           element: (
             <DashboardUsersScreen
               {...baseScreenProps}
-              form={{
-                ...baseScreenProps.form,
+              profileForm={{
+                ...baseScreenProps.profileForm,
                 isOpen: true,
                 mode: "create",
               }}
@@ -152,6 +168,46 @@ describe("dashboard users route", () => {
     expect(screen.getByRole("dialog", { name: "Create user" })).toBeInTheDocument();
     expect(screen.getByLabelText("Display name")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
+  }, 20000);
+
+  it("preserves the current role in a hidden field during profile edits", async () => {
+    const { DashboardUsersScreen } = await import("~/routes/dashboard/users");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/users",
+          element: (
+            <DashboardUsersScreen
+              {...baseScreenProps}
+              profileForm={{
+                ...baseScreenProps.profileForm,
+                editingUserId: "user-admin",
+                isOpen: true,
+                mode: "edit",
+                values: {
+                  ...baseScreenProps.profileForm.values,
+                  displayName: "Enes Admin",
+                  email: "admin@example.com",
+                  role: "admin",
+                },
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/users?modal=edit&userId=user-admin"],
+      },
+    );
+
+    const { container } = render(<RouterProvider router={router} />);
+
+    expect(screen.getByRole("dialog", { name: "Edit user" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("Role")).not.toBeInTheDocument();
+    expect(
+      container.querySelector('input[type="hidden"][name="role"][value="admin"]'),
+    ).not.toBeNull();
   }, 20000);
 
   it("renders the restricted access warning for non-admin viewers", async () => {
@@ -192,11 +248,6 @@ describe("dashboard users route", () => {
     render(<RouterProvider router={router} />);
 
     expect(screen.getByRole("dialog", { name: "Action denied" })).toBeInTheDocument();
-    expect(
-      screen.getByRole("alert", {
-        name: "",
-      }),
-    ).toBeInTheDocument();
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Son aktif admin hesabi pasiflestirilemez.",
     );

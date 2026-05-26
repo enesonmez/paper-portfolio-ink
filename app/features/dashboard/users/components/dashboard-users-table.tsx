@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { KeyRound, Pencil, Trash2 } from "lucide-react";
 import { Form, Link } from "react-router";
 
 import { DashboardPanel } from "~/components/dashboard/panel";
@@ -114,11 +114,33 @@ export function DashboardUsersTable({
                 to={to(
                   buildDashboardUsersHref({
                     ...listHrefState,
+                    modal: "edit",
                     editId: user.id,
                   }),
                 )}
               >
                 <Pencil className="size-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          ) : null}
+          {permissions.canUpdate ? (
+            <Button
+              asChild
+              size="iconSm"
+              variant="secondary"
+              className="hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
+              aria-label={`${copy.accessActionLabel} ${user.email}`}
+            >
+              <Link
+                to={to(
+                  buildDashboardUsersHref({
+                    ...listHrefState,
+                    editId: user.id,
+                    modal: "access",
+                  }),
+                )}
+              >
+                <KeyRound className="size-4" aria-hidden="true" />
               </Link>
             </Button>
           ) : null}

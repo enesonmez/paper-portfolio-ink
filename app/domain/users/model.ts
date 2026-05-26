@@ -32,20 +32,27 @@ export function useUserRoleOptions() {
 }
 
 export const USER_MUTATION_INTENT = {
+  grantClaim: "grant-claim",
   create: "create",
   delete: "delete",
+  revokeClaim: "revoke-claim",
   update: "update",
+  updateAccessRole: "update-access-role",
 } as const;
 
 export type UserMutationIntent = ValueOf<typeof USER_MUTATION_INTENT>;
 
+const userMutationIntentSet = new Set<string>(Object.values(USER_MUTATION_INTENT));
+
 export function isUserMutationIntent(value: string): value is UserMutationIntent {
-  return value in USER_MUTATION_INTENT;
+  return userMutationIntentSet.has(value);
 }
 
 export const USER_FORM_FIELD = {
   avatarUrl: "avatarUrl",
+  authzVersion: "authzVersion",
   bio: "bio",
+  claimKey: "claimKey",
   displayName: "displayName",
   email: "email",
   isActive: "isActive",

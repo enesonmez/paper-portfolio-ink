@@ -1,4 +1,5 @@
 import type { AppLoadContext } from "react-router";
+import type * as UserAuthorizationFormServerModule from "~/lib/users/user-authorization-form.server";
 import type * as UserFormServerModule from "~/lib/users/user-form.server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -9,15 +10,20 @@ const {
   countActiveAdminsMock,
   createUserMock,
   deactivateUserMock,
+  getUserAuthorizationByIdMock,
   getUserByIdMock,
   getUserOverviewByIdMock,
   isUserEmailTakenMock,
   listUsersPageMock,
   listUsersMock,
   parseDashboardUsersCursorMock,
+  parseUserAuthorizationRoleFormDataMock,
+  parseUserClaimOverrideFormDataMock,
   parseUserFormDataMock,
   requireSessionMock,
+  upsertUserClaimOverrideWithVersionGuardMock,
   updateUserMock,
+  updateUserRoleWithVersionGuardMock,
 } = vi.hoisted(() => {
   return {
     cacheDeleteMock: vi.fn(),
@@ -26,15 +32,20 @@ const {
     countActiveAdminsMock: vi.fn(),
     createUserMock: vi.fn(),
     deactivateUserMock: vi.fn(),
+    getUserAuthorizationByIdMock: vi.fn(),
     getUserByIdMock: vi.fn(),
     getUserOverviewByIdMock: vi.fn(),
     isUserEmailTakenMock: vi.fn(),
     listUsersPageMock: vi.fn(),
     listUsersMock: vi.fn(),
     parseDashboardUsersCursorMock: vi.fn(),
+    parseUserAuthorizationRoleFormDataMock: vi.fn(),
+    parseUserClaimOverrideFormDataMock: vi.fn(),
     parseUserFormDataMock: vi.fn(),
     requireSessionMock: vi.fn(),
+    upsertUserClaimOverrideWithVersionGuardMock: vi.fn(),
     updateUserMock: vi.fn(),
+    updateUserRoleWithVersionGuardMock: vi.fn(),
   };
 });
 
@@ -43,13 +54,29 @@ vi.mock("~/lib/users/users.server", () => {
     countActiveAdmins: countActiveAdminsMock,
     createUser: createUserMock,
     deactivateUser: deactivateUserMock,
+    getUserAuthorizationById: getUserAuthorizationByIdMock,
     getUserById: getUserByIdMock,
     getUserOverviewById: getUserOverviewByIdMock,
     isUserEmailTaken: isUserEmailTakenMock,
     listUsers: listUsersMock,
     listUsersPage: listUsersPageMock,
     parseDashboardUsersCursor: parseDashboardUsersCursorMock,
+    upsertUserClaimOverrideWithVersionGuard:
+      upsertUserClaimOverrideWithVersionGuardMock,
     updateUser: updateUserMock,
+    updateUserRoleWithVersionGuard: updateUserRoleWithVersionGuardMock,
+  };
+});
+
+vi.mock("~/lib/users/user-authorization-form.server", async () => {
+  const actual = await vi.importActual<typeof UserAuthorizationFormServerModule>(
+    "~/lib/users/user-authorization-form.server",
+  );
+
+  return {
+    ...actual,
+    parseUserAuthorizationRoleFormData: parseUserAuthorizationRoleFormDataMock,
+    parseUserClaimOverrideFormData: parseUserClaimOverrideFormDataMock,
   };
 });
 
@@ -88,15 +115,20 @@ describe("dashboard users server", () => {
     countActiveAdminsMock.mockReset();
     createUserMock.mockReset();
     deactivateUserMock.mockReset();
+    getUserAuthorizationByIdMock.mockReset();
     getUserByIdMock.mockReset();
     getUserOverviewByIdMock.mockReset();
     isUserEmailTakenMock.mockReset();
     listUsersPageMock.mockReset();
     listUsersMock.mockReset();
     parseDashboardUsersCursorMock.mockReset();
+    parseUserAuthorizationRoleFormDataMock.mockReset();
+    parseUserClaimOverrideFormDataMock.mockReset();
     parseUserFormDataMock.mockReset();
     requireSessionMock.mockReset();
+    upsertUserClaimOverrideWithVersionGuardMock.mockReset();
     updateUserMock.mockReset();
+    updateUserRoleWithVersionGuardMock.mockReset();
     parseDashboardUsersCursorMock.mockReturnValue(null);
   }, 20000);
 
@@ -159,7 +191,11 @@ describe("dashboard users server", () => {
 
     expect(response).toMatchObject({
       access: "granted",
-      form: {
+      authorizationForm: {
+        isOpen: false,
+        mode: null,
+      },
+      profileForm: {
         isOpen: false,
         mode: null,
       },
@@ -176,6 +212,69 @@ describe("dashboard users server", () => {
 
     expect(response.users).toHaveLength(2);
   }, 20000);
+
+  it("loads the access modal snapshot when authorization editing is requested", async () => {
+    const { loadDashboardUsersData } =
+      await import("~/features/dashboard/users/server");
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-admin",
+        role: "admin",
+      },
+    });
+    listUsersPageMock.mockResolvedValue({
+      items: [],
+      metrics: {
+        adminCount: 1,
+        authorCount: 1,
+        totalCount: 2,
+      },
+      pagination: {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        nextCursor: null,
+        previousCursor: null,
+      },
+    });
+    getUserAuthorizationByIdMock.mockResolvedValue({
+      authzVersion: 4,
+      displayName: "Ayla Author",
+      email: "author@example.com",
+      id: "user-author",
+      isActive: true,
+      overrides: [
+        {
+          claimKey: "users.read",
+          effect: "grant",
+        },
+      ],
+      role: "author",
+    });
+
+    const response = await loadDashboardUsersData(
+      context,
+      new Request(
+        "http://localhost:3000/dashboard/users?modal=access&edit=user-author",
+      ),
+    );
+
+    if (response instanceof Response || response.access !== "granted") {
+      throw new Error("Expected granted users loader data");
+    }
+
+    expect(response.authorizationForm).toMatchObject({
+      authzVersion: 4,
+      editingUserEmail: "author@example.com",
+      editingUserId: "user-author",
+      isOpen: true,
+      mode: "access",
+      values: {
+        authzVersion: "4",
+        role: "author",
+      },
+    });
+  });
 
   it("does not expose registry data to non-admin sessions", async () => {
     const { loadDashboardUsersData } =
@@ -603,4 +702,118 @@ describe("dashboard users server", () => {
       "http://localhost:3000/__cache/public/blog/page-1",
     );
   }, 20000);
+
+  it("updates the authorization role when the authz version matches", async () => {
+    const { handleDashboardUsersAction } =
+      await import("~/features/dashboard/users/server");
+
+    const request = new Request(
+      "http://localhost:3000/dashboard/users?modal=access&edit=user-author",
+      {
+        body: new URLSearchParams({
+          authzVersion: "4",
+          intent: "update-access-role",
+          role: "admin",
+          userId: "user-author",
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+      },
+    );
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-admin",
+        role: "admin",
+      },
+    });
+    parseUserAuthorizationRoleFormDataMock.mockReturnValue({
+      authzVersion: 4,
+      role: "admin",
+    });
+    getUserAuthorizationByIdMock.mockResolvedValue({
+      authzVersion: 4,
+      displayName: "Ayla Author",
+      email: "author@example.com",
+      id: "user-author",
+      isActive: true,
+      overrides: [],
+      role: "author",
+    });
+    updateUserRoleWithVersionGuardMock.mockResolvedValue(true);
+
+    const response = await handleDashboardUsersAction(context, request);
+
+    if (!(response instanceof Response)) {
+      throw new Error("Expected redirect response after authorization role action");
+    }
+
+    expect(updateUserRoleWithVersionGuardMock).toHaveBeenCalledWith({
+      db: { query: {} },
+      expectedAuthzVersion: 4,
+      role: "admin",
+      userId: "user-author",
+    });
+    expect(response.headers.get("Location")).toBe(
+      "http://localhost:3000/dashboard/users?modal=access&edit=user-author",
+    );
+  });
+
+  it("rejects stale authz version updates before role mutation runs", async () => {
+    const { handleDashboardUsersAction } =
+      await import("~/features/dashboard/users/server");
+
+    const request = new Request(
+      "http://localhost:3000/dashboard/users?modal=access&edit=user-author",
+      {
+        body: new URLSearchParams({
+          authzVersion: "3",
+          intent: "update-access-role",
+          role: "admin",
+          userId: "user-author",
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+      },
+    );
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-admin",
+        role: "admin",
+      },
+    });
+    parseUserAuthorizationRoleFormDataMock.mockReturnValue({
+      authzVersion: 3,
+      role: "admin",
+    });
+    getUserAuthorizationByIdMock.mockResolvedValue({
+      authzVersion: 4,
+      displayName: "Ayla Author",
+      email: "author@example.com",
+      id: "user-author",
+      isActive: true,
+      overrides: [],
+      role: "author",
+    });
+
+    await expect(handleDashboardUsersAction(context, request)).rejects.toMatchObject({
+      code: "users.update.stale_authz_version",
+      responseData: {
+        authorizationForm: {
+          errors: {
+            form: "Bu kullanicinin yetki surumu degisti. Modal'i kapatip yeniden acin.",
+          },
+          isOpen: true,
+          mode: "access",
+        },
+      },
+      status: 409,
+    });
+    expect(updateUserRoleWithVersionGuardMock).not.toHaveBeenCalled();
+  });
 });

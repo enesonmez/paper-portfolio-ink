@@ -670,10 +670,27 @@ const tr = {
   "dashboard.users.createDescription":
     "Rol kapsamli erisimle birlikte credential tabanli dashboard kullanicisi olustur.",
   "dashboard.users.createTitle": "Kullanici olustur",
+  "dashboard.users.accessActionLabel": "Claim ve rol",
+  "dashboard.users.accessDescription":
+    "Rol degisimini kaydet ve claim override'larini modal uzerinden yonet.",
+  "dashboard.users.accessRoleSaveLabel": "Rolu kaydet",
+  "dashboard.users.accessTitle": "Yetki duzenle",
+  "dashboard.users.accessVersionLabel": "Authz v",
+  "dashboard.users.claimDefineLabel": "Tanimla",
+  "dashboard.users.claimEffectiveLabel": "Efektif claim durumu",
+  "dashboard.users.claimGrantedLabel": "Tanimli",
+  "dashboard.users.claimOverrideGrantLabel": "Override grant",
+  "dashboard.users.claimOverrideRevokeLabel": "Override revoke",
+  "dashboard.users.claimRegistryTitle": "Claim override kayitlari",
+  "dashboard.users.claimRemoveLabel": "Cikar",
+  "dashboard.users.claimRevokedLabel": "Cikarildi",
+  "dashboard.users.claimRoleDefaultLabel": "Rol varsayilani",
+  "dashboard.users.claimScopeLabel": "Kapsam",
+  "dashboard.users.claimScopeNoneLabel": "yok",
   "dashboard.users.currentRoleLabel": "Mevcut rol",
   "dashboard.users.editActionLabel": "Kullaniciyi guncelle",
   "dashboard.users.editDescription":
-    "Kimlik alanlarini guncelle, rol yetkisini degistir veya parola rotasyonu yap.",
+    "Kimlik alanlarini guncelle veya parola rotasyonu yap.",
   "dashboard.users.editTitle": "Kullaniciyi duzenle",
   "dashboard.users.clearFiltersLabel": "Filtreleri temizle",
   "dashboard.users.emptyState": "Henuz dashboard kullanicisi yok.",
@@ -719,6 +736,8 @@ const tr = {
   "dashboard.users.form.email.placeholder": "author@paper-portfolio-ink.dev",
   "dashboard.users.form.error.createDuplicateEmail":
     "Bu e-posta adresi zaten kullanimda.",
+  "dashboard.users.form.error.authzVersionMismatch":
+    "Bu kullanicinin yetki surumu degisti. Modal'i kapatip yeniden acin.",
   "dashboard.users.form.error.deactivateMissingUser":
     "Pasiflestirilecek kullanici bulunamadi.",
   "dashboard.users.form.error.forbidden": "Bu flow icin erisim yetkiniz yoktur.",
@@ -869,6 +888,8 @@ const tr = {
   "validation.user.email": "Gecerli bir e-posta adresi gir.",
   "validation.user.password.max": "Parola en fazla 128 karakter olabilir.",
   "validation.user.role": "Gecerli bir kullanici rolu sec.",
+  "validation.user.authzVersion": "Gecerli bir authz versiyonu gerekli.",
+  "validation.user.authorizationClaim": "Gecerli bir authorization claim sec.",
   "validation.user.password.createMin": "Parola en az 8 karakter olmali.",
   "validation.user.password.updateMin":
     "Parola degistirilecekse en az 8 karakter olmali.",
@@ -1565,10 +1586,27 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.users.createDescription":
     "Create a credential-backed dashboard user with scoped role access.",
   "dashboard.users.createTitle": "Create user",
+  "dashboard.users.accessActionLabel": "Claims and role",
+  "dashboard.users.accessDescription":
+    "Save role changes and manage claim overrides from the same modal.",
+  "dashboard.users.accessRoleSaveLabel": "Save role",
+  "dashboard.users.accessTitle": "Edit access",
+  "dashboard.users.accessVersionLabel": "Authz v",
+  "dashboard.users.claimDefineLabel": "Grant",
+  "dashboard.users.claimEffectiveLabel": "Effective claim state",
+  "dashboard.users.claimGrantedLabel": "Granted",
+  "dashboard.users.claimOverrideGrantLabel": "Override grant",
+  "dashboard.users.claimOverrideRevokeLabel": "Override revoke",
+  "dashboard.users.claimRegistryTitle": "Claim override registry",
+  "dashboard.users.claimRemoveLabel": "Revoke",
+  "dashboard.users.claimRevokedLabel": "Revoked",
+  "dashboard.users.claimRoleDefaultLabel": "Role default",
+  "dashboard.users.claimScopeLabel": "Scope",
+  "dashboard.users.claimScopeNoneLabel": "none",
   "dashboard.users.currentRoleLabel": "Current role",
   "dashboard.users.editActionLabel": "Update user",
   "dashboard.users.editDescription":
-    "Update identity fields, role access, or rotate the credential password.",
+    "Update identity fields or rotate the credential password.",
   "dashboard.users.editTitle": "Edit user",
   "dashboard.users.clearFiltersLabel": "Clear filters",
   "dashboard.users.emptyState": "No dashboard users provisioned yet.",
@@ -1615,6 +1653,8 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.users.form.email.placeholder": "author@paper-portfolio-ink.dev",
   "dashboard.users.form.error.createDuplicateEmail":
     "This email address is already in use.",
+  "dashboard.users.form.error.authzVersionMismatch":
+    "This user's authorization version changed. Close and reopen the modal.",
   "dashboard.users.form.error.deactivateMissingUser":
     "The user to deactivate could not be found.",
   "dashboard.users.form.error.forbidden":
@@ -1767,6 +1807,8 @@ const en: Record<keyof typeof tr, string> = {
   "validation.user.email": "Enter a valid email address.",
   "validation.user.password.max": "Password can be at most 128 characters.",
   "validation.user.role": "Select a valid user role.",
+  "validation.user.authzVersion": "Provide a valid authz version.",
+  "validation.user.authorizationClaim": "Select a valid authorization claim.",
   "validation.user.password.createMin": "Password must be at least 8 characters.",
   "validation.user.password.updateMin":
     "If the password changes, it must be at least 8 characters.",

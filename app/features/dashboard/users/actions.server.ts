@@ -7,6 +7,10 @@ import {
   isUserMutationIntent,
 } from "~/domain/users/model";
 import { getDbFromContext } from "../../../../db/context";
+import {
+  parseUserAuthorizationRoleFormData,
+  parseUserClaimOverrideFormData,
+} from "~/lib/users/user-authorization-form.server";
 import { parseUserFormData } from "~/lib/users/user-form.server";
 import { withDashboardAccess } from "~/shared/authz/authz.server";
 import { buildValidationError } from "~/shared/errors/builders.server";
@@ -24,6 +28,7 @@ import { buildDashboardUsersFormCopy } from "./copy";
 import { authorizeUserMutationOrThrow } from "./operations/_shared/authorization.server";
 import { handleCreateUserMutation } from "./operations/create.server";
 import { handleDeleteUserMutation } from "./operations/delete.server";
+import { handleUpdateUserAuthorizationMutation } from "./operations/update-authorization.server";
 import { handleUpdateUserMutation } from "./operations/update.server";
 
 function buildInvalidIntentFormState(message: string) {
@@ -93,6 +98,10 @@ export async function handleDashboardUsersAction(
       intent: USER_MUTATION_INTENT.update,
       t,
     });
+  const resolveRoleAuthorizationSubmission = () =>
+    parseUserAuthorizationRoleFormData(formData, t);
+  const resolveClaimAuthorizationSubmission = () =>
+    parseUserClaimOverrideFormData(formData, t);
 
   return withDashboardAccess({
     request,
@@ -138,6 +147,36 @@ export async function handleDashboardUsersAction(
             request,
             submission: resolveUpdateSubmission(),
             supportedLocaleCodes,
+            userId,
+          }),
+        [USER_MUTATION_INTENT.grantClaim]: () =>
+          handleUpdateUserAuthorizationMutation({
+            context,
+            db,
+            formCopy,
+            intent: USER_MUTATION_INTENT.grantClaim,
+            request,
+            claimSubmission: resolveClaimAuthorizationSubmission(),
+            userId,
+          }),
+        [USER_MUTATION_INTENT.revokeClaim]: () =>
+          handleUpdateUserAuthorizationMutation({
+            context,
+            db,
+            formCopy,
+            intent: USER_MUTATION_INTENT.revokeClaim,
+            request,
+            claimSubmission: resolveClaimAuthorizationSubmission(),
+            userId,
+          }),
+        [USER_MUTATION_INTENT.updateAccessRole]: () =>
+          handleUpdateUserAuthorizationMutation({
+            context,
+            db,
+            formCopy,
+            intent: USER_MUTATION_INTENT.updateAccessRole,
+            request,
+            roleSubmission: resolveRoleAuthorizationSubmission(),
             userId,
           }),
       } as const;

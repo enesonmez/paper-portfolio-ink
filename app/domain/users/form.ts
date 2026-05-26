@@ -17,6 +17,19 @@ export interface UserFormState {
   values: UserFormValues;
 }
 
+export type UserAuthorizationFormValues = {
+  authzVersion: string;
+  claimKey: string;
+  role: UserRole;
+};
+
+export interface UserAuthorizationFormState {
+  errors?: Partial<Record<keyof UserAuthorizationFormValues, string>> & {
+    form?: string;
+  };
+  values: UserAuthorizationFormValues;
+}
+
 export function getDefaultUserFormValues(): UserFormValues {
   return {
     avatarUrl: "",
@@ -34,6 +47,23 @@ export function buildUserFormValues(
 ): UserFormValues {
   return {
     ...getDefaultUserFormValues(),
+    ...values,
+  };
+}
+
+export function getDefaultUserAuthorizationFormValues(): UserAuthorizationFormValues {
+  return {
+    authzVersion: "1",
+    claimKey: "",
+    role: USER_ROLE.author,
+  };
+}
+
+export function buildUserAuthorizationFormValues(
+  values: Partial<UserAuthorizationFormValues> = {},
+): UserAuthorizationFormValues {
+  return {
+    ...getDefaultUserAuthorizationFormValues(),
     ...values,
   };
 }

@@ -255,6 +255,7 @@ export const APP_ERROR_CODE = {
       forbidden: "users.update.forbidden",
       lastAdminGuard: "users.update.last_admin_guard",
       missingId: "users.update.missing_id",
+      staleAuthzVersion: "users.update.stale_authz_version",
     },
     validation: "users.validation",
   },

@@ -39,7 +39,10 @@ export const SKILL_MUTATION_CLAIMS = {
 export const USER_MUTATION_CLAIMS = {
   [USER_MUTATION_INTENT.create]: AUTHORIZATION_CLAIM.usersCreate,
   [USER_MUTATION_INTENT.delete]: AUTHORIZATION_CLAIM.usersDelete,
+  [USER_MUTATION_INTENT.grantClaim]: AUTHORIZATION_CLAIM.usersUpdate,
+  [USER_MUTATION_INTENT.revokeClaim]: AUTHORIZATION_CLAIM.usersUpdate,
   [USER_MUTATION_INTENT.update]: AUTHORIZATION_CLAIM.usersUpdate,
+  [USER_MUTATION_INTENT.updateAccessRole]: AUTHORIZATION_CLAIM.usersUpdate,
 } as const satisfies Record<UserMutationIntent, AuthorizationClaim>;
 
 export const RESOURCE_MUTATION_CLAIMS = {

@@ -17,32 +17,36 @@ import {
   buildDashboardUsersHref,
   useDashboardUserActiveFilterOptions,
   useDashboardUserRoleFilterOptions,
+  type DashboardUsersAuthorizationFormState,
   type DashboardUsersFilters,
-  type DashboardUsersFormState,
   type DashboardUsersMetrics,
   type DashboardUsersPermissions,
+  type DashboardUsersProfileFormState,
 } from "./state";
-import { DashboardUsersModalView } from "./components/dashboard-users-modal";
+import { DashboardUsersAuthorizationModalView } from "./components/dashboard-users-authorization-modal";
+import { DashboardUsersProfileModalView } from "./components/dashboard-users-modal";
 import { DashboardUsersTable } from "./components/dashboard-users-table";
 import type { DashboardPaginationState } from "../shared/pagination";
 
 export interface DashboardUsersScreenProps {
   actionError?: string;
+  authorizationForm: DashboardUsersAuthorizationFormState;
   filters: DashboardUsersFilters;
-  form: DashboardUsersFormState;
   metrics: DashboardUsersMetrics;
   pagination: DashboardPaginationState;
   permissions: DashboardUsersPermissions;
+  profileForm: DashboardUsersProfileFormState;
   users: UserOverview[];
 }
 
 export function DashboardUsersScreen({
   actionError,
+  authorizationForm,
   filters,
-  form,
   metrics,
   pagination,
   permissions,
+  profileForm,
   users,
 }: DashboardUsersScreenProps) {
   const t = useT();
@@ -143,8 +147,15 @@ export function DashboardUsersScreen({
         />
       </section>
 
-      <DashboardUsersModalView form={form} listHrefState={listHrefState} />
-      {!form.isOpen && actionError ? (
+      <DashboardUsersProfileModalView
+        form={profileForm}
+        listHrefState={listHrefState}
+      />
+      <DashboardUsersAuthorizationModalView
+        form={authorizationForm}
+        listHrefState={listHrefState}
+      />
+      {!profileForm.isOpen && !authorizationForm.isOpen && actionError ? (
         <DashboardModal
           title={copy.actionBlockedTitle}
           description={actionError}
