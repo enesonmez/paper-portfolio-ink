@@ -44,12 +44,16 @@ describe("cloudflare load context", () => {
         cache,
         request,
         env: {
+          ANALYTICS_SECRET: "analytics-secret",
           DB: { prepare: vi.fn() } as unknown as D1Database,
           BETTER_AUTH_SECRET: "0123456789-0123456789-0123456789-0123",
           BETTER_AUTH_URL: "https://paper-portfolio-ink.dev",
         },
       }),
     ).toMatchObject({
+      analytics: {
+        secret: "analytics-secret",
+      },
       auth: {
         baseURL: "https://paper-portfolio-ink.dev",
         secret: "0123456789-0123456789-0123456789-0123",

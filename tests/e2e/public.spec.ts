@@ -63,3 +63,41 @@ test("forwards legacy project URLs to the active locale and renders seeded proje
   ).toBeVisible();
   await expect(page.getByRole("link", { name: "Canli build" }).first()).toBeVisible();
 });
+
+test("sends blog tracking beacons on client-side exit and stores a view lock cookie", async ({
+  context,
+  page,
+}) => {
+  await page.goto(`${E2E_LOCALE_PREFIX}/blog/${E2E_POST_SLUG}`);
+  await page.evaluate(() => {
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+  await page.waitForTimeout(1200);
+
+  const trackRequestPromise = page.waitForRequest(
+    (request) =>
+      request.method() === "POST" &&
+      request.url().endsWith(`${E2E_LOCALE_PREFIX}/blog/track`),
+  );
+
+  await page
+    .getByRole("navigation", { name: "Public navigasyon" })
+    .getByRole("link", { exact: true, name: "Ana sayfa" })
+    .click();
+
+  const trackRequest = await trackRequestPromise;
+  const payload = new URLSearchParams(trackRequest.postData() ?? "");
+
+  expect(payload.get("slug")).toBe(E2E_POST_SLUG);
+  expect(Number(payload.get("scrollRate"))).toBeGreaterThan(0);
+  expect(Number(payload.get("secondsSpent"))).toBeGreaterThanOrEqual(1);
+  await expect(page).toHaveURL(new RegExp(`${E2E_LOCALE_PREFIX}$`));
+
+  await expect
+    .poll(async () => {
+      const cookies = await context.cookies();
+
+      return cookies.find((cookie) => cookie.name === "paper-view-lock")?.value ?? null;
+    })
+    .not.toBeNull();
+});

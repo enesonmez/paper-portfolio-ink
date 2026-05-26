@@ -12,6 +12,7 @@ export default [
     index("./routes/public/home.tsx"),
     route("blog", "./routes/public/blog/index.tsx"),
     route("blog/feed", "./routes/public/blog/feed.tsx"),
+    route("blog/track", "./routes/public/blog/track.ts"),
     route("blog/:slug", "./routes/public/blog/$slug.tsx"),
     route("dashboard", "./routes/dashboard/layout.tsx", [
       index("./routes/dashboard/index.tsx"),

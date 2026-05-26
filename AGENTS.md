@@ -27,6 +27,8 @@ Sen Senior Full-Stack Architect seviyesinde bir AI agent'sın. Gereksiz açıkla
 - Başarılı işlemler sonucu loglama yap. `app/shared/logging`
 - Authorization metodlarını ve sınfılarını her feature'da kullan. `app/shared/authz`
 - Her geliştirme öncesi plan yap.
+- `npm run test` `npm run typecheck` `npm run lint` `npm run format:check` `npm run e2e:prepare` `npm run e2e` her iş sonucu bunları sırayla çalıştır ve doğruluğunu kanıtla.
+- Yorum satırı ekleme.
 
 # Self-Improvement Loop
 

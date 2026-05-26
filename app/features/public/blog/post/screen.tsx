@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import type { PublicPostDetail, PublicPostListItem } from "~/lib/posts/posts.server";
 import { usePublicBlogCopy } from "../ui/copy";
+import { PublicBlogPostTracker } from "../tracking/tracker";
 import { PublicBlogPostBody } from "./components/public-blog-post-body";
 
 interface PublicBlogPostScreenProps {
@@ -15,9 +16,16 @@ interface PublicBlogPostScreenProps {
 export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenProps) {
   const to = useLocalizedPath();
   const { copy } = usePublicBlogCopy();
+  const trackingArticleId = `public-blog-post-${post.slug}`;
 
   return (
     <main className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:px-8 md:py-16 lg:px-12 lg:py-20">
+      <PublicBlogPostTracker
+        action={to("/blog/track")}
+        articleId={trackingArticleId}
+        slug={post.slug}
+      />
+
       <Button asChild variant="secondary" className="w-fit">
         <Link to={to("/blog")}>
           <ArrowLeft className="size-4" aria-hidden="true" />
@@ -60,7 +68,7 @@ export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenPr
             </div>
           ) : null}
 
-          <article>
+          <article id={trackingArticleId}>
             <PublicBlogPostBody content={post.content} />
           </article>
         </div>

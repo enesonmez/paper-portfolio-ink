@@ -6,6 +6,7 @@ const {
   loadPublicBlogDataMock,
   loadPublicBlogFeedDataMock,
   loadPublicBlogPostDataMock,
+  trackPublicBlogPostViewMock,
   loadPublicHomeDataMock,
   loadPublicProjectsDataMock,
   loadPublicProjectsFeedDataMock,
@@ -14,6 +15,7 @@ const {
   loadPublicBlogDataMock: vi.fn(),
   loadPublicBlogFeedDataMock: vi.fn(),
   loadPublicBlogPostDataMock: vi.fn(),
+  trackPublicBlogPostViewMock: vi.fn(),
   loadPublicHomeDataMock: vi.fn(),
   loadPublicProjectsDataMock: vi.fn(),
   loadPublicProjectsFeedDataMock: vi.fn(),
@@ -32,6 +34,7 @@ vi.mock("~/features/public/blog/server", () => ({
   loadPublicBlogData: loadPublicBlogDataMock,
   loadPublicBlogFeedData: loadPublicBlogFeedDataMock,
   loadPublicBlogPostData: loadPublicBlogPostDataMock,
+  trackPublicBlogPostView: trackPublicBlogPostViewMock,
 }));
 
 vi.mock("~/shared/i18n/i18n.server", async () => {
@@ -51,6 +54,7 @@ describe("public route modules", () => {
     loadPublicBlogDataMock.mockReset();
     loadPublicBlogFeedDataMock.mockReset();
     loadPublicBlogPostDataMock.mockReset();
+    trackPublicBlogPostViewMock.mockReset();
     loadPublicHomeDataMock.mockReset();
     loadPublicProjectsDataMock.mockReset();
     loadPublicProjectsFeedDataMock.mockReset();
@@ -67,6 +71,7 @@ describe("public route modules", () => {
     loadPublicBlogDataMock.mockResolvedValueOnce(payload);
     loadPublicBlogFeedDataMock.mockResolvedValueOnce(payload);
     loadPublicBlogPostDataMock.mockResolvedValueOnce(payload);
+    trackPublicBlogPostViewMock.mockResolvedValueOnce(payload);
 
     const { loader: homeLoader } = await import("~/routes/public/home");
     const { loader: projectsLoader } = await import("~/routes/public/projects/index");
@@ -75,6 +80,7 @@ describe("public route modules", () => {
     const { loader: blogLoader } = await import("~/routes/public/blog/index");
     const { loader: blogFeedLoader } = await import("~/routes/public/blog/feed");
     const { loader: blogPostLoader } = await import("~/routes/public/blog/$slug");
+    const { action: blogTrackAction } = await import("~/routes/public/blog/track");
 
     await expect(homeLoader({ context, params: {}, request } as never)).resolves.toBe(
       payload,
@@ -98,10 +104,23 @@ describe("public route modules", () => {
         request,
       } as never),
     ).resolves.toBe(payload);
+    await expect(
+      blogTrackAction({
+        context,
+        params: {},
+        request: new Request("https://paper-portfolio-ink.dev/tr/blog/track", {
+          method: "POST",
+        }),
+      } as never),
+    ).resolves.toBe(payload);
 
     expect(loadPublicBlogPostDataMock).toHaveBeenCalledWith(
       context,
       "edge-observability",
+    );
+    expect(trackPublicBlogPostViewMock).toHaveBeenCalledWith(
+      context,
+      expect.any(Request),
     );
   });
 
