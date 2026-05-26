@@ -9,6 +9,8 @@ import {
   authorizationUserClaimOverrides,
   configurationParameters,
   loginRateLimits,
+  logErrorHistory,
+  logHistory,
   locales,
   posts,
   projects,
@@ -18,6 +20,8 @@ import {
   translations,
   users,
   verifications,
+  viewHistory,
+  viewHistoryLocks,
 } from "#db/schema";
 
 function getColumnNames(table: Parameters<typeof getTableConfig>[0]) {
@@ -34,6 +38,8 @@ describe("database schema", () => {
       authorizationUserClaimOverrides,
       configurationParameters,
       loginRateLimits,
+      logErrorHistory,
+      logHistory,
       posts,
       projects,
       sessions,
@@ -42,6 +48,8 @@ describe("database schema", () => {
       translations,
       users,
       verifications,
+      viewHistory,
+      viewHistoryLocks,
     });
   });
 
@@ -278,5 +286,40 @@ describe("database schema", () => {
       ]),
     );
     expect(config.indexes).toHaveLength(1);
+  });
+
+  it("defines the view history table for throttled public post analytics", () => {
+    const config = getTableConfig(viewHistory);
+
+    expect(getColumnNames(viewHistory)).toEqual(
+      expect.arrayContaining([
+        "id",
+        "post_id",
+        "user_hash",
+        "scroll_rate",
+        "seconds_spent",
+        "created_at",
+      ]),
+    );
+    expect(config.foreignKeys).toHaveLength(1);
+    expect(config.indexes).toHaveLength(2);
+    expect(config.checks).toHaveLength(3);
+  });
+
+  it("defines the view history lock table for atomic duplicate suppression", () => {
+    const config = getTableConfig(viewHistoryLocks);
+
+    expect(getColumnNames(viewHistoryLocks)).toEqual(
+      expect.arrayContaining([
+        "post_id",
+        "user_hash",
+        "locked_until",
+        "created_at",
+        "updated_at",
+      ]),
+    );
+    expect(config.foreignKeys).toHaveLength(1);
+    expect(config.indexes).toHaveLength(1);
+    expect(config.checks).toHaveLength(1);
   });
 });

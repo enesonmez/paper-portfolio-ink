@@ -14,6 +14,7 @@ export const APP_ERROR_ACTION = {
   manage: "manage",
   mutate: "mutate",
   read: "read",
+  track: "track",
   update: "update",
   validate: "validate",
 } as const;
@@ -21,6 +22,7 @@ export const APP_ERROR_ACTION = {
 export type AppErrorAction = (typeof APP_ERROR_ACTION)[keyof typeof APP_ERROR_ACTION];
 
 export const APP_ERROR_RESOURCE = {
+  analytics: "analytics",
   authLogin: "auth.login",
   dashboard: "dashboard",
   logs: "logs",
@@ -56,6 +58,7 @@ export const APP_ROUTE_ID = {
   publicBlogFeed: "public.blog.feed",
   publicBlogIndex: "public.blog.index",
   publicBlogSlug: "public.blog.slug",
+  publicBlogTrack: "public.blog.track",
   publicHome: "public.home",
   publicProjectsFeed: "public.projects.feed",
   publicProjectsIndex: "public.projects.index",
@@ -76,6 +79,12 @@ export const APP_ERROR_CODE = {
       providerFailure: "auth.login.provider_failure",
       validation: "auth.login.validation",
     },
+  },
+  analytics: {
+    track: {
+      invalidOrigin: "analytics.track.invalid_origin",
+    },
+    validation: "analytics.validation",
   },
   internal: {
     nonErrorThrow: "internal.non_error_throw",

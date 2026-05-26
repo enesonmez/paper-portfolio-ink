@@ -44,6 +44,7 @@
 - [ ] `/settings` sayfasında `/runtime` tabı ekle. Projedeki cache'lenen tüm yapılar yer alsın ve her yapı için bir buton ile cache temizleyip tekrar cache alma yapısı kurulsun. Her yapı için ayrı buton olsun. Aynı zamanda burada sistemin ram, storage, cpu kullanım gösterimi de olsun. Belirli aralıklarla güncellencek şekilde örneğin 5 sn.
 - [ ] `/settings` sayfasında `/apperance` tabı ekle. Projede renk paleti ve font değişim imkanı versin. Seçilen değerler configuration-parameter tablosunda tutulsun.
 - [ ] `/settings` sayfasında `/security` tabı ekle. Session'ı olan kullanıcıları görüntüleme ve bunların session'larını sonlandırma yapısı kuralım.
+- [ ] Analitik için `/analytics` menüsü oluştur. Admin kullanıcıları herkesin post analitiğini, author kullanıcılar kendi post analitiğini görebilmeli. `/posts` sayfasındaki own - any yapısı referans alınmalı. Kullanıcıların her bir postunun kaç adet görüntülendiği, ortalama scroll_rate'i, ortalama zaman geçirme süresi tablo da listelenmeli. Projedeki diğer sayfalar dizayn olarak referans alınabilir. Sayfanın en üstünde günlük ve aylık toplam görüntülenme kırılımlı grafik yer almalıdır.(Burasıda admin ise tüm post'lar author ise kendi post'ların toplamı şeklinde olmalı.) Tablo içinde ise her bir post için grafik butonu yer alsın ve tıklandığında modal olarak günlük ve aylık kırlımı olan grafik yer alsın.
 
 ## Phase 5: Optimization & Launch
 
@@ -73,8 +74,8 @@
 
 ## Phase 8: Analytics & Insights
 
-[ ] view_history tablosunun (post_id, user_hash, scroll_rate, seconds_spent) oluşturulması.
-[ ] Backend Tracking: SHA-256(ip + user-agent + secret) tabanlı user_hash üretimi ve 12 saatlik kısıtlama (Throttling) logic'i.
-[ ] Frontend Tracker: navigator.sendBeacon ile sayfa terk edildiğinde (unload/visibilitychange) db'ye veri gönderimi.
-[ ] Scroll & Time Depth: Kullanıcının makalenin yüzde kaçına ulaştığının ve ne kadar süre kaldığının hesaplanması.
-[ ] Double-Lock Mechanism: Hem Cookie (Client) hem de DB (Server) seviyesinde 12 saatlik mükerrer kayıt engelleme.
+[x] view_history tablosunun (post_id, user_hash, scroll_rate, seconds_spent) oluşturulması.
+[x] Backend Tracking: SHA-256(ip + user-agent + secret) tabanlı user_hash üretimi ve 12 saatlik kısıtlama (Throttling) logic'i.
+[x] Frontend Tracker: navigator.sendBeacon ile sayfa terk edildiğinde (unload/visibilitychange) db'ye veri gönderimi.
+[x] Scroll & Time Depth: Kullanıcının makalenin yüzde kaçına ulaştığının ve ne kadar süre kaldığının hesaplanması.
+[x] Double-Lock Mechanism: Hem Cookie (Client) hem de DB (Server) seviyesinde 12 saatlik mükerrer kayıt engelleme.

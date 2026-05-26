@@ -408,6 +408,58 @@ export const loginRateLimits = sqliteTable(
   ],
 );
 
+export const viewHistoryLocks = sqliteTable(
+  "view_history_locks",
+  {
+    postId: text("post_id")
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    userHash: text("user_hash").notNull(),
+    lockedUntil: integer("locked_until", { mode: "timestamp_ms" }).notNull(),
+    createdAt: createCreatedAtColumn(),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.postId, table.userHash],
+      name: "view_history_locks_post_id_user_hash_pk",
+    }),
+    index("view_history_locks_locked_until_idx").on(table.lockedUntil),
+    check(
+      "view_history_locks_user_hash_length_check",
+      sql`length(${table.userHash}) = 64`,
+    ),
+  ],
+);
+
+export const viewHistory = sqliteTable(
+  "view_history",
+  {
+    id: createIdColumn(),
+    postId: text("post_id")
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    userHash: text("user_hash").notNull(),
+    scrollRate: integer("scroll_rate").notNull(),
+    secondsSpent: integer("seconds_spent").notNull(),
+    createdAt: createCreatedAtColumn(),
+  },
+  (table) => [
+    index("view_history_created_at_id_idx").on(table.createdAt, table.id),
+    index("view_history_post_user_created_at_idx").on(
+      table.postId,
+      table.userHash,
+      sql`${table.createdAt} desc`,
+      sql`${table.id} desc`,
+    ),
+    check("view_history_scroll_rate_check", sql`${table.scrollRate} between 0 and 100`),
+    check("view_history_seconds_spent_check", sql`${table.secondsSpent} >= 0`),
+    check("view_history_user_hash_length_check", sql`length(${table.userHash}) = 64`),
+  ],
+);
+
 export const logHistory = sqliteTable(
   "log_history",
   {
@@ -492,6 +544,8 @@ export const schema = {
   translations,
   configurationParameters,
   loginRateLimits,
+  viewHistoryLocks,
+  viewHistory,
   logHistory,
   logErrorHistory,
 };

@@ -1,5 +1,6 @@
 import type { AppLoadContext } from "react-router";
 
+import { resolveCloudflareAnalyticsConfig } from "./analytics-env";
 import {
   createCloudflareDataCache,
   type CloudflareCacheStore,
@@ -21,6 +22,7 @@ export function createCloudflareLoadContext({
   request,
 }: CreateCloudflareLoadContextOptions): AppLoadContext {
   return {
+    analytics: resolveCloudflareAnalyticsConfig(env),
     auth: resolveCloudflareAuthConfig(env, request),
     cache: cache ? createCloudflareDataCache(cache) : undefined,
     db: createAppDb(env),
