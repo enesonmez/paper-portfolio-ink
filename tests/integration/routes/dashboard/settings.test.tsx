@@ -26,6 +26,9 @@ const baseLoaderData = {
     "social.instagram": "https://instagram.com/paperportfolioink",
     "social.linkedin": "https://linkedin.com/in/enes-ink",
     "social.x": "https://x.com/paperinkdev",
+    "appearance.primaryColor": "yellow",
+    "appearance.headingFont": "vt323",
+    "appearance.bodyFont": "mono",
   },
   selectedTab: "account" as const,
 };
@@ -87,7 +90,7 @@ describe("dashboard settings route", () => {
     render(<RouterProvider router={router} />);
 
     expect(
-      screen.getByRole("dialog", { name: "Update account record" }),
+      screen.getByRole("dialog", { name: "Update configuration record" }),
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue("Paper Ink")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Edit record" })).toBeInTheDocument();
@@ -121,6 +124,36 @@ describe("dashboard settings route", () => {
     expect(screen.getByText("Runtime cache contract")).toBeInTheDocument();
     expect(screen.getByText("Cloudflare Pages + D1")).toBeInTheDocument();
     expect(screen.getByText("Pending runtime actions")).toBeInTheDocument();
+  });
+
+  it("renders the appearance configuration cards when requested", () => {
+    const router = createMemoryRouter(
+      [
+        {
+          path: "/dashboard/settings",
+          element: (
+            <DashboardSettingsScreen
+              loaderData={{
+                ...baseLoaderData,
+                selectedTab: "appearance",
+              }}
+            />
+          ),
+        },
+      ],
+      {
+        initialEntries: ["/dashboard/settings?tab=appearance"],
+      },
+    );
+
+    render(<RouterProvider router={router} />);
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Appearance tab" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Sarı / Yellow (Default - #facc15)")).toBeInTheDocument();
+    expect(screen.getByText("VT323 (Default)")).toBeInTheDocument();
+    expect(screen.getByText("JetBrains Mono (Default)")).toBeInTheDocument();
   });
 
   it("renders the denied state for unauthorized viewers", () => {

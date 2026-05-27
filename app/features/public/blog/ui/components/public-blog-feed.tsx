@@ -99,7 +99,7 @@ export function PublicBlogFeed({
 
   return (
     <section className="grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_20rem] xl:items-start">
-      <div className="bg-card grid gap-8 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+      <div className="bg-card grid gap-8 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8">
         {leadPost ? <PublicBlogFeedItem post={leadPost} variant="lead" /> : null}
 
         {remainingPosts.length > 0 ? (

@@ -71,7 +71,7 @@ export function PublicSiteHeader({ theme }: PublicSiteHeaderProps) {
           <details className="group relative md:hidden">
             <summary
               aria-label={copy.navMenuLabel}
-              className="bg-card inline-flex min-h-10 cursor-pointer list-none items-center gap-2 border-2 border-black px-2 py-2 text-[11px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)] [&::-webkit-details-marker]:hidden"
+              className="bg-card inline-flex min-h-10 cursor-pointer list-none items-center gap-2 border-2 border-black px-2 py-2 text-[11px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 [&::-webkit-details-marker]:hidden"
             >
               <Menu className="size-4 group-open:hidden" aria-hidden="true" />
               <X className="hidden size-4 group-open:block" aria-hidden="true" />
@@ -80,7 +80,7 @@ export function PublicSiteHeader({ theme }: PublicSiteHeaderProps) {
 
             <nav
               aria-label={copy.navMobileAriaLabel}
-              className="bg-card absolute top-[calc(100%+0.75rem)] right-0 z-20 grid w-[min(18rem,calc(100vw-2rem))] gap-2 border-2 border-black p-3 text-[13px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+              className="bg-card absolute top-[calc(100%+0.75rem)] right-0 z-20 grid w-[min(18rem,calc(100vw-2rem))] gap-2 border-2 border-black p-3 text-[13px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             >
               <div className="bg-background border-2 border-black px-2 py-2">
                 <LocaleSwitcher className="justify-end" />

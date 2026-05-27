@@ -35,7 +35,7 @@ export function DashboardSidebar({
       <div className="border-b-2 border-black p-5 md:p-6">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="bg-primary flex size-11 items-center justify-center border-2 border-black text-lg font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+            <div className="bg-primary flex size-11 items-center justify-center border-2 border-black text-lg font-bold text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               &gt;_
             </div>
             <div>
@@ -76,7 +76,7 @@ export function DashboardSidebar({
                   [
                     "flex items-center justify-between gap-3 border-2 border-black px-4 py-3 font-sans text-sm font-bold tracking-[0.12em] uppercase transition-transform",
                     isActive
-                      ? "bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+                      ? "bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                       : "bg-card text-foreground hover:translate-x-0.5 hover:translate-y-0.5 dark:bg-stone-800",
                   ].join(" ")
                 }

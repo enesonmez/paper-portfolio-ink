@@ -7,10 +7,16 @@ import {
 import {
   ACCOUNT_CONFIGURATION_FORM_FIELD,
   ACCOUNT_CONFIGURATION_KEYS,
+  APPEARANCE_BODY_FONTS,
+  APPEARANCE_HEADING_FONTS,
+  APPEARANCE_PRIMARY_COLORS,
   getAccountConfigurationDefinition,
   isAccountConfigurationKey,
   isOptionalAccountConfigurationKey,
   type AccountConfigurationKey,
+  type AppearanceBodyFont,
+  type AppearanceHeadingFont,
+  type AppearancePrimaryColor,
 } from "~/domain/configuration/model";
 import { buildValidationError } from "~/shared/errors/builders.server";
 import {
@@ -77,6 +83,54 @@ function createAccountConfigurationSchema(t: I18nTranslator) {
           context.addIssue({
             code: z.ZodIssueCode.custom,
             message: t("validation.settings.contactEmail"),
+            path: ["value"],
+          });
+        }
+
+        return;
+      }
+
+      if (value.key === "appearance.primaryColor") {
+        if (
+          !Object.values(APPEARANCE_PRIMARY_COLORS).includes(
+            value.value as AppearancePrimaryColor,
+          )
+        ) {
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("validation.settings.appearance.primaryColor"),
+            path: ["value"],
+          });
+        }
+
+        return;
+      }
+
+      if (value.key === "appearance.headingFont") {
+        if (
+          !Object.values(APPEARANCE_HEADING_FONTS).includes(
+            value.value as AppearanceHeadingFont,
+          )
+        ) {
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("validation.settings.appearance.headingFont"),
+            path: ["value"],
+          });
+        }
+
+        return;
+      }
+
+      if (value.key === "appearance.bodyFont") {
+        if (
+          !Object.values(APPEARANCE_BODY_FONTS).includes(
+            value.value as AppearanceBodyFont,
+          )
+        ) {
+          context.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("validation.settings.appearance.bodyFont"),
             path: ["value"],
           });
         }

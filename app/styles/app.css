@@ -6,8 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "JetBrains Mono", monospace;
-  --font-display: "VT323", monospace;
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -50,6 +50,8 @@
   --border: #000000;
   --input: #000000;
   --ring: #dc2626;
+  --font-sans: "JetBrains Mono", monospace;
+  --font-display: "VT323", monospace;
 }
 
 .dark {
@@ -73,6 +75,8 @@
   --border: #000000;
   --input: #000000;
   --ring: #facc15;
+  --font-sans: "JetBrains Mono", monospace;
+  --font-display: "VT323", monospace;
 }
 
 @layer base {

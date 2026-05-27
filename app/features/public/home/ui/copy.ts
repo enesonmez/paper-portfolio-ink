@@ -128,4 +128,4 @@ export function usePublicHomeCopy() {
 }
 
 export const PUBLIC_HOME_SURFACE_CLASSNAME =
-  "border-2 border-black bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]";
+  "border-2 border-black bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ";

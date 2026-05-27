@@ -14,7 +14,7 @@ export function PublicProjectCard({ project }: PublicProjectCardProps) {
   const copy = usePublicProjectsCopy();
 
   return (
-    <article className="bg-card grid gap-5 border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-1 md:p-6 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+    <article className="bg-card grid gap-5 border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-1 md:p-6">
       {project.coverImageUrl ? (
         <div className="bg-primary relative aspect-4/3 overflow-hidden border-2 border-black">
           <img

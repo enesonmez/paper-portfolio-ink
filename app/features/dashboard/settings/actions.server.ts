@@ -114,10 +114,14 @@ export async function handleDashboardSettingsAction(
         targetLabel: submission.key,
       });
 
+      const targetTab = submission.key.startsWith("appearance.")
+        ? "appearance"
+        : "account";
+
       return redirect(
         buildLocalizedPath(
           locale,
-          buildDashboardSettingsHref("account"),
+          buildDashboardSettingsHref(targetTab),
           supportedLocaleCodes,
         ),
       );

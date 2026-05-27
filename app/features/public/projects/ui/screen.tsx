@@ -50,7 +50,7 @@ export function PublicProjectsScreen({
             return (
               <div
                 key={key}
-                className="bg-card flex items-center justify-between gap-4 border-2 border-black px-5 py-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+                className="bg-card flex items-center justify-between gap-4 border-2 border-black px-5 py-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
               >
                 <span className="inline-flex items-center gap-3 text-sm font-bold uppercase">
                   <Icon className="size-5" aria-hidden="true" />
@@ -64,7 +64,7 @@ export function PublicProjectsScreen({
       </section>
 
       {projects.length === 0 ? (
-        <section className="bg-card grid min-h-96 content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+        <section className="bg-card grid min-h-96 content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8">
           <p className="text-muted-foreground text-sm tracking-[0.08em] uppercase">
             {copy.emptyEyebrow}
           </p>

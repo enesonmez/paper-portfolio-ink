@@ -35,7 +35,7 @@ export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenPr
 
       <section className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_20rem] xl:items-start">
         <div className="grid gap-8">
-          <header className="bg-card grid gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+          <header className="bg-card grid gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8">
             <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs font-bold tracking-[0.16em] uppercase">
               <span>{copy.authorLabel}</span>
               <span className="text-foreground">{post.authorName}</span>
@@ -59,7 +59,7 @@ export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenPr
           </header>
 
           {post.coverImageUrl ? (
-            <div className="bg-card overflow-hidden border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+            <div className="bg-card overflow-hidden border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <img
                 src={post.coverImageUrl}
                 alt=""
@@ -74,7 +74,7 @@ export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenPr
         </div>
 
         <aside className="grid gap-6">
-          <section className="bg-card grid gap-4 border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+          <section className="bg-card grid gap-4 border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <h2 className="font-sans text-lg font-black uppercase">
               {post.authorName}
             </h2>
@@ -84,7 +84,7 @@ export function PublicBlogPostScreen({ morePosts, post }: PublicBlogPostScreenPr
           </section>
 
           {morePosts.length > 0 ? (
-            <section className="bg-card grid gap-4 border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+            <section className="bg-card grid gap-4 border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <h2 className="font-sans text-lg font-black uppercase">
                 {copy.moreNotesTitle}
               </h2>

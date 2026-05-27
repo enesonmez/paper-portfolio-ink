@@ -27,7 +27,7 @@ export function PublicBlogScreen({ nextCursor, posts }: PublicBlogScreenProps) {
       {posts.length > 0 ? (
         <PublicBlogFeed initialNextCursor={nextCursor} initialPosts={posts} />
       ) : (
-        <section className="bg-card grid min-h-96 content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+        <section className="bg-card grid min-h-96 content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8">
           <p className="text-muted-foreground text-sm tracking-[0.08em] uppercase">
             {copy.archiveEyebrow}
           </p>

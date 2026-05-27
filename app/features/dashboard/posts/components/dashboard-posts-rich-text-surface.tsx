@@ -328,8 +328,7 @@ export function DashboardPostsRichTextSurface({
       Image.configure({
         allowBase64: false,
         HTMLAttributes: {
-          class:
-            "h-auto max-w-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]",
+          class: "h-auto max-w-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ",
         },
       }),
       Placeholder.configure({

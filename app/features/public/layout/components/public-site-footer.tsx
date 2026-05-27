@@ -34,7 +34,7 @@ export function PublicSiteFooter() {
                 href={link.href}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noreferrer" : undefined}
-                className="bg-card inline-flex items-center gap-2 border-2 border-black px-3 py-2 text-[11px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+                className="bg-card inline-flex items-center gap-2 border-2 border-black px-3 py-2 text-[11px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5"
               >
                 {t(`public.layout.social.${link.key}`)}
                 <ArrowUpRight className="size-4" aria-hidden="true" />
@@ -49,7 +49,7 @@ export function PublicSiteFooter() {
           </p>
           <a
             href="#top"
-            className="bg-card inline-flex items-center gap-2 self-start border-2 border-black px-3 py-2 text-[11px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+            className="bg-card inline-flex items-center gap-2 self-start border-2 border-black px-3 py-2 text-[11px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform hover:-translate-y-0.5"
           >
             <ArrowUpToLine className="size-4" aria-hidden="true" />
             {copy.footerCta}

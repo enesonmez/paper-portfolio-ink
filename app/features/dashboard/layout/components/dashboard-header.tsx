@@ -25,7 +25,7 @@ export function DashboardHeader({
             type="button"
             aria-label={copy.menuOpenAriaLabel}
             aria-expanded={isSidebarOpen}
-            className="bg-primary flex size-11 items-center justify-center border-2 border-black text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:hidden dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+            className="bg-primary flex size-11 items-center justify-center border-2 border-black text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:hidden"
             onClick={onToggleSidebar}
           >
             <Menu className="size-5" aria-hidden="true" />
@@ -51,7 +51,7 @@ export function DashboardHeader({
               {user.role} {copy.roleAccessSuffix}
             </p>
           </div>
-          <div className="bg-primary flex size-12 items-center justify-center border-2 border-black font-sans text-sm font-bold text-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+          <div className="bg-primary flex size-12 items-center justify-center border-2 border-black font-sans text-sm font-bold text-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             {user.initials}
           </div>
         </div>

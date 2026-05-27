@@ -35,7 +35,7 @@ export function DashboardModal({
       />
       <section
         className={cn(
-          "bg-card relative z-10 w-full max-w-4xl border-2 border-black p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:p-6 dark:shadow-[6px_6px_0px_0px_rgba(250,204,21,1)]",
+          "bg-card relative z-10 w-full max-w-4xl border-2 border-black p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:p-6",
           "max-h-[calc(100vh-2rem)] overflow-y-auto md:max-h-[calc(100vh-4rem)]",
         )}
       >

@@ -51,7 +51,7 @@ test("updates an account configuration value from the settings modal", async ({
 
   await page.getByRole("link", { name: /Project name/i }).click();
   await expect(
-    page.getByRole("dialog", { name: "Account kaydini guncelle" }),
+    page.getByRole("dialog", { name: "Yapilandirma kaydini guncelle" }),
   ).toBeVisible();
 
   const input = page.getByLabel("Project name");

@@ -152,7 +152,7 @@ export function PublicBlogPostBody({ content }: { content: string }) {
   const hasRenderableContent = document.content.some((node) => hasRenderableNode(node));
 
   return (
-    <div className="bg-card grid gap-6 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+    <div className="bg-card grid gap-6 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8">
       <div
         className={[
           "text-foreground font-sans text-lg leading-8",

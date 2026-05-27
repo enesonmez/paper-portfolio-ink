@@ -1,5 +1,8 @@
 import {
   ACCOUNT_CONFIGURATION_KEY,
+  APPEARANCE_BODY_FONTS,
+  APPEARANCE_HEADING_FONTS,
+  APPEARANCE_PRIMARY_COLORS,
   type AccountConfigurationKey,
 } from "~/domain/configuration/model";
 import { useT } from "~/shared/i18n/i18n-react";
@@ -44,7 +47,7 @@ export interface DashboardSettingsTabContent {
 export interface DashboardSettingsAccountCard {
   description: string;
   eyebrow: string;
-  section: "identity" | "presence";
+  section: "identity" | "presence" | "appearance";
   title: string;
 }
 
@@ -120,6 +123,18 @@ function buildDashboardSettingsAccountFieldCopy(
     [ACCOUNT_CONFIGURATION_KEY.socialX]: {
       hint: t("dashboard.settings.account.field.social.x.hint"),
       label: t("dashboard.settings.account.field.social.x.label"),
+    },
+    [ACCOUNT_CONFIGURATION_KEY.appearancePrimaryColor]: {
+      hint: t("dashboard.settings.appearance.field.primaryColor.hint"),
+      label: t("dashboard.settings.appearance.field.primaryColor.label"),
+    },
+    [ACCOUNT_CONFIGURATION_KEY.appearanceHeadingFont]: {
+      hint: t("dashboard.settings.appearance.field.headingFont.hint"),
+      label: t("dashboard.settings.appearance.field.headingFont.label"),
+    },
+    [ACCOUNT_CONFIGURATION_KEY.appearanceBodyFont]: {
+      hint: t("dashboard.settings.appearance.field.bodyFont.hint"),
+      label: t("dashboard.settings.appearance.field.bodyFont.label"),
     },
   };
 }
@@ -345,16 +360,30 @@ function buildDashboardSettingsAccountCards(
   ] as const;
 }
 
+function buildDashboardSettingsAppearanceCards(
+  t: I18nTranslator,
+): readonly DashboardSettingsAccountCard[] {
+  return [
+    {
+      description: t("dashboard.settings.appearance.cardChromeDescription"),
+      eyebrow: t("dashboard.settings.appearance.cardChromeEyebrow"),
+      section: "appearance",
+      title: t("dashboard.settings.appearance.cardChromeTitle"),
+    },
+  ] as const;
+}
+
 export function useDashboardSettingsCopy() {
   const t = useT();
 
   return {
-    accountActionLabel: t("dashboard.settings.account.actionLabel"),
+    configurationActionLabel: t("dashboard.settings.configuration.actionLabel"),
     accountCards: buildDashboardSettingsAccountCards(t),
-    accountEditDescription: t("dashboard.settings.account.editDescription"),
-    accountEditTitle: t("dashboard.settings.account.editTitle"),
+    appearanceCards: buildDashboardSettingsAppearanceCards(t),
+    configurationEditDescription: t("dashboard.settings.configuration.editDescription"),
+    configurationEditTitle: t("dashboard.settings.configuration.editTitle"),
     accountFields: buildDashboardSettingsAccountFieldCopy(t),
-    accountValueFallback: t("dashboard.settings.account.valueFallback"),
+    configurationValueFallback: t("dashboard.settings.configuration.valueFallback"),
     content: buildDashboardSettingsContent(t),
     currentRoleLabel: t("dashboard.settings.currentRoleLabel"),
     pageDescription: t("dashboard.settings.pageDescription"),
@@ -363,5 +392,63 @@ export function useDashboardSettingsCopy() {
     restrictedDescription: t("dashboard.settings.restrictedDescription"),
     restrictedTitle: t("dashboard.settings.restrictedTitle"),
     tabs: buildDashboardSettingsTabs(t),
+    appearanceColorOptions: [
+      {
+        value: APPEARANCE_PRIMARY_COLORS.yellow,
+        label: t("dashboard.settings.appearance.color.yellow"),
+      },
+      {
+        value: APPEARANCE_PRIMARY_COLORS.orange,
+        label: t("dashboard.settings.appearance.color.orange"),
+      },
+      {
+        value: APPEARANCE_PRIMARY_COLORS.green,
+        label: t("dashboard.settings.appearance.color.green"),
+      },
+      {
+        value: APPEARANCE_PRIMARY_COLORS.cyan,
+        label: t("dashboard.settings.appearance.color.cyan"),
+      },
+      {
+        value: APPEARANCE_PRIMARY_COLORS.red,
+        label: t("dashboard.settings.appearance.color.red"),
+      },
+    ],
+    appearanceHeadingFontOptions: [
+      {
+        value: APPEARANCE_HEADING_FONTS.vt323,
+        label: t("dashboard.settings.appearance.font.heading.vt323"),
+      },
+      {
+        value: APPEARANCE_HEADING_FONTS.outfit,
+        label: t("dashboard.settings.appearance.font.heading.outfit"),
+      },
+      {
+        value: APPEARANCE_HEADING_FONTS.sans,
+        label: t("dashboard.settings.appearance.font.heading.sans"),
+      },
+      {
+        value: APPEARANCE_HEADING_FONTS.serif,
+        label: t("dashboard.settings.appearance.font.heading.serif"),
+      },
+    ],
+    appearanceBodyFontOptions: [
+      {
+        value: APPEARANCE_BODY_FONTS.mono,
+        label: t("dashboard.settings.appearance.font.body.mono"),
+      },
+      {
+        value: APPEARANCE_BODY_FONTS.inter,
+        label: t("dashboard.settings.appearance.font.body.inter"),
+      },
+      {
+        value: APPEARANCE_BODY_FONTS.sans,
+        label: t("dashboard.settings.appearance.font.body.sans"),
+      },
+      {
+        value: APPEARANCE_BODY_FONTS.serif,
+        label: t("dashboard.settings.appearance.font.body.serif"),
+      },
+    ],
   };
 }

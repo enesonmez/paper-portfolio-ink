@@ -198,7 +198,8 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Vitest entegrasyon testlerinde yetkisiz giriş senaryolarını test ederken, varsayılan rol tanımlarından (örneğin varsayılan claim'lere sahip `author` rolü) kaynaklanan beklenmedik geçişleri önlemek için aktörün `role: "guest"` gibi tamamen claimsiz bir rolle mock'lanması gerekir.
 - Sıkı biçimlendirme kurallarına (örneğin "Yorum satırı ekleme" kısıtı) uyum sağlamak için, kod dosyaları commit edilmeden önce tüm inline (`//`), blok (`/* */`) ve JSX (`{/* */}`) yorumlarının temizlendiğinden emin olunmalıdır.
 - Playwright E2E testlerinde modal kapatma gibi genel eylemleri tetiklerken, başlık alanındaki çıkış yap gibi diğer butonlarla çakışma yaşanmaması için `asChild` ile linke dönüştürülmüş modal kapatma tetikleyicilerinin exact tag ve name eşleşmeleriyle spesifikleştirilmesi gerekir.
-
+- Ortak kullanılan dashboard yapılandırma modallarında (örneğin hem hesap hem görünüm için paylaşılan `configuration-modal.tsx`), dil anahtarları (`translations` tablosundaki key'ler) ve `copy.ts` alanlarının tab bazlı özel kelimeler (örneğin `.account.`) yerine generik isimlendirmelerle (`.configuration.`) tasarlanması; hem veri akışını sadeleştirir hem de gelecekte eklenecek yeni ayar gruplarının sıfır kod eforuyla aynı şablonu yeniden kullanabilmesini sağlar.
+- Yerelleştirme anahtarları güncellendiğinde veya silindiğinde, hem `messages.shared.ts` dosyasındaki statik seed değerleri güncellenmeli hem de veritabanının güncel kalması için eski anahtarları temizleyip yenilerini ekleyen bir veritabanı migrasyonu (`0033_generic_configuration_translations.sql` gibi) yazılmalıdır; aksi halde entegrasyon ve E2E testleri eski çeviri değerlerini bulamayarak hata verebilir.
 
 ## 8. What To Preserve Going Forward
 

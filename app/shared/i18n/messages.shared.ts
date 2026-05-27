@@ -256,7 +256,7 @@ const tr = {
   "dashboard.authz.forbiddenError": "Bu islemi gerceklestirme yetkiniz bulunmuyor.",
   "dashboard.authz.restrictedDescription": "Bu alani goruntuleme yetkiniz bulunmuyor.",
   "dashboard.authz.restrictedTitle": "Erisim reddedildi",
-  "dashboard.settings.account.actionLabel": "Kaydi duzenle",
+  "dashboard.settings.configuration.actionLabel": "Kaydi duzenle",
   "dashboard.settings.account.cardIdentityDescription":
     "Proje cekirdegi ve iletisim kanali cache-backed configuration parameter kayitlarindan okunur.",
   "dashboard.settings.account.cardIdentityEyebrow": "Kimlik kayitlari",
@@ -270,9 +270,9 @@ const tr = {
   "dashboard.settings.account.checklistTitle": "Isletim notlari",
   "dashboard.settings.account.description":
     "Email, sosyal linkler ve proje kimligini list-first yuzeyde tutan account registry.",
-  "dashboard.settings.account.editDescription":
+  "dashboard.settings.configuration.editDescription":
     "Secili configuration parameter degerini guncelle. Kayit D1'e yazilir ve configuration cache temizlenir.",
-  "dashboard.settings.account.editTitle": "Account kaydini guncelle",
+  "dashboard.settings.configuration.editTitle": "Yapilandirma kaydini guncelle",
   "dashboard.settings.account.eyebrow": "Hesap katmani",
   "dashboard.settings.account.field.contact.email.hint":
     "Public iletisim ve admin kimlik rotalari icin birincil e-posta.",
@@ -295,8 +295,32 @@ const tr = {
   "dashboard.settings.account.field.social.x.hint":
     "Kisa guncellemeler ve dagitim kanali. Bos birakilirsa public yuzeyde gosterilmez.",
   "dashboard.settings.account.field.social.x.label": "X",
+  "dashboard.settings.appearance.field.primaryColor.label": "Renk paleti",
+  "dashboard.settings.appearance.field.primaryColor.hint":
+    "Tema birincil vurgu rengini secin",
+  "dashboard.settings.appearance.field.headingFont.label": "Baslik yazi tipi",
+  "dashboard.settings.appearance.field.headingFont.hint":
+    "Neo-brutalist baslik font stilini ayarlayin",
+  "dashboard.settings.appearance.field.bodyFont.label": "Govde yazi tipi",
+  "dashboard.settings.appearance.field.bodyFont.hint":
+    "Govde metinleri ve kod bloklari fontunu secin",
+  "dashboard.settings.appearance.color.yellow": "Sarı / Yellow (Default - #facc15)",
+  "dashboard.settings.appearance.color.orange": "Turuncu / Orange (#f97316)",
+  "dashboard.settings.appearance.color.green": "Yeşil / Green (#22c55e)",
+  "dashboard.settings.appearance.color.cyan": "Mavi / Cyan (#06b6d4)",
+  "dashboard.settings.appearance.color.red": "Kırmızı / Red (#ef4444)",
+  "dashboard.settings.appearance.font.heading.vt323": "VT323 (Default)",
+  "dashboard.settings.appearance.font.heading.outfit": "Outfit",
+  "dashboard.settings.appearance.font.heading.sans":
+    "Sistem Sans-Serif / System Sans-Serif",
+  "dashboard.settings.appearance.font.heading.serif": "Sistem Serif / System Serif",
+  "dashboard.settings.appearance.font.body.mono": "JetBrains Mono (Default)",
+  "dashboard.settings.appearance.font.body.inter": "Inter",
+  "dashboard.settings.appearance.font.body.sans":
+    "Sistem Sans-Serif / System Sans-Serif",
+  "dashboard.settings.appearance.font.body.serif": "Sistem Serif / System Serif",
   "dashboard.settings.account.title": "Account tabi",
-  "dashboard.settings.account.valueFallback": "Henuz ayarlanmadi",
+  "dashboard.settings.configuration.valueFallback": "Henuz ayarlanmadi",
   "dashboard.settings.appearance.cardChromeDescription":
     "Dashboard kabugundeki grid, panel ve focus state tercihleri ayni retro comic dilinde hizalanir.",
   "dashboard.settings.appearance.cardChromeEyebrow": "Yuzey dili",
@@ -911,6 +935,12 @@ const tr = {
   "validation.settings.projectName.max": "Proje adi en fazla 80 karakter olabilir.",
   "validation.settings.projectName.min": "Proje adi en az 2 karakter olmali.",
   "validation.settings.url": "Gecerli bir URL gir.",
+  "validation.settings.appearance.primaryColor":
+    "Lutfen gecerli bir renk paleti secin (Sari, Turuncu, Yesil, Mavi, Kirmizi).",
+  "validation.settings.appearance.headingFont":
+    "Lutfen gecerli bir baslik yazi tipi secin.",
+  "validation.settings.appearance.bodyFont":
+    "Lutfen gecerli bir govde yazi tipi secin.",
   "validation.user.avatarUrl": "Gecerli bir avatar URL gir.",
   "validation.user.bio.max": "Biyografi en fazla 500 karakter olabilir.",
   "validation.user.displayName.min": "Gorunen ad en az 2 karakter olmali.",
@@ -1189,7 +1219,7 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.authz.restrictedDescription":
     "You do not have permission to view this area.",
   "dashboard.authz.restrictedTitle": "Access denied",
-  "dashboard.settings.account.actionLabel": "Edit record",
+  "dashboard.settings.configuration.actionLabel": "Edit record",
   "dashboard.settings.account.cardIdentityDescription":
     "Project core and contact channels read from cache-backed configuration parameters.",
   "dashboard.settings.account.cardIdentityEyebrow": "Identity registry",
@@ -1203,9 +1233,9 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.settings.account.checklistTitle": "Operating notes",
   "dashboard.settings.account.description":
     "An account registry that keeps email, social links, and project identity in a list-first surface.",
-  "dashboard.settings.account.editDescription":
+  "dashboard.settings.configuration.editDescription":
     "Update the selected configuration parameter. The value is written to D1 and the configuration cache is purged.",
-  "dashboard.settings.account.editTitle": "Update account record",
+  "dashboard.settings.configuration.editTitle": "Update configuration record",
   "dashboard.settings.account.eyebrow": "Account layer",
   "dashboard.settings.account.field.contact.email.hint":
     "Primary email used for public contact and admin identity flows.",
@@ -1228,8 +1258,32 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.settings.account.field.social.x.hint":
     "Short updates and distribution channel. Leave empty to hide it on the public site.",
   "dashboard.settings.account.field.social.x.label": "X",
+  "dashboard.settings.appearance.field.primaryColor.label": "Color palette",
+  "dashboard.settings.appearance.field.primaryColor.hint":
+    "Choose the primary theme accent color",
+  "dashboard.settings.appearance.field.headingFont.label": "Heading font",
+  "dashboard.settings.appearance.field.headingFont.hint":
+    "Configure the neo-brutalist heading typography style",
+  "dashboard.settings.appearance.field.bodyFont.label": "Body font",
+  "dashboard.settings.appearance.field.bodyFont.hint":
+    "Select the body copy and code blocks font",
+  "dashboard.settings.appearance.color.yellow": "Sarı / Yellow (Default - #facc15)",
+  "dashboard.settings.appearance.color.orange": "Turuncu / Orange (#f97316)",
+  "dashboard.settings.appearance.color.green": "Yeşil / Green (#22c55e)",
+  "dashboard.settings.appearance.color.cyan": "Mavi / Cyan (#06b6d4)",
+  "dashboard.settings.appearance.color.red": "Kırmızı / Red (#ef4444)",
+  "dashboard.settings.appearance.font.heading.vt323": "VT323 (Default)",
+  "dashboard.settings.appearance.font.heading.outfit": "Outfit",
+  "dashboard.settings.appearance.font.heading.sans":
+    "Sistem Sans-Serif / System Sans-Serif",
+  "dashboard.settings.appearance.font.heading.serif": "Sistem Serif / System Serif",
+  "dashboard.settings.appearance.font.body.mono": "JetBrains Mono (Default)",
+  "dashboard.settings.appearance.font.body.inter": "Inter",
+  "dashboard.settings.appearance.font.body.sans":
+    "Sistem Sans-Serif / System Sans-Serif",
+  "dashboard.settings.appearance.font.body.serif": "Sistem Serif / System Serif",
   "dashboard.settings.account.title": "Account tab",
-  "dashboard.settings.account.valueFallback": "Not configured yet",
+  "dashboard.settings.configuration.valueFallback": "Not configured yet",
   "dashboard.settings.appearance.cardChromeDescription":
     "Grid, panel, and focus-state decisions stay aligned to the same retro comic dashboard language.",
   "dashboard.settings.appearance.cardChromeEyebrow": "Surface language",
@@ -1860,6 +1914,10 @@ const en: Record<keyof typeof tr, string> = {
   "validation.settings.projectName.max": "Project name can be at most 80 characters.",
   "validation.settings.projectName.min": "Project name must be at least 2 characters.",
   "validation.settings.url": "Enter a valid URL.",
+  "validation.settings.appearance.primaryColor":
+    "Please select a valid color palette (Yellow, Orange, Green, Cyan, Red).",
+  "validation.settings.appearance.headingFont": "Please select a valid heading font.",
+  "validation.settings.appearance.bodyFont": "Please select a valid body font.",
   "validation.user.avatarUrl": "Enter a valid avatar URL.",
   "validation.user.bio.max": "Bio can be at most 500 characters.",
   "validation.user.displayName.min": "Display name must be at least 2 characters.",
