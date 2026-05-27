@@ -113,7 +113,7 @@ export function DashboardUsersAuthorizationModalView({
             </p>
           </div>
 
-          <div className="max-h-[24rem] space-y-3 overflow-y-auto pr-1">
+          <div className="max-h-96 space-y-3 overflow-y-auto pr-1">
             {form.claims.map((claim) => {
               const nextIntent = claim.isEffective
                 ? USER_MUTATION_INTENT.revokeClaim

@@ -18,6 +18,11 @@ import { runLoaderWithErrorHandling } from "~/shared/errors/route-error-handling
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
 import { createTranslator, getSeedMessages } from "~/shared/i18n/i18n.shared";
 import { loadAccountConfigurationParameters } from "~/lib/configuration/configuration.server";
+import {
+  APPEARANCE_BODY_FONTS,
+  APPEARANCE_HEADING_FONTS,
+  APPEARANCE_PRIMARY_COLORS,
+} from "~/domain/configuration/model";
 import { isPublicPathname } from "~/features/public/layout/routing";
 import { PUBLIC_THEME } from "~/features/public/layout/theme";
 import { PublicSiteLayout } from "~/features/public/layout/layout";
@@ -58,10 +63,85 @@ export function links() {
   ];
 }
 
+function buildAppearanceStyleOverrides(configuration?: Record<string, string>) {
+  if (!configuration) {
+    return "";
+  }
+
+  const primaryColor =
+    configuration["appearance.primaryColor"] || APPEARANCE_PRIMARY_COLORS.yellow;
+  const headingFont =
+    configuration["appearance.headingFont"] || APPEARANCE_HEADING_FONTS.vt323;
+  const bodyFont = configuration["appearance.bodyFont"] || APPEARANCE_BODY_FONTS.mono;
+
+  let primaryHex = "#facc15";
+  let ringLight = "#dc2626";
+  let ringDark = "#facc15";
+
+  if (primaryColor === APPEARANCE_PRIMARY_COLORS.orange) {
+    primaryHex = "#f97316";
+    ringLight = "#ea580c";
+    ringDark = "#f97316";
+  } else if (primaryColor === APPEARANCE_PRIMARY_COLORS.green) {
+    primaryHex = "#22c55e";
+    ringLight = "#16a34a";
+    ringDark = "#22c55e";
+  } else if (primaryColor === APPEARANCE_PRIMARY_COLORS.cyan) {
+    primaryHex = "#06b6d4";
+    ringLight = "#0891b2";
+    ringDark = "#06b6d4";
+  } else if (primaryColor === APPEARANCE_PRIMARY_COLORS.red) {
+    primaryHex = "#ef4444";
+    ringLight = "#dc2626";
+    ringDark = "#ef4444";
+  }
+
+  let fontImports = "";
+  let headingFamily = '"VT323", monospace';
+  let bodyFamily = '"JetBrains Mono", monospace';
+
+  if (headingFont === APPEARANCE_HEADING_FONTS.outfit) {
+    fontImports +=
+      "@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');\n";
+    headingFamily = '"Outfit", system-ui, sans-serif';
+  } else if (headingFont === APPEARANCE_HEADING_FONTS.sans) {
+    headingFamily = "system-ui, sans-serif";
+  } else if (headingFont === APPEARANCE_HEADING_FONTS.serif) {
+    headingFamily = "Georgia, serif";
+  }
+
+  if (bodyFont === APPEARANCE_BODY_FONTS.inter) {
+    fontImports +=
+      "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');\n";
+    bodyFamily = '"Inter", system-ui, sans-serif';
+  } else if (bodyFont === APPEARANCE_BODY_FONTS.sans) {
+    bodyFamily = "system-ui, sans-serif";
+  } else if (bodyFont === APPEARANCE_BODY_FONTS.serif) {
+    bodyFamily = "Georgia, serif";
+  }
+
+  return `
+    ${fontImports}
+    :root {
+      --primary: ${primaryHex};
+      --accent: ${primaryHex};
+      --ring: ${ringLight};
+      --font-sans: ${bodyFamily};
+      --font-display: ${headingFamily};
+    }
+    .dark {
+      --primary: ${primaryHex};
+      --accent: ${primaryHex};
+      --ring: ${ringDark};
+    }
+  `;
+}
+
 export function Layout({ children }: { children: ReactNode }) {
   const data = useRouteLoaderData<typeof loader>("root");
   const theme = data?.theme ?? PUBLIC_THEME.light;
   const locale = data?.locale ?? "tr";
+  const appearanceStyles = buildAppearanceStyleOverrides(data?.configuration);
 
   return (
     <html lang={locale} className={theme} suppressHydrationWarning>
@@ -70,6 +150,9 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        {appearanceStyles ? (
+          <style dangerouslySetInnerHTML={{ __html: appearanceStyles }} />
+        ) : null}
       </head>
       <body
         className="selection:bg-primary selection:text-primary-foreground"
@@ -109,7 +192,7 @@ export function ErrorBoundary() {
 
   return (
     <main className="mx-auto grid min-h-screen max-w-4xl px-4 py-8 md:px-6 lg:py-16">
-      <section className="bg-card grid gap-4 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+      <section className="bg-card grid gap-4 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8">
         <p className="text-muted-foreground text-sm tracking-[0.08em] uppercase">
           {t("root.error.eyebrow")}
         </p>

@@ -14,7 +14,7 @@ export function LoginFormCard({ errors, isSubmitting, values }: LoginFormCardPro
   const copy = useLoginCopy();
 
   return (
-    <div className="dark:border-primary w-full max-w-md border-2 border-black bg-white p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:bg-stone-900 dark:shadow-[6px_6px_0px_0px_rgba(250,204,21,1)]">
+    <div className="dark:border-primary w-full max-w-md border-2 border-black bg-white p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:bg-stone-900">
       <div className="mb-8">
         <p className="dark:border-primary dark:bg-primary mb-4 inline-flex border-2 border-black bg-black px-3 py-1 font-sans text-[10px] font-bold tracking-[0.28em] text-white uppercase dark:text-black">
           {copy.securityLevel}

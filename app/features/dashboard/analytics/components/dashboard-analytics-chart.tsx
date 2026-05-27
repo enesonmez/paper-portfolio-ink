@@ -37,7 +37,7 @@ export function DashboardAnalyticsChart({
   const barCount = data.length;
 
   return (
-    <div className="border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-stone-800 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+    <div className="border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-stone-800">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b-2 border-black pb-4">
         <h3 className="font-display text-2xl tracking-wide text-stone-900 dark:text-stone-50">
           {isDaily

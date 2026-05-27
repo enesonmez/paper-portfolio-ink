@@ -111,7 +111,7 @@ export function ErrorBoundary() {
   if (isPublicBlogPostNotFoundError(error)) {
     return (
       <main className="mx-auto grid min-h-[70vh] max-w-4xl px-4 py-12 md:px-8 md:py-16">
-        <section className="bg-card grid content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+        <section className="bg-card grid content-center gap-5 border-2 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:p-8">
           <p className="text-muted-foreground text-sm tracking-[0.08em] uppercase">
             {t("public.blog.notFoundEyebrow")}
           </p>

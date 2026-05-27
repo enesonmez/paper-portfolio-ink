@@ -94,7 +94,7 @@ export function DashboardAnalyticsTable({
   ];
 
   return (
-    <div className="flex flex-col gap-4 border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-stone-800 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+    <div className="flex flex-col gap-4 border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-stone-800">
       <div className="overflow-x-auto">
         <DataTable
           columns={columns}

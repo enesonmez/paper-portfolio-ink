@@ -11,7 +11,7 @@ interface PublicBlogSidebarProps {
 
 function SidebarCard({ children, title }: { children: ReactNode; title: string }) {
   return (
-    <section className="bg-card grid gap-4 border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+    <section className="bg-card grid gap-4 border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       <h2 className="font-sans text-lg font-black uppercase">{title}</h2>
       {children}
     </section>

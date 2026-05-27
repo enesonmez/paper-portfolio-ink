@@ -141,7 +141,7 @@ export function DashboardPostsComposeView({
           </section>
 
           <aside className="mx-auto w-full max-w-3xl space-y-6">
-            <section className="bg-card border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-stone-800 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+            <section className="bg-card border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-stone-800">
               <p className="font-sans text-xs font-bold tracking-[0.18em] uppercase">
                 {t("dashboard.posts.setupTitle")}
               </p>
@@ -174,7 +174,7 @@ export function DashboardPostsComposeView({
               </div>
             </section>
 
-            <section className="bg-card border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-stone-800 dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+            <section className="bg-card border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:bg-stone-800">
               <p className="font-sans text-xs font-bold tracking-[0.18em] uppercase">
                 {t("dashboard.posts.flowTitle")}
               </p>

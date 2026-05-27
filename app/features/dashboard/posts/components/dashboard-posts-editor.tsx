@@ -50,8 +50,8 @@ export function DashboardPostsEditor({
         className={cn(
           "overflow-hidden border-2 border-black bg-white dark:bg-stone-800",
           variant === "fullscreen"
-            ? "min-h-[32rem] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(250,204,21,1)]"
-            : "min-h-[24rem] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]",
+            ? "min-h-128 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+            : "min-h-96 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
         )}
       >
         {isClient ? (

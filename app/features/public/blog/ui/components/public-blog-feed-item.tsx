@@ -70,7 +70,7 @@ export function PublicBlogFeedItem({
         aria-label={`${post.title} ${t("aria.publicBlog.cover")}`}
         className="group focus-visible:ring-destructive focus-visible:ring-offset-background block focus-visible:ring-4 focus-visible:ring-offset-4 focus-visible:outline-none"
       >
-        <div className="bg-muted overflow-hidden border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover:translate-x-1 group-hover:translate-y-1 group-hover:shadow-none dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]">
+        <div className="bg-muted overflow-hidden border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover:translate-x-1 group-hover:translate-y-1 group-hover:shadow-none">
           {post.coverImageUrl ? (
             <img
               src={post.coverImageUrl}

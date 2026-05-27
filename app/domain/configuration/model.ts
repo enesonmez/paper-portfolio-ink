@@ -1,3 +1,34 @@
+export const APPEARANCE_PRIMARY_COLORS = {
+  yellow: "yellow",
+  orange: "orange",
+  green: "green",
+  cyan: "cyan",
+  red: "red",
+} as const;
+
+export type AppearancePrimaryColor =
+  (typeof APPEARANCE_PRIMARY_COLORS)[keyof typeof APPEARANCE_PRIMARY_COLORS];
+
+export const APPEARANCE_HEADING_FONTS = {
+  vt323: "vt323",
+  outfit: "outfit",
+  sans: "sans",
+  serif: "serif",
+} as const;
+
+export type AppearanceHeadingFont =
+  (typeof APPEARANCE_HEADING_FONTS)[keyof typeof APPEARANCE_HEADING_FONTS];
+
+export const APPEARANCE_BODY_FONTS = {
+  mono: "mono",
+  inter: "inter",
+  sans: "sans",
+  serif: "serif",
+} as const;
+
+export type AppearanceBodyFont =
+  (typeof APPEARANCE_BODY_FONTS)[keyof typeof APPEARANCE_BODY_FONTS];
+
 export const ACCOUNT_CONFIGURATION_KEY = {
   contactEmail: "contact.email",
   projectDomainUrl: "site.domainUrl",
@@ -6,6 +37,9 @@ export const ACCOUNT_CONFIGURATION_KEY = {
   socialInstagram: "social.instagram",
   socialLinkedin: "social.linkedin",
   socialX: "social.x",
+  appearancePrimaryColor: "appearance.primaryColor",
+  appearanceHeadingFont: "appearance.headingFont",
+  appearanceBodyFont: "appearance.bodyFont",
 } as const;
 
 export type AccountConfigurationKey =
@@ -14,14 +48,15 @@ export type AccountConfigurationKey =
 export const ACCOUNT_CONFIGURATION_SECTION = {
   identity: "identity",
   presence: "presence",
+  appearance: "appearance",
 } as const;
 
 export type AccountConfigurationSection =
   (typeof ACCOUNT_CONFIGURATION_SECTION)[keyof typeof ACCOUNT_CONFIGURATION_SECTION];
 
 export const ACCOUNT_CONFIGURATION_VALUE_KIND = {
-  email: "email",
   text: "text",
+  email: "email",
   url: "url",
 } as const;
 
@@ -107,6 +142,30 @@ export const ACCOUNT_CONFIGURATION_DEFINITIONS = [
     publicLinkOrder: 40,
     section: ACCOUNT_CONFIGURATION_SECTION.presence,
     valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.url,
+  },
+  {
+    defaultValue: "yellow",
+    inputType: "text",
+    isRequired: true,
+    key: ACCOUNT_CONFIGURATION_KEY.appearancePrimaryColor,
+    section: ACCOUNT_CONFIGURATION_SECTION.appearance,
+    valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.text,
+  },
+  {
+    defaultValue: "vt323",
+    inputType: "text",
+    isRequired: true,
+    key: ACCOUNT_CONFIGURATION_KEY.appearanceHeadingFont,
+    section: ACCOUNT_CONFIGURATION_SECTION.appearance,
+    valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.text,
+  },
+  {
+    defaultValue: "mono",
+    inputType: "text",
+    isRequired: true,
+    key: ACCOUNT_CONFIGURATION_KEY.appearanceBodyFont,
+    section: ACCOUNT_CONFIGURATION_SECTION.appearance,
+    valueKind: ACCOUNT_CONFIGURATION_VALUE_KIND.text,
   },
 ] as const satisfies readonly AccountConfigurationDefinition[];
 

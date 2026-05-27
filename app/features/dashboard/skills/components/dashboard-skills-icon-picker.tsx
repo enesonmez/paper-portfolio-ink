@@ -37,7 +37,7 @@ export function DashboardSkillsIconPicker({
               className={cn(
                 "bg-card flex cursor-pointer gap-3 border-2 border-black p-3 transition-transform dark:bg-stone-800",
                 value === option.value
-                  ? "bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(250,204,21,1)]"
+                  ? "bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                   : "hover:translate-x-0.5 hover:translate-y-0.5",
                 error ? "border-destructive" : undefined,
               )}
