@@ -190,6 +190,15 @@ Bu dokuman, `docs/features` altindaki feature dokumanlari olusturulma sirasina g
 - Dashboard listeleri arttikca pagination footer'i slice icinde yeniden kurulmamalidir; `logging` ve `resources` gibi onceki ekranlar da ayni `DashboardPaginationState + DashboardPaginationControls` kontratina cekildiginde hizalama, disabled-state ve summary davranisi tek noktadan korunuyor.
 - Keyset pagination icin sadece composite index eklemek yetmez; `sortOrder` gibi artan alanlar ile `featured/active` gibi azalan alanlar birlikte kullaniliyorsa index kolon yonleri sorgudaki `ORDER BY` ile birebir hizalanmalidir, aksi halde SQLite temp sort'a geri duser.
 - Query string tabanli dashboard cursor'lari `JSON.parse as Type` ile kabul edilmemelidir; malformed cursor payload'lari sessiz `Invalid Date` veya bozuk karşılaştırma üretmemesi icin Zod ile parse edilip gecersiz durumda `null`'a dusurulmelidir.
+- SQLite/D1 ortaminda zaman bazli goruntulenme kirilimlari (gunluk/aylik) hesaplanirken, milisaniye cinsinden epoch degerleri 1000'e bolunerek strftime (`strftime('%Y-%m-%d', datetime(created_at / 1000, 'unixepoch'))`) fonksiyonuyla veritabanı seviyesinde gruplanabilir.
+- Agir grafik kutuphaneleri yerine neo-brutalist tasarimina tam uyumlu, 3D golgeli ve VT323 tipografili custom SVG bar/line chart'lar yazmak, bundle'i sismeden edge platform kisitlarina en uygun ve estetik cozumu uretir.
+- Detay modal tetiklemelerinde query-string tabanli state kontrolu (`?view=post-id`) kullanmak, loader orkestrasyonunu bozmadan server-side ownership/authorization denetimi yapmayi kolaylastirir ve filtre durumunu korur.
+- Analitik listelerinde `leftJoin` kullanarak veritabanı seviyesinde hic goruntulenmemis yazilari da sifir (0) degerleriyle listelemek, veri seffafligi ve admin paneli registry tutarliligi acisindan en dogru yaklasimdir.
+- SQLite/D1 üzerinde cursor-tabanlı keyset pagination yapısı kurgularken, alt-sorgular (CTE) üzerinden gelen dinamik aggregasyon değerlerine (örneğin left join ile hesaplanan `viewsCount`) göre sıralama ve filtreleme yaparken Drizzle dynamic query builder'ın `.$dynamic()` metodu kullanılmalıdır. Bu sayede tip güvenliği kaybolmadan dinamik `.where()` koşulları zincirlenebilir.
+- Vitest entegrasyon testlerinde yetkisiz giriş senaryolarını test ederken, varsayılan rol tanımlarından (örneğin varsayılan claim'lere sahip `author` rolü) kaynaklanan beklenmedik geçişleri önlemek için aktörün `role: "guest"` gibi tamamen claimsiz bir rolle mock'lanması gerekir.
+- Sıkı biçimlendirme kurallarına (örneğin "Yorum satırı ekleme" kısıtı) uyum sağlamak için, kod dosyaları commit edilmeden önce tüm inline (`//`), blok (`/* */`) ve JSX (`{/* */}`) yorumlarının temizlendiğinden emin olunmalıdır.
+- Playwright E2E testlerinde modal kapatma gibi genel eylemleri tetiklerken, başlık alanındaki çıkış yap gibi diğer butonlarla çakışma yaşanmaması için `asChild` ile linke dönüştürülmüş modal kapatma tetikleyicilerinin exact tag ve name eşleşmeleriyle spesifikleştirilmesi gerekir.
+
 
 ## 8. What To Preserve Going Forward
 

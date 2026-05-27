@@ -17,6 +17,7 @@ describe("dashboard navigation", () => {
       expect.arrayContaining([
         "/tr/dashboard",
         "/tr/dashboard/posts",
+        "/tr/dashboard/analytics",
         "/tr/dashboard/projects",
         "/tr/dashboard/resources",
         "/tr/dashboard/settings?tab=account",
@@ -32,7 +33,11 @@ describe("dashboard navigation", () => {
       .filter((item) => item.kind === "link")
       .map((item) => item.to);
 
-    expect(linkTargets).toEqual(["/en/dashboard", "/en/dashboard/posts"]);
-    expect(navigation).toHaveLength(2);
+    expect(linkTargets).toEqual([
+      "/en/dashboard",
+      "/en/dashboard/posts",
+      "/en/dashboard/analytics",
+    ]);
+    expect(navigation).toHaveLength(3);
   });
 });

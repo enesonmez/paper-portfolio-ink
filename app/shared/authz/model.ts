@@ -18,6 +18,8 @@ export const AUTHORIZATION_EFFECT = {
 export type AuthorizationEffect = ValueOf<typeof AUTHORIZATION_EFFECT>;
 
 export const AUTHORIZATION_CLAIM = {
+  analyticsReadAny: "analytics.read.any",
+  analyticsReadOwn: "analytics.read.own",
   dashboardAccess: "dashboard.access",
   logsAuditDelete: "logs.audit.delete",
   logsAuditExport: "logs.audit.export",
@@ -58,6 +60,8 @@ export const AUTHORIZATION_CLAIM = {
 export type AuthorizationClaim = ValueOf<typeof AUTHORIZATION_CLAIM>;
 
 export const AUTHORIZATION_CLAIM_VALUES = [
+  AUTHORIZATION_CLAIM.analyticsReadAny,
+  AUTHORIZATION_CLAIM.analyticsReadOwn,
   AUTHORIZATION_CLAIM.dashboardAccess,
   AUTHORIZATION_CLAIM.logsAuditRead,
   AUTHORIZATION_CLAIM.logsAuditExport,
@@ -105,6 +109,20 @@ export interface AuthorizationClaimDefinition {
 
 export const AUTHORIZATION_CLAIM_DEFINITIONS: readonly AuthorizationClaimDefinition[] =
   [
+    {
+      action: "read",
+      description: "Read only the viewer's own post analytics.",
+      key: AUTHORIZATION_CLAIM.analyticsReadOwn,
+      resource: "analytics",
+      scope: AUTHORIZATION_SCOPE.own,
+    },
+    {
+      action: "read",
+      description: "Read any post analytics.",
+      key: AUTHORIZATION_CLAIM.analyticsReadAny,
+      resource: "analytics",
+      scope: AUTHORIZATION_SCOPE.any,
+    },
     {
       action: "access",
       description: "Allow entering the dashboard surface.",
@@ -360,6 +378,7 @@ export const DEFAULT_ROLE_CLAIMS: Record<UserRole, readonly AuthorizationClaim[]
     AUTHORIZATION_CLAIM.postsCreate,
     AUTHORIZATION_CLAIM.postsUpdateOwn,
     AUTHORIZATION_CLAIM.postsDeleteOwn,
+    AUTHORIZATION_CLAIM.analyticsReadOwn,
   ],
 };
 

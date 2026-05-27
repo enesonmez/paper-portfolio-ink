@@ -43,6 +43,7 @@ export type AppErrorResource =
 export const APP_ROUTE_ID = {
   authLogin: "auth.login",
   authLogout: "auth.logout",
+  dashboardAnalytics: "dashboard.analytics",
   dashboardLayout: "dashboard.layout",
   dashboardLogging: "dashboard.logging",
   dashboardPosts: "dashboard.posts",
@@ -81,6 +82,9 @@ export const APP_ERROR_CODE = {
     },
   },
   analytics: {
+    read: {
+      forbidden: "analytics.read.forbidden",
+    },
     track: {
       invalidOrigin: "analytics.track.invalid_origin",
     },
