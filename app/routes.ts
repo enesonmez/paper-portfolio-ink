@@ -16,6 +16,7 @@ export default [
     route("blog/:slug", "./routes/public/blog/$slug.tsx"),
     route("dashboard", "./routes/dashboard/layout.tsx", [
       index("./routes/dashboard/index.tsx"),
+      route("analytics", "./routes/dashboard/analytics.tsx"),
       route("posts", "./routes/dashboard/posts.tsx"),
       route("projects", "./routes/dashboard/projects.tsx"),
       route("resources", "./routes/dashboard/resources/layout.tsx", [

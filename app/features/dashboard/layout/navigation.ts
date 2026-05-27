@@ -1,4 +1,5 @@
 import {
+  BarChart3,
   FolderKanban,
   Languages,
   LayoutDashboard,
@@ -73,6 +74,21 @@ export function getDashboardNavigation(
       label: t("dashboard.layout.navPosts"),
       statusLabel: t("dashboard.layout.navStatusLive"),
       to: buildLocalizedPath(locale, "/dashboard/posts"),
+    });
+  }
+
+  if (
+    hasAnyAuthorizationClaim(claims, [
+      AUTHORIZATION_CLAIM.analyticsReadAny,
+      AUTHORIZATION_CLAIM.analyticsReadOwn,
+    ])
+  ) {
+    baseNavigation.push({
+      icon: BarChart3,
+      kind: "link",
+      label: t("dashboard.layout.navAnalytics"),
+      statusLabel: t("dashboard.layout.navStatusLive"),
+      to: buildLocalizedPath(locale, "/dashboard/analytics"),
     });
   }
 
