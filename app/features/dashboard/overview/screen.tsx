@@ -150,7 +150,22 @@ export default function DashboardOverviewScreen({
 
       {analytics.enabled &&
         (analytics.dailyViews.length > 0 || analytics.monthlyViews.length > 0) && (
-          <section>
+          <section className="space-y-4">
+            <DashboardSectionHeading
+              eyebrow={t("dashboard.overview.analyticsEyebrow")}
+              title={t("dashboard.overview.analyticsTitle")}
+              action={
+                <Button
+                  asChild
+                  variant="secondary"
+                  className="w-full tracking-[0.14em] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none md:w-auto"
+                >
+                  <Link to={to("/dashboard/analytics")}>
+                    {t("dashboard.overview.viewAnalyticsActionLabel")}
+                  </Link>
+                </Button>
+              }
+            />
             <DashboardAnalyticsChart
               dailyData={analytics.dailyViews}
               monthlyData={analytics.monthlyViews}

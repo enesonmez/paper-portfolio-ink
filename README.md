@@ -21,6 +21,104 @@ Edge-first personal portfolio and technical blog built with React Router v7, Clo
 - D1-backed content management for posts, projects, skills, users, locales, and translations.
 - Operational logging, error logging, export tooling, and dashboard security hardening.
 - Full TypeScript, Zod validation, Vitest coverage, and Playwright end-to-end checks.
+- Dynamic dashboard overview with parallelized database count metrics, recent logs feed, and custom SVG traffic analytics.
+- Granular role and claim override management using interactive access modals in the user registry.
+- Custom HSL accent colors, typography selections, and site configuration parameters managed through settings.
+- Safe public blog post view tracking with timezone offset adjustments and a double-lock mechanism (24h cookie + 12h DB IP lock).
+- Performant keyset pagination and SpreadsheetML Excel workbook export downloads.
+
+## Technical Architecture
+
+The following diagram illustrates the edge-first server-first architecture connecting the Client, Cloudflare Workers Pages Runtime, and Cloudflare D1 SQLite Database:
+
+```mermaid
+graph TD
+    classDef main fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff;
+    classDef runtime fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    classDef db fill:#022c22,stroke:#34d399,stroke-width:2px,color:#fff;
+    classDef client fill:#31102f,stroke:#f472b6,stroke-width:2px,color:#fff;
+
+    subgraph Client ["Client Side (Browser)"]
+        A["Neo-Brutalist UI (React 19)"]:::client
+        B["Telemetry Beacon (navigator.sendBeacon)"]:::client
+    end
+
+    subgraph Edge ["Cloudflare Pages & Workers Runtime"]
+        C["React Router v7 Server-First Framework"]:::runtime
+        D["Better Auth Session Manager"]:::runtime
+        E["Claim-Aware Access Guard (withDashboardAccess)"]:::runtime
+    end
+
+    subgraph Database ["Data & Storage Layer"]
+        F["Drizzle ORM Query & Schema Engine"]:::db
+        G["Cloudflare D1 (SQLite) DB Context"]:::db
+    end
+
+    A <-->|"Localized SSR / Document Requests"| C
+    B -->|"Timezone-aware Beacon POST"| C
+    C <-->|"Session Verification"| D
+    C <-->|"Access Control & Overrides"| E
+    C <-->|"ORM Data Mappings"| F
+    F <-->|"Prepared SQLite Statements"| G
+
+    class A,B client;
+    class C,D,E runtime;
+    class F,G db;
+```
+
+## System Use Cases
+
+The role-based authorization model differentiates capabilities across Admin, Author, and Public Visitors:
+
+```mermaid
+graph LR
+    classDef role fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#fff;
+    classDef uc fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    classDef lock fill:#450a0a,stroke:#f87171,stroke-width:2px,color:#fff;
+
+    Admin["Admin User"]:::role
+    Author["Author User"]:::role
+    Visitor["Public Visitor"]:::role
+
+    subgraph AdminUC ["Admin Capabilities"]
+        A1["Global System Overview"]:::uc
+        A2["User Registry & Access Modals"]:::uc
+        A3["Locale & Translation CRUD"]:::uc
+        A4["System Audit & Error Logs"]:::uc
+        A5["Site Appearance & Identity Options"]:::uc
+    end
+
+    subgraph AuthorUC ["Author Capabilities"]
+        B1["Scoped Dashboard Overview"]:::uc
+        B2["Owned Posts CRUD"]:::uc
+        B3["Personal Activity Logs"]:::uc
+    end
+
+    subgraph VisitorUC ["Visitor Capabilities"]
+        C1["Read Localized Blog Posts"]:::uc
+        C2["Read Featured Projects"]:::uc
+        C3["Auto-Localized Home Routing"]:::uc
+        C4["Telemetry View Tracking"]:::uc
+    end
+
+    Admin --> A1
+    Admin --> A2
+    Admin --> A3
+    Admin --> A4
+    Admin --> A5
+
+    Author --> B1
+    Author --> B2
+    Author --> B3
+
+    Visitor --> C1
+    Visitor --> C2
+    Visitor --> C3
+    Visitor --> C4
+
+    class Admin,Author,Visitor role;
+    class A1,A2,A3,A4,A5,B1,B2,B3,C1,C2,C3,C4 uc;
+```
 
 ## Tech Stack
 
@@ -50,6 +148,7 @@ Edge-first personal portfolio and technical blog built with React Router v7, Clo
 - Blog index, feed, and post detail routes
 - Projects index and feed routes
 - Locale switching and theme persistence
+- Same-origin blog post view telemetry tracking with cookie and DB double-locks
 
 ### Admin Dashboard
 
@@ -57,6 +156,9 @@ Edge-first personal portfolio and technical blog built with React Router v7, Clo
 - Post, project, skill, and user management
 - Locale and translation management
 - Logging, export, and delete workflows for audit and error history
+- Granular role and claim override access modals in the user registry
+- Custom HSL accents, fonts, and account parameter configurations under Settings
+- Scoped post-performance analytics (views, scroll rates, time spent) and custom SVG trends charts
 
 ## Project Structure
 
