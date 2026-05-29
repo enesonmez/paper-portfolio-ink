@@ -45,6 +45,7 @@ export const APP_ROUTE_ID = {
   authLogout: "auth.logout",
   dashboardAnalytics: "dashboard.analytics",
   dashboardLayout: "dashboard.layout",
+  dashboardIndex: "dashboard.index",
   dashboardLogging: "dashboard.logging",
   dashboardPosts: "dashboard.posts",
   dashboardProjects: "dashboard.projects",
@@ -89,6 +90,11 @@ export const APP_ERROR_CODE = {
       invalidOrigin: "analytics.track.invalid_origin",
     },
     validation: "analytics.validation",
+  },
+  dashboard: {
+    read: {
+      forbidden: "dashboard.read.forbidden",
+    },
   },
   internal: {
     nonErrorThrow: "internal.non_error_throw",
