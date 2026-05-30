@@ -1,21 +1,17 @@
-import { redirect, type AppLoadContext } from "react-router";
+import type { AppLoadContext } from "react-router";
 
-import { getDbFromContext } from "../../../../db/context";
 import {
   buildAccountConfigurationFormValues,
   type AccountConfigurationFormState,
 } from "~/domain/configuration/form";
 import {
   ACCOUNT_CONFIGURATION_FORM_FIELD,
+  ACCOUNT_CONFIGURATION_MUTATION_INTENT,
   isAccountConfigurationMutationIntent,
 } from "~/domain/configuration/model";
 import {
-  purgeAccountConfigurationCache,
-  updateAccountConfigurationParameter,
-} from "~/lib/configuration/configuration.server";
-import { parseAccountConfigurationFormData } from "~/lib/configuration/configuration-form.server";
-import {
-  assertClaimAuthorized,
+  actorHasClaim,
+  assertAuthorized,
   buildForbiddenFormState,
   withDashboardAccess,
 } from "~/shared/authz/authz.server";
@@ -28,10 +24,12 @@ import {
 } from "~/shared/errors/contracts";
 import { readStringField } from "~/shared/forms/form-data.server";
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
-import { buildLocalizedPath, createTranslator } from "~/shared/i18n/i18n.shared";
-import { recordAuditLog } from "~/shared/logging/audit.server";
+import { createTranslator } from "~/shared/i18n/i18n.shared";
 
-import { buildDashboardSettingsHref } from "./state";
+import { handleRevokeSessionMutation } from "./operations/revoke-session.server";
+import { handleRevokeOtherSessionsMutation } from "./operations/revoke-other-sessions.server";
+import { handleRevokeAllSessionsMutation } from "./operations/revoke-all-sessions.server";
+import { handleUpdateAccountConfigurationMutation } from "./operations/update.server";
 
 function buildInvalidIntentFormState(message: string) {
   return {
@@ -69,62 +67,91 @@ export async function handleDashboardSettingsAction(
     });
   }
 
+  const isSecurityIntent =
+    intent === ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeSession ||
+    intent === ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeOtherSessions ||
+    intent === ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeAllSessions;
+
+  const errorAction = isSecurityIntent
+    ? APP_ERROR_ACTION.delete
+    : APP_ERROR_ACTION.update;
+
+  const errorCode = isSecurityIntent
+    ? APP_ERROR_CODE.settings.delete.forbidden
+    : APP_ERROR_CODE.settings.update.forbidden;
+
   return withDashboardAccess({
     request,
     context,
     authorize: ({ actor }) =>
-      assertClaimAuthorized<AccountConfigurationFormState>({
-        actor,
-        claim: AUTHORIZATION_CLAIM.settingsManage,
+      assertAuthorized({
+        isAllowed: isSecurityIntent
+          ? actorHasClaim(actor, AUTHORIZATION_CLAIM.settingsSecurityManageOwn) ||
+            actorHasClaim(actor, AUTHORIZATION_CLAIM.settingsSecurityManageAny)
+          : actorHasClaim(actor, AUTHORIZATION_CLAIM.settingsAccountManage),
         error: {
-          action: APP_ERROR_ACTION.update,
-          code: APP_ERROR_CODE.settings.update.forbidden,
+          action: errorAction,
+          code: errorCode,
           details: {
             intent,
-            requiredClaim: AUTHORIZATION_CLAIM.settingsManage,
           },
           message: "Settings mutation denied by authorization policy",
           resource: APP_ERROR_RESOURCE.settings,
-          responseData: buildForbiddenFormState(
-            t("dashboard.authz.forbiddenError"),
-            buildAccountConfigurationFormValues(),
-          ),
+          responseData: isSecurityIntent
+            ? undefined
+            : buildForbiddenFormState(
+                t("dashboard.authz.forbiddenError"),
+                buildAccountConfigurationFormValues(),
+              ),
           status: 403,
         },
       }),
-    handle: async () => {
-      const submission = parseAccountConfigurationFormData(formData, t);
-      const db = getDbFromContext(context);
+    handle: ({ actor }) => {
+      const mutationHandlers = {
+        [ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeSession]: () =>
+          handleRevokeSessionMutation({
+            actor,
+            context,
+            formData,
+            intent,
+            locale,
+            request,
+            supportedLocaleCodes,
+            t,
+          }),
+        [ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeOtherSessions]: () =>
+          handleRevokeOtherSessionsMutation({
+            actor,
+            context,
+            intent,
+            locale,
+            request,
+            supportedLocaleCodes,
+            t,
+          }),
+        [ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeAllSessions]: () =>
+          handleRevokeAllSessionsMutation({
+            actor,
+            context,
+            intent,
+            locale,
+            request,
+            supportedLocaleCodes,
+            t,
+          }),
+        [ACCOUNT_CONFIGURATION_MUTATION_INTENT.update]: () =>
+          handleUpdateAccountConfigurationMutation({
+            context,
+            formData,
+            intent,
+            locale,
+            request,
+            supportedLocaleCodes,
+            t,
+          }),
+      } as const;
 
-      await updateAccountConfigurationParameter(db, submission);
-      await purgeAccountConfigurationCache(context, request);
-      await recordAuditLog({
-        action: APP_ERROR_ACTION.update,
-        context,
-        details: {
-          intent,
-          key: submission.key,
-        },
-        message: "Account configuration updated",
-        request,
-        resource: APP_ERROR_RESOURCE.settings,
-        result: "success",
-        statusCode: 302,
-        targetId: submission.key,
-        targetLabel: submission.key,
-      });
-
-      const targetTab = submission.key.startsWith("appearance.")
-        ? "appearance"
-        : "account";
-
-      return redirect(
-        buildLocalizedPath(
-          locale,
-          buildDashboardSettingsHref(targetTab),
-          supportedLocaleCodes,
-        ),
-      );
+      return mutationHandlers[intent]();
     },
   });
 }

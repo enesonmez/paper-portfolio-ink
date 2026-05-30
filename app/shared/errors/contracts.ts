@@ -220,6 +220,9 @@ export const APP_ERROR_CODE = {
     },
   },
   settings: {
+    delete: {
+      forbidden: "settings.delete.forbidden",
+    },
     mutation: {
       invalidIntent: "settings.mutation.invalid_intent",
     },

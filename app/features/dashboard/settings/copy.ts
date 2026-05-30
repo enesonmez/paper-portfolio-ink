@@ -249,7 +249,7 @@ function buildDashboardSettingsContent(
             {
               hint: "Claim gate",
               label: "Page access",
-              value: "settings.manage",
+              value: "settings.security.manage.own/any",
             },
             {
               hint: "Route strategy",
@@ -392,6 +392,46 @@ export function useDashboardSettingsCopy() {
     restrictedDescription: t("dashboard.settings.restrictedDescription"),
     restrictedTitle: t("dashboard.settings.restrictedTitle"),
     tabs: buildDashboardSettingsTabs(t),
+    securityNoSessions: t("dashboard.settings.security.noSessions"),
+    securityCurrentSession: t("dashboard.settings.security.currentSession"),
+    securityRevokeSession: t("dashboard.settings.security.revokeSession"),
+    securityRevokeSessionConfirm: t("dashboard.settings.security.revokeSessionConfirm"),
+    securityIpAddress: t("dashboard.settings.security.ipAddress"),
+    securityUnknown: t("dashboard.settings.security.unknown"),
+    securityCreatedAt: t("dashboard.settings.security.createdAt"),
+    securityExpiresAt: t("dashboard.settings.security.expiresAt"),
+    securityUnknownDevice: t("dashboard.settings.security.unknownDevice"),
+    securityRevokeOtherSessionsTitle: t(
+      "dashboard.settings.security.revokeOtherSessionsTitle",
+    ),
+    securityRevokeOtherSessionsLabel: t(
+      "dashboard.settings.security.revokeOtherSessionsLabel",
+    ),
+    securityRevokeOtherSessionsDescription: t(
+      "dashboard.settings.security.revokeOtherSessionsDescription",
+    ),
+    securityRevokeOtherSessionsButton: t(
+      "dashboard.settings.security.revokeOtherSessionsButton",
+    ),
+    securityRevokeOtherSessionsConfirm: t(
+      "dashboard.settings.security.revokeOtherSessionsConfirm",
+    ),
+    securityRevokeAllSessionsTitle: t(
+      "dashboard.settings.security.revokeAllSessionsTitle",
+    ),
+    securityRevokeAllSessionsLabel: t(
+      "dashboard.settings.security.revokeAllSessionsLabel",
+    ),
+    securityRevokeAllSessionsDescription: t(
+      "dashboard.settings.security.revokeAllSessionsDescription",
+    ),
+    securityRevokeAllSessionsButton: t(
+      "dashboard.settings.security.revokeAllSessionsButton",
+    ),
+    securityRevokeAllSessionsConfirm: t(
+      "dashboard.settings.security.revokeAllSessionsConfirm",
+    ),
+    securityCancelLabel: t("dashboard.settings.security.cancelLabel"),
     appearanceColorOptions: [
       {
         value: APPEARANCE_PRIMARY_COLORS.yellow,

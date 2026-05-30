@@ -40,11 +40,28 @@ export interface DashboardSettingsAccountFormViewState {
   values: AccountConfigurationFormValues;
 }
 
+export interface DashboardSettingsSecuritySession {
+  id: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+  expiresAt: string;
+  createdAt: string;
+  isCurrent: boolean;
+  user: {
+    displayName: string;
+    email: string;
+    role: string;
+  };
+}
+
 export interface DashboardSettingsGrantedLoaderData {
   access: "granted";
   accountForm: DashboardSettingsAccountFormViewState;
   accountValues: Record<AccountConfigurationKey, string>;
   selectedTab: DashboardSettingsTab;
+  authorizedTabs: DashboardSettingsTab[];
+  hasSettingsSecurityManageAny?: boolean;
+  sessions?: DashboardSettingsSecuritySession[];
 }
 
 export interface DashboardSettingsDeniedLoaderData {

@@ -7,12 +7,18 @@ const {
   recordAuditLogMock,
   requireSessionMock,
   updateAccountConfigurationParameterMock,
+  deleteOtherSessionsMock,
+  deleteAllOtherSessionsMock,
+  getSessionForRequestMock,
 } = vi.hoisted(() => ({
   loadAccountConfigurationParametersMock: vi.fn(),
   purgeAccountConfigurationCacheMock: vi.fn(),
   recordAuditLogMock: vi.fn(),
   requireSessionMock: vi.fn(),
   updateAccountConfigurationParameterMock: vi.fn(),
+  deleteOtherSessionsMock: vi.fn(),
+  deleteAllOtherSessionsMock: vi.fn(),
+  getSessionForRequestMock: vi.fn(),
 }));
 
 vi.mock("~/lib/configuration/configuration.server", () => ({
@@ -24,6 +30,12 @@ vi.mock("~/lib/configuration/configuration.server", () => ({
 
 vi.mock("~/shared/auth/session.server", () => ({
   requireSession: requireSessionMock,
+  getSessionForRequest: getSessionForRequestMock,
+}));
+
+vi.mock("~/lib/configuration/sessions.server", () => ({
+  deleteOtherSessions: deleteOtherSessionsMock,
+  deleteAllOtherSessions: deleteAllOtherSessionsMock,
 }));
 
 vi.mock("~/shared/logging/audit.server", () => ({
@@ -42,6 +54,9 @@ describe("dashboard settings server", () => {
     recordAuditLogMock.mockReset();
     requireSessionMock.mockReset();
     updateAccountConfigurationParameterMock.mockReset();
+    deleteOtherSessionsMock.mockReset();
+    deleteAllOtherSessionsMock.mockReset();
+    getSessionForRequestMock.mockReset();
 
     loadAccountConfigurationParametersMock.mockResolvedValue({
       "contact.email": "admin@paper-portfolio-ink.dev",
@@ -126,7 +141,7 @@ describe("dashboard settings server", () => {
     });
   });
 
-  it("rejects non-admin sessions from the settings surface", async () => {
+  it("rejects sessions without any settings claim from the settings surface", async () => {
     const { loadDashboardSettingsData } =
       await import("~/features/dashboard/settings/server");
 
@@ -134,6 +149,7 @@ describe("dashboard settings server", () => {
       user: {
         id: "user-author",
         role: "author",
+        claims: ["dashboard.access", "posts.read.own"],
       },
     });
 
@@ -239,5 +255,152 @@ describe("dashboard settings server", () => {
       },
     );
     expect(updateAccountConfigurationParameterMock).not.toHaveBeenCalled();
+  });
+
+  it("revokes all other sessions for the current user", async () => {
+    const { handleDashboardSettingsAction } =
+      await import("~/features/dashboard/settings/server");
+
+    const request = new Request(
+      "http://localhost:3000/tr/dashboard/settings?tab=security",
+      {
+        body: new URLSearchParams({
+          intent: "revoke-other-sessions",
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+      },
+    );
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-author",
+        role: "author",
+        claims: ["dashboard.access", "settings.security.manage.own"],
+      },
+    });
+
+    getSessionForRequestMock.mockResolvedValue({
+      session: {
+        token: "current-token-123",
+      },
+    });
+
+    const response = await handleDashboardSettingsAction(context, request);
+
+    expect(response).toBeInstanceOf(Response);
+    expect(response.headers.get("Location")).toContain(
+      "/tr/dashboard/settings?tab=security",
+    );
+    expect(deleteOtherSessionsMock).toHaveBeenCalledWith(
+      context.db,
+      "user-author",
+      "current-token-123",
+    );
+    expect(recordAuditLogMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "delete",
+        resource: "settings",
+        targetId: "user-author",
+      }),
+    );
+  });
+
+  it("allows admin to revoke all active sessions across all users", async () => {
+    const { handleDashboardSettingsAction } =
+      await import("~/features/dashboard/settings/server");
+
+    const request = new Request(
+      "http://localhost:3000/tr/dashboard/settings?tab=security",
+      {
+        body: new URLSearchParams({
+          intent: "revoke-all-sessions",
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+      },
+    );
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-admin",
+        role: "admin",
+        claims: [
+          "dashboard.access",
+          "settings.security.manage.own",
+          "settings.security.manage.any",
+        ],
+      },
+    });
+
+    getSessionForRequestMock.mockResolvedValue({
+      session: {
+        token: "current-token-123",
+      },
+    });
+
+    const response = await handleDashboardSettingsAction(context, request);
+
+    expect(response).toBeInstanceOf(Response);
+    expect(response.headers.get("Location")).toContain(
+      "/tr/dashboard/settings?tab=security",
+    );
+    expect(deleteAllOtherSessionsMock).toHaveBeenCalledWith(
+      context.db,
+      "current-token-123",
+    );
+    expect(recordAuditLogMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "delete",
+        resource: "settings",
+        targetId: "user-admin",
+      }),
+    );
+  });
+
+  it("blocks non-admin users from revoking all active sessions", async () => {
+    const { handleDashboardSettingsAction } =
+      await import("~/features/dashboard/settings/server");
+
+    const request = new Request(
+      "http://localhost:3000/tr/dashboard/settings?tab=security",
+      {
+        body: new URLSearchParams({
+          intent: "revoke-all-sessions",
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+      },
+    );
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-author",
+        role: "author",
+        claims: ["dashboard.access", "settings.security.manage.own"],
+      },
+    });
+
+    getSessionForRequestMock.mockResolvedValue({
+      session: {
+        token: "current-token-123",
+      },
+    });
+
+    await expect(handleDashboardSettingsAction(context, request)).rejects.toMatchObject(
+      {
+        code: "settings.delete.forbidden",
+        status: 403,
+      },
+    );
+
+    expect(deleteAllOtherSessionsMock).not.toHaveBeenCalled();
+    expect(recordAuditLogMock).not.toHaveBeenCalled();
   });
 });

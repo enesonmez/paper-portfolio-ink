@@ -367,7 +367,7 @@ const tr = {
   "dashboard.settings.runtime.eyebrow": "Runtime katmani",
   "dashboard.settings.runtime.title": "Runtime tabi",
   "dashboard.settings.security.cardAccessDescription":
-    "Loader-first authz gate ve settings.manage claim'i mock tasarim icinde de acikca gorunur.",
+    "Loader-first authz gate ve settings.security.manage.own/any claim'leri mock tasarim icinde de acikca gorunur.",
   "dashboard.settings.security.cardAccessEyebrow": "Erisim cercevesi",
   "dashboard.settings.security.cardAccessTitle": "Yetki modeli",
   "dashboard.settings.security.cardSessionDescription":
@@ -381,6 +381,31 @@ const tr = {
     "Session, authz ve audit beklentilerini gercek kayit akislarindan once tanimlayan koruma tab'i.",
   "dashboard.settings.security.eyebrow": "Guvenlik katmani",
   "dashboard.settings.security.title": "Security tabi",
+  "dashboard.settings.security.noSessions": "Aktif oturum bulunamadı.",
+  "dashboard.settings.security.currentSession": "Mevcut Oturum",
+  "dashboard.settings.security.revokeSession": "Oturumu Sonlandır",
+  "dashboard.settings.security.revokeSessionConfirm":
+    "Bu aktif oturum sonlandırılacak. Bu cihazdaki kullanıcı hesaba tekrar giriş yapmak zorunda kalacaktır. Devam etmek istiyor musunuz?",
+  "dashboard.settings.security.ipAddress": "IP Adresi",
+  "dashboard.settings.security.unknown": "Bilinmeyen",
+  "dashboard.settings.security.createdAt": "Oluşturulma Tarihi",
+  "dashboard.settings.security.expiresAt": "Son Geçerlilik Tarihi",
+  "dashboard.settings.security.unknownDevice": "Bilinmeyen Cihaz",
+  "dashboard.settings.security.revokeOtherSessionsTitle": "Çoklu Oturum Güvenliği",
+  "dashboard.settings.security.revokeOtherSessionsLabel": "Diğer Oturumları Kapat",
+  "dashboard.settings.security.revokeOtherSessionsDescription":
+    "Şu an kullandığınız oturum hariç diğer tüm cihazlardaki oturumları sonlandırın.",
+  "dashboard.settings.security.revokeOtherSessionsButton": "Diğer Oturumları Sonlandır",
+  "dashboard.settings.security.revokeOtherSessionsConfirm":
+    "Diğer tüm oturumlar sonlandırılacak. Devam etmek istiyor musunuz?",
+  "dashboard.settings.security.revokeAllSessionsTitle": "Toplu Oturum Güvenliği",
+  "dashboard.settings.security.revokeAllSessionsLabel": "Tüm Oturumları Kapat",
+  "dashboard.settings.security.revokeAllSessionsDescription":
+    "Sistemdeki tüm kullanıcıların oturumlarını sonlandırın. Mevcut oturumunuz korunur.",
+  "dashboard.settings.security.revokeAllSessionsButton": "Tüm Oturumları Sonlandır",
+  "dashboard.settings.security.revokeAllSessionsConfirm":
+    "Sistemdeki tüm aktif oturumlar sonlandırılacak. Bu işlem geri alınamaz. Devam etmek istiyor musunuz?",
+  "dashboard.settings.security.cancelLabel": "İptal",
   "dashboard.settings.tab.account": "Account",
   "dashboard.settings.tab.appearance": "Appearance",
   "dashboard.settings.tab.runtime": "Runtime",
@@ -1339,7 +1364,7 @@ const en: Record<keyof typeof tr, string> = {
   "dashboard.settings.runtime.eyebrow": "Runtime layer",
   "dashboard.settings.runtime.title": "Runtime tab",
   "dashboard.settings.security.cardAccessDescription":
-    "The loader-first authz gate and settings.manage claim remain explicit even in the mock phase.",
+    "The loader-first authz gate and settings.security.manage.own/any claims remain explicit even in the mock phase.",
   "dashboard.settings.security.cardAccessEyebrow": "Access frame",
   "dashboard.settings.security.cardAccessTitle": "Authorization model",
   "dashboard.settings.security.cardSessionDescription":
@@ -1353,6 +1378,31 @@ const en: Record<keyof typeof tr, string> = {
     "A guard-rail tab that defines session, authz, and audit expectations before real persistence lands.",
   "dashboard.settings.security.eyebrow": "Security layer",
   "dashboard.settings.security.title": "Security tab",
+  "dashboard.settings.security.noSessions": "No active sessions found.",
+  "dashboard.settings.security.currentSession": "Current Session",
+  "dashboard.settings.security.revokeSession": "Revoke Session",
+  "dashboard.settings.security.revokeSessionConfirm":
+    "This active session will be revoked. The user on this device will have to log in to the account again. Do you want to continue?",
+  "dashboard.settings.security.ipAddress": "IP Address",
+  "dashboard.settings.security.unknown": "Unknown",
+  "dashboard.settings.security.createdAt": "Created At",
+  "dashboard.settings.security.expiresAt": "Expires At",
+  "dashboard.settings.security.unknownDevice": "Unknown Device",
+  "dashboard.settings.security.revokeOtherSessionsTitle": "Multi-Session Security",
+  "dashboard.settings.security.revokeOtherSessionsLabel": "Revoke Other Sessions",
+  "dashboard.settings.security.revokeOtherSessionsDescription":
+    "Revoke all active sessions on other devices except for your current session.",
+  "dashboard.settings.security.revokeOtherSessionsButton": "Revoke Other Sessions",
+  "dashboard.settings.security.revokeOtherSessionsConfirm":
+    "All other sessions will be revoked. Do you want to continue?",
+  "dashboard.settings.security.revokeAllSessionsTitle": "Bulk Session Security",
+  "dashboard.settings.security.revokeAllSessionsLabel": "Revoke All Sessions",
+  "dashboard.settings.security.revokeAllSessionsDescription":
+    "Revoke all active sessions across all users. Your current session will be preserved.",
+  "dashboard.settings.security.revokeAllSessionsButton": "Revoke All Sessions",
+  "dashboard.settings.security.revokeAllSessionsConfirm":
+    "All active sessions in the system will be revoked. This action cannot be undone. Do you want to continue?",
+  "dashboard.settings.security.cancelLabel": "Cancel",
   "dashboard.settings.tab.account": "Account",
   "dashboard.settings.tab.appearance": "Appearance",
   "dashboard.settings.tab.runtime": "Runtime",
