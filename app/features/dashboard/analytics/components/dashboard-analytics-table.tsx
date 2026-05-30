@@ -5,7 +5,10 @@ import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { Button } from "~/components/ui/button";
 import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
-import type { DashboardPaginationState } from "~/features/dashboard/shared/pagination";
+import {
+  DASHBOARD_PAGINATION_DIRECTION,
+  type DashboardPaginationState,
+} from "~/features/dashboard/shared/pagination";
 
 import {
   buildDashboardAnalyticsHref,
@@ -109,7 +112,7 @@ export function DashboardAnalyticsTable({
           pagination.hasNextPage && pagination.nextCursor
             ? buildDashboardAnalyticsHref({
                 cursor: pagination.nextCursor,
-                direction: "next",
+                direction: DASHBOARD_PAGINATION_DIRECTION.next,
                 search: filters.searchQuery,
               })
             : null
@@ -119,7 +122,7 @@ export function DashboardAnalyticsTable({
           pagination.hasPreviousPage && pagination.previousCursor
             ? buildDashboardAnalyticsHref({
                 cursor: pagination.previousCursor,
-                direction: "previous",
+                direction: DASHBOARD_PAGINATION_DIRECTION.previous,
                 search: filters.searchQuery,
               })
             : null

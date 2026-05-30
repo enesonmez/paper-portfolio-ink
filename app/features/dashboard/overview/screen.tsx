@@ -6,6 +6,8 @@ import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 import { DashboardAnalyticsChart } from "~/features/dashboard/analytics/components/dashboard-analytics-chart";
+import { POST_STATUS } from "~/domain/posts/model";
+import { LocalDateTime } from "~/components/ui/local-date-time";
 import { useDashboardOverviewCopy } from "./copy";
 
 export interface DashboardOverviewScreenProps {
@@ -101,9 +103,9 @@ export default function DashboardOverviewScreen({
       id: "status",
       render: (post) => {
         let statusToneClassName = "text-stone-500";
-        if (post.status === "published") {
+        if (post.status === POST_STATUS.published) {
           statusToneClassName = "text-green-600 dark:text-green-400";
-        } else if (post.status === "draft") {
+        } else if (post.status === POST_STATUS.draft) {
           statusToneClassName = "text-amber-600 dark:text-amber-400";
         }
         return (
@@ -243,7 +245,7 @@ export default function DashboardOverviewScreen({
                           {log.message}
                         </p>
                         <p className="text-muted-foreground mt-2 font-sans text-[10px] font-bold tracking-[0.18em] uppercase">
-                          {new Date(log.createdAt).toLocaleString()}
+                          <LocalDateTime value={new Date(log.createdAt)} />
                         </p>
                       </div>
                     </div>

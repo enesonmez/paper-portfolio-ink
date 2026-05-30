@@ -13,6 +13,7 @@ import type { ProjectOverview } from "~/lib/projects/projects.server";
 
 import { useDashboardProjectsCopy } from "./copy";
 import {
+  DASHBOARD_PROJECTS_MODAL,
   DASHBOARD_PROJECTS_QUERY_PARAM,
   buildDashboardProjectsHref,
   useDashboardProjectStatusFilterOptions,
@@ -87,7 +88,7 @@ export function DashboardProjectsScreen({
                   to={to(
                     buildDashboardProjectsHref({
                       ...listHrefState,
-                      modal: "create",
+                      modal: DASHBOARD_PROJECTS_MODAL.create,
                     }),
                   )}
                 >

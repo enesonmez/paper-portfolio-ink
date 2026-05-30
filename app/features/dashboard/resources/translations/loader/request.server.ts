@@ -6,6 +6,7 @@ import {
   normalizeDashboardResourcesSearchQuery,
   resolveDashboardResourcesTranslationLocale,
 } from "../../routing/href";
+import { DASHBOARD_PAGINATION_DIRECTION } from "../../../shared/pagination";
 
 export interface TranslationRequestState {
   cursor: string | null;
@@ -39,7 +40,7 @@ export function resolveTranslationViewStateFromUrl(args: {
   if (!args.canReadTranslations) {
     return {
       cursor: null,
-      direction: "next",
+      direction: DASHBOARD_PAGINATION_DIRECTION.next,
       editTranslationKey: null,
       editTranslationLocale: null,
       searchQuery: "",
@@ -54,9 +55,9 @@ export function resolveTranslationViewStateFromUrl(args: {
     direction:
       args.url.searchParams.get(
         DASHBOARD_RESOURCES_QUERY_PARAM.translationDirection,
-      ) === "previous"
-        ? "previous"
-        : "next",
+      ) === DASHBOARD_PAGINATION_DIRECTION.previous
+        ? DASHBOARD_PAGINATION_DIRECTION.previous
+        : DASHBOARD_PAGINATION_DIRECTION.next,
     editTranslationKey: args.url.searchParams.get(
       DASHBOARD_RESOURCES_QUERY_PARAM.editTranslationKey,
     ),

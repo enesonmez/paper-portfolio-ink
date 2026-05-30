@@ -54,6 +54,54 @@ export function parseDashboardAnalyticsCursor(
   }
 }
 
+function padDailyViews(
+  rawViews: { date: string; count: number }[],
+  baseTime: number = Date.now(),
+): ViewsDataPoint[] {
+  const dailyMap = new Map<string, number>();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(baseTime - i * 24 * 60 * 60 * 1000);
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(d.getUTCDate()).padStart(2, "0");
+    dailyMap.set(`${year}-${month}-${day}`, 0);
+  }
+  for (const item of rawViews) {
+    if (dailyMap.has(item.date)) {
+      dailyMap.set(item.date, item.count);
+    }
+  }
+  return Array.from(dailyMap.entries()).map(([date, count]) => ({
+    date,
+    count,
+  }));
+}
+
+function padMonthlyViews(
+  rawViews: { month: string; count: number }[],
+  baseTime: number = Date.now(),
+): MonthlyViewsDataPoint[] {
+  const monthlyMap = new Map<string, number>();
+  const current = new Date(baseTime);
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(baseTime);
+    d.setUTCDate(1);
+    d.setUTCMonth(current.getUTCMonth() - i);
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+    monthlyMap.set(`${year}-${month}`, 0);
+  }
+  for (const item of rawViews) {
+    if (monthlyMap.has(item.month)) {
+      monthlyMap.set(item.month, item.count);
+    }
+  }
+  return Array.from(monthlyMap.entries()).map(([month, count]) => ({
+    month,
+    count,
+  }));
+}
+
 export async function getPostAnalyticsDetails(
   db: AppDb,
   postId: string,
@@ -120,8 +168,8 @@ export async function getPostAnalyticsDetails(
 
   return {
     title: authorizedPost.title,
-    dailyViews,
-    monthlyViews,
+    dailyViews: padDailyViews(dailyViews),
+    monthlyViews: padMonthlyViews(monthlyViews),
   };
 }
 
@@ -158,7 +206,7 @@ export async function getOverallDailyViews(
   db: AppDb,
   actor: AuthorizationActor,
 ): Promise<ViewsDataPoint[]> {
-  return db
+  const result = await db
     .select({
       date: sql<string>`strftime('%Y-%m-%d', datetime(${viewHistory.createdAt} / 1000, 'unixepoch'))`,
       count: sql<number>`count(${viewHistory.id})`,
@@ -179,13 +227,15 @@ export async function getOverallDailyViews(
     .orderBy(
       sql`strftime('%Y-%m-%d', datetime(${viewHistory.createdAt} / 1000, 'unixepoch')) asc`,
     );
+
+  return padDailyViews(result);
 }
 
 export async function getOverallMonthlyViews(
   db: AppDb,
   actor: AuthorizationActor,
 ): Promise<MonthlyViewsDataPoint[]> {
-  return db
+  const result = await db
     .select({
       month: sql<string>`strftime('%Y-%m', datetime(${viewHistory.createdAt} / 1000, 'unixepoch'))`,
       count: sql<number>`count(${viewHistory.id})`,
@@ -206,6 +256,8 @@ export async function getOverallMonthlyViews(
     .orderBy(
       sql`strftime('%Y-%m', datetime(${viewHistory.createdAt} / 1000, 'unixepoch')) asc`,
     );
+
+  return padMonthlyViews(result);
 }
 
 export async function listPostsAnalyticsPage(

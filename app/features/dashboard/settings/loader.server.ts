@@ -67,7 +67,7 @@ export async function loadDashboardSettingsData(
       const authorizedTabs = (
         Object.keys(TAB_REQUIRED_CLAIM) as DashboardSettingsTab[]
       ).filter((t) => {
-        if (t === "security") {
+        if (t === DASHBOARD_SETTINGS_TAB.security) {
           return (
             actorHasClaim(actor, AUTHORIZATION_CLAIM.settingsSecurityManageOwn) ||
             actorHasClaim(actor, AUTHORIZATION_CLAIM.settingsSecurityManageAny)

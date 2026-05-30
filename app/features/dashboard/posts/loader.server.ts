@@ -53,7 +53,7 @@ export async function loadDashboardPostsData(
       }),
     handle: async ({ actor }) => {
       const url = new URL(request.url);
-      const editId = url.searchParams.get("edit");
+      const editId = url.searchParams.get(DASHBOARD_POSTS_QUERY_PARAM.edit);
       const viewState = buildDashboardPostsViewState(url);
       const [postPage, editablePost] = await Promise.all([
         listAuthorizedPosts(context, actor, {

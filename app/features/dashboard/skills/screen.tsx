@@ -13,6 +13,7 @@ import type { SkillOverview } from "~/lib/skills/skills.server";
 
 import { useDashboardSkillsCopy } from "./copy";
 import {
+  DASHBOARD_SKILLS_MODAL,
   DASHBOARD_SKILLS_QUERY_PARAM,
   buildDashboardSkillsHref,
   type DashboardSkillsFilters,
@@ -73,7 +74,7 @@ export function DashboardSkillsScreen({
                   to={to(
                     buildDashboardSkillsHref({
                       ...listHrefState,
-                      modal: "create",
+                      modal: DASHBOARD_SKILLS_MODAL.create,
                     }),
                   )}
                 >

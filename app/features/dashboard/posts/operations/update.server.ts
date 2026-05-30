@@ -1,6 +1,7 @@
 import { redirect, type AppLoadContext } from "react-router";
 
 import type { getDbFromContext } from "../../../../../db/context";
+import { POST_MUTATION_INTENT } from "~/domain/posts/model";
 import { updatePost } from "~/lib/posts/posts.server";
 import {
   APP_ERROR_ACTION,
@@ -64,7 +65,7 @@ export async function handleUpdatePostMutation(args: {
     action: APP_ERROR_ACTION.update,
     context: args.context,
     details: {
-      intent: "update",
+      intent: POST_MUTATION_INTENT.update,
       slug: args.submission.slug,
     },
     message: "Post updated",

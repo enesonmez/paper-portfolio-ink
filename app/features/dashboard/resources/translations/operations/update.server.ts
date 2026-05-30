@@ -31,6 +31,7 @@ import {
   parseTranslationSubmission,
   type TranslationMutationArgs,
 } from "./_shared/support.server";
+import { DASHBOARD_RESOURCES_FORM_MODE } from "../../state";
 
 export async function handleUpdateTranslationMutation(
   args: TranslationMutationArgs<"update-translation">,
@@ -65,7 +66,7 @@ export async function handleUpdateTranslationMutation(
         errors: {
           form: args.formCopy.errors.updateTranslationMissing,
         },
-        mode: "edit",
+        mode: DASHBOARD_RESOURCES_FORM_MODE.edit,
         status: 400,
         values: buildTranslationFormValuesFromSubmission(submission),
       }),
@@ -92,7 +93,7 @@ export async function handleUpdateTranslationMutation(
           errors: {
             form: args.formCopy.errors.updateTranslationMissing,
           },
-          mode: "edit",
+          mode: DASHBOARD_RESOURCES_FORM_MODE.edit,
           status: 404,
           values: buildTranslationFormValuesFromSubmission(submission),
         }),
@@ -117,7 +118,7 @@ export async function handleUpdateTranslationMutation(
         responseData: buildTranslationConflictState(
           "key",
           args.formCopy.errors.updateTranslationDuplicateKey,
-          "edit",
+          DASHBOARD_RESOURCES_FORM_MODE.edit,
           submission,
           originalKey,
           originalLocale,
@@ -143,7 +144,7 @@ export async function handleUpdateTranslationMutation(
         responseData: buildTranslationConflictState(
           "locale",
           args.formCopy.errors.translationLocaleMissing,
-          "edit",
+          DASHBOARD_RESOURCES_FORM_MODE.edit,
           submission,
           originalKey,
           originalLocale,

@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import { Form, Link } from "react-router";
+import { Form, Link, useSubmit } from "react-router";
+
+import { ConfirmModal } from "~/components/dashboard/confirm-modal";
 
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
@@ -18,7 +21,10 @@ import {
   type DashboardProjectsFilters,
   type DashboardProjectsPermissions,
 } from "../state";
-import type { DashboardPaginationState } from "../../shared/pagination";
+import {
+  DASHBOARD_PAGINATION_DIRECTION,
+  type DashboardPaginationState,
+} from "../../shared/pagination";
 
 interface DashboardProjectsTableProps {
   filters: DashboardProjectsFilters;
@@ -33,6 +39,8 @@ export function DashboardProjectsTable({
   permissions,
   projects,
 }: DashboardProjectsTableProps) {
+  const [confirmingProjectId, setConfirmingProjectId] = useState<string | null>(null);
+  const submit = useSubmit();
   const { copy } = useDashboardProjectsCopy();
   const to = useLocalizedPath();
   const t = useT();
@@ -121,7 +129,14 @@ export function DashboardProjectsTable({
             </Button>
           ) : null}
           {permissions.canDelete ? (
-            <Form method="post">
+            <Form
+              id={`delete-project-form-${project.id}`}
+              method="post"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setConfirmingProjectId(project.id);
+              }}
+            >
               <input
                 type="hidden"
                 name={PROJECT_FORM_FIELD.intent}
@@ -165,7 +180,7 @@ export function DashboardProjectsTable({
                 search: filters.searchQuery,
                 status: filters.status,
                 cursor: pagination.nextCursor,
-                direction: "next",
+                direction: DASHBOARD_PAGINATION_DIRECTION.next,
               })
             : null
         }
@@ -176,11 +191,32 @@ export function DashboardProjectsTable({
                 search: filters.searchQuery,
                 status: filters.status,
                 cursor: pagination.previousCursor,
-                direction: "previous",
+                direction: DASHBOARD_PAGINATION_DIRECTION.previous,
               })
             : null
         }
         previousLabel={copy.paginationPreviousLabel}
+      />
+
+      <ConfirmModal
+        isOpen={confirmingProjectId !== null}
+        title={t("common.confirmDeleteTitle")}
+        description={t("common.confirmDeleteDescription")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={() => {
+          if (confirmingProjectId) {
+            const form = document.getElementById(
+              `delete-project-form-${confirmingProjectId}`,
+            ) as HTMLFormElement | null;
+            if (form) {
+              void submit(new FormData(form), { method: "post" });
+            }
+          }
+          setConfirmingProjectId(null);
+        }}
+        onCancel={() => setConfirmingProjectId(null)}
+        variant="destructive"
       />
     </DashboardPanel>
   );

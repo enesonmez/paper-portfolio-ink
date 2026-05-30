@@ -7,8 +7,12 @@ import { DashboardPaginationControls } from "~/components/dashboard/pagination-c
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { Button } from "~/components/ui/button";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
+import {
+  LOGGING_MUTATION_INTENT,
+  LOGGING_PAGINATION_DIRECTION,
+} from "~/domain/logging/model";
 
-import { LocalDateTime } from "./components/local-date-time";
+import { LocalDateTime } from "~/components/ui/local-date-time";
 import { DashboardLoggingRangeForm } from "./components/range-form";
 import {
   buildDashboardLoggingHref,
@@ -35,8 +39,12 @@ export function DashboardLoggingScreen({
   const currentPagination = isHistoryTab
     ? loaderData.pagination.history
     : loaderData.pagination.errors;
-  const exportIntent = isHistoryTab ? "export-history" : "export-errors";
-  const deleteIntent = isHistoryTab ? "delete-history" : "delete-errors";
+  const exportIntent = isHistoryTab
+    ? LOGGING_MUTATION_INTENT.exportHistory
+    : LOGGING_MUTATION_INTENT.exportErrors;
+  const deleteIntent = isHistoryTab
+    ? LOGGING_MUTATION_INTENT.deleteHistory
+    : LOGGING_MUTATION_INTENT.deleteErrors;
   const canExportCurrentTab = isHistoryTab
     ? loaderData.permissions.canExportHistory
     : loaderData.permissions.canExportErrors;
@@ -253,7 +261,7 @@ export function DashboardLoggingScreen({
                 currentPagination.hasNextPage && currentPagination.nextCursor
                   ? buildDashboardLoggingHref({
                       cursor: currentPagination.nextCursor,
-                      direction: "next",
+                      direction: LOGGING_PAGINATION_DIRECTION.next,
                       tab: loaderData.selectedTab,
                     })
                   : null
@@ -263,7 +271,7 @@ export function DashboardLoggingScreen({
                 currentPagination.hasPreviousPage && currentPagination.previousCursor
                   ? buildDashboardLoggingHref({
                       cursor: currentPagination.previousCursor,
-                      direction: "previous",
+                      direction: LOGGING_PAGINATION_DIRECTION.previous,
                       tab: loaderData.selectedTab,
                     })
                   : null

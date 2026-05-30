@@ -18,7 +18,10 @@ import type { LocaleResourceRecord } from "~/lib/resources/resources.server";
 
 import { useDashboardResourcesCopy } from "../../copy";
 import { buildDashboardResourcesTranslationsHref } from "../../routing/href";
-import type { DashboardResourcesTranslationFormState } from "../../state";
+import {
+  DASHBOARD_RESOURCES_FORM_MODE,
+  type DashboardResourcesTranslationFormState,
+} from "../../state";
 
 export function DashboardResourcesTranslationModal({
   canSubmit,
@@ -50,7 +53,7 @@ export function DashboardResourcesTranslationModal({
     return null;
   }
 
-  const isEditMode = form.mode === "edit";
+  const isEditMode = form.mode === DASHBOARD_RESOURCES_FORM_MODE.edit;
   const modalCopy = isEditMode
     ? {
         actionLabel: copy.editTranslationActionLabel,

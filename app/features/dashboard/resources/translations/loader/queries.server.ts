@@ -10,6 +10,7 @@ import {
 
 import { DASHBOARD_RESOURCES_TRANSLATIONS_PAGE_SIZE } from "../../routing/href";
 import { buildDashboardResourcesTranslationPagination } from "../../state";
+import { DASHBOARD_PAGINATION_DIRECTION } from "../../../shared/pagination";
 import type { TranslationRequestState } from "./request.server";
 
 export interface LoadedTranslationState {
@@ -25,7 +26,7 @@ function buildEmptyLoadedTranslationState(): LoadedTranslationState {
   return {
     pagination: buildDashboardResourcesTranslationPagination({
       currentCursor: null,
-      direction: "next",
+      direction: DASHBOARD_PAGINATION_DIRECTION.next,
       hasNextPage: false,
       hasPreviousPage: false,
       nextCursor: null,

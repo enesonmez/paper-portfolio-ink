@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import { Form, Link } from "react-router";
+import { Form, Link, useSubmit } from "react-router";
+
+import { ConfirmModal } from "~/components/dashboard/confirm-modal";
 
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
@@ -18,7 +21,10 @@ import {
   type DashboardPostsFilters,
   type DashboardPostsPermissions,
 } from "../state";
-import type { DashboardPaginationState } from "../../shared/pagination";
+import {
+  DASHBOARD_PAGINATION_DIRECTION,
+  type DashboardPaginationState,
+} from "../../shared/pagination";
 
 interface DashboardPostsTableProps {
   filters: DashboardPostsFilters;
@@ -33,6 +39,8 @@ export function DashboardPostsTable({
   permissions,
   posts,
 }: DashboardPostsTableProps) {
+  const [confirmingPostId, setConfirmingPostId] = useState<string | null>(null);
+  const submit = useSubmit();
   const { copy } = useDashboardPostsCopy();
   const to = useLocalizedPath();
   const t = useT();
@@ -123,7 +131,14 @@ export function DashboardPostsTable({
             </Button>
           ) : null}
           {permissions.canDelete ? (
-            <Form method="post">
+            <Form
+              id={`delete-post-form-${post.id}`}
+              method="post"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setConfirmingPostId(post.id);
+              }}
+            >
               <input
                 type="hidden"
                 name={POST_FORM_FIELD.intent}
@@ -163,7 +178,7 @@ export function DashboardPostsTable({
                 search: filters.searchQuery,
                 status: filters.status,
                 cursor: pagination.nextCursor,
-                direction: "next",
+                direction: DASHBOARD_PAGINATION_DIRECTION.next,
               })
             : null
         }
@@ -174,11 +189,32 @@ export function DashboardPostsTable({
                 search: filters.searchQuery,
                 status: filters.status,
                 cursor: pagination.previousCursor,
-                direction: "previous",
+                direction: DASHBOARD_PAGINATION_DIRECTION.previous,
               })
             : null
         }
         previousLabel={copy.paginationPreviousLabel}
+      />
+
+      <ConfirmModal
+        isOpen={confirmingPostId !== null}
+        title={t("common.confirmDeleteTitle")}
+        description={t("common.confirmDeleteDescription")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={() => {
+          if (confirmingPostId) {
+            const form = document.getElementById(
+              `delete-post-form-${confirmingPostId}`,
+            ) as HTMLFormElement | null;
+            if (form) {
+              void submit(new FormData(form), { method: "post" });
+            }
+          }
+          setConfirmingPostId(null);
+        }}
+        onCancel={() => setConfirmingPostId(null)}
+        variant="destructive"
       />
     </DashboardPanel>
   );

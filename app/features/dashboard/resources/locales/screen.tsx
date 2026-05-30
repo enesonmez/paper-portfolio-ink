@@ -11,6 +11,7 @@ import {
   buildDashboardResourcesLocalesHref,
 } from "../routing/href";
 import { useDashboardResourcesRouteContext } from "../layout/context";
+import { DASHBOARD_RESOURCES_FORM_MODE } from "../state";
 import { DashboardResourcesLocaleModal } from "./components/dashboard-resources-locale-modal";
 import { DashboardResourcesLocalesTable } from "./components/dashboard-resources-locales-table";
 
@@ -56,7 +57,8 @@ export default function DashboardResourcesLocalesScreen() {
       <DashboardResourcesLocaleModal
         canSubmit={
           permissions.locales.canCreate ||
-          (localeForm.mode === "edit" && permissions.locales.canUpdate)
+          (localeForm.mode === DASHBOARD_RESOURCES_FORM_MODE.edit &&
+            permissions.locales.canUpdate)
         }
         form={localeForm}
       />

@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import { useSubmit } from "react-router";
+import { LocalDateTime } from "~/components/ui/local-date-time";
 import { Button } from "~/components/ui/button";
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { ConfirmModal } from "~/components/dashboard/confirm-modal";
@@ -15,6 +17,7 @@ export function DashboardSettingsSecurityCards({
 }: {
   sessions: readonly DashboardSettingsSecuritySession[];
 }) {
+  const submit = useSubmit();
   const copy = useDashboardSettingsCopy();
   const [confirmingSessionRevoke, setConfirmingSessionRevoke] = useState<string | null>(
     null,
@@ -105,7 +108,7 @@ export function DashboardSettingsSecurityCards({
                   {copy.securityCreatedAt}
                 </p>
                 <p className="mt-1 font-sans text-sm font-bold">
-                  {new Date(session.createdAt).toLocaleString()}
+                  <LocalDateTime value={new Date(session.createdAt)} />
                 </p>
               </div>
               <div>
@@ -113,7 +116,7 @@ export function DashboardSettingsSecurityCards({
                   {copy.securityExpiresAt}
                 </p>
                 <p className="mt-1 font-sans text-sm font-bold">
-                  {new Date(session.expiresAt).toLocaleString()}
+                  <LocalDateTime value={new Date(session.expiresAt)} />
                 </p>
               </div>
             </div>
@@ -132,7 +135,9 @@ export function DashboardSettingsSecurityCards({
             const form = document.getElementById(
               `revoke-session-form-${confirmingSessionRevoke}`,
             ) as HTMLFormElement | null;
-            form?.submit();
+            if (form) {
+              void submit(new FormData(form), { method: "post" });
+            }
           }
           setConfirmingSessionRevoke(null);
         }}
@@ -150,6 +155,7 @@ export function DashboardSettingsSecurityActions({
   hasSettingsSecurityManageAny: boolean;
   sessions: readonly DashboardSettingsSecuritySession[];
 }) {
+  const submit = useSubmit();
   const copy = useDashboardSettingsCopy();
   const [confirmingIntent, setConfirmingIntent] = useState<
     "revoke-other" | "revoke-all" | null
@@ -171,8 +177,7 @@ export function DashboardSettingsSecurityActions({
             {copy.securityRevokeOtherSessionsLabel}
           </h3>
           <p className="font-sans text-sm font-bold text-stone-600 dark:text-stone-400">
-            Sistemde şu anda bekleyen toplu güvenlik eylemi bulunmuyor. Aktif olarak
-            sadece sizin mevcut oturumunuz açık durumda.
+            {copy.securityNoOtherSessionsDescription}
           </p>
         </div>
       </DashboardPanel>
@@ -275,9 +280,13 @@ export function DashboardSettingsSecurityActions({
         cancelLabel={copy.securityCancelLabel}
         onConfirm={() => {
           if (confirmingIntent === "revoke-other") {
-            revokeOtherFormRef.current?.submit();
+            if (revokeOtherFormRef.current) {
+              void submit(new FormData(revokeOtherFormRef.current), { method: "post" });
+            }
           } else if (confirmingIntent === "revoke-all") {
-            revokeAllFormRef.current?.submit();
+            if (revokeAllFormRef.current) {
+              void submit(new FormData(revokeAllFormRef.current), { method: "post" });
+            }
           }
           setConfirmingIntent(null);
         }}

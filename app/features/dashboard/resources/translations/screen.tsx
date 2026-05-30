@@ -13,6 +13,8 @@ import {
   buildDashboardResourcesTranslationsHref,
 } from "../routing/href";
 import { useDashboardResourcesRouteContext } from "../layout/context";
+import { DASHBOARD_PAGINATION_DIRECTION } from "../../shared/pagination";
+import { DASHBOARD_RESOURCES_FORM_MODE } from "../state";
 import { DashboardResourcesTranslationModal } from "./components/dashboard-resources-translation-modal";
 import { DashboardResourcesTranslationsTable } from "./components/dashboard-resources-translations-table";
 
@@ -86,7 +88,7 @@ export default function DashboardResourcesTranslationsScreen() {
                     to={to(
                       buildDashboardResourcesTranslationsHref({
                         translationCursor: null,
-                        translationDirection: "next",
+                        translationDirection: DASHBOARD_PAGINATION_DIRECTION.next,
                         translationLocale: localeRow.code,
                         translationSearch: "",
                       }),
@@ -131,7 +133,7 @@ export default function DashboardResourcesTranslationsScreen() {
                     buildDashboardResourcesTranslationsHref({
                       ...translationsViewState,
                       translationCursor: null,
-                      translationDirection: "next",
+                      translationDirection: DASHBOARD_PAGINATION_DIRECTION.next,
                       translationSearch: "",
                     }),
                   )}
@@ -161,7 +163,8 @@ export default function DashboardResourcesTranslationsScreen() {
       <DashboardResourcesTranslationModal
         canSubmit={
           permissions.translations.canCreate ||
-          (translationForm.mode === "edit" && permissions.translations.canUpdate)
+          (translationForm.mode === DASHBOARD_RESOURCES_FORM_MODE.edit &&
+            permissions.translations.canUpdate)
         }
         form={translationForm}
         locales={locales}

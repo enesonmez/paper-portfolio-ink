@@ -1,5 +1,6 @@
 import type { LocaleResourceRecord } from "~/lib/resources/resources.server";
 import { stripLocalePrefix } from "~/shared/i18n/i18n.shared";
+import { DASHBOARD_PAGINATION_DIRECTION } from "../../shared/pagination";
 
 type ValueOf<T> = T[keyof T];
 
@@ -108,7 +109,10 @@ function buildDashboardResourcesHref(
     );
   }
 
-  if (params.translationDirection && params.translationDirection !== "next") {
+  if (
+    params.translationDirection &&
+    params.translationDirection !== DASHBOARD_PAGINATION_DIRECTION.next
+  ) {
     searchParams.set(
       DASHBOARD_RESOURCES_QUERY_PARAM.translationDirection,
       params.translationDirection,
