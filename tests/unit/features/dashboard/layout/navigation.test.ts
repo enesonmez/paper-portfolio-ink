@@ -37,7 +37,8 @@ describe("dashboard navigation", () => {
       "/en/dashboard",
       "/en/dashboard/posts",
       "/en/dashboard/analytics",
+      "/en/dashboard/settings?tab=account",
     ]);
-    expect(navigation).toHaveLength(3);
+    expect(navigation).toHaveLength(4);
   });
 });

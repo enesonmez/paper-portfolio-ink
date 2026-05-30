@@ -16,6 +16,10 @@ import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import { DashboardSettingsAccountCards } from "./components/account-cards";
 import { DashboardSettingsAppearanceCards } from "./components/appearance-cards";
 import { DashboardSettingsConfigurationModal } from "./components/configuration-modal";
+import {
+  DashboardSettingsSecurityCards,
+  DashboardSettingsSecurityActions,
+} from "./components/security-cards";
 import { useDashboardSettingsCopy } from "./copy";
 import {
   buildDashboardSettingsHref,
@@ -84,31 +88,37 @@ export function DashboardSettingsScreen({
         </div>
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {copy.tabs.map((tab) => {
-            const TabIcon = DASHBOARD_SETTINGS_TAB_ICON[tab.tab];
+          {copy.tabs
+            .filter((tab) => loaderData.authorizedTabs.includes(tab.tab))
+            .map((tab) => {
+              const TabIcon = DASHBOARD_SETTINGS_TAB_ICON[tab.tab];
+              const totalCount =
+                tab.tab === DASHBOARD_SETTINGS_TAB.security && loaderData.sessions
+                  ? String(loaderData.sessions.length).padStart(2, "0")
+                  : tab.total;
 
-            return (
-              <Button
-                key={tab.tab}
-                asChild
-                className="h-auto w-full items-start justify-between px-4 py-4 text-left whitespace-normal"
-                variant={loaderData.selectedTab === tab.tab ? "default" : "secondary"}
-              >
-                <Link to={to(buildDashboardSettingsHref(tab.tab))}>
-                  <span className="flex min-w-0 flex-1 items-start gap-3">
-                    <TabIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                    <span className="min-w-0 space-y-1">
-                      <span className="block">{tab.label}</span>
-                      <span className="block text-xs leading-snug wrap-break-word normal-case opacity-80">
-                        {tab.description}
+              return (
+                <Button
+                  key={tab.tab}
+                  asChild
+                  className="h-auto w-full items-start justify-between px-4 py-4 text-left whitespace-normal"
+                  variant={loaderData.selectedTab === tab.tab ? "default" : "secondary"}
+                >
+                  <Link to={to(buildDashboardSettingsHref(tab.tab))}>
+                    <span className="flex min-w-0 flex-1 items-start gap-3">
+                      <TabIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                      <span className="min-w-0 space-y-1">
+                        <span className="block">{tab.label}</span>
+                        <span className="block text-xs leading-snug wrap-break-word normal-case opacity-80">
+                          {tab.description}
+                        </span>
                       </span>
                     </span>
-                  </span>
-                  <span className="shrink-0 self-start text-sm">{tab.total}</span>
-                </Link>
-              </Button>
-            );
-          })}
+                    <span className="shrink-0 self-start text-sm">{totalCount}</span>
+                  </Link>
+                </Button>
+              );
+            })}
         </div>
       </DashboardPanel>
 
@@ -124,6 +134,8 @@ export function DashboardSettingsScreen({
               accountValues={loaderData.accountValues}
               selectedTab={loaderData.selectedTab}
             />
+          ) : loaderData.selectedTab === DASHBOARD_SETTINGS_TAB.security ? (
+            <DashboardSettingsSecurityCards sessions={loaderData.sessions || []} />
           ) : (
             selectedContent.cards.map((card) => (
               <DashboardPanel key={card.title} className="space-y-4">
@@ -143,30 +155,39 @@ export function DashboardSettingsScreen({
           )}
         </div>
 
-        <DashboardPanel className="space-y-4">
-          <div className="space-y-2">
-            <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.18em] uppercase">
-              {copy.pageEyebrow}
-            </p>
-            <h3 className="font-display text-3xl leading-none">
-              {selectedContent.checklist.title}
-            </h3>
-            <p className="text-muted-foreground font-sans text-sm font-bold">
-              {selectedContent.checklist.description}
-            </p>
-          </div>
+        {loaderData.selectedTab === DASHBOARD_SETTINGS_TAB.security ? (
+          <DashboardSettingsSecurityActions
+            hasSettingsSecurityManageAny={
+              loaderData.hasSettingsSecurityManageAny === true
+            }
+            sessions={loaderData.sessions || []}
+          />
+        ) : (
+          <DashboardPanel className="space-y-4">
+            <div className="space-y-2">
+              <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.18em] uppercase">
+                {copy.pageEyebrow}
+              </p>
+              <h3 className="font-display text-3xl leading-none">
+                {selectedContent.checklist.title}
+              </h3>
+              <p className="text-muted-foreground font-sans text-sm font-bold">
+                {selectedContent.checklist.description}
+              </p>
+            </div>
 
-          <ul className="space-y-3">
-            {selectedContent.checklist.items.map((item) => (
-              <li
-                key={item}
-                className="bg-muted border-2 border-black px-4 py-3 font-sans text-sm font-bold dark:bg-stone-800"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        </DashboardPanel>
+            <ul className="space-y-3">
+              {selectedContent.checklist.items.map((item) => (
+                <li
+                  key={item}
+                  className="bg-muted border-2 border-black px-4 py-3 font-sans text-sm font-bold dark:bg-stone-800"
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </DashboardPanel>
+        )}
       </div>
 
       <DashboardSettingsConfigurationModal form={loaderData.accountForm} />

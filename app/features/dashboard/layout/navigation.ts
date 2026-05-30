@@ -14,6 +14,7 @@ import {
 
 import {
   AUTHORIZATION_CLAIM,
+  SETTINGS_AUTHORIZATION_CLAIMS,
   hasAnyAuthorizationClaim,
   hasAuthorizationClaim,
   type AuthorizationClaim,
@@ -153,7 +154,7 @@ export function getDashboardNavigation(
       to: buildLocalizedPath(locale, "/dashboard/logging"),
     });
   }
-  if (hasAuthorizationClaim(claims, AUTHORIZATION_CLAIM.settingsManage)) {
+  if (hasAnyAuthorizationClaim(claims, SETTINGS_AUTHORIZATION_CLAIMS)) {
     adminNavigation.push({
       icon: Settings,
       kind: "link",

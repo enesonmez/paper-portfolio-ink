@@ -46,7 +46,11 @@ export const AUTHORIZATION_CLAIM = {
   resourcesTranslationsDelete: "resources.translations.delete",
   resourcesTranslationsRead: "resources.translations.read",
   resourcesTranslationsUpdate: "resources.translations.update",
-  settingsManage: "settings.manage",
+  settingsAccountManage: "settings.account.manage",
+  settingsAppearanceManage: "settings.appearance.manage",
+  settingsSecurityManageOwn: "settings.security.manage.own",
+  settingsSecurityManageAny: "settings.security.manage.any",
+  settingsRuntimeManage: "settings.runtime.manage",
   skillsCreate: "skills.create",
   skillsDelete: "skills.delete",
   skillsRead: "skills.read",
@@ -96,7 +100,11 @@ export const AUTHORIZATION_CLAIM_VALUES = [
   AUTHORIZATION_CLAIM.usersCreate,
   AUTHORIZATION_CLAIM.usersUpdate,
   AUTHORIZATION_CLAIM.usersDelete,
-  AUTHORIZATION_CLAIM.settingsManage,
+  AUTHORIZATION_CLAIM.settingsAccountManage,
+  AUTHORIZATION_CLAIM.settingsAppearanceManage,
+  AUTHORIZATION_CLAIM.settingsSecurityManageOwn,
+  AUTHORIZATION_CLAIM.settingsSecurityManageAny,
+  AUTHORIZATION_CLAIM.settingsRuntimeManage,
 ] as const satisfies readonly AuthorizationClaim[];
 
 export interface AuthorizationClaimDefinition {
@@ -363,9 +371,37 @@ export const AUTHORIZATION_CLAIM_DEFINITIONS: readonly AuthorizationClaimDefinit
     },
     {
       action: "manage",
-      description: "Manage settings panels.",
-      key: AUTHORIZATION_CLAIM.settingsManage,
-      resource: "settings",
+      description: "Manage settings account panel.",
+      key: AUTHORIZATION_CLAIM.settingsAccountManage,
+      resource: "settings.account",
+      scope: AUTHORIZATION_SCOPE.global,
+    },
+    {
+      action: "manage",
+      description: "Manage settings appearance panel.",
+      key: AUTHORIZATION_CLAIM.settingsAppearanceManage,
+      resource: "settings.appearance",
+      scope: AUTHORIZATION_SCOPE.global,
+    },
+    {
+      action: "manage",
+      description: "Manage own settings security panel.",
+      key: AUTHORIZATION_CLAIM.settingsSecurityManageOwn,
+      resource: "settings.security.own",
+      scope: AUTHORIZATION_SCOPE.own,
+    },
+    {
+      action: "manage",
+      description: "Manage any settings security panel.",
+      key: AUTHORIZATION_CLAIM.settingsSecurityManageAny,
+      resource: "settings.security.any",
+      scope: AUTHORIZATION_SCOPE.global,
+    },
+    {
+      action: "manage",
+      description: "Manage settings runtime panel.",
+      key: AUTHORIZATION_CLAIM.settingsRuntimeManage,
+      resource: "settings.runtime",
       scope: AUTHORIZATION_SCOPE.global,
     },
   ] as const;
@@ -379,8 +415,17 @@ export const DEFAULT_ROLE_CLAIMS: Record<UserRole, readonly AuthorizationClaim[]
     AUTHORIZATION_CLAIM.postsUpdateOwn,
     AUTHORIZATION_CLAIM.postsDeleteOwn,
     AUTHORIZATION_CLAIM.analyticsReadOwn,
+    AUTHORIZATION_CLAIM.settingsSecurityManageOwn,
   ],
 };
+
+export const SETTINGS_AUTHORIZATION_CLAIMS = [
+  AUTHORIZATION_CLAIM.settingsAccountManage,
+  AUTHORIZATION_CLAIM.settingsAppearanceManage,
+  AUTHORIZATION_CLAIM.settingsSecurityManageOwn,
+  AUTHORIZATION_CLAIM.settingsSecurityManageAny,
+  AUTHORIZATION_CLAIM.settingsRuntimeManage,
+] as const satisfies readonly AuthorizationClaim[];
 
 export const PROJECTS_AUTHORIZATION_CLAIMS = [
   AUTHORIZATION_CLAIM.projectsRead,

@@ -6,6 +6,7 @@ import {
   DashboardSettingsAccessDeniedScreen,
   DashboardSettingsScreen,
 } from "~/routes/dashboard/settings";
+import type { DashboardSettingsTab } from "~/features/dashboard/settings/state";
 
 const baseLoaderData = {
   access: "granted" as const,
@@ -31,6 +32,12 @@ const baseLoaderData = {
     "appearance.bodyFont": "mono",
   },
   selectedTab: "account" as const,
+  authorizedTabs: [
+    "account",
+    "appearance",
+    "security",
+    "runtime",
+  ] as DashboardSettingsTab[],
 };
 
 describe("dashboard settings route", () => {

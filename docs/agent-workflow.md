@@ -12,19 +12,28 @@
   3. **Dosya Bağlantıları (Markdown File Links)**: Ders içinde geçen tüm ortak modüller, helper dosyaları veya şemalar absolute markdown linkleri (`[dosya_adi.ts](file:///...)`) ile belgelenmelidir.
   4. **Açık ve Deklaratif Dil**: Öğrenimler soyut anlatımlar yerine, agent'ların doğrudan uyması gereken katı iş mantığı kuralları veya kod kontratları şeklinde yazılmalıdır.
 
-## Feature Documentation
+## Feature Documentation & Zero-Dead-Code Rules
 
-Tamamlanan her işlem veya feature sonrası aşağıdaki standartta dokümantasyon oluşturulmalıdır:
+Tamamlanan her işlem veya feature sonrası en yüksek kalitede teknik dokümantasyon oluşturulmalı ve atıl duruma düşen tüm kodlar/şemalar temizlenmelidir.
 
-- Dosya yolu: `docs/features/{Phase#}_{Task#}_{FeatureName}.md` Örnek: `docs/features/Phase1_Task1.1_ProjectScaffolding.md`
-- İçerik:
-  1. Yapılan işlemin özeti ve teknik çalışma mantığı
-  2. Oluşturulan veya değiştirilen dosyaların sorumlulukları
-  3. Uygulanan testler ve sonuçları
-  4. İlgili feature'ı çalıştırma veya doğrulama komutları
-  5. İlgili roadmap task referansları
+### Zero-Dead-Code (Sıfır Ölü Kod) İlkesi
 
-Roadmap dışı değişikliklerde isimlendirme bakım amacıyla uyarlanabilir, ancak içerik standardı korunmalıdır.
+- **Tam Temizlik**: Yeni bir özelliğe veya daha ince taneli (fine-grained) bir mimariye geçildiğinde, eski kaba yetkiler (claims), kullanılmayan fonksiyonlar, atıl veritabanı kolonları veya modeller hem kod tabanından hem de veritabanından tamamen temizlenmelidir.
+- **Veritabanı Hizalaması**: Temizlenen yetkiler veya şemalar için mutlaka idempotent bir SQL migration dosyası oluşturulmalı ve D1 SQLite veritabanından kalıcı olarak silinmesi sağlanmalıdır.
+- **Tarihsel İzlenebilirlik**: Kaldırılan özellikler veya claims, oluşturulan teknik özellik dokümanının "Degisen Dosyalar" ve "Ozet" bölümlerinde açıkça listelenmeli ve "Zero-Dead-Code" kapsamında elendiği belgelenmelidir.
+
+### Teknik Özellik Dokümantasyon Şablonu
+
+- Dosya yolu: `docs/features/{Phase#}_{Task#}_{FeatureName}.md` veya `docs/features/Maintenance_{FeatureName}.md`
+- Zorunlu Başlıklar ve İçerik Standartları:
+  1. **# [Feature Name / Başlık]**: Phase ve Task numarasını içeren ana başlık.
+  2. **## Ozet**: Yapılan çalışmanın mimari özeti, teknik arka planı, Zero-Dead-Code temizlik kararları ve neo-brutalist tasarım iyileştirmeleri.
+  3. **## Degisen Dosyalar**: Değişen veya yeni eklenen tüm dosyalar, absolute olmaksızın projeyi kaynağından itibaren gösteren path formatında (`app/features/dashboard/...`) listelenmeli ve yanlarında kısa sorumluluk açıklamaları yer almalıdır. Silinen dosyalar `[DELETE]` ve yeni dosyalar `[NEW]` olarak işaretlenmelidir.
+  4. **## Testler**: Entegrasyon, birim ve E2E test çalıştırma komutları ve elde edilen test adetleri/başarı oranları.
+  5. **## Dogrulama**: Geliştirmenin doğruluğunu kanıtlamak için adım adım elle doğrulama senaryoları.
+  6. **## Roadmap Referansi**: İlgili roadmap maddesi veya bakım planına verilen atıflar.
+
+Roadmap dışı değişikliklerde de bu şablon ve Zero-Dead-Code standartları tavizsiz uygulanmalıdır.
 
 ## Database & Migration Standards
 
