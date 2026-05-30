@@ -29,12 +29,16 @@ Sen Senior Full-Stack Architect seviyesinde bir AI agent'sın. Gereksiz açıkla
 - Her geliştirme öncesi plan yap.
 - `npm run test` `npm run typecheck` `npm run lint` `npm run format:check` `npm run e2e:prepare` `npm run e2e` her iş sonucu bunları sırayla çalıştır ve doğruluğunu kanıtla.
 - Yorum satırı ekleme.
+- Çevre değişkenleri protokolü: `BETTER_AUTH_SECRET` veya `ANALYTICS_SECRET` gibi hiçbir sır kod içinde varsayılan (fallback) sabit dizgelerle tutulamaz. Yalnızca gitignore kapsamındaki `.env` veya `.dev.vars` dosyalarından okunmalıdır.
+- Form state normalizasyonu: Form tabanlı dashboard CRUD modüllerinde (`users`, `projects`, `posts`, `skills`, `resources`), form doğrulama ve hata yönetiminin tutarlılığı için `build*FormState` (veya `resolve*Form`) helper mekanizması ve ortak form hata şemaları kullanılmalıdır.
+- D1 SQLite composite index hizalaması: Keyset pagination veya sıralı sorgu yapılan tablolarda, composite index kolon sıralaması ve yönü (ASC/DESC), SQL'deki `ORDER BY` ve cursor karşılaştırmalarıyla birebir eşleşmelidir.
 
 # Self-Improvement Loop
 
 - Her bir task, refactor, bug düzenlemesi sonrası öğrendiklerini ve uygulananlar için [docs/lessons.md](./docs/lessons.md) dosyasını güncelle.
 - Her session başında docs/lessons.md dosyasını gözden geçir.
 - Basit olmayan her görev için plan moduna gir. (3+ adım veya mimari kararlar)
+- Plan moduna girildiğinde, mükerrer kod yazılmasını önlemek amacıyla mevcut kod tabanında (özellikle `app/shared` ve `app/domain` altında) kapsamlı bir grep/list araması gerçekleştirilmelidir.
 - Basit olmayan değişikliklerde dur ve sor: "Daha iyi bir yöntem var mı?"
 - Basit işlerde over-engineering yapma.
 
