@@ -36,6 +36,7 @@ import {
   parseLocaleSubmission,
   type LocaleMutationArgs,
 } from "./_shared/support.server";
+import { DASHBOARD_RESOURCES_FORM_MODE } from "../../state";
 
 export async function handleUpdateLocaleMutation(
   args: LocaleMutationArgs<"update-locale">,
@@ -59,7 +60,7 @@ export async function handleUpdateLocaleMutation(
           form: args.formCopy.errors.updateLocaleMissing,
         },
         editingCode: null,
-        mode: "edit",
+        mode: DASHBOARD_RESOURCES_FORM_MODE.edit,
         status: 400,
         values: buildLocaleFormValuesFromSubmission(submission),
       }),
@@ -81,7 +82,7 @@ export async function handleUpdateLocaleMutation(
           form: args.formCopy.errors.localeMissing,
         },
         editingCode: originalCode,
-        mode: "edit",
+        mode: DASHBOARD_RESOURCES_FORM_MODE.edit,
         status: 404,
         values: buildLocaleFormValuesFromSubmission(submission),
       }),
@@ -106,7 +107,7 @@ export async function handleUpdateLocaleMutation(
           form: args.formCopy.errors.deleteLocaleRestricted,
         },
         editingCode: originalCode,
-        mode: "edit",
+        mode: DASHBOARD_RESOURCES_FORM_MODE.edit,
         status: 409,
         values: buildLocaleFormValuesFromSubmission(submission),
       }),
@@ -132,7 +133,7 @@ export async function handleUpdateLocaleMutation(
           form: args.formCopy.errors.deleteLocaleRestricted,
         },
         editingCode: originalCode,
-        mode: "edit",
+        mode: DASHBOARD_RESOURCES_FORM_MODE.edit,
         status: 409,
         values: buildLocaleFormValuesFromSubmission(submission),
       }),
@@ -159,7 +160,7 @@ export async function handleUpdateLocaleMutation(
         resource: APP_ERROR_RESOURCE.resourcesLocales,
         responseData: buildLocaleConflictState(
           args.formCopy.errors.updateLocaleDuplicateCode,
-          "edit",
+          DASHBOARD_RESOURCES_FORM_MODE.edit,
           submission,
           originalCode,
         ),

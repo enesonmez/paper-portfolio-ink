@@ -13,6 +13,7 @@ import type { UserOverview } from "~/lib/users/users.server";
 
 import { useDashboardUsersCopy } from "./copy";
 import {
+  DASHBOARD_USERS_MODAL,
   DASHBOARD_USERS_QUERY_PARAM,
   buildDashboardUsersHref,
   useDashboardUserActiveFilterOptions,
@@ -92,7 +93,7 @@ export function DashboardUsersScreen({
                   to={to(
                     buildDashboardUsersHref({
                       ...listHrefState,
-                      modal: "create",
+                      modal: DASHBOARD_USERS_MODAL.create,
                     }),
                   )}
                 >

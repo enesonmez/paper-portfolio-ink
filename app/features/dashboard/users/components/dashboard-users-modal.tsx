@@ -14,6 +14,7 @@ import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/domain/users/model";
 
 import { useDashboardUsersCopy } from "../copy";
 import {
+  DASHBOARD_USERS_MODAL,
   buildDashboardUsersHref,
   type DashboardUsersHrefParams,
   type DashboardUsersProfileFormState,
@@ -41,10 +42,15 @@ export function DashboardUsersProfileModalView({
   }
 
   const actionLabel =
-    form.mode === "edit" ? copy.editActionLabel : copy.createActionLabel;
-  const title = form.mode === "edit" ? copy.editTitle : copy.createTitle;
+    form.mode === DASHBOARD_USERS_MODAL.edit
+      ? copy.editActionLabel
+      : copy.createActionLabel;
+  const title =
+    form.mode === DASHBOARD_USERS_MODAL.edit ? copy.editTitle : copy.createTitle;
   const description =
-    form.mode === "edit" ? copy.editDescription : copy.createDescription;
+    form.mode === DASHBOARD_USERS_MODAL.edit
+      ? copy.editDescription
+      : copy.createDescription;
 
   return (
     <DashboardModal
@@ -57,12 +63,12 @@ export function DashboardUsersProfileModalView({
           type="hidden"
           name={USER_FORM_FIELD.intent}
           value={
-            form.mode === "edit"
+            form.mode === DASHBOARD_USERS_MODAL.edit
               ? USER_MUTATION_INTENT.update
               : USER_MUTATION_INTENT.create
           }
         />
-        {form.mode === "edit" && form.editingUserId ? (
+        {form.mode === DASHBOARD_USERS_MODAL.edit && form.editingUserId ? (
           <>
             <input
               type="hidden"
@@ -93,7 +99,7 @@ export function DashboardUsersProfileModalView({
 
         <div
           className={
-            form.mode === "edit"
+            form.mode === DASHBOARD_USERS_MODAL.edit
               ? "space-y-2"
               : "grid gap-4 md:grid-cols-[minmax(0,1fr)_14rem]"
           }
@@ -107,13 +113,13 @@ export function DashboardUsersProfileModalView({
               placeholder={formCopy.password.placeholder}
               type="password"
             />
-            {form.mode === "edit" ? (
+            {form.mode === DASHBOARD_USERS_MODAL.edit ? (
               <p className="text-muted-foreground font-sans text-[11px] font-bold tracking-[0.14em] uppercase">
                 {formCopy.password.editHint}
               </p>
             ) : null}
           </div>
-          {form.mode === "create" ? (
+          {form.mode === DASHBOARD_USERS_MODAL.create ? (
             <SelectField
               defaultValue={form.values.role}
               error={form.errors?.role}

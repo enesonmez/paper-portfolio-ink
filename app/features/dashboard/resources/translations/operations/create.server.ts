@@ -21,6 +21,7 @@ import {
   parseTranslationSubmission,
   type TranslationMutationArgs,
 } from "./_shared/support.server";
+import { DASHBOARD_RESOURCES_FORM_MODE } from "../../state";
 
 export async function handleCreateTranslationMutation(
   args: TranslationMutationArgs<"create-translation">,
@@ -56,7 +57,7 @@ export async function handleCreateTranslationMutation(
         responseData: buildTranslationConflictState(
           "key",
           args.formCopy.errors.createTranslationDuplicateKey,
-          "create",
+          DASHBOARD_RESOURCES_FORM_MODE.create,
           submission,
         ),
         status: 409,
@@ -78,7 +79,7 @@ export async function handleCreateTranslationMutation(
         responseData: buildTranslationConflictState(
           "locale",
           args.formCopy.errors.translationLocaleMissing,
-          "create",
+          DASHBOARD_RESOURCES_FORM_MODE.create,
           submission,
         ),
         status: 409,

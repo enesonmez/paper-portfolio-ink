@@ -9,6 +9,7 @@ import { POST_FORM_FIELD, POST_MUTATION_INTENT } from "~/domain/posts/model";
 
 import { useDashboardPostsCopy } from "../copy";
 import {
+  DASHBOARD_POSTS_MODAL,
   buildDashboardPostsHref,
   useDashboardPostStatusOptions,
   type DashboardPostsFormState,
@@ -37,8 +38,10 @@ export function DashboardPostsComposeView({
     return null;
   }
 
-  const title = form.mode === "edit" ? copy.editTitle : copy.createTitle;
-  const submitLabel = form.mode === "edit" ? copy.editActionLabel : copy.createTitle;
+  const title =
+    form.mode === DASHBOARD_POSTS_MODAL.edit ? copy.editTitle : copy.createTitle;
+  const submitLabel =
+    form.mode === DASHBOARD_POSTS_MODAL.edit ? copy.editActionLabel : copy.createTitle;
   const titleInputId = "dashboard-post-title";
 
   return (
@@ -53,12 +56,12 @@ export function DashboardPostsComposeView({
           type="hidden"
           name={POST_FORM_FIELD.intent}
           value={
-            form.mode === "edit"
+            form.mode === DASHBOARD_POSTS_MODAL.edit
               ? POST_MUTATION_INTENT.update
               : POST_MUTATION_INTENT.create
           }
         />
-        {form.mode === "edit" && form.editingPostId ? (
+        {form.mode === DASHBOARD_POSTS_MODAL.edit && form.editingPostId ? (
           <input
             type="hidden"
             name={POST_FORM_FIELD.postId}
@@ -132,7 +135,7 @@ export function DashboardPostsComposeView({
             </div>
 
             <DashboardPostsEditor
-              key={`${form.editingPostId ?? "create"}:${form.values.content}`}
+              key={`${form.editingPostId ?? DASHBOARD_POSTS_MODAL.create}:${form.values.content}`}
               initialContent={form.values.content}
               inputName={POST_FORM_FIELD.content}
               variant="fullscreen"

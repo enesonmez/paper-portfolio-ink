@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import { Form, Link } from "react-router";
+import { Form, Link, useSubmit } from "react-router";
+
+import { ConfirmModal } from "~/components/dashboard/confirm-modal";
 
 import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
 import { DashboardPanel } from "~/components/dashboard/panel";
@@ -17,6 +20,7 @@ import {
   buildDashboardResourcesTranslationsHref,
 } from "../../routing/href";
 import type { DashboardResourcesTranslationPagination } from "../../state";
+import { DASHBOARD_PAGINATION_DIRECTION } from "../../../shared/pagination";
 
 function buildValuePreview(value: string) {
   return value.length > 100 ? `${value.slice(0, 100)}...` : value;
@@ -47,6 +51,11 @@ export function DashboardResourcesTranslationsTable({
   translationSearchQuery: string;
   translations: TranslationResourceRecord[];
 }) {
+  const [confirmingTranslation, setConfirmingTranslation] = useState<{
+    key: string;
+    locale: string;
+  } | null>(null);
+  const submit = useSubmit();
   const to = useLocalizedPath();
   const t = useT();
   const canManageTranslations = canUpdate || canDelete;
@@ -124,7 +133,17 @@ export function DashboardResourcesTranslationsTable({
             </Button>
           ) : null}
           {canDelete ? (
-            <Form method="post">
+            <Form
+              id={`delete-translation-form-${translationRow.locale}-${translationRow.key}`}
+              method="post"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setConfirmingTranslation({
+                  key: translationRow.key,
+                  locale: translationRow.locale,
+                });
+              }}
+            >
               <input
                 type="hidden"
                 name={RESOURCE_FORM_FIELD.intent}
@@ -176,7 +195,7 @@ export function DashboardResourcesTranslationsTable({
               ? buildDashboardResourcesTranslationsHref({
                   ...translationsViewState,
                   translationCursor: pagination.nextCursor,
-                  translationDirection: "next",
+                  translationDirection: DASHBOARD_PAGINATION_DIRECTION.next,
                 })
               : null
           }
@@ -186,7 +205,7 @@ export function DashboardResourcesTranslationsTable({
               ? buildDashboardResourcesTranslationsHref({
                   ...translationsViewState,
                   translationCursor: pagination.previousCursor,
-                  translationDirection: "previous",
+                  translationDirection: DASHBOARD_PAGINATION_DIRECTION.previous,
                 })
               : null
           }
@@ -194,6 +213,27 @@ export function DashboardResourcesTranslationsTable({
           summary={`${translations.length} / ${pagination.totalItems}`}
         />
       ) : null}
+
+      <ConfirmModal
+        isOpen={confirmingTranslation !== null}
+        title={t("common.confirmDeleteTitle")}
+        description={t("common.confirmDeleteDescription")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={() => {
+          if (confirmingTranslation) {
+            const form = document.getElementById(
+              `delete-translation-form-${confirmingTranslation.locale}-${confirmingTranslation.key}`,
+            ) as HTMLFormElement | null;
+            if (form) {
+              void submit(new FormData(form), { method: "post" });
+            }
+          }
+          setConfirmingTranslation(null);
+        }}
+        onCancel={() => setConfirmingTranslation(null)}
+        variant="destructive"
+      />
     </DashboardPanel>
   );
 }

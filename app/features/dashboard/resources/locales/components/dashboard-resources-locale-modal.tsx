@@ -12,7 +12,10 @@ import {
 
 import { useDashboardResourcesCopy } from "../../copy";
 import { buildDashboardResourcesLocalesHref } from "../../routing/href";
-import type { DashboardResourcesLocaleFormState } from "../../state";
+import {
+  DASHBOARD_RESOURCES_FORM_MODE,
+  type DashboardResourcesLocaleFormState,
+} from "../../state";
 
 export function DashboardResourcesLocaleModal({
   canSubmit,
@@ -28,7 +31,7 @@ export function DashboardResourcesLocaleModal({
     return null;
   }
 
-  const isEditMode = form.mode === "edit";
+  const isEditMode = form.mode === DASHBOARD_RESOURCES_FORM_MODE.edit;
   const modalCopy = isEditMode
     ? {
         actionLabel: copy.editLocaleActionLabel,

@@ -23,11 +23,15 @@ const tr = {
   "common.locale.tr": "TR",
   "common.locale.en": "EN",
   "common.dismiss": "Kapat",
+  "common.cancel": "İptal",
   "common.roleGuard": "Rol korumasi",
   "common.active": "AKTIF",
   "common.inactive": "PASIF",
   "common.edit": "Duzenle",
   "common.delete": "Sil",
+  "common.confirmDeleteTitle": "Silme İşlemini Onayla",
+  "common.confirmDeleteDescription":
+    "Bu işlem geri alınamaz. Seçili kaydı kalıcı olarak silmek istediğinizden emin misiniz?",
   "common.deactivate": "Pasiflestir",
   "site.name": "Paper Ink",
   "site.title.home": "{siteName} | Edge-First Portfolyo ve Notlar",
@@ -1006,6 +1010,97 @@ const tr = {
   "public.blog.notFoundTitle": "Yazi bulunamadi",
   "public.blog.notFoundBody":
     "Bu slug ile eslesen yayinlanmis bir not yok. Arsivden baska bir yazi sec.",
+  "dashboard.settings.security.noOtherSessionsDescription":
+    "Sistemde şu anda bekleyen toplu güvenlik eylemi bulunmuyor. Aktif olarak sadece sizin mevcut oturumunuz açık durumda.",
+  "dashboard.settings.account.checklist.item1":
+    "Satırlar liste öncelikli kalır; pop-up tek yazma yüzeyidir.",
+  "dashboard.settings.account.checklist.item2":
+    "Başarılı yazma işlemleri yapılandırma önbelleğini açıkça temizler.",
+  "dashboard.settings.account.checklist.item3":
+    "Genel tüketiciler aynı önbellek destekli sicili yeniden kullanabilir.",
+  "dashboard.settings.appearance.cardChrome.row1.hint": "Tema yönü",
+  "dashboard.settings.appearance.cardChrome.row1.label": "Yüzey modu",
+  "dashboard.settings.appearance.cardChrome.row1.value": "Paper Comic / Comic Noir",
+  "dashboard.settings.appearance.cardChrome.row2.hint": "Tipografi kilidi",
+  "dashboard.settings.appearance.cardChrome.row2.label": "Başlık yazı tipi",
+  "dashboard.settings.appearance.cardChrome.row2.value": "VT323",
+  "dashboard.settings.appearance.cardChrome.row3.hint": "Tipografi kilidi",
+  "dashboard.settings.appearance.cardChrome.row3.label": "Gövde yazı tipi",
+  "dashboard.settings.appearance.cardChrome.row3.value": "JetBrains Mono",
+  "dashboard.settings.appearance.cardVoice.row1.hint": "İçerik ritmi",
+  "dashboard.settings.appearance.cardVoice.row1.label": "Dashboard tonu",
+  "dashboard.settings.appearance.cardVoice.row1.value":
+    "Minimal, doğrudan, operasyon öncelikli",
+  "dashboard.settings.appearance.cardVoice.row2.hint": "Yerelleştirme şekli",
+  "dashboard.settings.appearance.cardVoice.row2.label": "Metin kapsamı",
+  "dashboard.settings.appearance.cardVoice.row2.value": "TR / EN tohum destekli",
+  "dashboard.settings.appearance.cardVoice.row3.hint": "Yoğunluk politikası",
+  "dashboard.settings.appearance.cardVoice.row3.label": "Panel aralığı",
+  "dashboard.settings.appearance.cardVoice.row3.value":
+    "Sert sınırlara sahip kompakt ızgara",
+  "dashboard.settings.appearance.checklist.item1":
+    "Glow (parıltı) yok, yuvarlatılmış kurumsal kabuklar yok.",
+  "dashboard.settings.appearance.checklist.item2":
+    "Odak durumları yüksek kontrastlı ve görünür kalır.",
+  "dashboard.settings.appearance.checklist.item3":
+    "Gelecekteki bir görünüm tercihi katmanı SSR varsayılanlarını bozmamalıdır.",
+  "dashboard.settings.security.cardSession.row1.hint": "Çerez kontratı",
+  "dashboard.settings.security.cardSession.row1.label": "Oturum depolama",
+  "dashboard.settings.security.cardSession.row1.value":
+    "HttpOnly / Secure / SameSite=Lax",
+  "dashboard.settings.security.cardSession.row2.hint": "Denetim kontratı",
+  "dashboard.settings.security.cardSession.row2.label": "Mutasyon loglama",
+  "dashboard.settings.security.cardSession.row2.value":
+    "Ayarlar yazmaları için gerekli",
+  "dashboard.settings.security.cardSession.row3.hint": "Edge politikası",
+  "dashboard.settings.security.cardSession.row3.label": "Çalışma zamanı duruşu",
+  "dashboard.settings.security.cardSession.row3.value":
+    "Yalnızca Cloudflare Worker uyumlu",
+  "dashboard.settings.security.cardAccess.row1.hint": "Hak kapısı",
+  "dashboard.settings.security.cardAccess.row1.label": "Sayfa erişimi",
+  "dashboard.settings.security.cardAccess.row1.value":
+    "settings.security.manage.own/any",
+  "dashboard.settings.security.cardAccess.row2.hint": "Rota stratejisi",
+  "dashboard.settings.security.cardAccess.row2.label": "Veri akışı",
+  "dashboard.settings.security.cardAccess.row2.value":
+    "Öncelikle yükleyici, sunucu onaylı",
+  "dashboard.settings.security.cardAccess.row3.hint": "Gelecek inceleme",
+  "dashboard.settings.security.cardAccess.row3.label": "Hak editörü",
+  "dashboard.settings.security.cardAccess.row3.value":
+    "Kullanıcı modal görevi beklemede",
+  "dashboard.settings.security.checklist.item1":
+    "Satır seviyesinde intent doğrulaması olmadan ayar mutasyonlarını asla açığa çıkarmayın.",
+  "dashboard.settings.security.checklist.item2":
+    "Yapılandırma değişikliklerinden sonra önbellek temizleme açık kalmalıdır.",
+  "dashboard.settings.security.checklist.item3":
+    "Yetkilendirme güncellemeleri revizyon tabanlı geçersiz kılmayı korumalıdır.",
+  "dashboard.settings.runtime.cardCache.row1.hint": "Mevcut akış",
+  "dashboard.settings.runtime.cardCache.row1.label": "I18n önbelleği",
+  "dashboard.settings.runtime.cardCache.row1.value": "İlk istekten sonra ısınır",
+  "dashboard.settings.runtime.cardCache.row2.hint": "Mevcut akış",
+  "dashboard.settings.runtime.cardCache.row2.label": "Yapılandırma önbelleği",
+  "dashboard.settings.runtime.cardCache.row2.value": "İlk istekten sonra ısınır",
+  "dashboard.settings.runtime.cardCache.row3.hint": "Operatör eylemi",
+  "dashboard.settings.runtime.cardCache.row3.label": "Temizleme tetikleyicisi",
+  "dashboard.settings.runtime.cardCache.row3.value":
+    "Ayarlar mutasyon geçersiz kılması",
+  "dashboard.settings.runtime.cardDelivery.row1.hint": "Çalışma zamanı hedefi",
+  "dashboard.settings.runtime.cardDelivery.row1.label": "Platform",
+  "dashboard.settings.runtime.cardDelivery.row1.value": "Cloudflare Pages + D1",
+  "dashboard.settings.runtime.cardDelivery.row2.hint": "Taşınabilirlik çizgisi",
+  "dashboard.settings.runtime.cardDelivery.row2.label": "Adaptasyon",
+  "dashboard.settings.runtime.cardDelivery.row2.value":
+    "Sağlayıcı soyutlamaları paylaşılan kalır",
+  "dashboard.settings.runtime.cardDelivery.row3.hint": "Gözlemlenebilirlik",
+  "dashboard.settings.runtime.cardDelivery.row3.label": "Hata ayıklama izi",
+  "dashboard.settings.runtime.cardDelivery.row3.value":
+    "İstek kimliği + merkezi hata hattı",
+  "dashboard.settings.runtime.checklist.item1":
+    "Çalışma zamanı sekmesinde her önbelleğe alınmış sicil için açık önbellek kontrolleri ekleyin.",
+  "dashboard.settings.runtime.checklist.item2":
+    "Isınma ve geçersiz kılma yardımcı programlarını rota modüllerinin dışında tutun.",
+  "dashboard.settings.runtime.checklist.item3":
+    "Çalışma zamanı durum kartlarını varsayılan olarak yalnızca istemci tarafı sorgulamasına bağlamayın.",
 } as const;
 
 const en: Record<keyof typeof tr, string> = {
@@ -1014,11 +1109,15 @@ const en: Record<keyof typeof tr, string> = {
   "common.locale.tr": "TR",
   "common.locale.en": "EN",
   "common.dismiss": "Dismiss",
+  "common.cancel": "Cancel",
   "common.roleGuard": "Role guard",
   "common.active": "ACTIVE",
   "common.inactive": "INACTIVE",
   "common.edit": "Edit",
   "common.delete": "Delete",
+  "common.confirmDeleteTitle": "Confirm Deletion",
+  "common.confirmDeleteDescription":
+    "This action cannot be undone. Are you sure you want to permanently delete the selected record?",
   "common.deactivate": "Deactivate",
   "site.name": "Paper Ink",
   "site.title.home": "{siteName} | Edge-First Portfolio and Notes",
@@ -2017,6 +2116,94 @@ const en: Record<keyof typeof tr, string> = {
   "public.blog.notFoundTitle": "Post not found",
   "public.blog.notFoundBody":
     "There is no published note matching this slug. Pick another story from the archive.",
+  "dashboard.settings.security.noOtherSessionsDescription":
+    "There are currently no pending bulk security actions. Active only is your current session open.",
+  "dashboard.settings.account.checklist.item1":
+    "Rows stay list-first; the popup is the only write surface.",
+  "dashboard.settings.account.checklist.item2":
+    "Successful writes purge the configuration cache explicitly.",
+  "dashboard.settings.account.checklist.item3":
+    "Public consumers can reuse the same cache-backed registry.",
+  "dashboard.settings.appearance.cardChrome.row1.hint": "Theme direction",
+  "dashboard.settings.appearance.cardChrome.row1.label": "Surface mode",
+  "dashboard.settings.appearance.cardChrome.row1.value": "Paper Comic / Comic Noir",
+  "dashboard.settings.appearance.cardChrome.row2.hint": "Typography lock",
+  "dashboard.settings.appearance.cardChrome.row2.label": "Heading font",
+  "dashboard.settings.appearance.cardChrome.row2.value": "VT323",
+  "dashboard.settings.appearance.cardChrome.row3.hint": "Typography lock",
+  "dashboard.settings.appearance.cardChrome.row3.label": "Body font",
+  "dashboard.settings.appearance.cardChrome.row3.value": "JetBrains Mono",
+  "dashboard.settings.appearance.cardVoice.row1.hint": "Content rhythm",
+  "dashboard.settings.appearance.cardVoice.row1.label": "Dashboard tone",
+  "dashboard.settings.appearance.cardVoice.row1.value":
+    "Minimal, direct, operation-first",
+  "dashboard.settings.appearance.cardVoice.row2.hint": "Localization shape",
+  "dashboard.settings.appearance.cardVoice.row2.label": "Copy coverage",
+  "dashboard.settings.appearance.cardVoice.row2.value": "TR / EN seed-backed",
+  "dashboard.settings.appearance.cardVoice.row3.hint": "Density policy",
+  "dashboard.settings.appearance.cardVoice.row3.label": "Panel spacing",
+  "dashboard.settings.appearance.cardVoice.row3.value":
+    "Compact grid with hard borders",
+  "dashboard.settings.appearance.checklist.item1":
+    "No glow, no rounded enterprise shells.",
+  "dashboard.settings.appearance.checklist.item2":
+    "Focus states remain high-contrast and visible.",
+  "dashboard.settings.appearance.checklist.item3":
+    "A future appearance preference layer should not break SSR defaults.",
+  "dashboard.settings.security.cardSession.row1.hint": "Cookie contract",
+  "dashboard.settings.security.cardSession.row1.label": "Session storage",
+  "dashboard.settings.security.cardSession.row1.value":
+    "HttpOnly / Secure / SameSite=Lax",
+  "dashboard.settings.security.cardSession.row2.hint": "Audit contract",
+  "dashboard.settings.security.cardSession.row2.label": "Mutation logging",
+  "dashboard.settings.security.cardSession.row2.value": "Required for settings writes",
+  "dashboard.settings.security.cardSession.row3.hint": "Edge policy",
+  "dashboard.settings.security.cardSession.row3.label": "Runtime posture",
+  "dashboard.settings.security.cardSession.row3.value":
+    "Cloudflare Worker-compatible only",
+  "dashboard.settings.security.cardAccess.row1.hint": "Claim gate",
+  "dashboard.settings.security.cardAccess.row1.label": "Page access",
+  "dashboard.settings.security.cardAccess.row1.value":
+    "settings.security.manage.own/any",
+  "dashboard.settings.security.cardAccess.row2.hint": "Route strategy",
+  "dashboard.settings.security.cardAccess.row2.label": "Data flow",
+  "dashboard.settings.security.cardAccess.row2.value":
+    "Loader-first, server-authorized",
+  "dashboard.settings.security.cardAccess.row3.hint": "Future review",
+  "dashboard.settings.security.cardAccess.row3.label": "Claim editor",
+  "dashboard.settings.security.cardAccess.row3.value": "User modal task pending",
+  "dashboard.settings.security.checklist.item1":
+    "Never expose settings mutations without row-level intent validation.",
+  "dashboard.settings.security.checklist.item2":
+    "Cache purge must remain explicit after config changes.",
+  "dashboard.settings.security.checklist.item3":
+    "Authorization updates should preserve revision-based invalidation.",
+  "dashboard.settings.runtime.cardCache.row1.hint": "Existing flow",
+  "dashboard.settings.runtime.cardCache.row1.label": "I18n cache",
+  "dashboard.settings.runtime.cardCache.row1.value": "Warm after first request",
+  "dashboard.settings.runtime.cardCache.row2.hint": "Current flow",
+  "dashboard.settings.runtime.cardCache.row2.label": "Configuration cache",
+  "dashboard.settings.runtime.cardCache.row2.value": "Warm after first request",
+  "dashboard.settings.runtime.cardCache.row3.hint": "Operator action",
+  "dashboard.settings.runtime.cardCache.row3.label": "Purge trigger",
+  "dashboard.settings.runtime.cardCache.row3.value": "Settings mutation invalidation",
+  "dashboard.settings.runtime.cardDelivery.row1.hint": "Runtime target",
+  "dashboard.settings.runtime.cardDelivery.row1.label": "Platform",
+  "dashboard.settings.runtime.cardDelivery.row1.value": "Cloudflare Pages + D1",
+  "dashboard.settings.runtime.cardDelivery.row2.hint": "Portability line",
+  "dashboard.settings.runtime.cardDelivery.row2.label": "Adaptation",
+  "dashboard.settings.runtime.cardDelivery.row2.value":
+    "Provider abstractions stay shared",
+  "dashboard.settings.runtime.cardDelivery.row3.hint": "Observability",
+  "dashboard.settings.runtime.cardDelivery.row3.label": "Debug trail",
+  "dashboard.settings.runtime.cardDelivery.row3.value":
+    "Request id + centralized error pipeline",
+  "dashboard.settings.runtime.checklist.item1":
+    "Add explicit cache controls for each cached registry in the runtime tab.",
+  "dashboard.settings.runtime.checklist.item2":
+    "Keep warm-up and invalidation utilities outside route modules.",
+  "dashboard.settings.runtime.checklist.item3":
+    "Do not couple runtime status cards to client-only polling by default.",
 };
 
 export type TranslationKey = keyof typeof tr;

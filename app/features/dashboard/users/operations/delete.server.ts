@@ -1,5 +1,7 @@
 import { redirect, type AppLoadContext } from "react-router";
 
+import { USER_ROLE } from "~/domain/users/model";
+
 import type { getDbFromContext } from "../../../../../db/context";
 import { deactivateUser } from "~/lib/users/users.server";
 import { purgePublicBlogDataCache } from "~/features/public/blog/server";
@@ -42,7 +44,7 @@ export async function handleDeleteUserMutation(args: {
     args.formCopy,
     {
       isActive: false,
-      role: "admin",
+      role: USER_ROLE.admin,
     },
     args.userId,
   );

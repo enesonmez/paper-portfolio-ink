@@ -13,6 +13,7 @@ import type { PostOverview } from "~/lib/posts/posts.server";
 
 import { useDashboardPostsCopy } from "./copy";
 import {
+  DASHBOARD_POSTS_MODAL,
   DASHBOARD_POSTS_QUERY_PARAM,
   buildDashboardPostsHref,
   useDashboardPostStatusFilterOptions,
@@ -91,7 +92,7 @@ export function DashboardPostsScreen({
                   to={to(
                     buildDashboardPostsHref({
                       ...listHrefState,
-                      modal: "create",
+                      modal: DASHBOARD_POSTS_MODAL.create,
                     }),
                   )}
                 >

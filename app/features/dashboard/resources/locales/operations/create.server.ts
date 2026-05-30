@@ -23,6 +23,7 @@ import {
   parseLocaleSubmission,
   type LocaleMutationArgs,
 } from "./_shared/support.server";
+import { DASHBOARD_RESOURCES_FORM_MODE } from "../../state";
 
 export async function handleCreateLocaleMutation(
   args: LocaleMutationArgs<"create-locale">,
@@ -47,7 +48,7 @@ export async function handleCreateLocaleMutation(
         resource: APP_ERROR_RESOURCE.resourcesLocales,
         responseData: buildLocaleConflictState(
           args.formCopy.errors.createLocaleDuplicateCode,
-          "create",
+          DASHBOARD_RESOURCES_FORM_MODE.create,
           submission,
         ),
         status: 409,

@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { KeyRound, Pencil, Trash2 } from "lucide-react";
-import { Form, Link } from "react-router";
+import { Form, Link, useSubmit } from "react-router";
+
+import { ConfirmModal } from "~/components/dashboard/confirm-modal";
 
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
@@ -7,11 +10,12 @@ import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
 import { Button } from "~/components/ui/button";
 import { DataTable, type DataTableColumn } from "~/components/ui/data-table";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
-import { USER_FORM_FIELD, USER_MUTATION_INTENT } from "~/domain/users/model";
+import { USER_FORM_FIELD, USER_MUTATION_INTENT, USER_ROLE } from "~/domain/users/model";
 import type { UserOverview } from "~/lib/users/users.server";
 
 import { useDashboardUsersCopy } from "../copy";
 import {
+  DASHBOARD_USERS_MODAL,
   buildDashboardUsersHref,
   formatDashboardUserRole,
   type DashboardUsersFilters,
@@ -32,6 +36,8 @@ export function DashboardUsersTable({
   permissions,
   users,
 }: DashboardUsersTableProps) {
+  const [confirmingUserId, setConfirmingUserId] = useState<string | null>(null);
+  const submit = useSubmit();
   const to = useLocalizedPath();
   const t = useT();
   const { copy } = useDashboardUsersCopy();
@@ -67,7 +73,11 @@ export function DashboardUsersTable({
         <DashboardStatusBadge
           label={`${formatDashboardUserRole(user.role)} / ${user.isActive ? t("common.active") : t("common.inactive")}`}
           tone={
-            !user.isActive ? "danger" : user.role === "admin" ? "warning" : "neutral"
+            !user.isActive
+              ? "danger"
+              : user.role === USER_ROLE.admin
+                ? "warning"
+                : "neutral"
           }
         />
       ),
@@ -114,7 +124,7 @@ export function DashboardUsersTable({
                 to={to(
                   buildDashboardUsersHref({
                     ...listHrefState,
-                    modal: "edit",
+                    modal: DASHBOARD_USERS_MODAL.edit,
                     editId: user.id,
                   }),
                 )}
@@ -136,7 +146,7 @@ export function DashboardUsersTable({
                   buildDashboardUsersHref({
                     ...listHrefState,
                     editId: user.id,
-                    modal: "access",
+                    modal: DASHBOARD_USERS_MODAL.access,
                   }),
                 )}
               >
@@ -145,7 +155,14 @@ export function DashboardUsersTable({
             </Button>
           ) : null}
           {permissions.canDelete ? (
-            <Form method="post">
+            <Form
+              id={`delete-user-form-${user.id}`}
+              method="post"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setConfirmingUserId(user.id);
+              }}
+            >
               <input
                 type="hidden"
                 name={USER_FORM_FIELD.intent}
@@ -203,6 +220,27 @@ export function DashboardUsersTable({
             : null
         }
         previousLabel={copy.paginationPreviousLabel}
+      />
+
+      <ConfirmModal
+        isOpen={confirmingUserId !== null}
+        title={t("common.confirmDeleteTitle")}
+        description={t("common.confirmDeleteDescription")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={() => {
+          if (confirmingUserId) {
+            const form = document.getElementById(
+              `delete-user-form-${confirmingUserId}`,
+            ) as HTMLFormElement | null;
+            if (form) {
+              void submit(new FormData(form), { method: "post" });
+            }
+          }
+          setConfirmingUserId(null);
+        }}
+        onCancel={() => setConfirmingUserId(null)}
+        variant="destructive"
       />
     </DashboardPanel>
   );

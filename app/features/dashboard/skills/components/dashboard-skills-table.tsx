@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import { Form, Link } from "react-router";
+import { Form, Link, useSubmit } from "react-router";
+
+import { ConfirmModal } from "~/components/dashboard/confirm-modal";
 
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardPaginationControls } from "~/components/dashboard/pagination-controls";
@@ -17,7 +20,10 @@ import {
   type DashboardSkillsFilters,
   type DashboardSkillsPermissions,
 } from "../state";
-import type { DashboardPaginationState } from "../../shared/pagination";
+import {
+  DASHBOARD_PAGINATION_DIRECTION,
+  type DashboardPaginationState,
+} from "../../shared/pagination";
 
 interface DashboardSkillsTableProps {
   filters: DashboardSkillsFilters;
@@ -32,6 +38,8 @@ export function DashboardSkillsTable({
   permissions,
   skills,
 }: DashboardSkillsTableProps) {
+  const [confirmingSkillId, setConfirmingSkillId] = useState<string | null>(null);
+  const submit = useSubmit();
   const to = useLocalizedPath();
   const t = useT();
   const { copy } = useDashboardSkillsCopy();
@@ -131,7 +139,14 @@ export function DashboardSkillsTable({
             </Button>
           ) : null}
           {permissions.canDelete ? (
-            <Form method="post">
+            <Form
+              id={`delete-skill-form-${skill.id}`}
+              method="post"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setConfirmingSkillId(skill.id);
+              }}
+            >
               <input
                 type="hidden"
                 name={SKILL_FORM_FIELD.intent}
@@ -170,7 +185,7 @@ export function DashboardSkillsTable({
             ? buildDashboardSkillsHref({
                 search: filters.searchQuery,
                 cursor: pagination.nextCursor,
-                direction: "next",
+                direction: DASHBOARD_PAGINATION_DIRECTION.next,
               })
             : null
         }
@@ -180,11 +195,32 @@ export function DashboardSkillsTable({
             ? buildDashboardSkillsHref({
                 search: filters.searchQuery,
                 cursor: pagination.previousCursor,
-                direction: "previous",
+                direction: DASHBOARD_PAGINATION_DIRECTION.previous,
               })
             : null
         }
         previousLabel={copy.paginationPreviousLabel}
+      />
+
+      <ConfirmModal
+        isOpen={confirmingSkillId !== null}
+        title={t("common.confirmDeleteTitle")}
+        description={t("common.confirmDeleteDescription")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={() => {
+          if (confirmingSkillId) {
+            const form = document.getElementById(
+              `delete-skill-form-${confirmingSkillId}`,
+            ) as HTMLFormElement | null;
+            if (form) {
+              void submit(new FormData(form), { method: "post" });
+            }
+          }
+          setConfirmingSkillId(null);
+        }}
+        onCancel={() => setConfirmingSkillId(null)}
+        variant="destructive"
       />
     </DashboardPanel>
   );

@@ -40,7 +40,14 @@ export interface DashboardResourcesPermissions {
   translations: DashboardResourcesSectionPermissions;
 }
 
-type DashboardResourcesFormMode = "create" | "edit" | null;
+export const DASHBOARD_RESOURCES_FORM_MODE = {
+  create: "create",
+  edit: "edit",
+} as const;
+
+export type DashboardResourcesFormMode =
+  | (typeof DASHBOARD_RESOURCES_FORM_MODE)[keyof typeof DASHBOARD_RESOURCES_FORM_MODE]
+  | null;
 
 export interface DashboardResourcesLocaleFormState {
   editingCode: string | null;
@@ -221,15 +228,15 @@ export function resolveDashboardResourcesState({
   );
   const localeMode =
     modal === DASHBOARD_RESOURCES_MODAL.createLocale
-      ? "create"
+      ? DASHBOARD_RESOURCES_FORM_MODE.create
       : modal === DASHBOARD_RESOURCES_MODAL.editLocale && localeRowToEdit
-        ? "edit"
+        ? DASHBOARD_RESOURCES_FORM_MODE.edit
         : null;
   const translationMode =
     modal === DASHBOARD_RESOURCES_MODAL.createTranslation
-      ? "create"
+      ? DASHBOARD_RESOURCES_FORM_MODE.create
       : modal === DASHBOARD_RESOURCES_MODAL.editTranslation && translationRecord
-        ? "edit"
+        ? DASHBOARD_RESOURCES_FORM_MODE.edit
         : null;
 
   return {
@@ -241,11 +248,17 @@ export function resolveDashboardResourcesState({
         : buildLocaleFormValues(),
     }),
     translationForm: buildDashboardResourcesTranslationFormState({
-      editingKey: translationMode === "edit" ? editTranslationKey : null,
-      editingLocale: translationMode === "edit" ? editTranslationLocale : null,
+      editingKey:
+        translationMode === DASHBOARD_RESOURCES_FORM_MODE.edit
+          ? editTranslationKey
+          : null,
+      editingLocale:
+        translationMode === DASHBOARD_RESOURCES_FORM_MODE.edit
+          ? editTranslationLocale
+          : null,
       mode: translationMode,
       values:
-        translationRecord && translationMode === "edit"
+        translationRecord && translationMode === DASHBOARD_RESOURCES_FORM_MODE.edit
           ? toTranslationFormValues(translationRecord)
           : buildTranslationFormValues({
               locale: selectedTranslationLocale,

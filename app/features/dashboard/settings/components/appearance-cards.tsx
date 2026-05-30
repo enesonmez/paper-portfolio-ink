@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react";
 import { DashboardPanel } from "~/components/dashboard/panel";
 import {
   ACCOUNT_CONFIGURATION_DEFINITIONS,
+  ACCOUNT_CONFIGURATION_KEY,
   type AccountConfigurationKey,
 } from "~/domain/configuration/model";
 import { useLocalizedPath } from "~/shared/i18n/i18n-react";
@@ -48,21 +49,21 @@ export function DashboardSettingsAppearanceCards({
             const rawValue = accountValues[row.key];
             let displayValue = rawValue || copy.configurationValueFallback;
 
-            if (row.key === "appearance.primaryColor") {
+            if (row.key === ACCOUNT_CONFIGURATION_KEY.appearancePrimaryColor) {
               const option = copy.appearanceColorOptions.find(
                 (opt) => opt.value === rawValue,
               );
               if (option) {
                 displayValue = option.label;
               }
-            } else if (row.key === "appearance.headingFont") {
+            } else if (row.key === ACCOUNT_CONFIGURATION_KEY.appearanceHeadingFont) {
               const option = copy.appearanceHeadingFontOptions.find(
                 (opt) => opt.value === rawValue,
               );
               if (option) {
                 displayValue = option.label;
               }
-            } else if (row.key === "appearance.bodyFont") {
+            } else if (row.key === ACCOUNT_CONFIGURATION_KEY.appearanceBodyFont) {
               const option = copy.appearanceBodyFontOptions.find(
                 (opt) => opt.value === rawValue,
               );

@@ -16,6 +16,7 @@ import { suggestSlugFromTitle } from "~/lib/slug";
 
 import { useDashboardSkillsCopy } from "../copy";
 import {
+  DASHBOARD_SKILLS_MODAL,
   buildDashboardSkillsHref,
   type DashboardSkillsFormState,
   type DashboardSkillsHrefParams,
@@ -165,7 +166,7 @@ export function DashboardSkillsModalView({
     return null;
   }
 
-  const isEditMode = form.mode === "edit";
+  const isEditMode = form.mode === DASHBOARD_SKILLS_MODAL.edit;
   const modalVariant = isEditMode
     ? {
         actionLabel: copy.editActionLabel,

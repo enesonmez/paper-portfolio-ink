@@ -1,5 +1,6 @@
 import type { getDbFromContext } from "../../../../../../db/context";
 import { buildUserFormValues, type UserFormState } from "~/domain/users/form";
+import { USER_ROLE } from "~/domain/users/model";
 import type { parseUserFormData } from "~/lib/users/user-form.server";
 import {
   countActiveAdmins,
@@ -53,11 +54,11 @@ export async function ensureAdminInvariant(
 ) {
   const currentUser = await getUserById(db, userId);
 
-  if (!currentUser || !currentUser.isActive || currentUser.role !== "admin") {
+  if (!currentUser || !currentUser.isActive || currentUser.role !== USER_ROLE.admin) {
     return null;
   }
 
-  if (nextState.isActive && nextState.role === "admin") {
+  if (nextState.isActive && nextState.role === USER_ROLE.admin) {
     return null;
   }
 

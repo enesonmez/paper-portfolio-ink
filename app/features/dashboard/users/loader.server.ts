@@ -21,6 +21,7 @@ import {
 
 import {
   DASHBOARD_USERS_ACTIVE_FILTER,
+  DASHBOARD_USERS_MODAL,
   DASHBOARD_USERS_PAGE_SIZE,
   DASHBOARD_USERS_QUERY_PARAM,
   DASHBOARD_USERS_ROLE_FILTER,
@@ -76,10 +77,10 @@ export async function loadDashboardUsersData(
               : viewState.role,
           searchQuery: viewState.searchQuery,
         }),
-        modal === "edit" && editId
+        modal === DASHBOARD_USERS_MODAL.edit && editId
           ? getUserOverviewById(db, editId)
           : Promise.resolve(null),
-        modal === "access" && editId
+        modal === DASHBOARD_USERS_MODAL.access && editId
           ? getUserAuthorizationById(db, editId)
           : Promise.resolve(null),
       ]);

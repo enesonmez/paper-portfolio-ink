@@ -1,9 +1,12 @@
-import { useRef, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
+import { useSubmit } from "react-router";
 
+import { ConfirmModal } from "~/components/dashboard/confirm-modal";
 import { Button } from "~/components/ui/button";
 import { FormError, TextField } from "~/components/ui/form-field";
 import { LOGGING_FORM_FIELD } from "~/domain/logging/model";
 import type { DashboardLoggingRangeFormState } from "~/features/dashboard/logging/state";
+import { useT } from "~/shared/i18n/i18n-react";
 
 function buildOffsetMinutes(value: string) {
   const date = new Date(value);
@@ -42,6 +45,9 @@ export function DashboardLoggingRangeForm({
   rangeForm,
   startLabel,
 }: DashboardLoggingRangeFormProps) {
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const submit = useSubmit();
+  const t = useT();
   const startAtOffsetRef = useRef<HTMLInputElement>(null);
   const endAtOffsetRef = useRef<HTMLInputElement>(null);
 
@@ -75,11 +81,9 @@ export function DashboardLoggingRangeForm({
     }
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    const startAtInput = event.currentTarget.elements.namedItem(
-      LOGGING_FORM_FIELD.startAt,
-    );
-    const endAtInput = event.currentTarget.elements.namedItem(LOGGING_FORM_FIELD.endAt);
+  function syncAllOffsets(form: HTMLFormElement) {
+    const startAtInput = form.elements.namedItem(LOGGING_FORM_FIELD.startAt);
+    const endAtInput = form.elements.namedItem(LOGGING_FORM_FIELD.endAt);
 
     if (startAtInput instanceof HTMLInputElement) {
       syncOffsetField({
@@ -96,8 +100,13 @@ export function DashboardLoggingRangeForm({
     }
   }
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    syncAllOffsets(event.currentTarget);
+  }
+
   return (
     <form
+      id="logging-range-form"
       method="post"
       className="grid gap-4 md:grid-cols-2"
       onInput={handleInput}
@@ -145,16 +154,41 @@ export function DashboardLoggingRangeForm({
           </Button>
         ) : null}
         {canDeleteCurrentTab ? (
-          <Button
-            type="submit"
-            variant="destructive"
-            name={LOGGING_FORM_FIELD.intent}
-            value={deleteIntent}
-          >
-            {deleteActionLabel}
-          </Button>
+          <>
+            <input
+              type="hidden"
+              name={LOGGING_FORM_FIELD.intent}
+              value={deleteIntent}
+            />
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setIsConfirmingDelete(true)}
+            >
+              {deleteActionLabel}
+            </Button>
+          </>
         ) : null}
       </div>
+      <ConfirmModal
+        isOpen={isConfirmingDelete}
+        title={t("common.confirmDeleteTitle")}
+        description={t("common.confirmDeleteDescription")}
+        confirmLabel={deleteActionLabel}
+        cancelLabel={t("common.cancel")}
+        onConfirm={() => {
+          setIsConfirmingDelete(false);
+          const form = document.getElementById(
+            "logging-range-form",
+          ) as HTMLFormElement | null;
+          if (form) {
+            syncAllOffsets(form);
+            void submit(new FormData(form), { method: "post" });
+          }
+        }}
+        onCancel={() => setIsConfirmingDelete(false)}
+        variant="destructive"
+      />
     </form>
   );
 }

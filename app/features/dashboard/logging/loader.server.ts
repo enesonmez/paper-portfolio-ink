@@ -19,6 +19,7 @@ import {
 } from "~/shared/errors/contracts";
 
 import {
+  DASHBOARD_LOGGING_TAB,
   buildDeniedLoaderData,
   buildGrantedLoggingLoaderData,
   normalizeLoggingTab,
@@ -67,14 +68,14 @@ export async function loadDashboardLoggingData(
         context,
         {
           errorPage:
-            canReadErrors && selectedTab === "errors"
+            canReadErrors && selectedTab === DASHBOARD_LOGGING_TAB.errors
               ? {
                   cursor,
                   direction,
                 }
               : undefined,
           historyPage:
-            canReadHistory && selectedTab === "history"
+            canReadHistory && selectedTab === DASHBOARD_LOGGING_TAB.history
               ? {
                   cursor,
                   direction,

@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import { Form, Link } from "react-router";
+import { Form, Link, useSubmit } from "react-router";
+
+import { ConfirmModal } from "~/components/dashboard/confirm-modal";
 
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { DashboardStatusBadge } from "~/components/dashboard/status-badge";
@@ -26,6 +29,8 @@ export function DashboardResourcesLocalesTable({
   canUpdate: boolean;
   locales: LocaleResourceRecord[];
 }) {
+  const [confirmingLocaleCode, setConfirmingLocaleCode] = useState<string | null>(null);
+  const submit = useSubmit();
   const to = useLocalizedPath();
   const t = useT();
   const canManageLocaleRows = canUpdate || canDelete;
@@ -106,7 +111,14 @@ export function DashboardResourcesLocalesTable({
             </Button>
           ) : null}
           {canDelete ? (
-            <Form method="post">
+            <Form
+              id={`delete-locale-form-${localeRow.code}`}
+              method="post"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setConfirmingLocaleCode(localeRow.code);
+              }}
+            >
               <input
                 type="hidden"
                 name={RESOURCE_FORM_FIELD.intent}
@@ -141,6 +153,27 @@ export function DashboardResourcesLocalesTable({
         emptyState={t("dashboard.resources.emptyLocales")}
         getRowKey={(localeRow) => localeRow.code}
         rows={locales}
+      />
+
+      <ConfirmModal
+        isOpen={confirmingLocaleCode !== null}
+        title={t("common.confirmDeleteTitle")}
+        description={t("common.confirmDeleteDescription")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={() => {
+          if (confirmingLocaleCode) {
+            const form = document.getElementById(
+              `delete-locale-form-${confirmingLocaleCode}`,
+            ) as HTMLFormElement | null;
+            if (form) {
+              void submit(new FormData(form), { method: "post" });
+            }
+          }
+          setConfirmingLocaleCode(null);
+        }}
+        onCancel={() => setConfirmingLocaleCode(null)}
+        variant="destructive"
       />
     </DashboardPanel>
   );

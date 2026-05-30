@@ -1,5 +1,7 @@
 import { redirect, type AppLoadContext } from "react-router";
 
+import { POST_MUTATION_INTENT } from "~/domain/posts/model";
+
 import type { getDbFromContext } from "../../../../../db/context";
 import { deletePost } from "~/lib/posts/posts.server";
 import {
@@ -39,7 +41,7 @@ export async function handleDeletePostMutation(args: {
     action: APP_ERROR_ACTION.delete,
     context: args.context,
     details: {
-      intent: "delete",
+      intent: POST_MUTATION_INTENT.delete,
     },
     message: "Post deleted",
     request: args.request,

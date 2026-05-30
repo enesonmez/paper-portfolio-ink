@@ -1,6 +1,7 @@
 import { redirect, type AppLoadContext } from "react-router";
 
 import type { PostFormState } from "~/domain/posts/form";
+import { POST_MUTATION_INTENT } from "~/domain/posts/model";
 import type { AuthorizationActor } from "~/shared/authz/authz.server";
 import type { getDbFromContext } from "../../../../../db/context";
 import { buildBusinessError } from "~/shared/errors/builders.server";
@@ -75,7 +76,7 @@ export async function handleCreatePostMutation(args: {
     action: APP_ERROR_ACTION.create,
     context: args.context,
     details: {
-      intent: "create",
+      intent: POST_MUTATION_INTENT.create,
       slug: args.submission.slug,
     },
     message: "Post created",

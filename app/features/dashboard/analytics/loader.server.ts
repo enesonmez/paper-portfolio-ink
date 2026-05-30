@@ -23,6 +23,7 @@ import {
 } from "~/lib/analytics/analytics.server";
 
 import {
+  DASHBOARD_ANALYTICS_QUERY_PARAM,
   buildDashboardAnalyticsFilters,
   buildDashboardAnalyticsViewState,
   buildDeniedDashboardAnalyticsLoaderData,
@@ -61,7 +62,7 @@ export async function loadDashboardAnalyticsData(
       const viewState = buildDashboardAnalyticsViewState(url);
       const filters = buildDashboardAnalyticsFilters(viewState);
 
-      const viewPostId = url.searchParams.get("view");
+      const viewPostId = url.searchParams.get(DASHBOARD_ANALYTICS_QUERY_PARAM.view);
       let postDailyViews: ViewsDataPoint[] = [];
       let postMonthlyViews: MonthlyViewsDataPoint[] = [];
       let selectedPostTitle = "";

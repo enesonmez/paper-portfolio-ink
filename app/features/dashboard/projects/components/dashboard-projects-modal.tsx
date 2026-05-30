@@ -15,6 +15,7 @@ import { PROJECT_FORM_FIELD, PROJECT_MUTATION_INTENT } from "~/domain/projects/m
 
 import { useDashboardProjectsCopy } from "../copy";
 import {
+  DASHBOARD_PROJECTS_MODAL,
   buildDashboardProjectsHref,
   useDashboardProjectStatusOptions,
   type DashboardProjectsHrefParams,
@@ -42,10 +43,15 @@ export function DashboardProjectsModalView({
   }
 
   const actionLabel =
-    form.mode === "edit" ? copy.editActionLabel : copy.createActionLabel;
-  const title = form.mode === "edit" ? copy.editTitle : copy.createTitle;
+    form.mode === DASHBOARD_PROJECTS_MODAL.edit
+      ? copy.editActionLabel
+      : copy.createActionLabel;
+  const title =
+    form.mode === DASHBOARD_PROJECTS_MODAL.edit ? copy.editTitle : copy.createTitle;
   const description =
-    form.mode === "edit" ? copy.editDescription : copy.createDescription;
+    form.mode === DASHBOARD_PROJECTS_MODAL.edit
+      ? copy.editDescription
+      : copy.createDescription;
   const titleInputId = "dashboard-project-title";
 
   return (
@@ -59,12 +65,12 @@ export function DashboardProjectsModalView({
           type="hidden"
           name={PROJECT_FORM_FIELD.intent}
           value={
-            form.mode === "edit"
+            form.mode === DASHBOARD_PROJECTS_MODAL.edit
               ? PROJECT_MUTATION_INTENT.update
               : PROJECT_MUTATION_INTENT.create
           }
         />
-        {form.mode === "edit" && form.editingProjectId ? (
+        {form.mode === DASHBOARD_PROJECTS_MODAL.edit && form.editingProjectId ? (
           <input
             type="hidden"
             name={PROJECT_FORM_FIELD.projectId}
