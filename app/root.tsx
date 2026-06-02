@@ -30,6 +30,15 @@ import { getThemeFromRequest } from "~/features/public/layout/theme.server";
 
 import appStylesHref from "./styles/app.css?url";
 
+type RootLoaderData = {
+  configuration: Record<string, string>;
+  cspNonce?: string;
+  locale: string;
+  messages: ReturnType<typeof getSeedMessages>;
+  supportedLocales: Awaited<ReturnType<typeof loadI18nPayload>>["supportedLocales"];
+  theme: ReturnType<typeof getThemeFromRequest>;
+};
+
 export async function loader({
   context,
   request,
@@ -138,10 +147,11 @@ function buildAppearanceStyleOverrides(configuration?: Record<string, string>) {
 }
 
 export function Layout({ children }: { children: ReactNode }) {
-  const data = useRouteLoaderData<typeof loader>("root");
+  const data = useRouteLoaderData<RootLoaderData>("root");
   const theme = data?.theme ?? PUBLIC_THEME.light;
   const locale = data?.locale ?? "tr";
   const appearanceStyles = buildAppearanceStyleOverrides(data?.configuration);
+  const cspNonce = data?.cspNonce;
 
   return (
     <html lang={locale} className={theme} suppressHydrationWarning>
@@ -149,18 +159,16 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
-        <Links />
-        {appearanceStyles ? (
-          <style dangerouslySetInnerHTML={{ __html: appearanceStyles }} />
-        ) : null}
+        <Links nonce={cspNonce} />
+        {appearanceStyles ? <style nonce={cspNonce}>{appearanceStyles}</style> : null}
       </head>
       <body
         className="selection:bg-primary selection:text-primary-foreground"
         suppressHydrationWarning
       >
         {children}
-        <ScrollRestoration />
-        <Scripts />
+        <ScrollRestoration nonce={cspNonce} />
+        <Scripts nonce={cspNonce} />
       </body>
     </html>
   );
