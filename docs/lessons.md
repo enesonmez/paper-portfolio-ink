@@ -244,6 +244,7 @@ Bu doküman, `docs/features` altındaki feature dokümanları oluşturulma sıra
 - **[GÜNCEL / ACTIVE]** **[TS/CONSTANTS]**: Dashboard mutasyonlarında ve pagination kontrollerinde yer alan raw intent (`"update"`) veya pagination direction (`"next"`, `"previous"`) gibi magic string'lerin, `POST_MUTATION_INTENT` ve `DASHBOARD_PAGINATION_DIRECTION` gibi merkezi tip güvenli sabitlerle (as const) değiştirilmesi drift risklerini sıfıra indirir.
 - **[GÜNCEL / ACTIVE]** **[UI/REACT]**: React Router v7'de programatik `submit(form)` çağrısı, form elementine sentetik bir submit event fırlatarak `onSubmit` dinleyicisini ikinci kez tetikler. Onay modalları gibi yerlerde `e.preventDefault()` ile formu durduruyorsak, bu döngüyü aşmak için formu değil doğrudan raw `new FormData(form)` nesnesini submit etmeliyiz.
 - **[GÜNCEL / ACTIVE]** **[UI/REACT]**: Programatik form gönderimi React'in `onSubmitCapture` veya `onInput` gibi yerel event lifecycle handler'larını çalıştırmaz. `logging` aralığındaki client timezone offset'leri gibi dinamik eşitlemelere ihtiyaç duyan formlarda, `FormData`'yı göndermeden hemen önce gizli offset alanlarını programatik olarak el ile senkronize etmeliyiz.
+- **[GÜNCEL / ACTIVE]** **[FOUNDATION]**: Guvenlik auditlerinde yalnizca authz ve validation kontrol etmek yeterli degildir; SSR giris noktasindaki global header baseline'i, production'da gereksiz `.well-known` debug rotalari ve custom cookie builder'larindaki `Secure` bayragi eksikleri de sistematik kontrol listesine dahil edilmelidir.
 
 ---
 

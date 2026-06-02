@@ -4,6 +4,24 @@ import { ServerRouter } from "react-router";
 
 import { normalizeAppError } from "~/shared/errors/app-error.server";
 import { reportAppError } from "~/shared/errors/report.server";
+import { applySecurityHeaders, createCspNonce } from "~/shared/security/headers.server";
+
+function isRootLoaderData(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function injectRootCspNonce(routerContext: EntryContext, nonce: string) {
+  const rootLoaderData: unknown = routerContext.staticHandlerContext.loaderData.root;
+
+  if (!isRootLoaderData(rootLoaderData)) {
+    return;
+  }
+
+  routerContext.staticHandlerContext.loaderData.root = {
+    ...rootLoaderData,
+    cspNonce: nonce,
+  };
+}
 
 export default async function handleRequest(
   request: Request,
@@ -11,8 +29,10 @@ export default async function handleRequest(
   responseHeaders: Headers,
   routerContext: EntryContext,
 ) {
+  const cspNonce = createCspNonce();
+  injectRootCspNonce(routerContext, cspNonce);
   const body = await renderToReadableStream(
-    <ServerRouter context={routerContext} url={request.url} />,
+    <ServerRouter context={routerContext} url={request.url} nonce={cspNonce} />,
     {
       signal: request.signal,
       onError(error: unknown) {
@@ -36,10 +56,11 @@ export default async function handleRequest(
     },
   );
 
-  responseHeaders.set("Content-Type", "text/html; charset=utf-8");
+  const headers = applySecurityHeaders(responseHeaders, { nonce: cspNonce });
+  headers.set("Content-Type", "text/html; charset=utf-8");
 
   return new Response(body, {
-    headers: responseHeaders,
+    headers,
     status: responseStatusCode,
   });
 }
