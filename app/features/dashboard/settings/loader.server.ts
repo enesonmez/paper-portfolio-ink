@@ -1,6 +1,11 @@
 import type { AppLoadContext } from "react-router";
 import { getDbFromContext } from "../../../../db/context";
 import {
+  getDefaultAccountConfigurationRecord,
+  getAccountConfigurationDefinition,
+  isAccountConfigurationKey,
+} from "~/domain/configuration/model";
+import {
   actorHasClaim,
   assertAnyClaimAuthorized,
   withDashboardAccess,
@@ -20,12 +25,15 @@ import { loadAccountConfigurationParameters } from "~/lib/configuration/configur
 import { listActiveSessions } from "~/lib/configuration/sessions.server";
 import { getSessionForRequest } from "~/shared/auth/session.server";
 
+import { listRuntimeCacheEntries } from "./operations/runtime-cache.server";
 import {
   buildDeniedDashboardSettingsLoaderData,
+  buildGrantedDashboardSettingsLoaderData,
   DASHBOARD_SETTINGS_QUERY_PARAM,
   DASHBOARD_SETTINGS_TAB,
   normalizeDashboardSettingsTab,
   resolveDashboardSettingsAccountForm,
+  type DashboardSettingsGrantedLoaderData,
   type DashboardSettingsLoaderData,
   type DashboardSettingsSecuritySession,
   type DashboardSettingsTab,
@@ -90,7 +98,17 @@ export async function loadDashboardSettingsData(
         activeTab = authorizedTabs[0];
       }
 
-      const accountValues = await loadAccountConfigurationParameters(context, request);
+      const requestedEditKey = url.searchParams.get(DASHBOARD_SETTINGS_QUERY_PARAM.key);
+      const requiresAccountConfiguration =
+        activeTab === DASHBOARD_SETTINGS_TAB.account ||
+        activeTab === DASHBOARD_SETTINGS_TAB.appearance ||
+        (requestedEditKey !== null && isAccountConfigurationKey(requestedEditKey)
+          ? getAccountConfigurationDefinition(requestedEditKey) !== undefined
+          : false);
+
+      const accountValues = requiresAccountConfiguration
+        ? await loadAccountConfigurationParameters(context, request)
+        : getDefaultAccountConfigurationRecord();
 
       const hasSettingsSecurityManageAny = actorHasClaim(
         actor,
@@ -98,6 +116,7 @@ export async function loadDashboardSettingsData(
       );
 
       let sessionsData: DashboardSettingsSecuritySession[] | undefined;
+      let runtimeData: DashboardSettingsGrantedLoaderData["runtime"];
       if (activeTab === DASHBOARD_SETTINGS_TAB.security) {
         const db = getDbFromContext(context);
         const activeSessions = await listActiveSessions(
@@ -126,21 +145,30 @@ export async function loadDashboardSettingsData(
             if (b.isCurrent) return 1;
             return 0;
           });
+      } else if (activeTab === DASHBOARD_SETTINGS_TAB.runtime) {
+        runtimeData = {
+          cacheEntries: await listRuntimeCacheEntries({
+            actor,
+            context,
+            request,
+          }),
+          platform: context.runtime.platform,
+        };
       }
 
-      return {
-        access: "granted",
+      return buildGrantedDashboardSettingsLoaderData({
         accountForm: resolveDashboardSettingsAccountForm({
           accountValues,
-          editKey: url.searchParams.get(DASHBOARD_SETTINGS_QUERY_PARAM.key),
+          editKey: requestedEditKey,
           modal: url.searchParams.get(DASHBOARD_SETTINGS_QUERY_PARAM.modal),
         }),
         accountValues,
-        selectedTab: activeTab,
         authorizedTabs,
         hasSettingsSecurityManageAny,
+        runtime: runtimeData,
+        selectedTab: activeTab,
         sessions: sessionsData,
-      };
+      });
     },
   });
 }

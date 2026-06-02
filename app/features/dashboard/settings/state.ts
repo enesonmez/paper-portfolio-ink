@@ -8,6 +8,7 @@ import {
   isAccountConfigurationKey,
   type AccountConfigurationKey,
 } from "~/domain/configuration/model";
+import type { DashboardSettingsRuntimeData } from "./runtime/state";
 
 export const DASHBOARD_SETTINGS_TAB = {
   account: "account",
@@ -61,6 +62,7 @@ export interface DashboardSettingsGrantedLoaderData {
   selectedTab: DashboardSettingsTab;
   authorizedTabs: DashboardSettingsTab[];
   hasSettingsSecurityManageAny?: boolean;
+  runtime?: DashboardSettingsRuntimeData;
   sessions?: DashboardSettingsSecuritySession[];
 }
 
@@ -72,6 +74,11 @@ export interface DashboardSettingsDeniedLoaderData {
 export type DashboardSettingsLoaderData =
   | DashboardSettingsDeniedLoaderData
   | DashboardSettingsGrantedLoaderData;
+
+export interface DashboardSettingsActionData {
+  accountForm?: AccountConfigurationFormState;
+  notice?: string;
+}
 
 interface ResolveDashboardSettingsAccountFormArgs {
   accountValues: Record<AccountConfigurationKey, string>;
@@ -105,6 +112,13 @@ function buildDashboardSettingsAccountFormState({
     mode,
     values,
   };
+}
+
+export function buildEmptyDashboardSettingsAccountFormState() {
+  return buildDashboardSettingsAccountFormState({
+    mode: null,
+    values: buildAccountConfigurationFormValues(),
+  });
 }
 
 export function normalizeDashboardSettingsTab(
@@ -157,6 +171,27 @@ export function buildDeniedDashboardSettingsLoaderData(): DashboardSettingsDenie
   };
 }
 
+export function buildGrantedDashboardSettingsLoaderData(args: {
+  accountForm: DashboardSettingsAccountFormViewState;
+  accountValues: Record<AccountConfigurationKey, string>;
+  authorizedTabs: DashboardSettingsTab[];
+  hasSettingsSecurityManageAny?: boolean;
+  runtime?: DashboardSettingsRuntimeData;
+  selectedTab: DashboardSettingsTab;
+  sessions?: DashboardSettingsSecuritySession[];
+}): DashboardSettingsGrantedLoaderData {
+  return {
+    access: "granted",
+    accountForm: args.accountForm,
+    accountValues: args.accountValues,
+    authorizedTabs: args.authorizedTabs,
+    hasSettingsSecurityManageAny: args.hasSettingsSecurityManageAny,
+    runtime: args.runtime,
+    selectedTab: args.selectedTab,
+    sessions: args.sessions,
+  };
+}
+
 export function resolveDashboardSettingsAccountForm({
   accountValues,
   editKey,
@@ -185,16 +220,16 @@ export function resolveDashboardSettingsAccountForm({
 
 export function mergeDashboardSettingsAccountFormState(
   loaderForm: DashboardSettingsAccountFormViewState,
-  actionData?: AccountConfigurationFormState,
+  actionData?: DashboardSettingsActionData,
 ) {
-  if (!actionData) {
+  if (!actionData?.accountForm) {
     return loaderForm;
   }
 
   return buildDashboardSettingsAccountFormState({
     editingKey: loaderForm.editingKey,
-    errors: actionData.errors,
+    errors: actionData.accountForm.errors,
     mode: loaderForm.mode,
-    values: actionData.values,
+    values: actionData.accountForm.values,
   });
 }

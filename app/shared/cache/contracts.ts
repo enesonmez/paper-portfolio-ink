@@ -5,6 +5,8 @@ export interface DataCacheWriteOptions {
   staleWhileRevalidateSeconds?: number;
 }
 
+export type AppDataCacheStrategy = "cloudflare" | "memory" | "none";
+
 export interface AppDataCache {
   delete(key: string): Promise<boolean>;
   get<T>(key: string, schema: z.ZodType<T>): Promise<T | null>;

@@ -16,6 +16,8 @@ import { useLocalizedPath } from "~/shared/i18n/i18n-react";
 import { DashboardSettingsAccountCards } from "./components/account-cards";
 import { DashboardSettingsAppearanceCards } from "./components/appearance-cards";
 import { DashboardSettingsConfigurationModal } from "./components/configuration-modal";
+import { DashboardSettingsRuntimeCards } from "./components/runtime-cards";
+import { DashboardSettingsRuntimeMetrics } from "./components/runtime-metrics";
 import {
   DashboardSettingsSecurityCards,
   DashboardSettingsSecurityActions,
@@ -62,8 +64,10 @@ function renderStaticCardRows(
 
 export function DashboardSettingsScreen({
   loaderData,
+  notice,
 }: {
   loaderData: DashboardSettingsGrantedLoaderData;
+  notice?: string;
 }) {
   const to = useLocalizedPath();
   const copy = useDashboardSettingsCopy();
@@ -122,6 +126,12 @@ export function DashboardSettingsScreen({
         </div>
       </DashboardPanel>
 
+      {notice ? (
+        <DashboardPanel>
+          <p className="font-sans text-sm font-bold">{notice}</p>
+        </DashboardPanel>
+      ) : null}
+
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(18rem,1fr)]">
         <div className="grid gap-6 lg:grid-cols-2">
           {isAccountTab ? (
@@ -136,6 +146,11 @@ export function DashboardSettingsScreen({
             />
           ) : loaderData.selectedTab === DASHBOARD_SETTINGS_TAB.security ? (
             <DashboardSettingsSecurityCards sessions={loaderData.sessions || []} />
+          ) : loaderData.selectedTab === DASHBOARD_SETTINGS_TAB.runtime &&
+            loaderData.runtime ? (
+            <DashboardSettingsRuntimeCards
+              cacheEntries={loaderData.runtime.cacheEntries}
+            />
           ) : (
             selectedContent.cards.map((card) => (
               <DashboardPanel key={card.title} className="space-y-4">
@@ -162,6 +177,34 @@ export function DashboardSettingsScreen({
             }
             sessions={loaderData.sessions || []}
           />
+        ) : loaderData.selectedTab === DASHBOARD_SETTINGS_TAB.runtime ? (
+          <div className="space-y-6">
+            <DashboardSettingsRuntimeMetrics />
+            <DashboardPanel className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-muted-foreground font-sans text-xs font-bold tracking-[0.18em] uppercase">
+                  {copy.pageEyebrow}
+                </p>
+                <h3 className="font-display text-3xl leading-none">
+                  {selectedContent.checklist.title}
+                </h3>
+                <p className="text-muted-foreground font-sans text-sm font-bold">
+                  {selectedContent.checklist.description}
+                </p>
+              </div>
+
+              <ul className="space-y-3">
+                {selectedContent.checklist.items.map((item) => (
+                  <li
+                    key={item}
+                    className="bg-muted border-2 border-black px-4 py-3 font-sans text-sm font-bold dark:bg-stone-800"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </DashboardPanel>
+          </div>
         ) : (
           <DashboardPanel className="space-y-4">
             <div className="space-y-2">

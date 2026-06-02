@@ -5,10 +5,7 @@ import { Button } from "~/components/ui/button";
 import { DashboardPanel } from "~/components/dashboard/panel";
 import { ConfirmModal } from "~/components/dashboard/confirm-modal";
 import { parseReadableUserAgent } from "~/shared/utils/user-agent";
-import {
-  ACCOUNT_CONFIGURATION_FORM_FIELD,
-  ACCOUNT_CONFIGURATION_MUTATION_INTENT,
-} from "~/domain/configuration/model";
+import { SETTINGS_MUTATION_FORM_FIELD, SETTINGS_MUTATION_INTENT } from "../contracts";
 import { useDashboardSettingsCopy } from "../copy";
 import type { DashboardSettingsSecuritySession } from "../state";
 
@@ -76,8 +73,8 @@ export function DashboardSettingsSecurityCards({
               >
                 <input
                   type="hidden"
-                  name={ACCOUNT_CONFIGURATION_FORM_FIELD.intent}
-                  value={ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeSession}
+                  name={SETTINGS_MUTATION_FORM_FIELD.intent}
+                  value={SETTINGS_MUTATION_INTENT.revokeSession}
                 />
                 <input type="hidden" name="sessionId" value={session.id} />
                 <Button
@@ -209,8 +206,8 @@ export function DashboardSettingsSecurityActions({
           >
             <input
               type="hidden"
-              name={ACCOUNT_CONFIGURATION_FORM_FIELD.intent}
-              value={ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeOtherSessions}
+              name={SETTINGS_MUTATION_FORM_FIELD.intent}
+              value={SETTINGS_MUTATION_INTENT.revokeOtherSessions}
             />
             <Button
               type="submit"
@@ -246,8 +243,8 @@ export function DashboardSettingsSecurityActions({
           >
             <input
               type="hidden"
-              name={ACCOUNT_CONFIGURATION_FORM_FIELD.intent}
-              value={ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeAllSessions}
+              name={SETTINGS_MUTATION_FORM_FIELD.intent}
+              value={SETTINGS_MUTATION_INTENT.revokeAllSessions}
             />
             <Button
               type="submit"

@@ -173,18 +173,7 @@ export const ACCOUNT_CONFIGURATION_KEYS = ACCOUNT_CONFIGURATION_DEFINITIONS.map(
   (definition) => definition.key,
 );
 
-export const ACCOUNT_CONFIGURATION_MUTATION_INTENT = {
-  update: "update-account-configuration",
-  revokeSession: "revoke-session",
-  revokeOtherSessions: "revoke-other-sessions",
-  revokeAllSessions: "revoke-all-sessions",
-} as const;
-
-export type AccountConfigurationMutationIntent =
-  (typeof ACCOUNT_CONFIGURATION_MUTATION_INTENT)[keyof typeof ACCOUNT_CONFIGURATION_MUTATION_INTENT];
-
 export const ACCOUNT_CONFIGURATION_FORM_FIELD = {
-  intent: "intent",
   key: "key",
   value: "value",
 } as const;
@@ -193,17 +182,6 @@ export function isAccountConfigurationKey(
   value: string,
 ): value is AccountConfigurationKey {
   return ACCOUNT_CONFIGURATION_KEYS.includes(value as AccountConfigurationKey);
-}
-
-export function isAccountConfigurationMutationIntent(
-  value: string,
-): value is AccountConfigurationMutationIntent {
-  return (
-    value === ACCOUNT_CONFIGURATION_MUTATION_INTENT.update ||
-    value === ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeSession ||
-    value === ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeOtherSessions ||
-    value === ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeAllSessions
-  );
 }
 
 export function getAccountConfigurationDefinition(key: AccountConfigurationKey) {
