@@ -69,6 +69,28 @@ test("updates an account configuration value from the settings modal", async ({
   await expect(page.getByText("Paper Ink")).toBeVisible();
 });
 
+test("renders runtime cache controls and posts a refresh action", async ({ page }) => {
+  await page.goto(`${E2E_LOCALE_PREFIX}/dashboard/settings?tab=runtime`);
+
+  await expect(page).toHaveURL(
+    new RegExp(`${E2E_LOCALE_PREFIX}/dashboard/settings\\?tab=runtime$`),
+  );
+  await expect(page.getByText("Configuration cache")).toBeVisible();
+  await expect(page.getByText("Authz claim cache")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 3, name: "Runtime telemetry" }),
+  ).toBeVisible();
+
+  const refreshButtons = page.getByRole("button", { name: "Cache Yenile" });
+  await expect(refreshButtons.first()).toBeVisible();
+  await refreshButtons.first().click();
+
+  await expect(page).toHaveURL(
+    new RegExp(`${E2E_LOCALE_PREFIX}/dashboard/settings\\?tab=runtime$`),
+  );
+  await expect(page.getByText("Configuration cache")).toBeVisible();
+});
+
 test("filters seeded translation resources inside the admin settings area", async ({
   page,
 }) => {

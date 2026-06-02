@@ -8,11 +8,11 @@ import {
   ACCOUNT_CONFIGURATION_DEFINITIONS,
   ACCOUNT_CONFIGURATION_FORM_FIELD,
   ACCOUNT_CONFIGURATION_KEY,
-  ACCOUNT_CONFIGURATION_MUTATION_INTENT,
   ACCOUNT_CONFIGURATION_SECTION,
 } from "~/domain/configuration/model";
 import { useLocalizedPath, useT } from "~/shared/i18n/i18n-react";
 
+import { SETTINGS_MUTATION_FORM_FIELD, SETTINGS_MUTATION_INTENT } from "../contracts";
 import { useDashboardSettingsCopy } from "../copy";
 import {
   buildDashboardSettingsHref,
@@ -68,8 +68,8 @@ export function DashboardSettingsConfigurationModal({
       <Form method="post" className="space-y-4">
         <input
           type="hidden"
-          name={ACCOUNT_CONFIGURATION_FORM_FIELD.intent}
-          value={ACCOUNT_CONFIGURATION_MUTATION_INTENT.update}
+          name={SETTINGS_MUTATION_FORM_FIELD.intent}
+          value={SETTINGS_MUTATION_INTENT.updateAccountConfiguration}
         />
         <input
           type="hidden"

@@ -6,10 +6,15 @@ export { createCloudflareDataCache } from "./adapters/cloudflare-data-cache.serv
 export { createMemoryDataCache } from "./adapters/memory-data-cache.server";
 export type {
   AppDataCache,
+  AppDataCacheStrategy,
   CloudflareCacheStore,
   DataCacheWriteOptions,
 } from "./contracts";
-import type { AppDataCache, DataCacheWriteOptions } from "./contracts";
+import type {
+  AppDataCache,
+  AppDataCacheStrategy,
+  DataCacheWriteOptions,
+} from "./contracts";
 
 interface DataCacheContextShape {
   cache?: AppDataCache;
@@ -30,15 +35,31 @@ const noopDataCache: AppDataCache = {
 const sharedNodeDataCache = createMemoryDataCache();
 
 export function getAppDataCache(context: DataCacheContextShape): AppDataCache {
-  if (context.cache) {
-    return context.cache;
+  const strategy = getAppDataCacheStrategy(context);
+
+  if (strategy === "cloudflare") {
+    return context.cache ?? noopDataCache;
   }
 
-  if (context.runtime?.platform === "node") {
+  if (strategy === "memory") {
     return sharedNodeDataCache;
   }
 
   return noopDataCache;
+}
+
+export function getAppDataCacheStrategy(
+  context: DataCacheContextShape,
+): AppDataCacheStrategy {
+  if (context.cache) {
+    return "cloudflare";
+  }
+
+  if (context.runtime?.platform === "node") {
+    return "memory";
+  }
+
+  return "none";
 }
 
 interface LoadCachedDataArgs<T> {

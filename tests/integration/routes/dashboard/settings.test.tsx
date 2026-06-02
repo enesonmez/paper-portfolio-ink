@@ -38,6 +38,29 @@ const baseLoaderData = {
     "security",
     "runtime",
   ] as DashboardSettingsTab[],
+  runtime: {
+    cacheEntries: [
+      {
+        cacheKey: "http://localhost:3000/__cache/configuration/parameters",
+        id: "configuration" as const,
+        scope: "global" as const,
+        strategy: "memory" as const,
+        value: 10,
+        valueKind: "keys" as const,
+        warmScope: "global" as const,
+      },
+      {
+        cacheKey: "http://localhost:3000/__cache/authz/*",
+        id: "authz" as const,
+        scope: "actor" as const,
+        strategy: "memory" as const,
+        value: 3,
+        valueKind: "revision" as const,
+        warmScope: "actor" as const,
+      },
+    ],
+    platform: "node" as const,
+  },
 };
 
 describe("dashboard settings route", () => {
@@ -128,9 +151,14 @@ describe("dashboard settings route", () => {
     expect(
       screen.getByRole("heading", { level: 2, name: "Runtime tab" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Runtime cache contract")).toBeInTheDocument();
-    expect(screen.getByText("Cloudflare Pages + D1")).toBeInTheDocument();
-    expect(screen.getByText("Pending runtime actions")).toBeInTheDocument();
+    expect(screen.getByText("Configuration cache")).toBeInTheDocument();
+    expect(screen.getByText("Authz claim cache")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Runtime telemetry" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("button", { name: "Refresh Cache" }).length,
+    ).toBeGreaterThan(0);
   });
 
   it("renders the appearance configuration cards when requested", () => {

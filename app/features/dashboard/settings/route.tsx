@@ -1,11 +1,11 @@
 import { useActionData, useLoaderData, useOutletContext } from "react-router";
 
-import type { AccountConfigurationFormState } from "~/domain/configuration/form";
 import type { DashboardLayoutOutletContext } from "~/features/dashboard/layout/identity";
 
 import { DashboardSettingsAccessDeniedScreen, DashboardSettingsScreen } from "./screen";
 import {
   mergeDashboardSettingsAccountFormState,
+  type DashboardSettingsActionData,
   type DashboardSettingsLoaderData,
 } from "./state";
 
@@ -13,7 +13,7 @@ export { DashboardSettingsAccessDeniedScreen, DashboardSettingsScreen };
 
 export default function DashboardSettingsRoute() {
   const loaderData = useLoaderData<DashboardSettingsLoaderData>();
-  const actionData = useActionData<AccountConfigurationFormState>();
+  const actionData = useActionData<DashboardSettingsActionData>();
   const { user } = useOutletContext<DashboardLayoutOutletContext>();
 
   if (loaderData.access === "denied") {
@@ -29,6 +29,7 @@ export default function DashboardSettingsRoute() {
           actionData,
         ),
       }}
+      notice={actionData?.notice}
     />
   );
 }

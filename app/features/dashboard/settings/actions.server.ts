@@ -1,21 +1,7 @@
 import type { AppLoadContext } from "react-router";
 
-import {
-  buildAccountConfigurationFormValues,
-  type AccountConfigurationFormState,
-} from "~/domain/configuration/form";
-import {
-  ACCOUNT_CONFIGURATION_FORM_FIELD,
-  ACCOUNT_CONFIGURATION_MUTATION_INTENT,
-  isAccountConfigurationMutationIntent,
-} from "~/domain/configuration/model";
-import {
-  actorHasClaim,
-  assertAuthorized,
-  buildForbiddenFormState,
-  withDashboardAccess,
-} from "~/shared/authz/authz.server";
-import { AUTHORIZATION_CLAIM } from "~/shared/authz/model";
+import type { AccountConfigurationFormState } from "~/domain/configuration/form";
+import { withDashboardAccess } from "~/shared/authz/authz.server";
 import { buildValidationError } from "~/shared/errors/builders.server";
 import {
   APP_ERROR_ACTION,
@@ -26,18 +12,24 @@ import { readStringField } from "~/shared/forms/form-data.server";
 import { loadI18nPayload } from "~/shared/i18n/i18n.server";
 import { createTranslator } from "~/shared/i18n/i18n.shared";
 
+import { authorizeSettingsMutationOrThrow } from "./operations/_shared/authorization.server";
+import { buildSettingsAccountActionData } from "./operations/_shared/support.server";
+import {
+  isSettingsMutationIntent,
+  SETTINGS_MUTATION_FORM_FIELD,
+  SETTINGS_MUTATION_INTENT,
+  type SettingsMutationIntent,
+} from "./contracts";
+import { handleRefreshRuntimeCacheMutation } from "./operations/refresh-runtime-cache.server";
 import { handleRevokeSessionMutation } from "./operations/revoke-session.server";
 import { handleRevokeOtherSessionsMutation } from "./operations/revoke-other-sessions.server";
 import { handleRevokeAllSessionsMutation } from "./operations/revoke-all-sessions.server";
 import { handleUpdateAccountConfigurationMutation } from "./operations/update.server";
 
 function buildInvalidIntentFormState(message: string) {
-  return {
-    errors: {
-      form: message,
-    },
-    values: buildAccountConfigurationFormValues(),
-  } satisfies AccountConfigurationFormState;
+  const actionData = buildSettingsAccountActionData(message);
+
+  return actionData.accountForm as AccountConfigurationFormState;
 }
 
 export async function handleDashboardSettingsAction(
@@ -51,9 +43,9 @@ export async function handleDashboardSettingsAction(
   const t = createTranslator(messages);
   const supportedLocaleCodes = supportedLocales.map((item) => item.code);
   const formData = await request.formData();
-  const intent = readStringField(formData, ACCOUNT_CONFIGURATION_FORM_FIELD.intent);
+  const intent = readStringField(formData, SETTINGS_MUTATION_FORM_FIELD.intent);
 
-  if (!isAccountConfigurationMutationIntent(intent)) {
+  if (!isSettingsMutationIntent(intent)) {
     throw buildValidationError({
       action: APP_ERROR_ACTION.mutate,
       code: APP_ERROR_CODE.settings.mutation.invalidIntent,
@@ -67,89 +59,70 @@ export async function handleDashboardSettingsAction(
     });
   }
 
-  const isSecurityIntent =
-    intent === ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeSession ||
-    intent === ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeOtherSessions ||
-    intent === ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeAllSessions;
-
-  const errorAction = isSecurityIntent
-    ? APP_ERROR_ACTION.delete
-    : APP_ERROR_ACTION.update;
-
-  const errorCode = isSecurityIntent
-    ? APP_ERROR_CODE.settings.delete.forbidden
-    : APP_ERROR_CODE.settings.update.forbidden;
-
   return withDashboardAccess({
     request,
     context,
     authorize: ({ actor }) =>
-      assertAuthorized({
-        isAllowed: isSecurityIntent
-          ? actorHasClaim(actor, AUTHORIZATION_CLAIM.settingsSecurityManageOwn) ||
-            actorHasClaim(actor, AUTHORIZATION_CLAIM.settingsSecurityManageAny)
-          : actorHasClaim(actor, AUTHORIZATION_CLAIM.settingsAccountManage),
-        error: {
-          action: errorAction,
-          code: errorCode,
-          details: {
-            intent,
-          },
-          message: "Settings mutation denied by authorization policy",
-          resource: APP_ERROR_RESOURCE.settings,
-          responseData: isSecurityIntent
-            ? undefined
-            : buildForbiddenFormState(
-                t("dashboard.authz.forbiddenError"),
-                buildAccountConfigurationFormValues(),
-              ),
-          status: 403,
-        },
+      authorizeSettingsMutationOrThrow({
+        actor,
+        forbiddenMessage: t("dashboard.authz.forbiddenError"),
+        intent,
       }),
     handle: ({ actor }) => {
-      const mutationHandlers = {
-        [ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeSession]: () =>
-          handleRevokeSessionMutation({
-            actor,
-            context,
-            formData,
-            intent,
-            locale,
-            request,
-            supportedLocaleCodes,
-            t,
-          }),
-        [ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeOtherSessions]: () =>
-          handleRevokeOtherSessionsMutation({
-            actor,
-            context,
-            intent,
-            locale,
-            request,
-            supportedLocaleCodes,
-            t,
-          }),
-        [ACCOUNT_CONFIGURATION_MUTATION_INTENT.revokeAllSessions]: () =>
-          handleRevokeAllSessionsMutation({
-            actor,
-            context,
-            intent,
-            locale,
-            request,
-            supportedLocaleCodes,
-            t,
-          }),
-        [ACCOUNT_CONFIGURATION_MUTATION_INTENT.update]: () =>
-          handleUpdateAccountConfigurationMutation({
-            context,
-            formData,
-            intent,
-            locale,
-            request,
-            supportedLocaleCodes,
-            t,
-          }),
-      } as const;
+      const mutationHandlers: Record<SettingsMutationIntent, () => Promise<Response>> =
+        {
+          [SETTINGS_MUTATION_INTENT.revokeSession]: () =>
+            handleRevokeSessionMutation({
+              actor,
+              context,
+              formData,
+              intent,
+              locale,
+              request,
+              supportedLocaleCodes,
+              t,
+            }),
+          [SETTINGS_MUTATION_INTENT.revokeOtherSessions]: () =>
+            handleRevokeOtherSessionsMutation({
+              actor,
+              context,
+              intent,
+              locale,
+              request,
+              supportedLocaleCodes,
+              t,
+            }),
+          [SETTINGS_MUTATION_INTENT.revokeAllSessions]: () =>
+            handleRevokeAllSessionsMutation({
+              actor,
+              context,
+              intent,
+              locale,
+              request,
+              supportedLocaleCodes,
+              t,
+            }),
+          [SETTINGS_MUTATION_INTENT.updateAccountConfiguration]: () =>
+            handleUpdateAccountConfigurationMutation({
+              context,
+              formData,
+              intent,
+              locale,
+              request,
+              supportedLocaleCodes,
+              t,
+            }),
+          [SETTINGS_MUTATION_INTENT.refreshRuntimeCache]: () =>
+            handleRefreshRuntimeCacheMutation({
+              actor,
+              context,
+              formData,
+              intent,
+              locale,
+              request,
+              supportedLocaleCodes,
+            }),
+        } as const;
 
       return mutationHandlers[intent]();
     },

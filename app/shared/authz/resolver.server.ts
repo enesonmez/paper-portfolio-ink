@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import type { AppLoadContext } from "react-router";
 import { z } from "zod";
 
@@ -171,6 +171,10 @@ async function loadAuthorizationRevision(context: AppLoadContext) {
   }
 }
 
+export async function getAuthorizationRevision(context: AppLoadContext) {
+  return loadAuthorizationRevision(context);
+}
+
 async function loadEffectiveClaims(
   context: AppLoadContext,
   request: Request,
@@ -206,6 +210,40 @@ async function loadEffectiveClaims(
     },
     schema: authorizationClaimsSchema,
   });
+}
+
+export async function warmAuthorizationActorClaimsCache(args: {
+  authzVersion: number;
+  context: AppLoadContext;
+  request: Request;
+  role: string;
+  userId: string;
+}) {
+  await loadEffectiveClaims(
+    args.context,
+    args.request,
+    args.userId,
+    args.role,
+    args.authzVersion,
+  );
+}
+
+export async function bumpAuthorizationRevision(context: AppLoadContext) {
+  const db = getDbFromContext(context);
+
+  if (!("update" in db) || typeof db.update !== "function") {
+    return null;
+  }
+
+  await db
+    .update(authorizationState)
+    .set({
+      revision: sql`${authorizationState.revision} + 1`,
+      updatedAt: new Date(),
+    })
+    .where(eq(authorizationState.key, "global"));
+
+  return loadAuthorizationRevision(context);
 }
 
 function buildAuthorizationActor(args: {

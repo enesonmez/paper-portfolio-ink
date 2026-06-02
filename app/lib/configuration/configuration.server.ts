@@ -20,7 +20,7 @@ const configurationRequestCache = new WeakMap<
   Promise<Record<AccountConfigurationKey, string>>
 >();
 
-function buildConfigurationCacheKey(request: Request) {
+export function buildConfigurationCacheKey(request: Request) {
   return new URL("/__cache/configuration/parameters", request.url).toString();
 }
 

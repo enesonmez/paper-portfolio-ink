@@ -10,6 +10,8 @@ const {
   deleteOtherSessionsMock,
   deleteAllOtherSessionsMock,
   getSessionForRequestMock,
+  listRuntimeCacheEntriesMock,
+  refreshRuntimeCacheEntryMock,
 } = vi.hoisted(() => ({
   loadAccountConfigurationParametersMock: vi.fn(),
   purgeAccountConfigurationCacheMock: vi.fn(),
@@ -19,6 +21,8 @@ const {
   deleteOtherSessionsMock: vi.fn(),
   deleteAllOtherSessionsMock: vi.fn(),
   getSessionForRequestMock: vi.fn(),
+  listRuntimeCacheEntriesMock: vi.fn(),
+  refreshRuntimeCacheEntryMock: vi.fn(),
 }));
 
 vi.mock("~/lib/configuration/configuration.server", () => ({
@@ -42,6 +46,11 @@ vi.mock("~/shared/logging/audit.server", () => ({
   recordAuditLog: recordAuditLogMock,
 }));
 
+vi.mock("~/features/dashboard/settings/operations/runtime-cache.server", () => ({
+  listRuntimeCacheEntries: listRuntimeCacheEntriesMock,
+  refreshRuntimeCacheEntry: refreshRuntimeCacheEntryMock,
+}));
+
 describe("dashboard settings server", () => {
   const context = {
     db: { query: {} } as never,
@@ -57,6 +66,8 @@ describe("dashboard settings server", () => {
     deleteOtherSessionsMock.mockReset();
     deleteAllOtherSessionsMock.mockReset();
     getSessionForRequestMock.mockReset();
+    listRuntimeCacheEntriesMock.mockReset();
+    refreshRuntimeCacheEntryMock.mockReset();
 
     loadAccountConfigurationParametersMock.mockResolvedValue({
       "contact.email": "admin@paper-portfolio-ink.dev",
@@ -66,7 +77,21 @@ describe("dashboard settings server", () => {
       "social.instagram": "https://instagram.com/paperportfolioink",
       "social.linkedin": "https://linkedin.com/in/enes-ink",
       "social.x": "https://x.com/paperinkdev",
+      "appearance.primaryColor": "yellow",
+      "appearance.headingFont": "vt323",
+      "appearance.bodyFont": "mono",
     });
+    listRuntimeCacheEntriesMock.mockResolvedValue([
+      {
+        cacheKey: "http://localhost:3000/__cache/configuration/parameters",
+        id: "configuration",
+        scope: "global",
+        strategy: "memory",
+        value: 10,
+        valueKind: "keys",
+        warmScope: "global",
+      },
+    ]);
   });
 
   it("loads the selected tab and account registry for admin sessions", async () => {
@@ -102,10 +127,36 @@ describe("dashboard settings server", () => {
       throw new Error("Expected granted settings loader data");
     }
     expect(response.accountValues["site.name"]).toBe("Paper Ink");
-    expect(loadAccountConfigurationParametersMock).toHaveBeenCalledWith(
-      context,
-      expect.any(Request),
-    );
+    expect(loadAccountConfigurationParametersMock).not.toHaveBeenCalled();
+    expect(listRuntimeCacheEntriesMock).toHaveBeenCalledTimes(1);
+    const runtimeListArgs = listRuntimeCacheEntriesMock.mock.calls[0]?.[0] as
+      | {
+          actor: {
+            role: string | null;
+            userId: string | null;
+          };
+          context: AppLoadContext;
+          request: Request;
+        }
+      | undefined;
+    expect(runtimeListArgs?.actor.role).toBe("admin");
+    expect(runtimeListArgs?.actor.userId).toBe("user-admin");
+    expect(runtimeListArgs?.context).toBe(context);
+    expect(runtimeListArgs?.request).toBeInstanceOf(Request);
+    expect(response.runtime).toEqual({
+      cacheEntries: [
+        {
+          cacheKey: "http://localhost:3000/__cache/configuration/parameters",
+          id: "configuration",
+          scope: "global",
+          strategy: "memory",
+          value: 10,
+          valueKind: "keys",
+          warmScope: "global",
+        },
+      ],
+      platform: "node",
+    });
   });
 
   it("opens the account modal when a setting query parameter is present", async () => {
@@ -255,6 +306,63 @@ describe("dashboard settings server", () => {
       },
     );
     expect(updateAccountConfigurationParameterMock).not.toHaveBeenCalled();
+  });
+
+  it("refreshes a runtime cache entry and redirects back to the runtime tab", async () => {
+    const { handleDashboardSettingsAction } =
+      await import("~/features/dashboard/settings/server");
+
+    const request = new Request(
+      "http://localhost:3000/tr/dashboard/settings?tab=runtime",
+      {
+        body: new URLSearchParams({
+          intent: "refresh-runtime-cache",
+          cacheId: "configuration",
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+      },
+    );
+
+    requireSessionMock.mockResolvedValue({
+      user: {
+        id: "user-admin",
+        role: "admin",
+      },
+    });
+
+    const response = await handleDashboardSettingsAction(context, request);
+
+    expect(response).toBeInstanceOf(Response);
+    expect(response.headers.get("Location")).toContain(
+      "/tr/dashboard/settings?tab=runtime",
+    );
+    expect(refreshRuntimeCacheEntryMock).toHaveBeenCalledTimes(1);
+    const runtimeRefreshArgs = refreshRuntimeCacheEntryMock.mock.calls[0]?.[0] as
+      | {
+          actor: {
+            role: string | null;
+            userId: string | null;
+          };
+          cacheId: string;
+          context: AppLoadContext;
+          request: Request;
+        }
+      | undefined;
+    expect(runtimeRefreshArgs?.actor.role).toBe("admin");
+    expect(runtimeRefreshArgs?.actor.userId).toBe("user-admin");
+    expect(runtimeRefreshArgs?.cacheId).toBe("configuration");
+    expect(runtimeRefreshArgs?.context).toBe(context);
+    expect(runtimeRefreshArgs?.request).toBe(request);
+    expect(recordAuditLogMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "update",
+        resource: "settings",
+        targetId: "configuration",
+      }),
+    );
   });
 
   it("revokes all other sessions for the current user", async () => {

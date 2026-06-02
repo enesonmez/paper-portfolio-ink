@@ -5,9 +5,11 @@ import {
   APPEARANCE_PRIMARY_COLORS,
   type AccountConfigurationKey,
 } from "~/domain/configuration/model";
+import type { AppDataCacheStrategy } from "~/shared/cache/data-cache.server";
 import { useT } from "~/shared/i18n/i18n-react";
 import type { I18nTranslator } from "~/shared/i18n/i18n.shared";
 
+import type { RuntimeCacheEntryId, RuntimeCacheScope } from "./runtime/state";
 import { DASHBOARD_SETTINGS_TAB, type DashboardSettingsTab } from "./state";
 
 export interface DashboardSettingsTabLink {
@@ -61,6 +63,17 @@ export type DashboardSettingsAccountFieldCopyMap = Record<
   DashboardSettingsAccountFieldCopy
 >;
 
+export interface DashboardSettingsRuntimeEntryCopy {
+  description: string;
+  eyebrow: string;
+  title: string;
+}
+
+export type DashboardSettingsRuntimeEntryCopyMap = Record<
+  RuntimeCacheEntryId,
+  DashboardSettingsRuntimeEntryCopy
+>;
+
 function buildDashboardSettingsTabs(
   t: I18nTranslator,
 ): readonly DashboardSettingsTabLink[] {
@@ -87,9 +100,46 @@ function buildDashboardSettingsTabs(
       description: t("dashboard.settings.runtime.description"),
       label: t("dashboard.settings.tab.runtime"),
       tab: DASHBOARD_SETTINGS_TAB.runtime,
-      total: "05",
+      total: "06",
     },
   ] as const;
+}
+
+function buildDashboardSettingsRuntimeEntryCopy(
+  t: I18nTranslator,
+): DashboardSettingsRuntimeEntryCopyMap {
+  return {
+    authz: {
+      description: t("dashboard.settings.runtime.entry.authz.description"),
+      eyebrow: t("dashboard.settings.runtime.entry.authz.eyebrow"),
+      title: t("dashboard.settings.runtime.entry.authz.title"),
+    },
+    configuration: {
+      description: t("dashboard.settings.runtime.entry.configuration.description"),
+      eyebrow: t("dashboard.settings.runtime.entry.configuration.eyebrow"),
+      title: t("dashboard.settings.runtime.entry.configuration.title"),
+    },
+    i18n: {
+      description: t("dashboard.settings.runtime.entry.i18n.description"),
+      eyebrow: t("dashboard.settings.runtime.entry.i18n.eyebrow"),
+      title: t("dashboard.settings.runtime.entry.i18n.title"),
+    },
+    "public-blog": {
+      description: t("dashboard.settings.runtime.entry.publicBlog.description"),
+      eyebrow: t("dashboard.settings.runtime.entry.publicBlog.eyebrow"),
+      title: t("dashboard.settings.runtime.entry.publicBlog.title"),
+    },
+    "public-home": {
+      description: t("dashboard.settings.runtime.entry.publicHome.description"),
+      eyebrow: t("dashboard.settings.runtime.entry.publicHome.eyebrow"),
+      title: t("dashboard.settings.runtime.entry.publicHome.title"),
+    },
+    "public-projects": {
+      description: t("dashboard.settings.runtime.entry.publicProjects.description"),
+      eyebrow: t("dashboard.settings.runtime.entry.publicProjects.eyebrow"),
+      title: t("dashboard.settings.runtime.entry.publicProjects.title"),
+    },
+  };
 }
 
 function buildDashboardSettingsAccountFieldCopy(
@@ -391,6 +441,40 @@ export function useDashboardSettingsCopy() {
     pageTitle: t("dashboard.settings.pageTitle"),
     restrictedDescription: t("dashboard.settings.restrictedDescription"),
     restrictedTitle: t("dashboard.settings.restrictedTitle"),
+    runtimeCacheEntries: buildDashboardSettingsRuntimeEntryCopy(t),
+    runtimeCacheKeyLabel: t("dashboard.settings.runtime.cacheKeyLabel"),
+    runtimeCacheScopeLabel: t("dashboard.settings.runtime.cacheScopeLabel"),
+    runtimeCacheStrategyLabel: t("dashboard.settings.runtime.cacheStrategyLabel"),
+    runtimeCacheValueLabel: t("dashboard.settings.runtime.cacheValueLabel"),
+    runtimeMetricsCpuHint: t("dashboard.settings.runtime.metrics.cpuHint"),
+    runtimeMetricsCpuLabel: t("dashboard.settings.runtime.metrics.cpuLabel"),
+    runtimeMetricsDescription: t("dashboard.settings.runtime.metrics.description"),
+    runtimeMetricsEyebrow: t("dashboard.settings.runtime.metrics.eyebrow"),
+    runtimeMetricsMemoryHint: t("dashboard.settings.runtime.metrics.memoryHint"),
+    runtimeMetricsMemoryLabel: t("dashboard.settings.runtime.metrics.memoryLabel"),
+    runtimeMetricsStorageHint: t("dashboard.settings.runtime.metrics.storageHint"),
+    runtimeMetricsStorageLabel: t("dashboard.settings.runtime.metrics.storageLabel"),
+    runtimeMetricsTitle: t("dashboard.settings.runtime.metrics.title"),
+    runtimeMetricsUpdatedAt: t("dashboard.settings.runtime.metrics.updatedAt"),
+    runtimeRefreshAction: t("dashboard.settings.runtime.refreshAction"),
+    runtimeRefreshPending: t("dashboard.settings.runtime.refreshPending"),
+    runtimeScopeLabels: {
+      actor: t("dashboard.settings.runtime.scope.actor"),
+      global: t("dashboard.settings.runtime.scope.global"),
+      locale: t("dashboard.settings.runtime.scope.locale"),
+      page: t("dashboard.settings.runtime.scope.page"),
+    } satisfies Record<RuntimeCacheScope, string>,
+    runtimeStrategyLabels: {
+      cloudflare: t("dashboard.settings.runtime.strategy.cloudflare"),
+      memory: t("dashboard.settings.runtime.strategy.memory"),
+      none: t("dashboard.settings.runtime.strategy.none"),
+    } satisfies Record<AppDataCacheStrategy, string>,
+    runtimeTelemetryUnavailable: t("dashboard.settings.runtime.metrics.unavailable"),
+    runtimeValueKeys: t("dashboard.settings.runtime.value.keys"),
+    runtimeValueLocales: t("dashboard.settings.runtime.value.locales"),
+    runtimeValuePage: t("dashboard.settings.runtime.value.page"),
+    runtimeValueRevision: t("dashboard.settings.runtime.value.revision"),
+    runtimeWarmScopeLabel: t("dashboard.settings.runtime.warmScopeLabel"),
     tabs: buildDashboardSettingsTabs(t),
     securityNoSessions: t("dashboard.settings.security.noSessions"),
     securityNoOtherSessionsDescription: t(

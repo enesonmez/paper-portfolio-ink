@@ -54,11 +54,11 @@ export interface I18nRuntimeState {
   supportedLocales: SupportedLocaleOption[];
 }
 
-function buildI18nCacheKey(request: Request, locale: AppLocale) {
+export function buildI18nCacheKey(request: Request, locale: AppLocale) {
   return new URL(`/__cache/i18n/${locale}`, request.url).toString();
 }
 
-function buildSupportedLocalesCacheKey(request: Request) {
+export function buildSupportedLocalesCacheKey(request: Request) {
   return new URL("/__cache/i18n/locales", request.url).toString();
 }
 
@@ -218,6 +218,28 @@ export async function purgeI18nDataCache(
       purgeI18nLocaleCache(context, request, localeCode),
     ),
   ]);
+}
+
+export async function warmI18nDataCache(
+  context: AppLoadContext,
+  request: Request,
+  localeCodes: readonly AppLocale[],
+) {
+  await loadSupportedLocales(context, request);
+  await Promise.all(
+    localeCodes.map((locale) =>
+      loadCachedData({
+        context,
+        key: buildI18nCacheKey(request, locale),
+        load: () => listTranslationsByLocale(context, locale),
+        options: {
+          maxAgeSeconds: 60 * 30,
+          staleWhileRevalidateSeconds: 60 * 60 * 12,
+        },
+        schema: translationsPayloadSchema,
+      }),
+    ),
+  );
 }
 
 export async function loadI18nRuntimeState(
