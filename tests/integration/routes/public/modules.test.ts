@@ -189,7 +189,9 @@ describe("public route modules", () => {
 
     expect(validResponse.status).toBe(302);
     expect(validResponse.headers.get("location")).toBe("/tr/blog");
-    expect(validResponse.headers.get("set-cookie")).toContain("paper-theme=dark");
+    expect(validResponse.headers.get("set-cookie")).toContain(
+      "__Host-paper-theme=dark",
+    );
   });
 
   it("rejects public mutation routes without a same-origin header", async () => {

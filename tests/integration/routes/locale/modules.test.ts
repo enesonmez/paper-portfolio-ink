@@ -119,17 +119,19 @@ describe("locale route modules", () => {
 
     expect(indexResponse.status).toBe(302);
     expect(indexResponse.headers.get("location")).toBe("/en");
-    expect(indexResponse.headers.get("set-cookie")).toContain("paper-locale=en");
+    expect(indexResponse.headers.get("set-cookie")).toContain("__Host-paper-locale=en");
 
     expect(fallbackActionResponse.status).toBe(302);
     expect(fallbackActionResponse.headers.get("location")).toBe("/tr");
     expect(fallbackActionResponse.headers.get("set-cookie")).toContain(
-      "paper-locale=tr",
+      "__Host-paper-locale=tr",
     );
 
     expect(validActionResponse.status).toBe(302);
     expect(validActionResponse.headers.get("location")).toBe("/en/projects");
-    expect(validActionResponse.headers.get("set-cookie")).toContain("paper-locale=en");
+    expect(validActionResponse.headers.get("set-cookie")).toContain(
+      "__Host-paper-locale=en",
+    );
   });
 
   it("rejects locale mutations without a same-origin header", async () => {

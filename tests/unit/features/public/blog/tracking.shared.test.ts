@@ -48,6 +48,9 @@ describe("public blog tracking shared helpers", () => {
     });
 
     expect(setCookieHeader).toContain(`${PUBLIC_BLOG_VIEW_LOCK_COOKIE_NAME}=`);
+    expect(setCookieHeader).toContain("Path=/");
+    expect(setCookieHeader).toContain("Secure");
+    expect(setCookieHeader).not.toContain("HttpOnly");
     expect(setCookieHeader).toContain("SameSite=Lax");
 
     expect(

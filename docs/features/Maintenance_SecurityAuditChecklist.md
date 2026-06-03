@@ -79,19 +79,28 @@ export function assertSameOriginMutationRequest(request: Request) {
 }
 ```
 
-### [ ] SEC-03 | Low | Ozel cookie'lerde `Secure` bayragi yok
+### [x] SEC-03 | Resolved | Ozel cookie'lerde `Secure` bayragi yoktu
 
-- Etki: `theme`, `locale` ve public analytics lock cookie'leri HTTPS zorlamasi olmayan bir baglamda plaintext isteklerle tasinabilir veya HTTP uzerinden overwrite edilebilir. Bu cookie'ler kimlik dogrulama cookie'si degil, ancak butunluk ve gizlilik sertlestirmesi eksik.
-- Kanit:
-  - `app/features/public/layout/theme.server.ts:52` `paper-theme` cookie'sini `HttpOnly` ve `SameSite=Lax` ile kuruyor, fakat `Secure` eklemiyor.
-  - `app/shared/i18n/i18n.shared.ts:177` `paper-locale` cookie'sinde de `Secure` yok.
-  - `app/features/public/blog/tracking/shared.ts:111` `paper-view-lock` cookie'sinde hem `Secure` yok hem de JS tarafindan okunabilir durumda.
-- Somurulebilirlik Kaniti: Kullanici HTTP varyanti olan bir hosta yonlendirilirse veya ara katmanda TLS downgrade/misconfig olursa bu cookie'ler acik agda gozlemlenebilir ya da sahte degerlerle ezilebilir; analytics lock cookie'sinin overwrite edilmesi telemetry kalitesini de bozar.
-- Remediation checklist:
-  - [ ] Tum custom cookie builder'larina `Secure` ekle.
-  - [ ] Uygunsa host-only davranis icin `__Host-` on eki ve `Path=/` kombinasyonunu kullan.
-  - [ ] JS-erisimine ihtiyac olmayan cookie'lerde `HttpOnly` korunmaya devam etsin.
-- Onerilen kod yonu:
+- Cozum: `theme`, `locale` ve public analytics lock cookie builder'lari `Secure` ile sertlestirildi. `theme` ve `locale` cookie'leri host-only `__Host-` ismine gecirildi ve `HttpOnly` korundu; analytics lock cookie'si de host-only `__Host-` + `Secure` olarak hizalandi, ancak client-side duplicate suppression mekanizmasi `document.cookie` okudugu icin bilerek `HttpOnly` yapilmadi.
+- Uygulanan degisiklikler:
+  - [x] Tum custom cookie builder'larina `Secure` eklendi.
+  - [x] Uygun yuzeylerde host-only davranis icin `__Host-` on eki ve `Path=/` kombinasyonu kullanildi.
+  - [x] JS-erisimine ihtiyac olmayan cookie'lerde `HttpOnly` korundu; analytics lock cookie'sinde JS ihtiyaci nedeniyle korunmadi.
+- Referans dosyalar:
+  - `app/features/public/layout/theme.server.ts`
+  - `app/shared/i18n/i18n.shared.ts`
+  - `app/features/public/blog/tracking/shared.ts`
+  - `tests/unit/features/public/layout/theme.server.test.ts`
+  - `tests/unit/shared/i18n/i18n.shared.test.ts`
+  - `tests/unit/features/public/blog/tracking.shared.test.ts`
+  - `tests/integration/routes/public/modules.test.ts`
+  - `tests/integration/routes/locale/modules.test.ts`
+  - `tests/integration/features/public/blog-tracking.server.test.ts`
+  - `tests/e2e/public.spec.ts`
+- Dogrulama:
+  - Theme, locale ve analytics lock cookie'lerinin `Secure`/`Path=/`/`__Host-` kontratlarini sabitleyen unit ve integration testleri
+  - Public tracking E2E cookie assertion'i
+- Ilk onerilen kod yonu:
 
 ```ts
 return [

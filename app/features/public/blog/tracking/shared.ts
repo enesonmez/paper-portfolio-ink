@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const PUBLIC_BLOG_VIEW_LOCK_COOKIE_NAME = "paper-view-lock";
+export const PUBLIC_BLOG_VIEW_LOCK_COOKIE_NAME = "__Host-paper-view-lock";
 export const PUBLIC_BLOG_VIEW_LOCK_WINDOW_MS = 12 * 60 * 60 * 1000;
 const PUBLIC_BLOG_VIEW_LOCK_MAX_ENTRIES = 24;
 const MAX_TRACKED_SECONDS = 24 * 60 * 60;
@@ -114,6 +114,7 @@ export function buildPublicBlogViewLockCookie(args: {
     )}`,
     `Max-Age=${maxAgeSeconds}`,
     "Path=/",
+    "Secure",
     "SameSite=Lax",
   ].join("; ");
 }

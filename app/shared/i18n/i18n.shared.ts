@@ -14,7 +14,7 @@ export interface SupportedLocaleOption {
   isDefault: boolean;
 }
 
-export const LOCALE_COOKIE_NAME = "paper-locale";
+export const LOCALE_COOKIE_NAME = "__Host-paper-locale";
 export const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365;
 export const NORMALIZED_LOCALE_CODE_PATTERN = /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/;
 const LOCALE_CODE_PATTERN = /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i;
@@ -180,6 +180,7 @@ export function buildLocaleCookie(locale: AppLocale) {
     "HttpOnly",
     "Path=/",
     `Max-Age=${ONE_YEAR_IN_SECONDS}`,
+    "Secure",
     "SameSite=Lax",
   ].join("; ");
 }
