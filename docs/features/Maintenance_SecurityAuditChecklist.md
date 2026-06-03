@@ -43,19 +43,31 @@ headers.set("X-Content-Type-Options", "nosniff");
 headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
 ```
 
-### [ ] SEC-02 | Medium | State-changing route'larda ortak anti-CSRF dogrulamasi yok
+### [x] SEC-02 | Resolved | State-changing route'larda ortak anti-CSRF dogrulamasi yoktu
 
-- Etki: Dashboard ve public mutation akislari cookie tabanli oturumla calisiyor, ancak bu rotalar icin ortak `Origin`/`Referer` veya CSRF token dogrulamasi uygulanmadigi icin savunma buyuk oranda `SameSite=Lax` davranisina birakilmis durumda.
-- Kanit:
-  - `app/features/dashboard/settings/actions.server.ts:45` ve `app/features/dashboard/posts/actions.server.ts:83` `request.formData()` alip auth/authz sonrasi mutasyon yurutuyor, fakat request-origin dogrulamasi yapmiyor.
-  - `app/features/public/blog/tracking/server.ts:55` ayni-origin kontrolu uygulayan tek belirgin mutation ornegi.
-  - `app/routes/public/theme.tsx` ve `app/routes/locale/action.tsx` benzer sekilde POST kabul ediyor, fakat anti-CSRF guard'i tasimiyor.
-- Somurulebilirlik Kaniti: Bugunku cookie politikasi bircok cross-site POST'u azaltir, ancak ayni-site alt alan adi senaryolari, gelecekte cookie policy gevsemesi veya yeni mutation route'larin GET/JSON tabanli eklenmesi durumunda ortak bir sunucu guard'i olmadigi icin koruma kolayca delinmeye acik kalir.
-- Remediation checklist:
-  - [ ] `app/shared/auth` veya `app/shared/security` altinda ortak `assertSameOriginMutationRequest(request)` helper'i ekle.
-  - [ ] Tum state-changing route'larda bu guard'i `request.formData()` veya `request.json()` cagrilarindan once zorunlu kil.
-  - [ ] Authenticated dashboard aksiyonlari ve public mutation'lar icin basarisiz `Origin`/`Referer` testleri ekle.
-- Onerilen kod yonu:
+- Cozum: `app/shared/security/csrf.server.ts` altinda ortak `assertSameOriginMutationRequest` guard'i eklendi. Guard `Origin` header'ini birinci sinif kontrol olarak uygular, `Origin` eksiginde ayni origin'li `Referer` fallback'i kabul eder ve `sec-fetch-site` ile cross-site mutation'lari erkenden reddeder.
+- Uygulanan degisiklikler:
+  - [x] `app/shared/security` altinda ortak `assertSameOriginMutationRequest(request)` helper'i eklendi.
+  - [x] Tum dashboard action route'lari ile `auth/login`, `auth/logout`, `public/theme`, `locale/action` ve `public/blog/track` girislerinde guard `request.formData()`/feature mutasyonu oncesine yerlestirildi.
+  - [x] Authenticated dashboard aksiyonlari ve public mutation'lar icin basarisiz `Origin`/`Referer` regression testleri eklendi.
+- Referans dosyalar:
+  - `app/shared/security/csrf.server.ts`
+  - `app/routes/auth/login.tsx`
+  - `app/routes/auth/logout.tsx`
+  - `app/routes/system/api-auth.ts`
+  - `app/routes/public/theme.tsx`
+  - `app/routes/locale/action.tsx`
+  - `app/routes/public/blog/track.ts`
+  - `app/routes/dashboard/*.tsx`
+  - `app/features/public/blog/tracking/server.ts`
+- Dogrulama:
+  - `tests/unit/shared/security/csrf.server.test.ts`
+  - `tests/integration/routes/auth/modules.test.ts`
+  - `tests/integration/routes/public/modules.test.ts`
+  - `tests/integration/routes/locale/modules.test.ts`
+  - `tests/integration/routes/dashboard/modules.test.ts`
+  - `tests/integration/features/public/blog-tracking.server.test.ts`
+- Ilk onerilen kod yonu:
 
 ```ts
 export function assertSameOriginMutationRequest(request: Request) {

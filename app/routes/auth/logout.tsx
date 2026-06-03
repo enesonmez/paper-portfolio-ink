@@ -1,5 +1,10 @@
 import type { Route } from "./+types/logout";
-import { APP_ROUTE_ID } from "~/shared/errors/contracts";
+import {
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+  APP_ROUTE_ID,
+} from "~/shared/errors/contracts";
 
 import {
   runActionWithErrorHandling,
@@ -9,6 +14,7 @@ import {
   performLogout,
   redirectLoggedOutUsers,
 } from "~/features/auth/logout/logout.server";
+import { assertSameOriginMutationRequest } from "~/shared/security/csrf.server";
 
 export function loader({ context, request }: Route.LoaderArgs) {
   return runLoaderWithErrorHandling({
@@ -22,13 +28,21 @@ export function loader({ context, request }: Route.LoaderArgs) {
 export function action({ context, request }: Route.ActionArgs) {
   return runActionWithErrorHandling({
     context,
-    handler: () =>
-      Promise.resolve(
+    handler: () => {
+      assertSameOriginMutationRequest({
+        action: APP_ERROR_ACTION.manage,
+        code: APP_ERROR_CODE.security.csrf.invalidOrigin,
+        request,
+        resource: APP_ERROR_RESOURCE.authLogout,
+      });
+
+      return Promise.resolve(
         performLogout({
           context,
           request,
         }),
-      ),
+      );
+    },
     request,
     routeId: APP_ROUTE_ID.authLogout,
   });

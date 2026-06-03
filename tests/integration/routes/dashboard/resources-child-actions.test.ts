@@ -26,6 +26,9 @@ function buildActionArgs<TAction extends (args: never) => unknown>(request: Requ
 describe("dashboard resources child route modules", () => {
   it("delegates index action submissions to the shared resources action", async () => {
     const request = new Request("https://example.com/tr/dashboard/resources", {
+      headers: {
+        origin: "https://example.com",
+      },
       method: "POST",
     });
     const response = new Response(null, { status: 204 });
@@ -43,6 +46,9 @@ describe("dashboard resources child route modules", () => {
 
   it("delegates locales action submissions to the shared resources action", async () => {
     const request = new Request("https://example.com/tr/dashboard/resources/locales", {
+      headers: {
+        origin: "https://example.com",
+      },
       method: "POST",
     });
     const response = new Response(null, { status: 204 });
@@ -62,6 +68,9 @@ describe("dashboard resources child route modules", () => {
     const request = new Request(
       "https://example.com/tr/dashboard/resources/translations",
       {
+        headers: {
+          origin: "https://example.com",
+        },
         method: "POST",
       },
     );

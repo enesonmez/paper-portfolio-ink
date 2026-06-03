@@ -22,13 +22,17 @@ export const APP_ERROR_ACTION = {
 export type AppErrorAction = (typeof APP_ERROR_ACTION)[keyof typeof APP_ERROR_ACTION];
 
 export const APP_ERROR_RESOURCE = {
+  authApi: "auth.api",
   analytics: "analytics",
   authLogin: "auth.login",
+  authLogout: "auth.logout",
   dashboard: "dashboard",
+  locale: "locale",
   logs: "logs",
   posts: "posts",
   projects: "projects",
   publicBlog: "public.blog",
+  publicTheme: "public.theme",
   resources: "resources",
   resourcesLocales: "resources.locales",
   resourcesTranslations: "resources.translations",
@@ -41,6 +45,7 @@ export type AppErrorResource =
   (typeof APP_ERROR_RESOURCE)[keyof typeof APP_ERROR_RESOURCE];
 
 export const APP_ROUTE_ID = {
+  authApi: "auth.api",
   authLogin: "auth.login",
   authLogout: "auth.logout",
   dashboardAnalytics: "dashboard.analytics",
@@ -166,6 +171,11 @@ export const APP_ERROR_CODE = {
   public: {
     blog: {
       postNotFound: "public.blog.post_not_found",
+    },
+  },
+  security: {
+    csrf: {
+      invalidOrigin: "security.csrf.invalid_origin",
     },
   },
   resources: {

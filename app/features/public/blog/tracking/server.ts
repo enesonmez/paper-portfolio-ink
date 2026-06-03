@@ -4,16 +4,14 @@ import {
   getPublishedPostAnalyticsTargetBySlug,
   insertPostViewHistoryEntry,
 } from "~/lib/analytics/view-history.server";
-import {
-  buildAuthorizationError,
-  buildValidationError,
-} from "~/shared/errors/builders.server";
+import { buildValidationError } from "~/shared/errors/builders.server";
 import {
   APP_ERROR_ACTION,
   APP_ERROR_CODE,
   APP_ERROR_RESOURCE,
 } from "~/shared/errors/contracts";
 import { resolveAnalyticsConfig } from "~/shared/analytics/config.server";
+import { assertSameOriginMutationRequest } from "~/shared/security/csrf.server";
 
 import {
   buildPublicBlogViewLockCookie,
@@ -50,58 +48,6 @@ async function hashPublicPostViewActor(args: { request: Request; secret: string 
   return Array.from(new Uint8Array(digest), (byte) =>
     byte.toString(16).padStart(2, "0"),
   ).join("");
-}
-
-function assertSameOriginTrackingRequest(request: Request) {
-  const fetchSite = request.headers.get("sec-fetch-site");
-
-  if (
-    fetchSite &&
-    fetchSite !== "same-origin" &&
-    fetchSite !== "same-site" &&
-    fetchSite !== "none"
-  ) {
-    throw buildAuthorizationError({
-      action: APP_ERROR_ACTION.track,
-      code: APP_ERROR_CODE.analytics.track.invalidOrigin,
-      details: {
-        fetchSite,
-      },
-      message: "Cross-site analytics tracking request rejected.",
-      resource: APP_ERROR_RESOURCE.analytics,
-      status: 403,
-    });
-  }
-
-  const requestOrigin = request.headers.get("origin");
-
-  if (!requestOrigin) {
-    throw buildAuthorizationError({
-      action: APP_ERROR_ACTION.track,
-      code: APP_ERROR_CODE.analytics.track.invalidOrigin,
-      details: {
-        origin: null,
-      },
-      message: "Missing origin header on analytics tracking request.",
-      resource: APP_ERROR_RESOURCE.analytics,
-      status: 403,
-    });
-  }
-
-  const expectedOrigin = new URL(request.url).origin;
-
-  if (requestOrigin !== expectedOrigin) {
-    throw buildAuthorizationError({
-      action: APP_ERROR_ACTION.track,
-      code: APP_ERROR_CODE.analytics.track.invalidOrigin,
-      details: {
-        origin: requestOrigin,
-      },
-      message: "Cross-origin analytics tracking request rejected.",
-      resource: APP_ERROR_RESOURCE.analytics,
-      status: 403,
-    });
-  }
 }
 
 async function parseTrackPublicBlogPostViewRequest(request: Request) {
@@ -142,7 +88,12 @@ export async function trackPublicBlogPostView(
   context: AppLoadContext,
   request: Request,
 ) {
-  assertSameOriginTrackingRequest(request);
+  assertSameOriginMutationRequest({
+    action: APP_ERROR_ACTION.track,
+    code: APP_ERROR_CODE.analytics.track.invalidOrigin,
+    request,
+    resource: APP_ERROR_RESOURCE.analytics,
+  });
 
   const submission = await parseTrackPublicBlogPostViewRequest(request);
   const analyticsConfig = resolveAnalyticsConfig({

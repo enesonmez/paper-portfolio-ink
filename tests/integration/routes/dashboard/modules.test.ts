@@ -114,6 +114,9 @@ describe("dashboard route modules", () => {
   it("delegates dashboard actions to their feature servers", async () => {
     const request = new Request("https://paper-portfolio-ink.dev/dashboard/posts", {
       body: new FormData(),
+      headers: {
+        origin: "https://paper-portfolio-ink.dev",
+      },
       method: "POST",
     });
     const context = { db: { query: {} }, runtime: { platform: "node" } } as never;
@@ -147,5 +150,26 @@ describe("dashboard route modules", () => {
     await expect(
       resourcesAction({ context, params: {}, request } as never),
     ).resolves.toBe(response);
+  });
+
+  it("rejects dashboard mutations without a same-origin header", async () => {
+    const context = { db: { query: {} }, runtime: { platform: "node" } } as never;
+    const { action: postsAction } = await import("~/routes/dashboard/posts");
+
+    await expect(
+      postsAction({
+        context,
+        params: {},
+        request: new Request("https://paper-portfolio-ink.dev/dashboard/posts", {
+          body: new FormData(),
+          method: "POST",
+        }),
+      } as never),
+    ).rejects.toMatchObject({
+      code: "security.csrf.invalid_origin",
+      status: 403,
+    });
+
+    expect(handleDashboardPostsActionMock).not.toHaveBeenCalled();
   });
 });

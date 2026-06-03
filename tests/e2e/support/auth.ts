@@ -12,6 +12,15 @@ interface E2EUserCredentials {
   password: string;
 }
 
+function buildSameOriginHeaders(path: string) {
+  const url = new URL(path, E2E_BASE_URL);
+
+  return {
+    origin: url.origin,
+    referer: url.toString(),
+  };
+}
+
 function resolveLocalOffsetMinutes(value: string) {
   const date = new Date(value);
 
@@ -88,9 +97,12 @@ export async function submitAuthorizedForm(
   path: string,
   form: Record<string, string>,
 ) {
-  return page.context().request.post(new URL(path, E2E_BASE_URL).toString(), {
+  const url = new URL(path, E2E_BASE_URL);
+
+  return page.context().request.post(url.toString(), {
     failOnStatusCode: false,
     form: withLoggingRangeOffsets(form),
+    headers: buildSameOriginHeaders(path),
     maxRedirects: 0,
   });
 }
