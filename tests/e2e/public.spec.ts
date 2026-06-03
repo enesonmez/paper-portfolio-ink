@@ -97,7 +97,10 @@ test("sends blog tracking beacons on client-side exit and stores a view lock coo
     .poll(async () => {
       const cookies = await context.cookies();
 
-      return cookies.find((cookie) => cookie.name === "paper-view-lock")?.value ?? null;
+      return (
+        cookies.find((cookie) => cookie.name === "__Host-paper-view-lock")?.value ??
+        null
+      );
     })
     .not.toBeNull();
 });

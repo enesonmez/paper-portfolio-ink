@@ -92,7 +92,8 @@ describe("public blog tracking server", () => {
 
     expect(response.status).toBe(204);
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(response.headers.get("set-cookie")).toContain("paper-view-lock=");
+    expect(response.headers.get("set-cookie")).toContain("__Host-paper-view-lock=");
+    expect(response.headers.get("set-cookie")).toContain("Secure");
     expect(acquirePostViewHistoryLockMock).toHaveBeenCalledWith(
       context.db,
       expect.objectContaining({
@@ -139,6 +140,7 @@ describe("public blog tracking server", () => {
     const response = await trackPublicBlogPostView(context, request);
 
     expect(response.status).toBe(204);
+    expect(response.headers.get("set-cookie")).toContain("__Host-paper-view-lock=");
     expect(response.headers.get("set-cookie")).toContain("Max-Age=43200");
     expect(insertPostViewHistoryEntryMock).not.toHaveBeenCalled();
   });

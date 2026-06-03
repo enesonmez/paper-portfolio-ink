@@ -246,6 +246,7 @@ Bu doküman, `docs/features` altındaki feature dokümanları oluşturulma sıra
 - **[GÜNCEL / ACTIVE]** **[UI/REACT]**: Programatik form gönderimi React'in `onSubmitCapture` veya `onInput` gibi yerel event lifecycle handler'larını çalıştırmaz. `logging` aralığındaki client timezone offset'leri gibi dinamik eşitlemelere ihtiyaç duyan formlarda, `FormData`'yı göndermeden hemen önce gizli offset alanlarını programatik olarak el ile senkronize etmeliyiz.
 - **[GÜNCEL / ACTIVE]** **[FOUNDATION]**: Guvenlik auditlerinde yalnizca authz ve validation kontrol etmek yeterli degildir; SSR giris noktasindaki global header baseline'i, production'da gereksiz `.well-known` debug rotalari ve custom cookie builder'larindaki `Secure` bayragi eksikleri de sistematik kontrol listesine dahil edilmelidir.
 - **[GÜNCEL / ACTIVE]** **[SECURITY]**: Cookie tabanli tum mutation route'lari `SameSite` davranisina guvenmek yerine route wrapper seviyesinde ortak bir `Origin`/`Referer` guard'i ile korunmalidir; guard body parse oncesinde calismali ve blog tracking gibi public POST endpoint'leri de ayni helper'i kullanmalidir.
+- **[GÜNCEL / ACTIVE]** **[SECURITY]**: Kimlik dogrulama disindaki custom cookie'ler bile `Secure` olmadan birakilmamali; public preference cookie'leri icin host-only `__Host-` + `Path=/` + `HttpOnly` deseni varsayilan olmali, yalnizca analytics lock gibi client-side okunma zorunlulugu olan istisnalarda `HttpOnly` bilincli olarak disarida birakilmalidir.
 
 ---
 

@@ -8,7 +8,7 @@ import {
   type PublicTheme,
 } from "./theme";
 
-const THEME_COOKIE_NAME = "paper-theme";
+const THEME_COOKIE_NAME = "__Host-paper-theme";
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365;
 
 const themeFormSchema = z.object({
@@ -55,6 +55,7 @@ export function buildThemeCookie(theme: PublicTheme) {
     "HttpOnly",
     "Path=/",
     `Max-Age=${ONE_YEAR_IN_SECONDS}`,
+    "Secure",
     "SameSite=Lax",
   ].join("; ");
 }

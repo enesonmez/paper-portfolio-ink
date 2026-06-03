@@ -15,7 +15,7 @@ describe("public theme server helpers", () => {
   it("reads the dark theme from the cookie header", () => {
     const request = new Request("https://paper-portfolio-ink.dev/blog", {
       headers: {
-        Cookie: "paper-theme=dark",
+        Cookie: "__Host-paper-theme=dark",
       },
     });
 
@@ -37,6 +37,8 @@ describe("public theme server helpers", () => {
 
   it("builds an httpOnly cookie for the selected theme", () => {
     expect(buildThemeCookie(PUBLIC_THEME.dark)).toContain("HttpOnly");
-    expect(buildThemeCookie(PUBLIC_THEME.dark)).toContain("paper-theme=dark");
+    expect(buildThemeCookie(PUBLIC_THEME.dark)).toContain("__Host-paper-theme=dark");
+    expect(buildThemeCookie(PUBLIC_THEME.dark)).toContain("Path=/");
+    expect(buildThemeCookie(PUBLIC_THEME.dark)).toContain("Secure");
   });
 });
