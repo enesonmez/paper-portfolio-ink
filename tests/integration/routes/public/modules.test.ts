@@ -109,6 +109,9 @@ describe("public route modules", () => {
         context,
         params: {},
         request: new Request("https://paper-portfolio-ink.dev/tr/blog/track", {
+          headers: {
+            origin: "https://paper-portfolio-ink.dev",
+          },
           method: "POST",
         }),
       } as never),
@@ -159,6 +162,7 @@ describe("public route modules", () => {
         }),
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
+          origin: "https://paper-portfolio-ink.dev",
         },
         method: "POST",
       }),
@@ -174,6 +178,7 @@ describe("public route modules", () => {
         }),
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
+          origin: "https://paper-portfolio-ink.dev",
         },
         method: "POST",
       }),
@@ -185,5 +190,46 @@ describe("public route modules", () => {
     expect(validResponse.status).toBe(302);
     expect(validResponse.headers.get("location")).toBe("/tr/blog");
     expect(validResponse.headers.get("set-cookie")).toContain("paper-theme=dark");
+  });
+
+  it("rejects public mutation routes without a same-origin header", async () => {
+    const context = { db: { query: {} }, runtime: { platform: "node" } } as never;
+    const { action: themeAction } = await import("~/routes/public/theme");
+    const { action: blogTrackAction } = await import("~/routes/public/blog/track");
+
+    await expect(
+      themeAction({
+        context,
+        params: {},
+        request: new Request("https://paper-portfolio-ink.dev/theme", {
+          body: new URLSearchParams({
+            intent: "set-theme",
+            redirectTo: "/tr/blog",
+            theme: "dark",
+          }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          method: "POST",
+        }),
+      } as never),
+    ).rejects.toMatchObject({
+      code: "security.csrf.invalid_origin",
+      status: 403,
+    });
+    await expect(
+      blogTrackAction({
+        context,
+        params: {},
+        request: new Request("https://paper-portfolio-ink.dev/tr/blog/track", {
+          method: "POST",
+        }),
+      } as never),
+    ).rejects.toMatchObject({
+      code: "analytics.track.invalid_origin",
+      status: 403,
+    });
+
+    expect(trackPublicBlogPostViewMock).not.toHaveBeenCalled();
   });
 });

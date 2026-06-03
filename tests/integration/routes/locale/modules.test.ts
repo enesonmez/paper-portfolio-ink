@@ -99,6 +99,9 @@ describe("locale route modules", () => {
       params: {},
       request: new Request("https://paper-portfolio-ink.dev/locale", {
         body: new FormData(),
+        headers: {
+          origin: "https://paper-portfolio-ink.dev",
+        },
         method: "POST",
       }),
     } as never);
@@ -107,6 +110,9 @@ describe("locale route modules", () => {
       params: {},
       request: new Request("https://paper-portfolio-ink.dev/locale", {
         body: new FormData(),
+        headers: {
+          origin: "https://paper-portfolio-ink.dev",
+        },
         method: "POST",
       }),
     } as never);
@@ -124,5 +130,25 @@ describe("locale route modules", () => {
     expect(validActionResponse.status).toBe(302);
     expect(validActionResponse.headers.get("location")).toBe("/en/projects");
     expect(validActionResponse.headers.get("set-cookie")).toContain("paper-locale=en");
+  });
+
+  it("rejects locale mutations without a same-origin header", async () => {
+    const { action } = await import("~/routes/locale/action");
+
+    await expect(
+      action({
+        context: { db: { query: {} }, runtime: { platform: "node" } },
+        params: {},
+        request: new Request("https://paper-portfolio-ink.dev/locale", {
+          body: new FormData(),
+          method: "POST",
+        }),
+      } as never),
+    ).rejects.toMatchObject({
+      code: "security.csrf.invalid_origin",
+      status: 403,
+    });
+
+    expect(parseLocaleFormDataMock).not.toHaveBeenCalled();
   });
 });

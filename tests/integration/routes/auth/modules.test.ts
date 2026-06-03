@@ -49,6 +49,9 @@ describe("auth route modules", () => {
         params: {},
         request: new Request(request.url, {
           body: new FormData(),
+          headers: {
+            origin: "https://paper-portfolio-ink.dev",
+          },
           method: "POST",
         }),
       } as never),
@@ -77,6 +80,9 @@ describe("auth route modules", () => {
         params: {},
         request: new Request(request.url, {
           body: new FormData(),
+          headers: {
+            origin: "https://paper-portfolio-ink.dev",
+          },
           method: "POST",
         }),
       } as never),
@@ -95,5 +101,41 @@ describe("auth route modules", () => {
       context,
     });
     expect(logoutInvocation?.request).toBeInstanceOf(Request);
+  });
+
+  it("rejects login and logout actions without a same-origin header", async () => {
+    const context = { db: { query: {} }, runtime: { platform: "node" } } as never;
+    const { action: loginAction } = await import("~/routes/auth/login");
+    const { action: logoutAction } = await import("~/routes/auth/logout");
+
+    await expect(
+      loginAction({
+        context,
+        params: {},
+        request: new Request("https://paper-portfolio-ink.dev/login", {
+          body: new FormData(),
+          method: "POST",
+        }),
+      } as never),
+    ).rejects.toMatchObject({
+      code: "security.csrf.invalid_origin",
+      status: 403,
+    });
+    await expect(
+      logoutAction({
+        context,
+        params: {},
+        request: new Request("https://paper-portfolio-ink.dev/logout", {
+          body: new FormData(),
+          method: "POST",
+        }),
+      } as never),
+    ).rejects.toMatchObject({
+      code: "security.csrf.invalid_origin",
+      status: 403,
+    });
+
+    expect(handleLoginActionMock).not.toHaveBeenCalled();
+    expect(performLogoutMock).not.toHaveBeenCalled();
   });
 });

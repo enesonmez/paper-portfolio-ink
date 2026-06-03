@@ -55,6 +55,7 @@ describe("auth route", () => {
       body: JSON.stringify({ email: "test@example.com", password: "pass1234" }),
       headers: {
         "content-type": "application/json",
+        origin: "http://localhost:3000",
       },
     });
     const response = new Response("created", { status: 200 });
@@ -73,5 +74,33 @@ describe("auth route", () => {
         params: { "*": "sign-in/email" },
       } as never),
     ).resolves.toBe(response);
+  });
+
+  it("rejects POST requests without a same-origin header", async () => {
+    const request = new Request("http://localhost:3000/api/auth/sign-in/email", {
+      method: "POST",
+      body: JSON.stringify({ email: "test@example.com", password: "pass1234" }),
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+    const { action } = await import("~/routes/system/api-auth");
+
+    await expect(
+      action({
+        request,
+        context: {
+          db: { query: {} },
+          runtime: { platform: "node" },
+        },
+        params: { "*": "sign-in/email" },
+      } as never),
+    ).rejects.toMatchObject({
+      code: "security.csrf.invalid_origin",
+      status: 403,
+    });
+
+    expect(createAuthMock).not.toHaveBeenCalled();
+    expect(handlerMock).not.toHaveBeenCalled();
   });
 });

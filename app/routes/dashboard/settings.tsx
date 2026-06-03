@@ -8,11 +8,17 @@ import {
   handleDashboardSettingsAction,
   loadDashboardSettingsData,
 } from "~/features/dashboard/settings/server";
-import { APP_ROUTE_ID } from "~/shared/errors/contracts";
+import {
+  APP_ERROR_ACTION,
+  APP_ERROR_CODE,
+  APP_ERROR_RESOURCE,
+  APP_ROUTE_ID,
+} from "~/shared/errors/contracts";
 import {
   runActionWithErrorHandling,
   runLoaderWithErrorHandling,
 } from "~/shared/errors/route-error-handling.server";
+import { assertSameOriginMutationRequest } from "~/shared/security/csrf.server";
 
 export async function loader({
   context,
@@ -38,7 +44,16 @@ export async function action({
 }) {
   return runActionWithErrorHandling({
     context,
-    handler: () => handleDashboardSettingsAction(context, request),
+    handler: () => {
+      assertSameOriginMutationRequest({
+        action: APP_ERROR_ACTION.mutate,
+        code: APP_ERROR_CODE.security.csrf.invalidOrigin,
+        request,
+        resource: APP_ERROR_RESOURCE.settings,
+      });
+
+      return handleDashboardSettingsAction(context, request);
+    },
     request,
     routeId: APP_ROUTE_ID.dashboardSettings,
   });
