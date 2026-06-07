@@ -247,6 +247,7 @@ Bu doküman, `docs/features` altındaki feature dokümanları oluşturulma sıra
 - **[GÜNCEL / ACTIVE]** **[FOUNDATION]**: Guvenlik auditlerinde yalnizca authz ve validation kontrol etmek yeterli degildir; SSR giris noktasindaki global header baseline'i, production'da gereksiz `.well-known` debug rotalari ve custom cookie builder'larindaki `Secure` bayragi eksikleri de sistematik kontrol listesine dahil edilmelidir.
 - **[GÜNCEL / ACTIVE]** **[SECURITY]**: Cookie tabanli tum mutation route'lari `SameSite` davranisina guvenmek yerine route wrapper seviyesinde ortak bir `Origin`/`Referer` guard'i ile korunmalidir; guard body parse oncesinde calismali ve blog tracking gibi public POST endpoint'leri de ayni helper'i kullanmalidir.
 - **[GÜNCEL / ACTIVE]** **[SECURITY]**: Kimlik dogrulama disindaki custom cookie'ler bile `Secure` olmadan birakilmamali; public preference cookie'leri icin host-only `__Host-` + `Path=/` + `HttpOnly` deseni varsayilan olmali, yalnizca analytics lock gibi client-side okunma zorunlulugu olan istisnalarda `HttpOnly` bilincli olarak disarida birakilmalidir.
+- **[GÜNCEL / ACTIVE]** **[SECURITY]**: Debug veya tool-discovery amacli `.well-known` endpoint'ler tum ortamlarda acik birakilmamalidir; en dayanikli desen, route'u local probe'lar icin korurken Cloudflare production hostlarinda handler seviyesinde 404 ile kapatmaktir.
 
 ---
 
