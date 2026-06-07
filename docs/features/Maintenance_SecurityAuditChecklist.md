@@ -113,17 +113,19 @@ return [
 ].join("; ");
 ```
 
-### [ ] SEC-04 | Low | Chrome DevTools well-known endpoint'i production'da acik
+### [x] SEC-04 | Resolved | Chrome DevTools well-known endpoint'i production'da acikti
 
-- Etki: Public `.well-known` rotasi repo/workspace adi sızdiriyor ve gereksiz fingerprinting yuzeyi aciyor.
-- Kanit:
-  - `app/routes.ts:6` `.well-known/appspecific.com.chrome.devtools.json` rotasini tum ortamlar icin kaydediyor.
-  - `app/routes/system/chrome-devtools.ts:1` endpoint'e gelen herkese `workspace` adini JSON olarak donuyor.
-- Somurulebilirlik Kaniti: Harici tarayicilar veya botlar tek istekle proje/workspace adini ve devtools entegrasyonunun acik oldugunu anlayabilir; etki dusuk ama yuzey gereksiz.
-- Remediation checklist:
-  - [ ] Rotayi sadece local/dev runtime'da kaydet veya environment flag ile disable et.
-  - [ ] Production'da 404/410 don.
-- Onerilen kod yonu:
+- Cozum: `.well-known/appspecific.com.chrome.devtools.json` handler'i local/dev probe'lari ile production host'larini ayirt edecek sekilde sertlestirildi. `node` runtime ve loopback/local hostlar JSON cevabi almaya devam ederken, Cloudflare runtime'da non-local hostlar icin endpoint 404 donuyor.
+- Uygulanan degisiklikler:
+  - [x] Rota local/dev probe'lara acik kalirken production hostlarda 404 donen runtime gate ile sertlestirildi.
+  - [x] Production benzeri Cloudflare request'leri icin 404 regression testi eklendi.
+- Referans dosyalar:
+  - `app/routes/system/chrome-devtools.ts`
+  - `tests/integration/routes/system/chrome-devtools.test.ts`
+- Dogrulama:
+  - Local `node` ve local Cloudflare request'lerinde 200 JSON response
+  - Production benzeri Cloudflare hostunda 404 response
+- Ilk onerilen kod yonu:
 
 ```ts
 if (context.runtime.platform === "cloudflare" && env.NODE_ENV === "production") {
